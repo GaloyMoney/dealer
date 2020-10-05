@@ -1,4 +1,4 @@
-FROM mhart/alpine-node:slim-12.18 as app-build
+FROM mhart/alpine-node:12.18 as app-build
 
 WORKDIR /usr/src/app
 
