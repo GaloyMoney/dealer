@@ -2,11 +2,11 @@ FROM mhart/alpine-node:12.18 as app-build
 
 WORKDIR /usr/src/app
 
-COPY package.json ./
+COPY ./app/package.json ./app/yarn.lock ./
 
 RUN yarn install --prod --frozen-lockfile
 
-COPY . ./
+COPY ./app ./
 
 RUN yarn build
 

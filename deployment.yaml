@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: lnpage
+  name: lnpage
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: lnpage
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: lnpage
+    spec:
+      containers:
+      - image: gcr.io/galoyapp/lnpage:latest
+        imagePullPolicy: IfNotPresent
+        name: lnpage-container
