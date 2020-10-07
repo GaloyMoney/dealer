@@ -8,7 +8,7 @@ RUN yarn install --prod --frozen-lockfile
 
 COPY ./app ./
 
-yarn build
+RUN yarn build
 
 FROM nginx:alpine
 
