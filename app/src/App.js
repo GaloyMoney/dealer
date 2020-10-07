@@ -5,7 +5,8 @@ import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import Jumbotron from 'react-bootstrap/Jumbotron'
-import Image from 'react-bootstrap/Image'
+import QRCode from 'qrcode.react';
+
 
 function App() {
   return (
@@ -26,7 +27,7 @@ function App() {
                     <hr />
                   </Col>
                   <Col xs={3}>
-                    <Image src={"./qrcode.png"} fluid />
+                    <QRCode value={`${window.env.LND_PUB_KEY}@${window.env.LND_ADDR}`} size={196} />
                   </Col>
                 </Row>
               </Container>
