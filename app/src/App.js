@@ -21,8 +21,8 @@ function App() {
                   <Col>
                     <h2>Connect to the Bitcoin Beach Lightning Node</h2>
                     <br/>
-                    <label>Node Public Key: </label> <p style={{ fontSize: 'small' }}>{process.env.REACT_APP_PUB_KEY}</p>
-                    <label> Node Connection String:</label> <p style={{ fontSize: 'small' }}>{process.env.REACT_APP_PUB_KEY}@{process.env.REACT_APP_ADDR}</p>
+                    <label>Node Public Key: </label> <p style={{ fontSize: 'small' }}>{window.env.LND_PUB_KEY}</p>
+                    <label> Node Connection String:</label> <p style={{ fontSize: 'small' }}>{window.env.LND_PUB_KEY}@{window.env.LND_ADDR}</p>
                     <hr />
                   </Col>
                   <Col xs={3}>
