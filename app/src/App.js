@@ -44,7 +44,7 @@ function App() {
       }
     }
     fetchNodeStats()
-  })
+  }, [])
 
   return (
     <div>
