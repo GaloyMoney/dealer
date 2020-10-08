@@ -21,13 +21,20 @@ function App() {
                 <Row>
                   <Col>
                     <h2>Connect to the Bitcoin Beach Lightning Node</h2>
-                    <br/>
-                    <label>Node Public Key: </label> <p style={{ fontSize: 'small' }}>{window.env.LND_PUB_KEY}</p>
-                    <label> Node Connection String:</label> <p style={{ fontSize: 'small' }}>{window.env.LND_PUB_KEY}@{window.env.LND_ADDR}</p>
+                    <br />
+                    <label>Node Public Key: </label> <p style={{ fontSize: 'small', overflowWrap: 'break-word' }}>{window.env.LND_PUB_KEY}</p>
+                    <label> Node Connection String:</label> <p style={{ fontSize: 'small', overflowWrap: 'break-word' }}>{window.env.LND_PUB_KEY}@{window.env.LND_ADDR}</p>
                     <hr />
                   </Col>
                   <Col xs={3}>
                     <QRCode value={`${window.env.LND_PUB_KEY}@${window.env.LND_ADDR}`} size={196} />
+                  </Col>
+                </Row>
+                <Row>
+                  <Col>
+                    <Card>
+                      <Card.Body>This is some text within a card body.</Card.Body>
+                    </Card>
                   </Col>
                 </Row>
               </Container>
