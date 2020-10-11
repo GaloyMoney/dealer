@@ -1,3 +1,0 @@
-ingress:
-  certName: lnpage-testnet-cert
-  staticIpName: lnpage-testnet
