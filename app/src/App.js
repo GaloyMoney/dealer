@@ -16,7 +16,7 @@ const client = new ApolloClient({
   cache: new InMemoryCache()
 });
 
-const nodeStatsQuery = client.query({
+const nodeStatsQuery = () => client.query({
   query: gql`
       query nodeStats {
         nodeStats {
@@ -30,14 +30,14 @@ const nodeStatsQuery = client.query({
 function App() {
 
   const [nodeStats, setNodeStats] = useState({
-    peersCount: 0,
-    channelsCount: 0
+    peersCount: "Loading...",
+    channelsCount: "Loading..."
   })
 
   useEffect(() => {
     async function fetchNodeStats() {
       try {
-        let { data: { nodeStats: { channelsCount, peersCount } } } = await nodeStatsQuery
+        let { data: { nodeStats: { channelsCount, peersCount } } } = await nodeStatsQuery()
         setNodeStats({ peersCount, channelsCount })
       } catch (err) {
         console.error("Could not fetch node stats")
