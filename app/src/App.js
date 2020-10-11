@@ -31,7 +31,8 @@ function App() {
 
   const [nodeStats, setNodeStats] = useState({
     peersCount: "Loading...",
-    channelsCount: "Loading..."
+    channelsCount: "Loading...",
+    nodeStatsAvailable: true
   })
 
   useEffect(() => {
@@ -40,7 +41,9 @@ function App() {
         let { data: { nodeStats: { channelsCount, peersCount } } } = await nodeStatsQuery()
         setNodeStats({ peersCount, channelsCount })
       } catch (err) {
-        console.error("Could not fetch node stats")
+        const error = "Could not fetch node stats"
+        setNodeStats({ nodeStatsAvailable: false })
+        console.error(error)
       }
     }
     fetchNodeStats()
@@ -54,7 +57,7 @@ function App() {
         <Row>
           <Col>
             <h2>Connect to the Bitcoin Beach Lightning Node</h2>
-            <br/>
+            <br />
             <Jumbotron>
               <Container>
                 <Row>
@@ -72,7 +75,7 @@ function App() {
                       </Card.Body>
                     </Card>
                   </Col>
-                  <Col>
+                  {nodeStats.nodeStatsAvailable && <Col>
                     <Card>
                       <Card.Header>Node Stats</Card.Header>
                       <Card.Body>
@@ -86,7 +89,7 @@ function App() {
                         </ListGroup>
                       </Card.Body>
                     </Card>
-                  </Col>
+                  </Col>}
                 </Row>
                 <hr />
                 <Row>
