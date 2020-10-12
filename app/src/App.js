@@ -41,9 +41,8 @@ function App() {
         let { data: { nodeStats: { channelsCount, peersCount } } } = await nodeStatsQuery()
         setNodeStats({ peersCount, channelsCount })
       } catch (err) {
-        const error = "Could not fetch node stats"
         setNodeStats({ nodeStatsAvailable: false })
-        console.error(error)
+        console.error(err)
       }
     }
     fetchNodeStats()
