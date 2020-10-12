@@ -39,7 +39,7 @@ function App() {
     async function fetchNodeStats() {
       try {
         let { data: { nodeStats: { channelsCount, peersCount } } } = await nodeStatsQuery()
-        setNodeStats({ peersCount, channelsCount })
+        setNodeStats({ peersCount, channelsCount, nodeStatsAvailable: true })
       } catch (err) {
         setNodeStats({ nodeStatsAvailable: false })
         console.error(err)
