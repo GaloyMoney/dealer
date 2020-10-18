@@ -56,17 +56,17 @@ function Receive({ uid }) {
 							<Card.Header>
 								Pay {uid}
 							</Card.Header>
-							<Card.Body>
+							{invoice.loading && <div> <br />Loading...</div>}
+							{!invoice.loading && <Card.Body style={{paddingBottom:'0'}}>
 								<Card.Text>
-									{invoice.loading && "Loading..."}
-									{!invoice.loading && <QRCode includeMargin="true" value={`${invoice.invoice}`} size={320} />}
-									<br/>
-								<small>Scan using a lightning enabled wallet</small>
+									<QRCode includeMargin="true" value={`${invoice.invoice}`} size={320} />
+									<br />
+									<small>Scan using a lightning enabled wallet</small>
 								</Card.Text>
-							<Button size="sm">Check payment</Button>
-							</Card.Body>
+								<Button size="sm">Check payment</Button>
+							</Card.Body>}
 							<Card.Body>
-							<Card.Link href={window.location.origin}>Open a channel with us</Card.Link>
+								<Card.Link href={window.location.origin}>Open a channel with us</Card.Link>
 							</Card.Body>
 							<Card.Footer className="text-muted">
 								Powered by <Card.Link href="https://try.galoy.io">Galoy</Card.Link>
