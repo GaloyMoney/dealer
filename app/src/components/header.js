@@ -7,7 +7,7 @@ function Header() {
 	return (
 		<Navbar bg="dark">
 		<Container>
-			<Navbar.Brand href="https://bitcoinbeach.com"><Image src="BBLogo.png" rounded/> </Navbar.Brand>
+			<Navbar.Brand href="https://bitcoinbeach.com"><Image src={process.env.PUBLIC_URL + '/BBLogo.png'} rounded/> </Navbar.Brand>
 		</Container>
 		</Navbar>
 	)
