@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import Figure from 'react-bootstrap/Figure'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import Card from 'react-bootstrap/Card'
@@ -17,6 +18,16 @@ function Receive({ uid }) {
 		cache: new InMemoryCache()
 	});
 
+	const updatePendingInvoiceMutation = (hash) => client.mutate({
+		mutation: gql`
+      mutation publicInvoice {
+        publicInvoice(uid: "${uid}") {
+          updatePendingInvoice(hash: "${hash}")
+        }
+      }
+    `
+	})
+
 	const addPublicInvoiceMutation = () => client.mutate({
 		mutation: gql`
       mutation publicInvoice {
@@ -32,6 +43,11 @@ function Receive({ uid }) {
 		loading: true
 	})
 
+	const [invoiceStatus, setInvoiceStatus] = useState({
+		loading: false,
+		invoicePaid: false
+	})
+
 	useEffect(() => {
 		async function fetchPublicInvoice() {
 			try {
@@ -43,6 +59,15 @@ function Receive({ uid }) {
 		}
 		fetchPublicInvoice()
 	}, [])
+
+	const updatePendingInvoice = async (e) => {
+		setInvoiceStatus({ loading: true, invoicePaid: false })
+		let decoded = window.lightningPayReq.decode(invoice.invoice)
+		let [{ data: hash }] = decoded.tags.filter(item => item.tagName === "payment_hash")
+		let { data: { publicInvoice: { updatePendingInvoice: invoicePaid } } } = await updatePendingInvoiceMutation(hash)
+		setInvoiceStatus({ loading: false, invoicePaid })
+		console.log({ invoicePaid })
+	}
 
 
 	return (
@@ -57,13 +82,23 @@ function Receive({ uid }) {
 								Pay {uid}
 							</Card.Header>
 							{invoice.loading && <div> <br />Loading...</div>}
-							{!invoice.loading && <Card.Body style={{paddingBottom:'0'}}>
+							{invoiceStatus.invoicePaid &&
 								<Card.Text>
-									<QRCode includeMargin="true" value={`${invoice.invoice}`} size={320} />
+								<br/>
+									<Figure>
+										<Figure.Image src={process.env.PUBLIC_URL + '/confetti.svg'} width={150} height={150} />
+									</Figure>
+									<br />
+									Payment received!
+								</Card.Text>
+							}
+							{!invoice.loading && !invoiceStatus.invoicePaid && <Card.Body style={{ paddingBottom: '0' }}>
+								<Card.Text>
+									<QRCode value={`${invoice.invoice}`} size={320} />
 									<br />
 									<small>Scan using a lightning enabled wallet</small>
 								</Card.Text>
-								<Button size="sm">Check payment</Button>
+								<Button size="sm" disabled={invoiceStatus.loading} onClick={updatePendingInvoice}>{invoiceStatus.loading ? 'Waiting...' : 'Check payment'}</Button>
 							</Card.Body>}
 							<Card.Body>
 								<Card.Link href={window.location.origin}>Open a channel with us</Card.Link>
