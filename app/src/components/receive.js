@@ -66,7 +66,6 @@ function Receive({ uid }) {
 		let [{ data: hash }] = decoded.tags.filter(item => item.tagName === "payment_hash")
 		let { data: { publicInvoice: { updatePendingInvoice: invoicePaid } } } = await updatePendingInvoiceMutation(hash)
 		setInvoiceStatus({ loading: false, invoicePaid })
-		console.log({ invoicePaid })
 	}
 
 
