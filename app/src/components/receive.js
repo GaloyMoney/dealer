@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Figure from 'react-bootstrap/Figure'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
@@ -7,65 +7,53 @@ import Container from 'react-bootstrap/Container'
 import Button from 'react-bootstrap/Button'
 import QRCode from 'qrcode.react';
 import Header from './header.js'
-import { ApolloClient, InMemoryCache, gql } from '@apollo/client';
+import { gql, useMutation } from '@apollo/client';
 
 function Receive({ uid }) {
 
-	let graphqlUri = window.env.GRAPHQL_URI
 
-	const client = new ApolloClient({
-		uri: graphqlUri,
-		cache: new InMemoryCache()
-	});
-
-	const updatePendingInvoiceMutation = (hash) => client.mutate({
-		mutation: gql`
-      mutation publicInvoice {
-        publicInvoice(uid: "${uid}") {
-          updatePendingInvoice(hash: "${hash}")
+	const UPDATE_PENDING_INVOICE = gql`
+      mutation PublicInvoice($hash: String!, $uid: String!) {
+        publicInvoice(uid: $uid) {
+          updatePendingInvoice(hash: $hash)
         }
       }
     `
-	})
 
-	const addPublicInvoiceMutation = () => client.mutate({
-		mutation: gql`
-      mutation publicInvoice {
-        publicInvoice(uid: "${uid}") {
+	const GENERATE_PUBLIC_INVOICE = gql`
+      mutation publicInvoice($uid: String!) {
+        publicInvoice(uid: $uid) {
           addInvoice
         }
       }
     `
+
+	const [updatePendingInvoice, { loading: invoiceUpdating }] = useMutation(UPDATE_PENDING_INVOICE, {
+		onCompleted({ publicInvoice: { updatePendingInvoice: invoicePaid } }) {
+			setInvoicePaid(invoicePaid)
+		}
 	})
 
-	const [invoice, setInvoice] = useState({
-		invoice: null,
-		loading: true
+
+	const [generatePublicInvoice, { loading: invoiceLoading }] = useMutation(GENERATE_PUBLIC_INVOICE, {
+		onCompleted({ publicInvoice: { addInvoice } }) {
+			setInvoice(addInvoice)
+		}
 	})
 
-	const [invoiceStatus, setInvoiceStatus] = useState({
-		loading: false,
-		invoicePaid: false
-	})
+
+	const [invoice, setInvoice] = useState(0)
+
+	const [invoicePaid, setInvoicePaid] = useState(false)
 
 	useEffect(() => {
-		async function fetchPublicInvoice() {
-			try {
-				let { data: { publicInvoice: { addInvoice: publicInvoice } } } = await addPublicInvoiceMutation()
-				setInvoice({ invoice: publicInvoice, loading: false })
-			} catch (err) {
-				console.error(err)
-			}
-		}
-		fetchPublicInvoice()
+		generatePublicInvoice({ variables: { uid } })
 	}, [])
 
-	const updatePendingInvoice = async (e) => {
-		setInvoiceStatus({ loading: true, invoicePaid: false })
-		let decoded = window.lightningPayReq.decode(invoice.invoice)
+	const checkPayment = async () => {
+		let decoded = window.lightningPayReq.decode(invoice)
 		let [{ data: hash }] = decoded.tags.filter(item => item.tagName === "payment_hash")
-		let { data: { publicInvoice: { updatePendingInvoice: invoicePaid } } } = await updatePendingInvoiceMutation(hash)
-		setInvoiceStatus({ loading: false, invoicePaid })
+		updatePendingInvoice({ variables: { uid, hash } })
 	}
 
 
@@ -80,25 +68,26 @@ function Receive({ uid }) {
 							<Card.Header>
 								Pay {uid}
 							</Card.Header>
-							{invoice.loading && <div> <br />Loading...</div>}
-							{invoiceStatus.invoicePaid &&
-								<Card.Text>
+							{(invoiceLoading || !invoice) && <div> <br />Loading...</div>}
+							{invoicePaid &&
+									<div>
 									<br />
 									<Figure>
 										<Figure.Image src={process.env.PUBLIC_URL + '/confetti.svg'} width={150} height={150} />
 									</Figure>
 									<br />
 									Payment received!
-								</Card.Text>
+									</div>
 							}
-							{!invoice.loading && !invoiceStatus.invoicePaid && <Card.Body style={{ paddingBottom: '0' }}>
+							{!invoiceLoading && !invoicePaid && <Card.Body style={{ paddingBottom: '0' }}>
 								<Card.Text>
-									<QRCode value={`${invoice.invoice}`} size={320} />
+									<QRCode value={`${invoice}`} size={320} />
 									<br />
 									<small>Scan using a lightning enabled wallet</small>
 								</Card.Text>
-								<Button size="sm" disabled={invoiceStatus.loading} onClick={updatePendingInvoice}>{invoiceStatus.loading ? 'Waiting...' : 'Check payment'}</Button>
+								<Button size="sm" disabled={invoiceUpdating} onClick={checkPayment}>{invoiceUpdating ? 'Waiting...' : 'Check payment'}</Button>
 							</Card.Body>}
+
 							<Card.Body>
 								<Card.Link href={window.location.origin}>Open a channel with us</Card.Link>
 							</Card.Body>
