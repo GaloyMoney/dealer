@@ -84,7 +84,7 @@ function Receive({ uid }) {
 							{invoice.loading && <div> <br />Loading...</div>}
 							{invoiceStatus.invoicePaid &&
 								<Card.Text>
-								<br/>
+									<br />
 									<Figure>
 										<Figure.Image src={process.env.PUBLIC_URL + '/confetti.svg'} width={150} height={150} />
 									</Figure>
