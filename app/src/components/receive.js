@@ -9,10 +9,7 @@ import QRCode from 'qrcode.react';
 import Header from './header.js'
 import { gql, useMutation } from '@apollo/client';
 
-function Receive({ uid }) {
-
-
-	const UPDATE_PENDING_INVOICE = gql`
+const UPDATE_PENDING_INVOICE = gql`
       mutation PublicInvoice($hash: String!, $uid: String!) {
         publicInvoice(uid: $uid) {
           updatePendingInvoice(hash: $hash)
@@ -20,7 +17,7 @@ function Receive({ uid }) {
       }
     `
 
-	const GENERATE_PUBLIC_INVOICE = gql`
+const GENERATE_PUBLIC_INVOICE = gql`
       mutation publicInvoice($uid: String!) {
         publicInvoice(uid: $uid) {
           addInvoice
@@ -28,12 +25,10 @@ function Receive({ uid }) {
       }
     `
 
-	const [updatePendingInvoice, { loading: invoiceUpdating }] = useMutation(UPDATE_PENDING_INVOICE, {
-		onCompleted({ publicInvoice: { updatePendingInvoice: invoicePaid } }) {
-			setInvoicePaid(invoicePaid)
-		}
-	})
+function Receive({ uid }) {
 
+	const [invoice, setInvoice] = useState(0)
+	const [invoicePaid, setInvoicePaid] = useState(false)
 
 	const [generatePublicInvoice, { loading: invoiceLoading }] = useMutation(GENERATE_PUBLIC_INVOICE, {
 		onCompleted({ publicInvoice: { addInvoice } }) {
@@ -41,14 +36,15 @@ function Receive({ uid }) {
 		}
 	})
 
-
-	const [invoice, setInvoice] = useState(0)
-
-	const [invoicePaid, setInvoicePaid] = useState(false)
-
 	useEffect(() => {
 		generatePublicInvoice({ variables: { uid } })
 	}, [])
+
+	const [updatePendingInvoice, { loading: invoiceUpdating }] = useMutation(UPDATE_PENDING_INVOICE, {
+		onCompleted({ publicInvoice: { updatePendingInvoice: invoicePaid } }) {
+			setInvoicePaid(invoicePaid)
+		}
+	})
 
 	const checkPayment = async () => {
 		let decoded = window.lightningPayReq.decode(invoice)
@@ -70,7 +66,7 @@ function Receive({ uid }) {
 							</Card.Header>
 							{(invoiceLoading || !invoice) && <div> <br />Loading...</div>}
 							{invoicePaid &&
-									<div>
+								<div>
 									<br />
 									<Figure>
 										<Figure.Image src={process.env.PUBLIC_URL + '/confetti.svg'} width={150} height={150} />
