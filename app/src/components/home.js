@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import Header from './header.js'
 import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
@@ -7,45 +7,9 @@ import Card from 'react-bootstrap/Card'
 import ListGroup from 'react-bootstrap/ListGroup'
 import Jumbotron from 'react-bootstrap/Jumbotron'
 import QRCode from 'qrcode.react';
-import { ApolloClient, InMemoryCache, gql } from '@apollo/client';
-
+import NodeStats from './nodeStats.js'
 
 function Home() {
-
-  const client = new ApolloClient({
-    uri: window.env.GRAPHQL_URI,
-    cache: new InMemoryCache()
-  });
-
-  const nodeStatsQuery = () => client.query({
-    query: gql`
-      query nodeStats {
-        nodeStats {
-          peersCount,
-          channelsCount
-        }
-      }
-    `
-  })
-
-  const [nodeStats, setNodeStats] = useState({
-    peersCount: "Loading...",
-    channelsCount: "Loading...",
-    nodeStatsAvailable: true
-  })
-
-  useEffect(() => {
-    async function fetchNodeStats() {
-      try {
-        let { data: { nodeStats: { channelsCount, peersCount } } } = await nodeStatsQuery()
-        setNodeStats({ peersCount, channelsCount, nodeStatsAvailable: true })
-      } catch (err) {
-        setNodeStats({ nodeStatsAvailable: false })
-        console.error(err)
-      }
-    }
-    fetchNodeStats()
-  }, [])
 
   return (
     <div>
@@ -73,21 +37,9 @@ function Home() {
                       </Card.Body>
                     </Card>
                   </Col>
-                  {nodeStats.nodeStatsAvailable && <Col>
-                    <Card>
-                      <Card.Header>Node Stats</Card.Header>
-                      <Card.Body>
-                        <ListGroup>
-                          <ListGroup.Item variant="success">
-                            Peers: {nodeStats.peersCount}
-                          </ListGroup.Item>
-                          <ListGroup.Item variant="success">
-                            Channels: {nodeStats.channelsCount}
-                          </ListGroup.Item>
-                        </ListGroup>
-                      </Card.Body>
-                    </Card>
-                  </Col>}
+                  <Col>
+                    <NodeStats />
+                  </Col>
                 </Row>
                 <hr />
                 <Row className="justify-content-md-center">
