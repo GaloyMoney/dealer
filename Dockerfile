@@ -10,9 +10,9 @@ RUN yarn add bolt11
 
 RUN yarn global add browserify uglify-es
 
-RUN browserify -r bolt11 --standalone lightningPayReq | uglifyjs -c -m -o ./app/public/bolt11.min.js
-
 COPY ./app ./
+
+RUN browserify -r bolt11 --standalone lightningPayReq | uglifyjs -c -m -o ./app/public/bolt11.min.js
 
 RUN yarn build
 
