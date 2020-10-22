@@ -6,9 +6,9 @@ COPY ./app/package.json ./app/yarn.lock ./
 
 RUN yarn install --prod --frozen-lockfile
 
-RUN yarn install bolt11
+RUN yarn add bolt11
 
-RUN yarn global install browserify uglify-es
+RUN yarn global add browserify uglify-es
 
 RUN browserify -r bolt11 --standalone lightningPayReq | uglifyjs -c -m -o ./app/public/bolt11.min.js
 
