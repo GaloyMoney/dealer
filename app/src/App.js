@@ -6,7 +6,7 @@ import { useRoutes } from 'hookrouter';
 
 const routes = {
   '/': () => <Home />,
-  '/u/:username': ({ username }) => <Receive username={username} />
+  '/:username': ({ username }) => <Receive username={username} />
 };
 
 function App() {
