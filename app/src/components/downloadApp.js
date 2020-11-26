@@ -30,6 +30,7 @@ const DownloadApp = () => {
     <Header />
       <Container>
       <br />
+      <h3>Download the Bitcoin Beach Wallet</h3>
       <br />
         <Row>
           <Col>
