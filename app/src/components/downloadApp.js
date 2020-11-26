@@ -22,6 +22,9 @@ const DownloadApp = () => {
     return window.location.replace("itms-apps://itunes.apple.com/app/bitcoin-beach-wallet/id1531383905")
   }
 
+  const playStoreLink = "https://play.google.com/store/apps/details?id=com.galoyapp"
+  const appStoreLink = "https://apps.apple.com/app/bitcoin-beach-wallet/id1531383905"
+
   return (
     <div>
     <Header />
@@ -30,14 +33,20 @@ const DownloadApp = () => {
       <br />
         <Row>
           <Col>
-            <a href="https://play.google.com/store/apps/details?id=com.galoyapp">
+            <a href={playStoreLink}>
             <Image src={process.env.PUBLIC_URL + '/google-play-badge.png'} rounded/>
             </a>
+            <br/>
+            <br/>
+            <QRCode value={playStoreLink} size={200} />
           </Col>
           <Col>
-            <a href="https://apps.apple.com/app/bitcoin-beach-wallet/id1531383905">
+            <a href={appStoreLink}>
             <Image src={process.env.PUBLIC_URL + '/apple-app-store.png'} rounded/>
             </a>
+            <br/>
+            <br/>
+            <QRCode value={appStoreLink} size={200} />
           </Col>
       </Row>
       </Container>
