@@ -4,6 +4,7 @@ import Image from 'react-bootstrap/Image';
 import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
+import Button from 'react-bootstrap/Button'
 import Header from './header.js'
 
 const DownloadApp = () => {
@@ -24,32 +25,45 @@ const DownloadApp = () => {
 
   const playStoreLink = "https://play.google.com/store/apps/details?id=com.galoyapp"
   const appStoreLink = "https://apps.apple.com/app/bitcoin-beach-wallet/id1531383905"
+  const apkLink = "https://storage.googleapis.com/bitcoin-beach-wallet/bitcoin-beach-wallet_1.2.1.apk"
 
   return (
     <div>
-    <Header />
+      <Header />
       <Container>
-      <br />
-      <h3>Download the Bitcoin Beach Wallet</h3>
-      <br />
+        <br />
+        <h3>Download the Bitcoin Beach Wallet</h3>
+        <br />
         <Row>
           <Col>
-            <a href={playStoreLink}>
-            <Image src={process.env.PUBLIC_URL + '/google-play-badge.png'} rounded/>
+            <a href={appStoreLink}>
+              <Image src={process.env.PUBLIC_URL + '/apple-app-store.png'} rounded />
             </a>
-            <br/>
-            <br/>
+            <br />
+            <br />
+          </Col>
+          <Col>
+            <a href={playStoreLink}>
+              <Image src={process.env.PUBLIC_URL + '/google-play-badge.png'} rounded />
+            </a>
+          </Col>
+          <Col>
+            <div style={{width:200}}>
+              <Button href={apkLink} block variant="outline-dark">Download APK<br /> for Android</Button>
+            </div>
+          </Col>
+        </Row>
+        <Row>
+          <Col>
+            <QRCode value={appStoreLink} size={200} />
+          </Col>
+          <Col>
             <QRCode value={playStoreLink} size={200} />
           </Col>
           <Col>
-            <a href={appStoreLink}>
-            <Image src={process.env.PUBLIC_URL + '/apple-app-store.png'} rounded/>
-            </a>
-            <br/>
-            <br/>
-            <QRCode value={appStoreLink} size={200} />
+            <QRCode value={apkLink} size={200} />
           </Col>
-      </Row>
+        </Row>
       </Container>
     </div>
   )
