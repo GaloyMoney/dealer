@@ -52,7 +52,7 @@ const PrintQR = ({ username }) => {
                   <QRCode id="qr" value={`https://ln.bitcoinbeach.com/${username}`} size={300} logoImage={process.env.PUBLIC_URL + '/BBQRLogo.png'} logoWidth={100} />
                 </Card.Text>
               </Card.Body>
-              <h4>Powered by <Card.Link href="https://try.galoy.io">Galoy</Card.Link></h4>
+              <h4>Powered by <Card.Link href="https://try.galoy.io">Galoy.io</Card.Link></h4>
             </Card>
           </Col>
         </Row>
