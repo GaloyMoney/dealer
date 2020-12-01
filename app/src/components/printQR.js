@@ -23,7 +23,7 @@ const QRContainer = React.forwardRef((props, ref) => {
                   <QRCode value={`https://ln.bitcoinbeach.com/${props.username}`} size={800} logoImage={process.env.PUBLIC_URL + '/BBQRLogo.png'} logoWidth={250} />
                 </Card.Text>
               </Card.Body>
-              <h2>Powered by <Card.Link href="https://try.galoy.io">Galoy</Card.Link></h2>
+              <h2>Powered by Galoy.io</h2>
             </Card>
           </Col>
         </Row>
