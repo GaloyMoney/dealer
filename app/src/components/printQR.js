@@ -11,24 +11,24 @@ import Header from './header.js'
 
 const QRContainer = React.forwardRef((props, ref) => {
   return (
-    <div style={{display:"none"}}>
-    <Container fluid ref={ref}>
-      <br />
-      <Row className="justify-content-md-center">
-        <Col md="auto">
-          <Card className="text-center">
-            <Card.Body>
-              <Card.Text>
-              <h1>Pay {props.username}</h1>
-                <QRCode id="qr" value={`https://ln.bitcoinbeach.com/${props.username}`} size={800} logoImage={process.env.PUBLIC_URL + '/BBQRLogo.png'} logoWidth={300} />
-              </Card.Text>
-            </Card.Body>
-            <h2>Powered by <Card.Link href="https://try.galoy.io">Galoy</Card.Link></h2>
-          </Card>
-        </Col>
-      </Row>
-      <br />
-    </Container>
+    <div style={{ display: "none" }}>
+      <Container fluid ref={ref}>
+        <br />
+        <Row className="justify-content-md-center">
+          <Col md="auto">
+            <Card className="text-center">
+              <Card.Body>
+                <Card.Text>
+                  <h1>Pay {props.username}</h1>
+                  <QRCode value={`https://ln.bitcoinbeach.com/${props.username}`} size={800} logoImage={process.env.PUBLIC_URL + '/BBQRLogo.png'} logoWidth={250} />
+                </Card.Text>
+              </Card.Body>
+              <h2>Powered by <Card.Link href="https://try.galoy.io">Galoy</Card.Link></h2>
+            </Card>
+          </Col>
+        </Row>
+        <br />
+      </Container>
     </div>
   )
 })
@@ -36,31 +36,28 @@ const QRContainer = React.forwardRef((props, ref) => {
 const PrintQR = ({ username }) => {
 
   const componentRef = useRef()
-  // const handlePrint = useReactToPrint({
-  //   content: () => componentRef.current,
-  // });
 
   return (
     <div>
       <Header />
       <QRContainer username={username} ref={componentRef} />
       <Container fluid>
-      <br />
-      <Row className="justify-content-md-center">
-        <Col md="auto">
-          <Card className="text-center">
-            <Card.Body>
-              <Card.Text>
-              <h3>Pay {username}</h3>
-                <QRCode id="qr" value={`https://ln.bitcoinbeach.com/${username}`} size={300} logoImage={process.env.PUBLIC_URL + '/BBQRLogo.png'} logoWidth={100} />
-              </Card.Text>
-            </Card.Body>
-            <h4>Powered by <Card.Link href="https://try.galoy.io">Galoy</Card.Link></h4>
-          </Card>
-        </Col>
-      </Row>
-      <br />
-    </Container>
+        <br />
+        <Row className="justify-content-md-center">
+          <Col md="auto">
+            <Card className="text-center">
+              <Card.Body>
+                <Card.Text>
+                  <h3>Pay {username}</h3>
+                  <QRCode id="qr" value={`https://ln.bitcoinbeach.com/${username}`} size={300} logoImage={process.env.PUBLIC_URL + '/BBQRLogo.png'} logoWidth={100} />
+                </Card.Text>
+              </Card.Body>
+              <h4>Powered by <Card.Link href="https://try.galoy.io">Galoy</Card.Link></h4>
+            </Card>
+          </Col>
+        </Row>
+        <br />
+      </Container>
       <Row className="justify-content-md-center">
         <ReactToPrint
           trigger={() => <Button>Print QR Code</Button>}

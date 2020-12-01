@@ -1,5 +1,5 @@
 import React from 'react';
-import QRCode from 'qrcode.react';
+import { QRCode } from 'react-qrcode-logo'
 import Image from 'react-bootstrap/Image';
 import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
