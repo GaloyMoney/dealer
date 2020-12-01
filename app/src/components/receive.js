@@ -5,7 +5,8 @@ import Col from 'react-bootstrap/Col'
 import Card from 'react-bootstrap/Card'
 import Container from 'react-bootstrap/Container'
 import Button from 'react-bootstrap/Button'
-import QRCode from 'qrcode.react';
+// import QRCode from 'qrcode.react';
+import {QRCode} from 'react-qrcode-logo'
 import Header from './header.js'
 import { gql, useMutation } from '@apollo/client';
 
@@ -80,7 +81,7 @@ function Receive({ username }) {
               }
               {!invoiceLoading && !invoicePaid && !error && <Card.Body style={{ paddingBottom: '0' }}>
                 <Card.Text>
-                  <QRCode value={`${invoice}`} size={320} />
+                  <QRCode value={`${invoice}`} size={320} logoImage={process.env.PUBLIC_URL + '/BBQRLogo.png'} logoWidth={130}/>
                   <br />
                   <small>Scan using a lightning enabled wallet</small>
                 </Card.Text>
