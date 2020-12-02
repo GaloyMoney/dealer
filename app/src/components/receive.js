@@ -5,7 +5,6 @@ import Col from 'react-bootstrap/Col'
 import Card from 'react-bootstrap/Card'
 import Container from 'react-bootstrap/Container'
 import Button from 'react-bootstrap/Button'
-// import QRCode from 'qrcode.react';
 import {QRCode} from 'react-qrcode-logo'
 import Header from './header.js'
 import { gql, useMutation } from '@apollo/client';

@@ -12,6 +12,7 @@
     "hookrouter": "^1.2.3",
     "react": "^16.13.1",
     "react-bootstrap": "^1.3.0",
+    "react-copy-to-clipboard": "^5.0.2",
     "react-dom": "^16.13.1",
     "react-qrcode-logo": "^2.2.1",
     "react-scripts": "3.4.3",
