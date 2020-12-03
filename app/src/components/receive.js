@@ -65,9 +65,9 @@ function Receive({ username }) {
     <div>
       <Header />
       <Container fluid >
-        <br />
+        {os === undefined && <br />}
         <Row className="justify-content-md-center">
-          <Col md="auto">
+          <Col md="auto" style={{padding: 0}}>
             <Card className="text-center">
               <Card.Header>
                 Pay {username}
@@ -86,7 +86,7 @@ function Receive({ username }) {
               }
               {!invoiceLoading && !invoicePaid && !error && <Card.Body style={{ paddingBottom: '0' }}>
               <small>Scan using a lightning enabled wallet</small>
-                <Card.Text>
+                <Card.Text style={{marginBottom: 0, marginTop: "5px"}}>
                   <QRCode value={`${invoice}`} size={320} logoImage={process.env.PUBLIC_URL + '/BBQRLogo.png'} logoWidth={100} />
                 </Card.Text>
                 <CopyToClipboard text={invoice}>
