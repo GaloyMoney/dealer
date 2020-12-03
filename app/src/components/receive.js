@@ -87,9 +87,9 @@ function Receive({ username }) {
               {!invoiceLoading && !invoicePaid && !error && <Card.Body style={{ paddingBottom: '0' }}>
               <small>Scan using a lightning enabled wallet</small>
                 <Card.Text>
-                  <QRCode value={`${invoice}`} size={320} logoImage={process.env.PUBLIC_URL + '/BBQRLogo.png'} logoWidth={130} />
+                  <QRCode value={`${invoice}`} size={320} logoImage={process.env.PUBLIC_URL + '/BBQRLogo.png'} logoWidth={100} />
                 </Card.Text>
-                <CopyToClipboard text="ok">
+                <CopyToClipboard text={invoice}>
                     <Button size="sm" onClick={() => setIsCopied(true)}>{isCopied ? "Copied": "Copy invoice"}</Button>
                   </CopyToClipboard>&nbsp;
                 <Button size="sm" disabled={invoiceUpdating} onClick={checkPayment}>{invoiceUpdating ? 'Waiting...' : 'Check payment'}</Button>
