@@ -49,7 +49,7 @@ const PrintQR = ({ username }) => {
               <Card.Body>
                 <Card.Text>
                   <h3>Pay {username}</h3>
-                  <QRCode id="qr" value={`https://ln.bitcoinbeach.com/${username}`} size={300} logoImage={process.env.PUBLIC_URL + '/BBQRLogo.png'} logoWidth={100} />
+                  <QRCode id="qr" ecLevel={"Q"}  value={`https://ln.bitcoinbeach.com/${username}`} size={300} logoImage={process.env.PUBLIC_URL + '/BBQRLogo.png'} logoWidth={100} />
                 </Card.Text>
               </Card.Body>
               <h4>Powered by <Card.Link href="https://try.galoy.io">Galoy.io</Card.Link></h4>
