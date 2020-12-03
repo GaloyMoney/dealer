@@ -24,6 +24,10 @@ export const getOS = () => {
   }
 }
 
+export const playStoreLink = "https://play.google.com/store/apps/details?id=com.galoyapp"
+export const appStoreLink = "https://apps.apple.com/app/bitcoin-beach-wallet/id1531383905"
+export const apkLink = "https://storage.googleapis.com/bitcoin-beach-wallet/bitcoin-beach-wallet_1.2.1.apk"
+
 const DownloadApp = () => {
   const os = getOS()
 
@@ -32,10 +36,6 @@ const DownloadApp = () => {
   } else if (os === "ios") {
     return window.location.replace("itms-apps://itunes.apple.com/app/bitcoin-beach-wallet/id1531383905")
   }
-
-  const playStoreLink = "https://play.google.com/store/apps/details?id=com.galoyapp"
-  const appStoreLink = "https://apps.apple.com/app/bitcoin-beach-wallet/id1531383905"
-  const apkLink = "https://storage.googleapis.com/bitcoin-beach-wallet/bitcoin-beach-wallet_1.2.1.apk"
 
   return (
     <div>
