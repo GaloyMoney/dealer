@@ -10,7 +10,7 @@ import { QRCode } from 'react-qrcode-logo'
 import Header from './header.js'
 import { gql, useMutation } from '@apollo/client';
 import { getOS, appStoreLink, playStoreLink } from './downloadApp.js'
-import {CopyToClipboard} from 'react-copy-to-clipboard';
+import { CopyToClipboard } from 'react-copy-to-clipboard';
 
 const UPDATE_PENDING_INVOICE = gql`
       mutation PublicInvoice($hash: String!, $username: String!) {
@@ -67,7 +67,7 @@ function Receive({ username }) {
       <Container fluid >
         {os === undefined && <br />}
         <Row className="justify-content-md-center">
-          <Col md="auto" style={{padding: 0}}>
+          <Col md="auto" style={{ padding: 0 }}>
             <Card className="text-center">
               <Card.Header>
                 Pay {username}
@@ -85,13 +85,16 @@ function Receive({ username }) {
 									</div>
               }
               {!invoiceLoading && !invoicePaid && !error && <Card.Body style={{ paddingBottom: '0' }}>
-              <small>Scan using a lightning enabled wallet</small>
-                <Card.Text style={{marginBottom: 0, marginTop: "5px"}}>
-                  <QRCode value={`${invoice}`} size={320} logoImage={process.env.PUBLIC_URL + '/BBQRLogo.png'} logoWidth={100} />
+                <small>Scan using a lightning enabled wallet</small>
+                <Card.Text style={{ marginBottom: 0, marginTop: "5px" }}>
+                  <CopyToClipboard text={invoice}>
+                  <span>
+                    <QRCode value={`${invoice}`} size={320} logoImage={process.env.PUBLIC_URL + '/BBQRLogo.png'} logoWidth={100} />
+                    </span>
+                  </CopyToClipboard>
                 </Card.Text>
-                <CopyToClipboard text={invoice}>
-                    <Button size="sm" onClick={() => setIsCopied(true)}>{isCopied ? "Copied": "Copy invoice"}</Button>
-                  </CopyToClipboard>&nbsp;
+                <Button size="sm" onClick={() => setIsCopied(true)}>{isCopied ? "Copied" : "Copy invoice"}</Button>
+                  &nbsp;
                 <Button size="sm" disabled={invoiceUpdating} onClick={checkPayment}>{invoiceUpdating ? 'Waiting...' : 'Check payment'}</Button>
               </Card.Body>}
 
