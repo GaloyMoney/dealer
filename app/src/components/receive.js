@@ -4,10 +4,12 @@ import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import Card from 'react-bootstrap/Card'
 import Container from 'react-bootstrap/Container'
+import Image from 'react-bootstrap/Image'
 import Button from 'react-bootstrap/Button'
-import {QRCode} from 'react-qrcode-logo'
+import { QRCode } from 'react-qrcode-logo'
 import Header from './header.js'
 import { gql, useMutation } from '@apollo/client';
+import { getOS, appStoreLink, playStoreLink } from './downloadApp.js'
 
 const UPDATE_PENDING_INVOICE = gql`
       mutation PublicInvoice($hash: String!, $username: String!) {
@@ -29,6 +31,7 @@ function Receive({ username }) {
 
   const [invoice, setInvoice] = useState(0)
   const [invoicePaid, setInvoicePaid] = useState(false)
+  const [os, setOS] = useState(null)
 
   const [generatePublicInvoice, { loading: invoiceLoading, error }] = useMutation(GENERATE_PUBLIC_INVOICE, {
     onCompleted({ publicInvoice: { addInvoice } }) {
@@ -41,6 +44,7 @@ function Receive({ username }) {
 
   useEffect(() => {
     generatePublicInvoice({ variables: { username } })
+    setOS(getOS())
   }, [])
 
   const [updatePendingInvoice, { loading: invoiceUpdating }] = useMutation(UPDATE_PENDING_INVOICE, {
@@ -80,7 +84,7 @@ function Receive({ username }) {
               }
               {!invoiceLoading && !invoicePaid && !error && <Card.Body style={{ paddingBottom: '0' }}>
                 <Card.Text>
-                  <QRCode value={`${invoice}`} size={320} logoImage={process.env.PUBLIC_URL + '/BBQRLogo.png'} logoWidth={130}/>
+                  <QRCode value={`${invoice}`} size={320} logoImage={process.env.PUBLIC_URL + '/BBQRLogo.png'} logoWidth={130} />
                   <br />
                   <small>Scan using a lightning enabled wallet</small>
                 </Card.Text>
@@ -88,10 +92,25 @@ function Receive({ username }) {
               </Card.Body>}
 
               <Card.Body>
-                <Card.Link href={window.location.origin}>Open a channel with us</Card.Link>
+                <br />
+                {os === "android" && <a href={playStoreLink}>
+                  <Image src={process.env.PUBLIC_URL + '/google-play-badge.png'} height="40px" rounded />
+                </a>}
+                {os === "ios" && <a href={playStoreLink}>
+                  <Image src={process.env.PUBLIC_URL + '/apple-app-store.png'} height="40px" rounded />
+                </a>}
+                {os === undefined && <div>
+                  <a href={appStoreLink}>
+                    <Image src={process.env.PUBLIC_URL + '/apple-app-store.png'} height="45px" rounded />
+                  </a>&nbsp;
+                  <a href={playStoreLink}>
+                    <Image src={process.env.PUBLIC_URL + '/google-play-badge.png'} height="45px" rounded />
+                  </a>
+                </div>}
               </Card.Body>
               <Card.Footer className="text-muted">
-                Powered by <Card.Link href="https://try.galoy.io">Galoy</Card.Link>
+                Powered by <Card.Link href="https://try.galoy.io">Galoy </Card.Link>
+                <br /><Card.Link href={window.location.origin}>Open a channel with us</Card.Link>
               </Card.Footer>
             </Card>
           </Col>
