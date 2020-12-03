@@ -10,6 +10,7 @@ import { QRCode } from 'react-qrcode-logo'
 import Header from './header.js'
 import { gql, useMutation } from '@apollo/client';
 import { getOS, appStoreLink, playStoreLink } from './downloadApp.js'
+import {CopyToClipboard} from 'react-copy-to-clipboard';
 
 const UPDATE_PENDING_INVOICE = gql`
       mutation PublicInvoice($hash: String!, $username: String!) {
@@ -32,6 +33,7 @@ function Receive({ username }) {
   const [invoice, setInvoice] = useState(0)
   const [invoicePaid, setInvoicePaid] = useState(false)
   const [os, setOS] = useState(null)
+  const [isCopied, setIsCopied] = useState(false)
 
   const [generatePublicInvoice, { loading: invoiceLoading, error }] = useMutation(GENERATE_PUBLIC_INVOICE, {
     onCompleted({ publicInvoice: { addInvoice } }) {
@@ -83,11 +85,13 @@ function Receive({ username }) {
 									</div>
               }
               {!invoiceLoading && !invoicePaid && !error && <Card.Body style={{ paddingBottom: '0' }}>
+              <small>Scan using a lightning enabled wallet</small>
                 <Card.Text>
                   <QRCode value={`${invoice}`} size={320} logoImage={process.env.PUBLIC_URL + '/BBQRLogo.png'} logoWidth={130} />
-                  <br />
-                  <small>Scan using a lightning enabled wallet</small>
                 </Card.Text>
+                <CopyToClipboard text="ok">
+                    <Button size="sm" onClick={() => setIsCopied(true)}>{isCopied ? "Copied": "Copy invoice"}</Button>
+                  </CopyToClipboard>&nbsp;
                 <Button size="sm" disabled={invoiceUpdating} onClick={checkPayment}>{invoiceUpdating ? 'Waiting...' : 'Check payment'}</Button>
               </Card.Body>}
 
