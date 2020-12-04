@@ -96,7 +96,7 @@ function Receive({ username }) {
               }
               {!invoiceLoading && !invoicePaid && !error && <Card.Body style={{ paddingBottom: '0', paddingTop: '5px' }}>
                 <small>Scan using a lightning enabled wallet</small>
-                <Card.Text style={{ marginBottom: 0, marginTop: "5px" }}>
+                
                   <OverlayTrigger
                     show={showCopied}
                     placement="top"
@@ -109,7 +109,7 @@ function Receive({ username }) {
                       <QRCode value={`${invoice}`} size={320} logoImage={process.env.PUBLIC_URL + '/BBQRLogo.png'} logoWidth={100} />
                     </div>
                   </OverlayTrigger>
-                </Card.Text>
+                
                 <Button size="sm" disabled={invoiceUpdating} onClick={checkPayment}>{invoiceUpdating ? 'Waiting...' : 'Check payment'}</Button>
               </Card.Body>}
 
