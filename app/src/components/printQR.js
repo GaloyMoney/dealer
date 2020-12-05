@@ -19,7 +19,7 @@ const QRContainer = React.forwardRef((props, ref) => {
               <Card.Body>
                 <Card.Text>
                   <h1>Pay {props.username}</h1>
-                  <QRCode value={`https://ln.bitcoinbeach.com/${props.username}`} size={800} logoImage={process.env.PUBLIC_URL + '/BBQRLogo.png'} logoWidth={250} />
+                  <QRCode level={"H"} value={`https://ln.bitcoinbeach.com/${props.username}`} size={800} logoImage={process.env.PUBLIC_URL + '/BBQRLogo.png'} logoWidth={250} />
                 </Card.Text>
               </Card.Body>
               <h2>Powered by Galoy.io</h2>
@@ -48,7 +48,7 @@ const PrintQR = ({ username }) => {
               <Card.Body>
                 <Card.Text>
                   <h3>Pay {username}</h3>
-                  <QRCode id="qr" ecLevel={"Q"}  value={`https://ln.bitcoinbeach.com/${username}`} size={300} logoImage={process.env.PUBLIC_URL + '/BBQRLogo.png'} logoWidth={100} />
+                  <QRCode id="qr" level={"H"}  value={`https://ln.bitcoinbeach.com/${username}`} size={300} logoImage={process.env.PUBLIC_URL + '/BBQRLogo.png'} logoWidth={100} />
                 </Card.Text>
               </Card.Body>
               <h4>Powered by <Card.Link href="https://try.galoy.io">Galoy.io</Card.Link></h4>
