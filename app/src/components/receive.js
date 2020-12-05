@@ -80,7 +80,7 @@ function Receive({ username }) {
               }
               {!invoiceLoading && !invoicePaid && !error && <Card.Body style={{ paddingBottom: '0' }}>
                 <Card.Text>
-                  <QRCode value={`${invoice}`} size={320} />
+                  <QRCode value={`${invoice}`} size={320} level="H" />
                   <br />
                   <small>Scan using a lightning enabled wallet</small>
                 </Card.Text>
