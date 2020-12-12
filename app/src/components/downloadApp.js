@@ -1,5 +1,5 @@
 import React from 'react';
-import QRCode from 'qrcode.react';
+import { QRCode } from 'react-qrcode-logo'
 import Image from 'react-bootstrap/Image';
 import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
@@ -7,7 +7,7 @@ import Col from 'react-bootstrap/Col'
 import Button from 'react-bootstrap/Button'
 import Header from './header.js'
 
-const DownloadApp = () => {
+export const getOS = () => {
   var userAgent = navigator.userAgent || navigator.vendor || window.opera;
   // Windows Phone must come first because its UA also contains "Android"
   if (/windows phone/i.test(userAgent)) {
@@ -15,17 +15,27 @@ const DownloadApp = () => {
   }
 
   if (/android/i.test(userAgent)) {
-    return window.location.replace("https://play.google.com/store/apps/details?id=com.galoyapp")
+    return "android"
   }
 
   // iOS detection from: http://stackoverflow.com/a/9039885/177710
   if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+    return "ios"
+  }
+}
+
+export const playStoreLink = "https://play.google.com/store/apps/details?id=com.galoyapp"
+export const appStoreLink = "https://apps.apple.com/app/bitcoin-beach-wallet/id1531383905"
+export const apkLink = "https://storage.googleapis.com/bitcoin-beach-wallet/bitcoin-beach-wallet_1.2.1.apk"
+
+const DownloadApp = () => {
+  const os = getOS()
+
+  if (os === "android") {
+    return window.location.replace("https://play.google.com/store/apps/details?id=com.galoyapp")
+  } else if (os === "ios") {
     return window.location.replace("itms-apps://itunes.apple.com/app/bitcoin-beach-wallet/id1531383905")
   }
-
-  const playStoreLink = "https://play.google.com/store/apps/details?id=com.galoyapp"
-  const appStoreLink = "https://apps.apple.com/app/bitcoin-beach-wallet/id1531383905"
-  const apkLink = "https://storage.googleapis.com/bitcoin-beach-wallet/bitcoin-beach-wallet_1.2.1.apk"
 
   return (
     <div>
@@ -48,7 +58,7 @@ const DownloadApp = () => {
             </a>
           </Col>
           <Col>
-            <div style={{width:200}}>
+            <div style={{ width: 200 }}>
               <Button href={apkLink} block variant="outline-dark">Download APK<br /> for Android</Button>
             </div>
           </Col>

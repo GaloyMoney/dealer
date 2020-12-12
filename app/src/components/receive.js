@@ -1,13 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import Figure from 'react-bootstrap/Figure'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import Card from 'react-bootstrap/Card'
 import Container from 'react-bootstrap/Container'
+import Image from 'react-bootstrap/Image'
 import Button from 'react-bootstrap/Button'
-import QRCode from 'qrcode.react';
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger'
+import Tooltip from 'react-bootstrap/Tooltip'
+import { QRCode } from 'react-qrcode-logo'
 import Header from './header.js'
 import { gql, useMutation } from '@apollo/client';
+import { getOS, appStoreLink, playStoreLink } from './downloadApp.js'
+import copy from "copy-to-clipboard";
 
 const UPDATE_PENDING_INVOICE = gql`
       mutation PublicInvoice($hash: String!, $username: String!) {
@@ -29,6 +34,8 @@ function Receive({ username }) {
 
   const [invoice, setInvoice] = useState(0)
   const [invoicePaid, setInvoicePaid] = useState(false)
+  const [os, setOS] = useState(null)
+  const [showCopied, setShowCopied] = useState(false)
 
   const [generatePublicInvoice, { loading: invoiceLoading, error }] = useMutation(GENERATE_PUBLIC_INVOICE, {
     onCompleted({ publicInvoice: { addInvoice } }) {
@@ -41,6 +48,7 @@ function Receive({ username }) {
 
   useEffect(() => {
     generatePublicInvoice({ variables: { username } })
+    setOS(getOS())
   }, [])
 
   const [updatePendingInvoice, { loading: invoiceUpdating }] = useMutation(UPDATE_PENDING_INVOICE, {
@@ -55,13 +63,21 @@ function Receive({ username }) {
     updatePendingInvoice({ variables: { username, hash } })
   }
 
+  const copyInvoice = () => {
+    copy(invoice)
+    setShowCopied(true)
+    setTimeout(() => {
+      setShowCopied(false)
+    }, 3000)
+  }
+
   return (
     <div>
       <Header />
       <Container fluid >
-        <br />
+        {os === undefined && <br />}
         <Row className="justify-content-md-center">
-          <Col md="auto">
+          <Col md="auto" style={{ padding: 0 }}>
             <Card className="text-center">
               <Card.Header>
                 Pay {username}
@@ -78,20 +94,45 @@ function Receive({ username }) {
 									Payment received!
 									</div>
               }
-              {!invoiceLoading && !invoicePaid && !error && <Card.Body style={{ paddingBottom: '0' }}>
-                <Card.Text>
-                  <QRCode value={`${invoice}`} size={320} />
-                  <br />
-                  <small>Scan using a lightning enabled wallet</small>
-                </Card.Text>
+              {!invoiceLoading && !invoicePaid && !error && <Card.Body style={{ paddingBottom: '0', paddingTop: '5px' }}>
+                <small>Scan using a lightning enabled wallet</small>
+                
+                  <OverlayTrigger
+                    show={showCopied}
+                    placement="top"
+                    overlay={
+                      <Tooltip>
+                        Copied!
+                    </Tooltip>
+                    }>
+                    <div onClick={copyInvoice}>
+                      <QRCode value={`${invoice}`} size={320} logoImage={process.env.PUBLIC_URL + '/BBQRLogo.png'} logoWidth={100} />
+                    </div>
+                  </OverlayTrigger>
+                
                 <Button size="sm" disabled={invoiceUpdating} onClick={checkPayment}>{invoiceUpdating ? 'Waiting...' : 'Check payment'}</Button>
               </Card.Body>}
 
               <Card.Body>
-                <Card.Link href={window.location.origin}>Open a channel with us</Card.Link>
+                <br />
+                {os === "android" && <a href={playStoreLink}>
+                  <Image src={process.env.PUBLIC_URL + '/google-play-badge.png'} height="40px" rounded />
+                </a>}
+                {os === "ios" && <a href={playStoreLink}>
+                  <Image src={process.env.PUBLIC_URL + '/apple-app-store.png'} height="40px" rounded />
+                </a>}
+                {os === undefined && <div>
+                  <a href={appStoreLink}>
+                    <Image src={process.env.PUBLIC_URL + '/apple-app-store.png'} height="45px" rounded />
+                  </a>&nbsp;
+                  <a href={playStoreLink}>
+                    <Image src={process.env.PUBLIC_URL + '/google-play-badge.png'} height="45px" rounded />
+                  </a>
+                </div>}
               </Card.Body>
               <Card.Footer className="text-muted">
-                Powered by <Card.Link href="https://try.galoy.io">Galoy</Card.Link>
+                Powered by <Card.Link href="https://try.galoy.io">Galoy </Card.Link>
+                <br /><Card.Link href={window.location.origin}>Open a channel with us</Card.Link>
               </Card.Footer>
             </Card>
           </Col>
@@ -99,7 +140,7 @@ function Receive({ username }) {
         <br />
       </Container>
 
-    </div>
+    </div >
   )
 }
 
