@@ -13,6 +13,8 @@ import Header from './header.js'
 import { gql, useMutation } from '@apollo/client';
 import { getOS, appStoreLink, playStoreLink } from './downloadApp.js'
 import copy from "copy-to-clipboard";
+import Lottie from 'react-lottie';
+import animationData from './successAnimation.json'
 
 const UPDATE_PENDING_INVOICE = gql`
       mutation PublicInvoice($hash: String!, $username: String!) {
@@ -86,30 +88,30 @@ function Receive({ username }) {
               {(invoiceLoading || !invoice) && !error && <div> <br />Loading...</div>}
               {invoicePaid &&
                 <div>
-                  <br />
-                  <Figure>
-                    <Figure.Image src={process.env.PUBLIC_URL + '/confetti.svg'} width={150} height={150} />
-                  </Figure>
-                  <br />
-									Payment received!
-									</div>
+                  <Lottie
+                    options={{ animationData: animationData, loop: false }}
+                    height="150"
+                    width="150"
+                  >
+                  </Lottie>
+                </div>
               }
               {!invoiceLoading && !invoicePaid && !error && <Card.Body style={{ paddingBottom: '0', paddingTop: '5px' }}>
                 <small>Scan using a lightning enabled wallet</small>
-                
-                  <OverlayTrigger
-                    show={showCopied}
-                    placement="top"
-                    overlay={
-                      <Tooltip>
-                        Copied!
+
+                <OverlayTrigger
+                  show={showCopied}
+                  placement="top"
+                  overlay={
+                    <Tooltip>
+                      Copied!
                     </Tooltip>
-                    }>
-                    <div onClick={copyInvoice}>
-                      <QRCode value={`${invoice}`} size={320} logoImage={process.env.PUBLIC_URL + '/BBQRLogo.png'} logoWidth={100} />
-                    </div>
-                  </OverlayTrigger>
-                
+                  }>
+                  <div onClick={copyInvoice}>
+                    <QRCode value={`${invoice}`} size={320} logoImage={process.env.PUBLIC_URL + '/BBQRLogo.png'} logoWidth={100} />
+                  </div>
+                </OverlayTrigger>
+
                 <Button size="sm" disabled={invoiceUpdating} onClick={checkPayment}>{invoiceUpdating ? 'Waiting...' : 'Check payment'}</Button>
               </Card.Body>}
 
