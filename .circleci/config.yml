@@ -25,10 +25,10 @@ jobs:
       - gcp-gcr/push-image:
           image: lnpage
       - run:
-          name: Tag the approved image
+          name: Tag the latest image with current build num
           command: |
             IMAGE_ROOT=gcr.io/${GOOGLE_PROJECT_ID}/lnpage
-            gcloud container images add-tag --quiet "${IMAGE_ROOT}:approved" "${IMAGE_ROOT}:${CIRCLE_BUILD_NUM}"
+            gcloud container images add-tag --quiet "${IMAGE_ROOT}:latest" "${IMAGE_ROOT}:${CIRCLE_BUILD_NUM}"
 
 workflows:
   build_lnpage:
