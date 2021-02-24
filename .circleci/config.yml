@@ -21,24 +21,14 @@ jobs:
       - checkout
       - gcp-gcr/build-image:
           image: lnpage
-          tag: approved
       - gcp-gcr/gcr-auth
-      - run:
-          name: Compute tag
-          command: |
-            export TAG=$(gcloud container images list-tags gcr.io/galoyapp/lnpage --filter="tags[]=approved" \
-            | awk 'FNR == 2 {print $2}'| awk -F, '{print $1}')
-            echo tag "$TAG"
-            TAG=$(($TAG+1))
-            echo "export TAG=$TAG" >> $BASH_ENV
       - gcp-gcr/push-image:
           image: lnpage
-          tag: approved
       - run:
           name: Tag the approved image
           command: |
             IMAGE_ROOT=gcr.io/${GOOGLE_PROJECT_ID}/lnpage
-            gcloud container images add-tag --quiet "${IMAGE_ROOT}:approved" "${IMAGE_ROOT}:${TAG}"
+            gcloud container images add-tag --quiet "${IMAGE_ROOT}:approved" "${IMAGE_ROOT}:${CIRCLE_BUILD_NUM}"
 
 workflows:
   build_lnpage:
