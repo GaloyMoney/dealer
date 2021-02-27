@@ -1,3 +1,5 @@
+name: Add tag to docker image
+
 on:
   push:
     tags:
