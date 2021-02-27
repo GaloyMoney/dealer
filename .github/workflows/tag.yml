@@ -1,0 +1,19 @@
+on:
+  push:
+    tags:
+    - '*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: '0'
+    - name: Set env
+      run: echo "TAG=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+    - name: Tag latest image
+      run: |
+        docker pull gcr.io/galoyapp/lnpage:latest
+        docker tag gcr.io/galoyapp/lnpage:latest gcr.io/galoyapp/lnpage:$TAG
+        docker push gcr.io/galoyapp/lnpage:$TAG
