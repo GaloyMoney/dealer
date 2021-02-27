@@ -21,4 +21,4 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           push: true
-          tags: galoyapp/lnpage:latest,galoyapp/lnpage:${{ github.sha }}
+          tags: gcr.io/galoyapp/lnpage:latest,gcr.io/galoyapp/lnpage:${{ github.sha }}
