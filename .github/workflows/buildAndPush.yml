@@ -14,5 +14,5 @@ jobs:
       - uses: RafikFarhad/push-to-gcr-github-action@v3.0.2
         with:
           gcloud_service_key: ${{ secrets.GCLOUD_SERVICE_KEY }}
-          project_id: galoy-app
+          project_id: galoyapp
           image_name: lnpage
