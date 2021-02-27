@@ -16,3 +16,4 @@ jobs:
           gcloud_service_key: ${{ secrets.GCLOUD_SERVICE_KEY }}
           project_id: galoyapp
           image_name: lnpage
+          image_tag: latest,$GITHUB_SHA
