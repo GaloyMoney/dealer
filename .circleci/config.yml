@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  gcp-gcr: circleci/gcp-gcr@0.7.1
+  gcp-gcr: circleci/gcp-gcr@0.13.0
 
 commands:
   gke-auth:
@@ -21,11 +21,14 @@ jobs:
       - checkout
       - gcp-gcr/build-image:
           image: lnpage
-          tag: $CIRCLE_SHA1
       - gcp-gcr/gcr-auth
       - gcp-gcr/push-image:
           image: lnpage
-          tag: $CIRCLE_SHA1
+      - run:
+          name: Tag the latest image with current build num
+          command: |
+            IMAGE_ROOT=gcr.io/${GOOGLE_PROJECT_ID}/lnpage
+            gcloud container images add-tag --quiet "${IMAGE_ROOT}:latest" "${IMAGE_ROOT}:${CIRCLE_BUILD_NUM}"
 
 workflows:
   build_lnpage:

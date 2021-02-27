@@ -6,10 +6,24 @@ import Col from 'react-bootstrap/Col'
 import Card from 'react-bootstrap/Card'
 import ListGroup from 'react-bootstrap/ListGroup'
 import Jumbotron from 'react-bootstrap/Jumbotron'
-import { QRCode } from 'react-qrcode-logo'
-import NodeStats from './nodeStats.js'
+import { gql, useQuery } from '@apollo/client';
+
+const GET_NODE_STATS = gql`
+      query nodeStats {
+        nodeStats {
+          peersCount,
+          channelsCount,
+          id
+        }
+      }
+    `
+
 
 function Home() {
+
+  let nodeUrl = window.env.GRAPHQL_URI.indexOf('testnet') ? `https://1ml.com/testnet/node/` : `https://1ml.com/node/`
+
+  let { loading, error, data } = useQuery(GET_NODE_STATS)
 
   return (
     <div>
@@ -28,25 +42,32 @@ function Home() {
                       <Card.Body>
                         <ListGroup variant="flush">
                           <ListGroup.Item>
-                            <label>Node Public Key: </label> <p style={{ fontSize: 'small', overflowWrap: 'break-word' }}>{window.env.LND_PUB_KEY}</p>
+                            <label>Node Public Key: </label> <p style={{ fontSize: 'small', overflowWrap: 'break-word' }}>{error ? "Unavailable" : (loading ? "Loading..." :data.nodeStats.id)}</p>
                           </ListGroup.Item>
                           <ListGroup.Item>
-                            <label> Node Connection String:</label> <p style={{ fontSize: 'small', overflowWrap: 'break-word' }}>{window.env.LND_PUB_KEY}@{window.env.LND_ADDR}</p>
+                          {error ? "Unavailable" : (loading ? "Loading..." : <a href={nodeUrl + `${data.nodeStats.id}`}>Connect the Bitcoin Beach Lightning node</a>)}
                           </ListGroup.Item>
                         </ListGroup>
                       </Card.Body>
                     </Card>
                   </Col>
                   <Col>
-                    <NodeStats />
+                  <Card>
+      <Card.Header>Node Stats</Card.Header>
+      <Card.Body>
+        <ListGroup>
+          <ListGroup.Item variant="success">
+            Peers: {error ? "Unavailable" : (loading ? "Loading..." : data.nodeStats.peersCount)}
+          </ListGroup.Item>
+          <ListGroup.Item variant="success">
+            Channels: {error ? "Unavailable" : (loading ? "Loading..." : data.nodeStats.channelsCount)}
+          </ListGroup.Item>
+        </ListGroup>
+      </Card.Body>
+    </Card>
                   </Col>
                 </Row>
                 <hr />
-                <Row className="justify-content-md-center">
-                  <Col xs={3}>
-                    <QRCode value={`${window.env.LND_PUB_KEY}@${window.env.LND_ADDR}`} size={196} />
-                  </Col>
-                </Row>
               </Container>
             </Jumbotron>
           </Col>
