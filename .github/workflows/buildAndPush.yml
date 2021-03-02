@@ -20,13 +20,11 @@ jobs:
           cd app
           npm install
           npm run build
-          echo $(ls)
-          echo $(git status)
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
-          git pull
+          git pull -q
           echo $(git branch)
-          git checkout build
+          git checkout build --
           echo $(git status)
           git add build
           git commit -m 'Build'
