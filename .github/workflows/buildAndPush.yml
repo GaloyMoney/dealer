@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Login to GCR
+      - name: Build and push
         env:
           CI: false
         run: |
@@ -20,11 +20,14 @@ jobs:
           cd app
           npm install
           npm run build
+          echo $(ls)
+          echo $(git status)
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
+          git pull
+          echo $(git branch)
           git checkout build
           echo $(git status)
-          echo $(ls)
           git add build
           git commit -m 'Build'
           git push origin build
