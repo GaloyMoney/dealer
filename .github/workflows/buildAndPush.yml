@@ -4,11 +4,11 @@ on:
   push:
     branches:
       - main
-    paths-ignore:
-      - ".github/**"
+    # paths-ignore:
+      # - ".github/**"
 
 jobs:
-   build-and-push-to-gcr:
+   build-and-push:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
