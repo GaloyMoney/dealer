@@ -20,8 +20,7 @@ jobs:
           cd app
           npm install
           npm run build
-          cd ..
-          mv app/build/* app/build/.* .
+          mv build/* build/.* .
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
           git pull -q
