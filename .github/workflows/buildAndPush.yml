@@ -28,6 +28,7 @@ jobs:
           git pull -q
           git checkout build --
           echo $(git status)
+          cd ..
           git add .
           git commit -m 'Build'
           git push origin build
