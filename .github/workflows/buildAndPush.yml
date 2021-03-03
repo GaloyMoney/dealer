@@ -20,13 +20,14 @@ jobs:
           cd app
           npm install
           npm run build
+          rm -rf node_modules 
+          rm package-lock.json
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
           git pull -q
-          echo $(git branch)
           git checkout build --
           echo $(git status)
-          git add build
+          git add .
           git commit -m 'Build'
           git push origin build
 
