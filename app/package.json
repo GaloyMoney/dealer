@@ -12,7 +12,7 @@
     "graphql": "^15.3.0",
     "hookrouter": "^1.2.3",
     "react": "^16.13.1",
-    "react-bootstrap": "^1.5.1",
+    "react-bootstrap": "^1.5.2",
     "react-dom": "^16.13.1",
     "react-lottie": "^1.2.3",
     "react-qrcode-logo": "^2.2.1",
