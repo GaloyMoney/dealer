@@ -1,6 +1,9 @@
 name: Build and Push to GCR
 
 on:
+  pull_request:
+    branches:
+     - main
   push:
     branches:
       - main
