@@ -15,25 +15,26 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Setup upterm session
-        uses: lhotari/action-upterm@v1
       - name: Build and push
         env:
           CI: false
         run: |
           echo $(ls)
           cd app
-          npm install
+          npm i
           npm run build
-          mv build/* build/.well* ../
           rm -rf node_modules
           rm package-lock.json
+          cd ..
+          git rm -rf .
+          mv app/build/* app/build/.well* .
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
           git pull -q
+          git stash
           git checkout build --
-          echo $(git status)
-          cd ..
+          git rm -rf .
+          git stash pop
           git add .
           git commit -m 'Build'
           git push origin build
