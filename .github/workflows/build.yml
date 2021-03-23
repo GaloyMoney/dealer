@@ -15,14 +15,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      # - name: debug
-      #   env:
-      #     CI: false
-      #   run: |
-      #     echo $(git status)
-      #     git pull
-      # - name: Setup upterm session
-      #   uses: lhotari/action-upterm@v1
+      - name: Setup upterm session
+        uses: lhotari/action-upterm@v1
       - name: Build and push
         env:
           CI: false
@@ -36,13 +30,11 @@ jobs:
           rm package-lock.json
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
-          cd ..
           git pull -q
-          git stash -u
           git checkout build --
-          git checkout stash -- .
-          git add .
           echo $(git status)
+          cd ..
+          git add .
           git commit -m 'Build'
           git push origin build
 
