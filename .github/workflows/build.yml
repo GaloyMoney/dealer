@@ -31,7 +31,7 @@ jobs:
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
           git pull -q
-          git stash
+          git stash -u
           git checkout build --
           git rm -rf .
           git stash pop
