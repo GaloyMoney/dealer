@@ -1,4 +1,4 @@
-name: Build and Push to GCR
+name: Build
 
 on:
   pull_request:
@@ -15,6 +15,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: debug
+        env:
+          CI: false
+        run: |
+          echo $(git status)
+          git pull
       - name: Setup upterm session
         uses: lhotari/action-upterm@v1
       - name: Build and push
