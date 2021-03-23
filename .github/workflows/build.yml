@@ -38,10 +38,9 @@ jobs:
           git config user.email "github-actions@github.com"
           cd ..
           git pull -q
-          git add .
-          git stash
+          git stash -u
           git checkout build --
-          git stash pop
+          git checkout stash -- .
           git add .
           echo $(git status)
           git commit -m 'Build'
