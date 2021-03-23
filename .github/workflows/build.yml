@@ -36,6 +36,6 @@ jobs:
           git rm -rf .
           git stash pop
           git add .
-          git commit -m 'Build'
+          git diff-index --quiet HEAD || git commit -m 'Build'
           git push origin build
 
