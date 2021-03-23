@@ -1,17 +1,28 @@
-name: Build and Push to GCR
+name: Build
 
 on:
+  pull_request:
+    branches:
+     - main
   push:
     branches:
       - main
-    paths-ignore:
-      - ".github/**"
+    # paths-ignore:
+    #   - ".github/**"
 
 jobs:
    build-and-push:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      # - name: debug
+      #   env:
+      #     CI: false
+      #   run: |
+      #     echo $(git status)
+      #     git pull
+      # - name: Setup upterm session
+      #   uses: lhotari/action-upterm@v1
       - name: Build and push
         env:
           CI: false
@@ -21,15 +32,18 @@ jobs:
           npm install
           npm run build
           mv build/* build/.well* ../
-          rm -rf node_modules 
+          rm -rf node_modules
           rm package-lock.json
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
-          git pull -q
-          git checkout build --
-          echo $(git status)
           cd ..
+          git pull -q
           git add .
+          git stash
+          git checkout build --
+          git stash pop
+          git add .
+          echo $(git status)
           git commit -m 'Build'
           git push origin build
 
