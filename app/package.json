@@ -15,7 +15,7 @@
     "react-bootstrap": "^1.5.2",
     "react-dom": "^16.13.1",
     "react-lottie": "^1.2.3",
-    "react-qrcode-logo": "^2.2.1",
+    "react-qrcode-logo": "^2.4.0",
     "react-scripts": "4.0.3",
     "react-to-print": "^2.12.0"
   },
