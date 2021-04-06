@@ -9,25 +9,21 @@ import OverlayTrigger from 'react-bootstrap/OverlayTrigger'
 import Tooltip from 'react-bootstrap/Tooltip'
 import { QRCode } from 'react-qrcode-logo'
 import Header from './header.js'
-import { gql, useMutation } from '@apollo/client';
+import { gql, useLazyQuery, useMutation } from '@apollo/client';
 import { getOS, appStoreLink, playStoreLink } from './downloadApp.js'
 import copy from "copy-to-clipboard";
 import Lottie from 'react-lottie';
 import animationData from './successAnimation.json'
 
 const UPDATE_PENDING_INVOICE = gql`
-      mutation PublicInvoice($hash: String!, $username: String!) {
-        publicInvoice(username: $username) {
-          updatePendingInvoice(hash: $hash)
-        }
+      query noauthUpdatePendingInvoice($hash: String!, $username: String!) {
+        noauthUpdatePendingInvoice(username: $username, hash: $hash)
       }
     `
 
 const GENERATE_PUBLIC_INVOICE = gql`
-      mutation publicInvoice($username: String!) {
-        publicInvoice(username: $username) {
-          addInvoice
-        }
+      mutation noauthAddInvoice($username: String!) {
+        noauthAddInvoice(username: $username)
       }
     `
 
@@ -39,12 +35,28 @@ function Receive({ username }) {
   const [showCopied, setShowCopied] = useState(false)
 
   const [generatePublicInvoice, { loading: invoiceLoading, error }] = useMutation(GENERATE_PUBLIC_INVOICE, {
-    onCompleted({ publicInvoice: { addInvoice } }) {
-      setInvoice(addInvoice)
+    onCompleted({ noauthAddInvoice: invoice }) {
+      setInvoice(invoice)
+      updateInvoiceStatus(invoice)
     },
     onError(error) {
       console.error(error.message)
     }
+  })
+
+  const [updatePendingInvoice, { loading: invoiceUpdating, stopPolling }] = useLazyQuery(UPDATE_PENDING_INVOICE, {
+    onCompleted({ noauthUpdatePendingInvoice: invoicePaid }) {
+      console.log({ invoicePaid, stopPolling })
+      setInvoicePaid(invoicePaid)
+      if (invoicePaid) {
+        stopPolling()
+      }
+    },
+    onError(error) {
+      console.log({ error })
+    },
+    pollInterval: 2000,
+    notifyOnNetworkStatusChange: true
   })
 
   useEffect(() => {
@@ -52,14 +64,13 @@ function Receive({ username }) {
     setOS(getOS())
   }, [])
 
-  const [updatePendingInvoice, { loading: invoiceUpdating }] = useMutation(UPDATE_PENDING_INVOICE, {
-    onCompleted({ publicInvoice: { updatePendingInvoice: invoicePaid } }) {
-      setInvoicePaid(invoicePaid)
-    }
-  })
-
-  const checkPayment = async () => {
-    let decoded = window.lightningPayReq.decode(invoice)
+  const updateInvoiceStatus = async (invoice) => {
+    let decoded = window.lightningPayReq.decode(invoice, {
+      bech32: 'bcrt',
+      pubKeyHash: 0x6f,
+      scriptHash: 0xc4,
+      validWitnessVersions: [0],
+    })
     let [{ data: hash }] = decoded.tags.filter(item => item.tagName === "payment_hash")
     updatePendingInvoice({ variables: { username, hash } })
   }
@@ -110,12 +121,11 @@ function Receive({ username }) {
                     <QRCode value={`${invoice}`} size={320} logoImage={process.env.PUBLIC_URL + '/BBQRLogo.png'} logoWidth={100} />
                   </div>
                 </OverlayTrigger>
-
-                <Button size="sm" disabled={invoiceUpdating} onClick={checkPayment}>{invoiceUpdating ? 'Waiting...' : 'Check payment'}</Button>
+                <p>Click on the QR code to copy</p>
+                <p>Waiting for payment confirmation...</p>
               </Card.Body>}
 
               <Card.Body>
-                <br />
                 {os === "android" && <a href={playStoreLink}>
                   <Image src={process.env.PUBLIC_URL + '/google-play-badge.png'} height="40px" rounded />
                 </a>}
