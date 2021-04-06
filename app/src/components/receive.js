@@ -65,12 +65,7 @@ function Receive({ username }) {
   }, [])
 
   const updateInvoiceStatus = async (invoice) => {
-    let decoded = window.lightningPayReq.decode(invoice, {
-      bech32: 'bcrt',
-      pubKeyHash: 0x6f,
-      scriptHash: 0xc4,
-      validWitnessVersions: [0],
-    })
+    let decoded = window.lightningPayReq.decode(invoice)
     let [{ data: hash }] = decoded.tags.filter(item => item.tagName === "payment_hash")
     updatePendingInvoice({ variables: { username, hash } })
   }
