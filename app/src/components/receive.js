@@ -55,7 +55,7 @@ function Receive({ username }) {
     onError(error) {
       console.log({ error })
     },
-    pollInterval: 2000,
+    pollInterval: 3500,
     notifyOnNetworkStatusChange: true
   })
 
