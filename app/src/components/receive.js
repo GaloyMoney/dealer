@@ -137,7 +137,7 @@ function Receive({ username }) {
                 </div>}
               </Card.Body>
               <Card.Footer className="text-muted">
-                Powered by <Card.Link href="https://try.galoy.io">Galoy </Card.Link>
+                Powered by <Card.Link href="https://galoy.io">Galoy </Card.Link>
                 <br /><Card.Link href={window.location.origin}>Open a channel with us</Card.Link>
               </Card.Footer>
             </Card>
