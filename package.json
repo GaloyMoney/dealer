@@ -1,0 +1,44 @@
+{
+  "name": "dealer",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:GaloyMoney/dealer.git",
+  "author": "Sebastien Verreault <sebver@pm.me>",
+  "license": "MIT",
+  "scripts": {
+    "tsc-check": "tsc --noEmit --skipLibCheck",
+    "eslint-check": "eslint \"src/**/*.ts\"",
+    "eslint-fix": "eslint \"src/**/*.ts\" --fix",
+    "prettier-check": "prettier --check .",
+    "prettier-write": "prettier --write .",
+    "build": "tsc -p tsconfig-build.json --skipLibCheck",
+    "test:unit": "jest --config ./test/jest-unit.config.js --bail --verbose $TEST | yarn pino-pretty -c -l"
+  },
+  "dependencies": {
+    "ccxt": "^1.53.54",
+    "dotenv": "^10.0.0",
+    "js-yaml": "^4.1.0",
+    "lodash": "^4.17.21",
+    "pino": "^7.0.0-rc.1",
+    "typescript": "^4.3.5"
+  },
+  "devDependencies": {
+    "@jest/test-sequencer": "^27.0.6",
+    "@types/jest": "^26.0.24",
+    "@types/lodash": "^4.14.171",
+    "@types/node": "^16.4.1",
+    "@types/pino": "^6.3.9",
+    "@typescript-eslint/eslint-plugin": "^4.28.4",
+    "@typescript-eslint/parser": "^4.28.4",
+    "eslint": "^7.31.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-import": "^2.23.4",
+    "jest": "^27.0.6",
+    "jest-junit": "^12.2.0",
+    "pino-pretty": "^5.1.2",
+    "prettier": "^2.3.2",
+    "ts-jest": "^27.0.4",
+    "ts-node": "^10.1.0",
+    "tsc": "^2.0.3"
+  }
+}
