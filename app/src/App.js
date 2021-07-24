@@ -9,7 +9,7 @@ import { useRoutes } from 'hookrouter';
 
 const routes = {
   '/': () => <Home />,
-  '/elzonte': () => <DownloadApp />,
+  '/download': () => <DownloadApp />,
   '/:username/print': ({ username }) => <PrintQR username={username} />,
   '/:username': ({ username }) => <Receive username={username} />
 };
