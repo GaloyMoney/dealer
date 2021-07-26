@@ -83,11 +83,12 @@ export class OkexExchangeConfiguration implements ExchangeConfiguration {
     // Not supported
     throw new Error(ApiError.NOT_SUPPORTED)
   }
+  /* eslint-disable */
   privateGetAccountProcessApiResponse(response): PrivateGetAccountResult {
     // Not supported
-    console.log(response)
     throw new Error(ApiError.NOT_SUPPORTED)
   }
+  /* eslint-enable */
 
   fetchBalanceValidateCall() {
     // Implementation is to do nothing and let the call pass thru
