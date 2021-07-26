@@ -106,6 +106,23 @@ function getProcessedFetchBalanceProcessApiResponse(response) {
   }
 }
 
+function getValidFetchPositionProcessApiResponse() {
+  return {
+    last: "44444.4",
+    notionalUsd: "99.99999999999996",
+    margin: "0.000615615271145",
+  }
+}
+
+function getProcessedFetchPositionProcessApiResponse(response) {
+  return {
+    originalResponseAsIs: response,
+    last: response.last,
+    notionalUsd: response.notionalUsd,
+    margin: response.margin,
+  }
+}
+
 const falsyArgs = [null, undefined, NaN, 0, "", false]
 
 describe("OkexExchangeConfiguration", () => {
@@ -543,7 +560,7 @@ describe("OkexExchangeConfiguration", () => {
         info: {
           data: [
             {
-              totalEq: false,
+              totalEq: true,
             },
           ],
         },
@@ -598,13 +615,94 @@ describe("OkexExchangeConfiguration", () => {
     })
   })
 
-  // describe("fetchPositionProcessApiResponse", () => {
-  //   it("should throw not implemented for now", async () => {
-  //     const configuration = new OkexExchangeConfiguration()
-  //     const response = {}
-  //     expect(() => configuration.fetchPositionProcessApiResponse(response)).toThrowError(
-  //       ApiError.NOT_IMPLEMENTED,
-  //     )
-  //   })
-  // })
+  describe("fetchPositionProcessApiResponse", () => {
+    it("should throw when response is falsy", async () => {
+      const configuration = new OkexExchangeConfiguration()
+      falsyArgs.forEach((response) => {
+        expect(() =>
+          configuration.fetchPositionProcessApiResponse(response),
+        ).toThrowError(ApiError.UNSUPPORTED_API_RESPONSE)
+      })
+    })
+
+    it("should throw when response has no last property", async () => {
+      const configuration = new OkexExchangeConfiguration()
+      const response = {
+        // last: "44444.4",
+        notionalUsd: "99.99999999999996",
+        margin: "0.000615615271145",
+      }
+      expect(() => configuration.fetchPositionProcessApiResponse(response)).toThrowError(
+        ApiError.UNSUPPORTED_API_RESPONSE,
+      )
+    })
+
+    it("should throw when response last property is not a number", async () => {
+      const configuration = new OkexExchangeConfiguration()
+      const response = {
+        last: true,
+        notionalUsd: "99.99999999999996",
+        margin: "0.000615615271145",
+      }
+      expect(() => configuration.fetchPositionProcessApiResponse(response)).toThrowError(
+        ApiError.UNSUPPORTED_API_RESPONSE,
+      )
+    })
+
+    it("should throw when response has no notionalUsd property", async () => {
+      const configuration = new OkexExchangeConfiguration()
+      const response = {
+        last: "44444.4",
+        // notionalUsd: "99.99999999999996",
+        margin: "0.000615615271145",
+      }
+      expect(() => configuration.fetchPositionProcessApiResponse(response)).toThrowError(
+        ApiError.UNSUPPORTED_API_RESPONSE,
+      )
+    })
+
+    it("should throw when response notionalUsd property is not a number", async () => {
+      const configuration = new OkexExchangeConfiguration()
+      const response = {
+        last: "44444.4",
+        notionalUsd: true,
+        margin: "0.000615615271145",
+      }
+      expect(() => configuration.fetchPositionProcessApiResponse(response)).toThrowError(
+        ApiError.UNSUPPORTED_API_RESPONSE,
+      )
+    })
+
+    it("should throw when response has no margin property", async () => {
+      const configuration = new OkexExchangeConfiguration()
+      const response = {
+        last: "44444.4",
+        notionalUsd: "99.99999999999996",
+        // margin: "0.000615615271145",
+      }
+      expect(() => configuration.fetchPositionProcessApiResponse(response)).toThrowError(
+        ApiError.UNSUPPORTED_API_RESPONSE,
+      )
+    })
+
+    it("should throw when response margin property is not a number", async () => {
+      const configuration = new OkexExchangeConfiguration()
+      const response = {
+        last: "44444.4",
+        notionalUsd: "99.99999999999996",
+        margin: true,
+      }
+      expect(() => configuration.fetchPositionProcessApiResponse(response)).toThrowError(
+        ApiError.UNSUPPORTED_API_RESPONSE,
+      )
+    })
+
+    it("should return processed response when response is valid", async () => {
+      const configuration = new OkexExchangeConfiguration()
+      const response = getValidFetchPositionProcessApiResponse()
+      const expected = getProcessedFetchPositionProcessApiResponse(response)
+      const result = configuration.fetchPositionProcessApiResponse(response)
+      expect(result).toEqual(expected)
+    })
+  })
 })
