@@ -11,8 +11,6 @@ import {
   OrderStatus,
 } from "src/ExchangeTradingType"
 
-beforeAll(async () => {})
-
 function getValidFetchDepositAddressResponse() {
   return {
     code: "0",
@@ -87,6 +85,25 @@ function getValidCreateMarketOrderValidateInput(): CreateOrderParameters {
 
 function getValidcreateMarketOrderValidateApiResponse() {
   return { id: "validId" }
+}
+
+function getValidFetchBalanceProcessApiResponse() {
+  return {
+    info: {
+      data: [
+        {
+          totalEq: "100",
+        },
+      ],
+    },
+  }
+}
+
+function getProcessedFetchBalanceProcessApiResponse(response) {
+  return {
+    originalResponseAsIs: response,
+    totalEq: response.info.data[0].totalEq,
+  }
 }
 
 const falsyArgs = [null, undefined, NaN, 0, "", false]
@@ -424,7 +441,6 @@ describe("OkexExchangeConfiguration", () => {
   })
 
   describe("privateGetAccountValidateCall", () => {
-    //
     it("should throw not supported for okex", async () => {
       const configuration = new OkexExchangeConfiguration()
       expect(() => configuration.privateGetAccountValidateCall()).toThrowError(
@@ -434,7 +450,6 @@ describe("OkexExchangeConfiguration", () => {
   })
 
   describe("privateGetAccountProcessApiResponse", () => {
-    //
     it("should throw not supported for okex", async () => {
       const configuration = new OkexExchangeConfiguration()
       const response = {}
@@ -445,45 +460,151 @@ describe("OkexExchangeConfiguration", () => {
   })
 
   describe("fetchBalanceValidateCall", () => {
-    //
     it("should throw not implemented for now", async () => {
       const configuration = new OkexExchangeConfiguration()
-      expect(() => configuration.fetchBalanceValidateCall()).toThrowError(
-        ApiError.NOT_IMPLEMENTED,
-      )
+      const result = configuration.fetchBalanceValidateCall()
+      expect(result).toBeUndefined()
     })
   })
 
   describe("fetchBalanceProcessApiResponse", () => {
-    //
-    it("should throw not implemented for now", async () => {
+    it("should throw when response is falsy", async () => {
       const configuration = new OkexExchangeConfiguration()
-      const response = {}
+      falsyArgs.forEach((response) => {
+        expect(() => configuration.fetchBalanceProcessApiResponse(response)).toThrowError(
+          ApiError.UNSUPPORTED_API_RESPONSE,
+        )
+      })
+    })
+
+    it("should throw when response has no info property", async () => {
+      const configuration = new OkexExchangeConfiguration()
+      const response = {
+        not_info: {
+          data: [
+            {
+              totalEq: "100",
+            },
+          ],
+        },
+      }
       expect(() => configuration.fetchBalanceProcessApiResponse(response)).toThrowError(
-        ApiError.NOT_IMPLEMENTED,
+        ApiError.MISSING_ACCOUNT_VALUE,
       )
+    })
+
+    it("should throw when response has no info.data property", async () => {
+      const configuration = new OkexExchangeConfiguration()
+      const response = {
+        info: {
+          not_data: [
+            {
+              totalEq: "100",
+            },
+          ],
+        },
+      }
+      expect(() => configuration.fetchBalanceProcessApiResponse(response)).toThrowError(
+        ApiError.MISSING_ACCOUNT_VALUE,
+      )
+    })
+
+    it("should throw when response info.data array is empty property", async () => {
+      const configuration = new OkexExchangeConfiguration()
+      const response = {
+        info: {
+          data: [],
+        },
+      }
+      expect(() => configuration.fetchBalanceProcessApiResponse(response)).toThrowError(
+        ApiError.MISSING_ACCOUNT_VALUE,
+      )
+    })
+
+    it("should throw when response has no info.data[0].totalEq property", async () => {
+      const configuration = new OkexExchangeConfiguration()
+      const response = {
+        info: {
+          data: [
+            {
+              not_totalEq: "100",
+            },
+          ],
+        },
+      }
+      expect(() => configuration.fetchBalanceProcessApiResponse(response)).toThrowError(
+        ApiError.MISSING_ACCOUNT_VALUE,
+      )
+    })
+
+    it("should throw when response info.data[0].totalEq property is not a number", async () => {
+      const configuration = new OkexExchangeConfiguration()
+      const response = {
+        info: {
+          data: [
+            {
+              totalEq: false,
+            },
+          ],
+        },
+      }
+      expect(() => configuration.fetchBalanceProcessApiResponse(response)).toThrowError(
+        ApiError.MISSING_ACCOUNT_VALUE,
+      )
+    })
+
+    it("should return processed response when info.data[0].totalEq property is negative, positive or zero", async () => {
+      const configuration = new OkexExchangeConfiguration()
+      const validTotalEq = ["-1", "0", "1"]
+      for (const totalEq of validTotalEq) {
+        const response = {
+          info: {
+            data: [
+              {
+                totalEq: totalEq,
+              },
+            ],
+          },
+        }
+        const expected = getProcessedFetchBalanceProcessApiResponse(response)
+        const result = configuration.fetchBalanceProcessApiResponse(response)
+        expect(result).toEqual(expected)
+      }
+    })
+
+    it("should return processed response when response is valid", async () => {
+      const configuration = new OkexExchangeConfiguration()
+      const response = getValidFetchBalanceProcessApiResponse()
+      const expected = getProcessedFetchBalanceProcessApiResponse(response)
+      const result = configuration.fetchBalanceProcessApiResponse(response)
+      expect(result).toEqual(expected)
     })
   })
 
   describe("fetchPositionValidateInput", () => {
-    //
-    it("should throw not implemented for now", async () => {
+    it("should throw when instrumentId is not supported", async () => {
       const configuration = new OkexExchangeConfiguration()
-      const id = ""
+      const id = "wrong"
       expect(() => configuration.fetchPositionValidateInput(id)).toThrowError(
-        ApiError.NOT_IMPLEMENTED,
+        ApiError.UNSUPPORTED_INSTRUMENT,
       )
+    })
+
+    it("should do nothing when instrumentId is supported", async () => {
+      const configuration = new OkexExchangeConfiguration()
+      const instrumentId = SupportedInstrument.OKEX_PERPETUAL_SWAP
+      const result = configuration.fetchPositionValidateInput(instrumentId)
+      expect(result).toBeUndefined()
     })
   })
 
-  describe("fetchPositionProcessApiResponse", () => {
-    //
-    it("should throw not implemented for now", async () => {
-      const configuration = new OkexExchangeConfiguration()
-      const response = {}
-      expect(() => configuration.fetchPositionProcessApiResponse(response)).toThrowError(
-        ApiError.NOT_IMPLEMENTED,
-      )
-    })
-  })
+  // describe("fetchPositionProcessApiResponse", () => {
+  //   it("should throw not implemented for now", async () => {
+  //     const configuration = new OkexExchangeConfiguration()
+  //     const response = {}
+  //     expect(() => configuration.fetchPositionProcessApiResponse(response)).toThrowError(
+  //       ApiError.NOT_IMPLEMENTED,
+  //     )
+  //   })
+  // })
 })
