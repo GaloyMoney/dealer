@@ -11,8 +11,6 @@ import {
   OrderStatus,
 } from "src/ExchangeTradingType"
 
-beforeAll(async () => {})
-
 function getValidFetchDepositAddressResponse() {
   return {
     currency: "BTC",
@@ -368,7 +366,7 @@ describe("FtxExchangeConfiguration", () => {
 
   describe("privateGetAccountValidateCall", () => {
     //
-    it("should throw not implemented for now", async () => {
+    it("should do nothing and return without error", async () => {
       const configuration = new FtxExchangeConfiguration()
       const result = configuration.privateGetAccountValidateCall()
       expect(result).toBeUndefined()
