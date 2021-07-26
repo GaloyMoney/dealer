@@ -98,7 +98,16 @@ export class OkexExchangeConfiguration implements ExchangeConfiguration {
   fetchBalanceProcessApiResponse(response): FetchBalanceResult {
     assert(response, ApiError.UNSUPPORTED_API_RESPONSE)
     assert(response?.info?.data?.[0]?.totalEq, ApiError.MISSING_ACCOUNT_VALUE)
-    assert(response?.info?.data?.[0]?.totalEq >= 0, ApiError.NON_POSITIVE_ACCOUNT_VALUE)
+    const numberRegex = /-?(?=[1-9]|0(?!\d))\d+(\.\d+)?([eE][+-]?\d+)?/
+    assert(
+      typeof response?.info?.data?.[0]?.totalEq === "string",
+      ApiError.MISSING_ACCOUNT_VALUE,
+    )
+    assert.match(
+      response?.info?.data?.[0]?.totalEq,
+      numberRegex,
+      ApiError.MISSING_ACCOUNT_VALUE,
+    )
 
     return {
       originalResponseAsIs: response,
@@ -114,9 +123,16 @@ export class OkexExchangeConfiguration implements ExchangeConfiguration {
   }
   fetchPositionProcessApiResponse(response): FetchPositionResult {
     assert(response, ApiError.UNSUPPORTED_API_RESPONSE)
-    assert(response.last >= 0, ApiError.NON_POSITIVE_PRICE)
-    assert(response.notionalUsd >= 0, ApiError.NON_POSITIVE_NOTIONAL)
-    assert(response.margin >= 0, ApiError.NON_POSITIVE_MARGIN)
+    assert(response.last, ApiError.UNSUPPORTED_API_RESPONSE)
+    assert(response.notionalUsd, ApiError.UNSUPPORTED_API_RESPONSE)
+    assert(response.margin, ApiError.UNSUPPORTED_API_RESPONSE)
+    const numberRegex = /-?(?=[1-9]|0(?!\d))\d+(\.\d+)?([eE][+-]?\d+)?/
+    assert(typeof response.last === "string", ApiError.UNSUPPORTED_API_RESPONSE)
+    assert.match(response.last, numberRegex, ApiError.UNSUPPORTED_API_RESPONSE)
+    assert(typeof response.notionalUsd === "string", ApiError.UNSUPPORTED_API_RESPONSE)
+    assert.match(response.notionalUsd, numberRegex, ApiError.UNSUPPORTED_API_RESPONSE)
+    assert(typeof response.margin === "string", ApiError.UNSUPPORTED_API_RESPONSE)
+    assert.match(response.margin, numberRegex, ApiError.UNSUPPORTED_API_RESPONSE)
 
     return {
       originalResponseAsIs: response,
