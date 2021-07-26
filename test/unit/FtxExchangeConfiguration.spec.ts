@@ -417,7 +417,7 @@ describe("FtxExchangeConfiguration", () => {
           result: {
             collateral: completeResponse.result.collateral,
             totalAccountValue: completeResponse.result.totalAccountValue,
-            marginFraction: false,
+            marginFraction: true,
             positions: completeResponse.result.positions,
           },
         },
@@ -451,7 +451,7 @@ describe("FtxExchangeConfiguration", () => {
       const response = {
         result: {
           result: {
-            collateral: false,
+            collateral: true,
             totalAccountValue: completeResponse.result.totalAccountValue,
             marginFraction: completeResponse.result.marginFraction,
             positions: completeResponse.result.positions,
@@ -488,7 +488,7 @@ describe("FtxExchangeConfiguration", () => {
         result: {
           result: {
             collateral: completeResponse.result.collateral,
-            totalAccountValue: false,
+            totalAccountValue: true,
             marginFraction: completeResponse.result.marginFraction,
             positions: completeResponse.result.positions,
           },
