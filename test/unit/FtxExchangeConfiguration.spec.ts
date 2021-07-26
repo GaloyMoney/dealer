@@ -370,17 +370,12 @@ describe("FtxExchangeConfiguration", () => {
     //
     it("should throw not implemented for now", async () => {
       const configuration = new FtxExchangeConfiguration()
-      expect(() => configuration.privateGetAccountValidateCall()).toHaveReturned()
+      const result = configuration.privateGetAccountValidateCall()
+      expect(result).toBeUndefined()
     })
   })
 
   describe("privateGetAccountProcessApiResponse", () => {
-    // undef response
-    // no margin
-    // no collateral
-    // no totalAcc
-    // no positions
-    // everything ok
     it("should throw when response is falsy", async () => {
       const configuration = new FtxExchangeConfiguration()
       falsyArgs.forEach((response) => {
@@ -390,25 +385,169 @@ describe("FtxExchangeConfiguration", () => {
       })
     })
 
-    it("should throw when response has no marginFraction property", async () => {
+    it("should throw when response has no result property", async () => {
       const configuration = new FtxExchangeConfiguration()
       const response = {}
-      // const response = getValidPrivateGetAccountResponse()
-      // delete response.result.marginFraction
       expect(() =>
         configuration.privateGetAccountProcessApiResponse(response),
       ).toThrowError(ApiError.UNSUPPORTED_API_RESPONSE)
     })
 
-    it("should throw when response.status is not a supported OrderStatus property", async () => {
+    it("should throw when response has no marginFraction property", async () => {
       const configuration = new FtxExchangeConfiguration()
-      const response = { status: "" }
+      const completeResponse = getValidPrivateGetAccountResponse()
+      const response = {
+        result: {
+          result: {
+            collateral: completeResponse.result.collateral,
+            totalAccountValue: completeResponse.result.totalAccountValue,
+            // marginFraction: completeResponse.result.marginFraction,
+            positions: completeResponse.result.positions,
+          },
+        },
+      }
       expect(() =>
         configuration.privateGetAccountProcessApiResponse(response),
       ).toThrowError(ApiError.UNSUPPORTED_API_RESPONSE)
     })
 
-    it("should do nothing when response is valid", async () => {
+    it("should throw when response marginFraction property is not a number", async () => {
+      const configuration = new FtxExchangeConfiguration()
+      const completeResponse = getValidPrivateGetAccountResponse()
+      const response = {
+        result: {
+          result: {
+            collateral: completeResponse.result.collateral,
+            totalAccountValue: completeResponse.result.totalAccountValue,
+            marginFraction: false,
+            positions: completeResponse.result.positions,
+          },
+        },
+      }
+      expect(() =>
+        configuration.privateGetAccountProcessApiResponse(response),
+      ).toThrowError(ApiError.UNSUPPORTED_API_RESPONSE)
+    })
+
+    it("should throw when response has no collateral property", async () => {
+      const configuration = new FtxExchangeConfiguration()
+      const completeResponse = getValidPrivateGetAccountResponse()
+      const response = {
+        result: {
+          result: {
+            // collateral: completeResponse.result.collateral,
+            totalAccountValue: completeResponse.result.totalAccountValue,
+            marginFraction: completeResponse.result.marginFraction,
+            positions: completeResponse.result.positions,
+          },
+        },
+      }
+      expect(() =>
+        configuration.privateGetAccountProcessApiResponse(response),
+      ).toThrowError(ApiError.UNSUPPORTED_API_RESPONSE)
+    })
+
+    it("should throw when response collateral property is not a number", async () => {
+      const configuration = new FtxExchangeConfiguration()
+      const completeResponse = getValidPrivateGetAccountResponse()
+      const response = {
+        result: {
+          result: {
+            collateral: false,
+            totalAccountValue: completeResponse.result.totalAccountValue,
+            marginFraction: completeResponse.result.marginFraction,
+            positions: completeResponse.result.positions,
+          },
+        },
+      }
+      expect(() =>
+        configuration.privateGetAccountProcessApiResponse(response),
+      ).toThrowError(ApiError.UNSUPPORTED_API_RESPONSE)
+    })
+
+    it("should throw when response has no totalAccountValue property", async () => {
+      const configuration = new FtxExchangeConfiguration()
+      const completeResponse = getValidPrivateGetAccountResponse()
+      const response = {
+        result: {
+          result: {
+            collateral: completeResponse.result.collateral,
+            // totalAccountValue: completeResponse.result.totalAccountValue,
+            marginFraction: completeResponse.result.marginFraction,
+            positions: completeResponse.result.positions,
+          },
+        },
+      }
+      expect(() =>
+        configuration.privateGetAccountProcessApiResponse(response),
+      ).toThrowError(ApiError.UNSUPPORTED_API_RESPONSE)
+    })
+
+    it("should throw when response totalAccountValue property is not a number", async () => {
+      const configuration = new FtxExchangeConfiguration()
+      const completeResponse = getValidPrivateGetAccountResponse()
+      const response = {
+        result: {
+          result: {
+            collateral: completeResponse.result.collateral,
+            totalAccountValue: false,
+            marginFraction: completeResponse.result.marginFraction,
+            positions: completeResponse.result.positions,
+          },
+        },
+      }
+      expect(() =>
+        configuration.privateGetAccountProcessApiResponse(response),
+      ).toThrowError(ApiError.UNSUPPORTED_API_RESPONSE)
+    })
+
+    it("should throw when response has no positions property", async () => {
+      const configuration = new FtxExchangeConfiguration()
+      const completeResponse = getValidPrivateGetAccountResponse()
+      const response = {
+        result: {
+          result: {
+            collateral: completeResponse.result.collateral,
+            totalAccountValue: completeResponse.result.totalAccountValue,
+            marginFraction: completeResponse.result.marginFraction,
+            // positions: completeResponse.result.positions,
+          },
+        },
+      }
+      expect(() =>
+        configuration.privateGetAccountProcessApiResponse(response),
+      ).toThrowError(ApiError.UNSUPPORTED_API_RESPONSE)
+    })
+
+    it("should get netSize of zero when response has no positions.netSize property", async () => {
+      const configuration = new FtxExchangeConfiguration()
+      const completeResponse = getValidPrivateGetAccountResponse()
+      const response = {
+        result: {
+          collateral: completeResponse.result.collateral,
+          totalAccountValue: completeResponse.result.totalAccountValue,
+          marginFraction: completeResponse.result.marginFraction,
+          positions: [
+            {
+              future: "BTC-PERP",
+              side: "sell",
+              // netSize: "-0.0029",
+            },
+          ],
+        },
+      }
+      const expected = {
+        originalResponseAsIs: response,
+        marginFraction: response.result.marginFraction,
+        netSize: 0,
+        collateral: response.result.collateral,
+        totalAccountValue: response.result.totalAccountValue,
+      }
+      const result = configuration.privateGetAccountProcessApiResponse(response)
+      expect(result).toEqual(expected)
+    })
+
+    it("should return processed response", async () => {
       const configuration = new FtxExchangeConfiguration()
       const response = getValidPrivateGetAccountResponse()
       const expected = getProcessedPrivateGetAccountResponse()
