@@ -84,12 +84,16 @@ export class FtxExchangeConfiguration implements ExchangeConfiguration {
     assert(response, ApiError.UNSUPPORTED_API_RESPONSE)
     assert(response.result, ApiError.UNSUPPORTED_API_RESPONSE)
     const result = response.result
-    assert(typeof result.marginFraction === "number", ApiError.UNSUPPORTED_API_RESPONSE)
-    assert(typeof result.collateral === "number", ApiError.UNSUPPORTED_API_RESPONSE)
+    const numberRegex = /-?(?=[1-9]|0(?!\d))\d+(\.\d+)?([eE][+-]?\d+)?/
+    assert(typeof result.marginFraction === "string", ApiError.UNSUPPORTED_API_RESPONSE)
+    assert.match(result.marginFraction, numberRegex, ApiError.UNSUPPORTED_API_RESPONSE)
+    assert(typeof result.collateral === "string", ApiError.UNSUPPORTED_API_RESPONSE)
+    assert.match(result.collateral, numberRegex, ApiError.UNSUPPORTED_API_RESPONSE)
     assert(
-      typeof result.totalAccountValue === "number",
+      typeof result.totalAccountValue === "string",
       ApiError.UNSUPPORTED_API_RESPONSE,
     )
+    assert.match(result.totalAccountValue, numberRegex, ApiError.UNSUPPORTED_API_RESPONSE)
 
     const { netSize = 0 } = _.find(result.positions, {
       future: this.instrumentId,
