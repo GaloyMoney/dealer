@@ -4,7 +4,6 @@ import Col from "react-bootstrap/Col"
 import Card from "react-bootstrap/Card"
 import Container from "react-bootstrap/Container"
 import Image from "react-bootstrap/Image"
-import Button from "react-bootstrap/Button"
 import OverlayTrigger from "react-bootstrap/OverlayTrigger"
 import Tooltip from "react-bootstrap/Tooltip"
 import { QRCode } from "react-qrcode-logo"
@@ -27,10 +26,10 @@ const GENERATE_PUBLIC_INVOICE = gql`
   }
 `
 
-function Receive({ username }) {
-  const [invoice, setInvoice] = useState(0)
+function Receive({ username }: { username: string }) {
+  const [invoice, setInvoice] = useState("")
   const [invoicePaid, setInvoicePaid] = useState(false)
-  const [os, setOS] = useState(null)
+  const [os, setOS] = useState<null | undefined | string>(null) // TODO: simplify type
   const [showCopied, setShowCopied] = useState(false)
 
   const [generatePublicInvoice, { loading: invoiceLoading, error }] = useMutation(
@@ -46,32 +45,32 @@ function Receive({ username }) {
     },
   )
 
-  const [updatePendingInvoice, { loading: invoiceUpdating, stopPolling }] = useLazyQuery(
-    UPDATE_PENDING_INVOICE,
-    {
-      onCompleted({ noauthUpdatePendingInvoice: invoicePaid }) {
-        console.log({ invoicePaid, stopPolling })
-        setInvoicePaid(invoicePaid)
-        if (invoicePaid) {
-          stopPolling()
-        }
-      },
-      onError(error) {
-        console.log({ error })
-      },
-      pollInterval: 3500,
-      notifyOnNetworkStatusChange: true,
+  const [updatePendingInvoice, { stopPolling }] = useLazyQuery(UPDATE_PENDING_INVOICE, {
+    onCompleted({ noauthUpdatePendingInvoice: invoicePaid }) {
+      console.log({ invoicePaid, stopPolling })
+      setInvoicePaid(invoicePaid)
+      if (invoicePaid) {
+        // @ts-expect-error: this is going aawy soon
+        stopPolling()
+      }
     },
-  )
+    onError(error) {
+      console.log({ error })
+    },
+    pollInterval: 3500,
+    notifyOnNetworkStatusChange: true,
+  })
 
   useEffect(() => {
     generatePublicInvoice({ variables: { username } })
     setOS(getOS())
-  }, [])
+  }, [generatePublicInvoice, username])
 
-  const updateInvoiceStatus = async (invoice) => {
-    let decoded = window.lightningPayReq.decode(invoice)
-    let [{ data: hash }] = decoded.tags.filter((item) => item.tagName === "payment_hash")
+  const updateInvoiceStatus = async (invoice: string) => {
+    const decoded = window.lightningPayReq.decode(invoice)
+    const [{ data: hash }] = decoded.tags.filter(
+      (item) => item.tagName === "payment_hash",
+    )
     updatePendingInvoice({ variables: { username, hash } })
   }
 
@@ -121,7 +120,7 @@ function Receive({ username }) {
                   <OverlayTrigger
                     show={showCopied}
                     placement="top"
-                    overlay={<Tooltip>Copied!</Tooltip>}
+                    overlay={<Tooltip id="copy">Copied!</Tooltip>}
                   >
                     <div onClick={copyInvoice}>
                       <QRCode

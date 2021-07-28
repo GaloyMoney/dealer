@@ -8,10 +8,11 @@ import Button from "react-bootstrap/Button"
 import Header from "./header"
 
 export const getOS = () => {
-  var userAgent = navigator.userAgent || navigator.vendor || window.opera
+  const userAgent = navigator.userAgent || navigator.vendor || window.opera
+
   // Windows Phone must come first because its UA also contains "Android"
   if (/windows phone/i.test(userAgent)) {
-    return
+    return undefined
   }
 
   if (/android/i.test(userAgent)) {
@@ -22,6 +23,8 @@ export const getOS = () => {
   if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
     return "ios"
   }
+
+  return undefined
 }
 
 export const playStoreLink = "https://play.google.com/store/apps/details?id=com.galoyapp"
@@ -32,11 +35,9 @@ const DownloadApp = () => {
   const os = getOS()
 
   if (os === "android") {
-    return window.location.replace(
-      "https://play.google.com/store/apps/details?id=com.galoyapp",
-    )
+    window.location.replace("https://play.google.com/store/apps/details?id=com.galoyapp")
   } else if (os === "ios") {
-    return window.location.replace(
+    window.location.replace(
       "itms-apps://itunes.apple.com/app/bitcoin-beach-wallet/id1531383905",
     )
   }

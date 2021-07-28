@@ -6,7 +6,11 @@
     "start": "node scripts/start.js",
     "build": "node scripts/build.js",
     "test": "node scripts/test.js",
-    "eslint-check": "eslint \"{src,test}/**/*.{ts,tsx}\""
+    "postinstall": "rm -rf node_modules/hookrouter/dist/*.d.ts",
+    "prettier-check": "prettier --check .",
+    "eslint-check": "eslint \"{src,test}/**/*.ts\"",
+    "tsc-check": "tsc --noEmit --skipLibCheck",
+    "check-code": "yarn prettier-check && yarn eslint-check && yarn tsc-check"
   },
   "dependencies": {
     "@apollo/client": "^3.3.18",

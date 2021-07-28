@@ -8,9 +8,10 @@ import ReactToPrint from "react-to-print"
 import { QRCode } from "react-qrcode-logo"
 import Header from "./header"
 
-const QRContainer = React.forwardRef((props, ref) => {
+const QRContainer = React.forwardRef((props: { username: string }, ref) => {
   return (
     <div style={{ display: "none" }}>
+      {/* @ts-expect-error: TODO */}
       <Container fluid ref={ref}>
         <br />
         <Row className="justify-content-md-center">
@@ -38,7 +39,7 @@ const QRContainer = React.forwardRef((props, ref) => {
   )
 })
 
-const PrintQR = ({ username }) => {
+const PrintQR = ({ username }: { username: string }) => {
   const componentRef = useRef()
 
   return (
@@ -54,7 +55,6 @@ const PrintQR = ({ username }) => {
                 <Card.Text>
                   <h3>Pay {username}</h3>
                   <QRCode
-                    id="qr"
                     ecLevel="H"
                     value={`https://ln.bitcoinbeach.com/${username}`}
                     size={300}
@@ -74,10 +74,14 @@ const PrintQR = ({ username }) => {
       <Row className="justify-content-md-center">
         <ReactToPrint
           trigger={() => <Button>Print QR Code</Button>}
+          // @ts-expect-error: TODO
           content={() => componentRef.current}
           onBeforeGetContent={() => {
-            document.getElementById("react-qrcode-logo").style.height = 1000
-            document.getElementById("react-qrcode-logo").style.width = 1000
+            const qrcodeLogo = document.getElementById("react-qrcode-logo")
+            if (qrcodeLogo) {
+              qrcodeLogo.style.height = "1000px"
+              qrcodeLogo.style.width = "1000px"
+            }
           }}
         />
       </Row>

@@ -19,12 +19,12 @@ const GET_NODE_STATS = gql`
 `
 
 function Home() {
-  let nodeUrl =
+  const nodeUrl =
     window.env.GRAPHQL_URI.indexOf("testnet") === -1
       ? `https://1ml.com/node/`
       : `https://1ml.com/testnet/node/`
 
-  let { loading, error, data } = useQuery(GET_NODE_STATS)
+  const { loading, error, data } = useQuery(GET_NODE_STATS)
 
   return (
     <div>

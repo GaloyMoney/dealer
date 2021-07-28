@@ -9,12 +9,15 @@ import { useRoutes } from "hookrouter"
 const routes = {
   "/": () => <Home />,
   "/download": () => <DownloadApp />,
-  "/:username/print": ({ username }) => <PrintQR username={username} />,
-  "/:username": ({ username }) => <Receive username={username} />,
+  "/:username/print": ({ username }: { username: string }) => (
+    <PrintQR username={username} />
+  ),
+  "/:username": ({ username }: { username: string }) => <Receive username={username} />,
 }
 
 function App() {
-  let routeResult = useRoutes(routes)
+  // @ts-expect-error: TODO
+  const routeResult = useRoutes(routes)
 
   return routeResult || <Home />
 }
