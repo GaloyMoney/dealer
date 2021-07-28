@@ -1,9 +1,9 @@
 import React from "react"
 import "bootstrap/dist/css/bootstrap.min.css"
-import Home from "./components/home.js"
-import Receive from "./components/receive.js"
-import PrintQR from "./components/printQR.js"
-import DownloadApp from "./components/downloadApp.js"
+import Home from "./components/home"
+import Receive from "./components/receive"
+import PrintQR from "./components/printQR"
+import DownloadApp from "./components/downloadApp"
 import { useRoutes } from "hookrouter"
 
 const routes = {

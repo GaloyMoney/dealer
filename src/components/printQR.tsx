@@ -6,7 +6,7 @@ import Container from "react-bootstrap/Container"
 import Button from "react-bootstrap/Button"
 import ReactToPrint from "react-to-print"
 import { QRCode } from "react-qrcode-logo"
-import Header from "./header.js"
+import Header from "./header"
 
 const QRContainer = React.forwardRef((props, ref) => {
   return (

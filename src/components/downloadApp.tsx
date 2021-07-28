@@ -5,7 +5,7 @@ import Container from "react-bootstrap/Container"
 import Row from "react-bootstrap/Row"
 import Col from "react-bootstrap/Col"
 import Button from "react-bootstrap/Button"
-import Header from "./header.js"
+import Header from "./header"
 
 export const getOS = () => {
   var userAgent = navigator.userAgent || navigator.vendor || window.opera

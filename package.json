@@ -2,31 +2,98 @@
   "name": "lnpage",
   "version": "0.1.0",
   "private": true,
+  "scripts": {
+    "start": "node scripts/start.js",
+    "build": "node scripts/build.js",
+    "test": "node scripts/test.js",
+    "eslint-check": "eslint \"{src,test}/**/*.{ts,tsx}\""
+  },
   "dependencies": {
     "@apollo/client": "^3.3.18",
-    "@testing-library/jest-dom": "^5.14.1",
-    "@testing-library/react": "^11.2.7",
-    "@testing-library/user-event": "^13.1.9",
+    "@babel/core": "7.14.8",
+    "@pmmmwh/react-refresh-webpack-plugin": "0.4.3",
+    "@svgr/webpack": "5.5.0",
+    "@testing-library/jest-dom": "^5.11.4",
+    "@testing-library/react": "^12.0.0",
+    "@testing-library/user-event": "^13.2.1",
+    "@types/jest": "^26.0.15",
+    "@types/node": "^12.0.0",
+    "@types/react": "^17.0.0",
+    "@types/react-dom": "^17.0.0",
+    "@typescript-eslint/eslint-plugin": "^4.28.5",
+    "@typescript-eslint/parser": "^4.28.5",
+    "babel-eslint": "^10.1.0",
+    "babel-jest": "^27.0.6",
+    "babel-loader": "8.2.2",
+    "babel-plugin-named-asset-import": "^0.3.7",
+    "babel-preset-react-app": "^10.0.0",
+    "bfj": "^7.0.2",
     "bootstrap": "^4.5.2",
+    "camelcase": "^6.1.0",
+    "case-sensitive-paths-webpack-plugin": "2.4.0",
     "copy-to-clipboard": "^3.3.1",
+    "css-loader": "6.2.0",
+    "dotenv": "10.0.0",
+    "dotenv-expand": "5.1.0",
+    "eslint": "^7.31.0",
+    "eslint-config-react-app": "^6.0.0",
+    "eslint-plugin-flowtype": "^5.8.2",
+    "eslint-plugin-import": "^2.23.4",
+    "eslint-plugin-jest": "^24.4.0",
+    "eslint-plugin-jsx-a11y": "^6.3.1",
+    "eslint-plugin-react": "^7.24.0",
+    "eslint-plugin-react-hooks": "^4.2.0",
+    "eslint-plugin-testing-library": "^4.10.1",
+    "eslint-webpack-plugin": "^3.0.1",
+    "file-loader": "6.2.0",
+    "fs-extra": "^10.0.0",
     "graphql": "^15.3.0",
     "hookrouter": "^1.2.3",
-    "react": "^16.13.1",
+    "html-webpack-plugin": "5.3.2",
+    "identity-obj-proxy": "3.0.0",
+    "jest": "27.0.6",
+    "jest-circus": "27.0.6",
+    "jest-resolve": "27.0.6",
+    "jest-watch-typeahead": "0.6.4",
+    "mini-css-extract-plugin": "2.1.0",
+    "optimize-css-assets-webpack-plugin": "6.0.1",
+    "pnp-webpack-plugin": "1.7.0",
+    "postcss-flexbugs-fixes": "5.0.2",
+    "postcss-loader": "6.1.1",
+    "postcss-normalize": "10.0.0",
+    "postcss-preset-env": "6.7.0",
+    "postcss-safe-parser": "6.0.0",
+    "prompts": "2.4.1",
+    "react": "^17.0.2",
+    "react-app-polyfill": "^2.0.0",
     "react-bootstrap": "^1.6.1",
-    "react-dom": "^16.13.1",
+    "react-dev-utils": "^11.0.4",
+    "react-dom": "^17.0.2",
     "react-lottie": "^1.2.3",
     "react-qrcode-logo": "^2.4.0",
+    "react-refresh": "^0.10.0",
     "react-scripts": "4.0.3",
-    "react-to-print": "^2.12.6"
-  },
-  "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "react-to-print": "^2.12.6",
+    "resolve": "1.20.0",
+    "resolve-url-loader": "^4.0.0",
+    "sass-loader": "^12.1.0",
+    "semver": "7.3.5",
+    "style-loader": "3.2.1",
+    "terser-webpack-plugin": "5.1.4",
+    "ts-pnp": "1.2.0",
+    "typescript": "^4.1.2",
+    "url-loader": "4.1.1",
+    "web-vitals": "^2.1.0",
+    "webpack": "5.47.0",
+    "webpack-dev-server": "3.11.2",
+    "webpack-manifest-plugin": "3.2.0",
+    "workbox-webpack-plugin": "6.1.5"
   },
   "eslintConfig": {
-    "extends": "react-app"
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
   },
   "browserslist": {
     "production": [
@@ -40,7 +107,85 @@
       "last 1 safari version"
     ]
   },
+  "jest": {
+    "roots": [
+      "<rootDir>/src"
+    ],
+    "collectCoverageFrom": [
+      "src/**/*.{js,jsx,ts,tsx}",
+      "!src/**/*.d.ts"
+    ],
+    "setupFiles": [
+      "react-app-polyfill/jsdom"
+    ],
+    "setupFilesAfterEnv": [
+      "<rootDir>/src/setupTests.ts"
+    ],
+    "testMatch": [
+      "<rootDir>/src/**/__tests__/**/*.{js,jsx,ts,tsx}",
+      "<rootDir>/src/**/*.{spec,test}.{js,jsx,ts,tsx}"
+    ],
+    "testEnvironment": "jsdom",
+    "testRunner": "/Users/samer/Work/GaloyMoney/lnpage/node_modules/jest-circus/runner.js",
+    "transform": {
+      "^.+\\.(js|jsx|mjs|cjs|ts|tsx)$": "<rootDir>/config/jest/babelTransform.js",
+      "^.+\\.css$": "<rootDir>/config/jest/cssTransform.js",
+      "^(?!.*\\.(js|jsx|mjs|cjs|ts|tsx|css|json)$)": "<rootDir>/config/jest/fileTransform.js"
+    },
+    "transformIgnorePatterns": [
+      "[/\\\\]node_modules[/\\\\].+\\.(js|jsx|mjs|cjs|ts|tsx)$",
+      "^.+\\.module\\.(css|sass|scss)$"
+    ],
+    "modulePaths": [],
+    "moduleNameMapper": {
+      "^react-native$": "react-native-web",
+      "^.+\\.module\\.(css|sass|scss)$": "identity-obj-proxy"
+    },
+    "moduleFileExtensions": [
+      "web.js",
+      "js",
+      "web.ts",
+      "ts",
+      "web.tsx",
+      "tsx",
+      "json",
+      "web.jsx",
+      "jsx",
+      "node"
+    ],
+    "watchPlugins": [
+      "jest-watch-typeahead/filename",
+      "jest-watch-typeahead/testname"
+    ],
+    "resetMocks": true
+  },
+  "babel": {
+    "presets": [
+      "react-app"
+    ]
+  },
   "devDependencies": {
+    "@types/babel__core": "7.1.15",
+    "@types/bootstrap": "^4.6.1",
+    "@types/case-sensitive-paths-webpack-plugin": "2.1.6",
+    "@types/eslint": "^7.28.0",
+    "@types/file-loader": "5.0.1",
+    "@types/fs-extra": "^9.0.12",
+    "@types/hookrouter": "^2.2.5",
+    "@types/mini-css-extract-plugin": "2.0.1",
+    "@types/optimize-css-assets-webpack-plugin": "5.0.4",
+    "@types/prettier": "^2.3.2",
+    "@types/prompts": "2.4.0",
+    "@types/react-dev-utils": "^9.0.7",
+    "@types/react-lottie": "^1.2.6",
+    "@types/resolve": "1.20.0",
+    "@types/semver": "7.3.5",
+    "@types/terser-webpack-plugin": "5.0.4",
+    "@types/testing-library__jest-dom": "^5.14.1",
+    "@types/testing-library__user-event": "^4.2.0",
+    "@types/webpack-dev-server": "3.11.2",
+    "@types/webpack-manifest-plugin": "3.0.5",
+    "@types/workbox-webpack-plugin": "5.1.8",
     "prettier": "^2.3.2"
   }
 }
