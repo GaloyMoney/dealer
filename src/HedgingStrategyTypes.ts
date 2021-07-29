@@ -34,11 +34,11 @@ export interface DepositOnExchangeCallback {
 }
 
 export interface HedgingStrategy {
-  UpdatePosition(
+  updatePosition(
     liabilityInUsd: number,
     btcPriceInUsd: number,
   ): Promise<Result<UpdatedPosition>>
-  UpdateLeverage(
+  updateLeverage(
     liabilityInUsd: number,
     btcPriceInUsd: number,
     withdrawFromExchangeOnChainAddress,

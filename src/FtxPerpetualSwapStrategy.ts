@@ -28,7 +28,7 @@ export class FtxPerpetualSwapStrategy implements HedgingStrategy {
     this.logger = logger.child({ class: FtxPerpetualSwapStrategy.name })
   }
 
-  public async UpdatePosition(
+  public async updatePosition(
     usdLiability,
     btcPriceInUsd,
   ): Promise<Result<UpdatedPosition>> {
@@ -108,7 +108,7 @@ export class FtxPerpetualSwapStrategy implements HedgingStrategy {
     }
   }
 
-  public async UpdateLeverage(
+  public async updateLeverage(
     usdLiability,
     btcPriceInUsd,
   ): Promise<Result<UpdatedBalance>> {

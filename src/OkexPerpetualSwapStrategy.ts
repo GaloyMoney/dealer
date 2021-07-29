@@ -65,7 +65,7 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
     this.logger = logger.child({ class: OkexPerpetualSwapStrategy.name })
   }
 
-  public async UpdatePosition(
+  public async updatePosition(
     liabilityInUsd,
     btcPriceInUsd,
   ): Promise<Result<UpdatedPosition>> {
@@ -153,7 +153,7 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
     }
   }
 
-  public async UpdateLeverage(
+  public async updateLeverage(
     liabilityInUsd,
     btcPriceInUsd,
     withdrawOnChainAddress,
