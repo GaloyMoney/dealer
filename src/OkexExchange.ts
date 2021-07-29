@@ -78,9 +78,6 @@ export class OkexExchange extends ExchangeBase {
       assert(response.minSz > 0, ApiError.NON_POSITIVE_QUANTITY)
       assert(response.ctVal > 0, ApiError.NON_POSITIVE_PRICE)
 
-      // const contractFaceValue = response.ctVal
-      // const orderSizeInContract = Math.round(btcPriceInUsd / contractFaceValue)
-
       return {
         ok: true,
         value: {
