@@ -22,7 +22,9 @@ export class OkexExchange extends ExchangeBase {
   ): Promise<Result<GetAccountAndPositionRiskResult>> {
     try {
       // OKEx has last price as apart of position data, may forgo input validation
-      assert(btcPriceInUsd > 0, ApiError.MISSING_PARAMETERS)
+      assert(btcPriceInUsd !== 0, ApiError.NON_POSITIVE_PRICE)
+      assert(btcPriceInUsd, ApiError.MISSING_PARAMETERS)
+      assert(btcPriceInUsd > 0, ApiError.NON_POSITIVE_PRICE)
 
       const positionResult = await this.fetchPosition(this.instrumentId)
       this.logger.debug(
