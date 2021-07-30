@@ -3,7 +3,7 @@
 // import { User } from "../schema"
 // import { getCurrentPrice } from "../realtimePrice"
 // import { UserWallet } from "../userWallet"
-// import { DealerWallet } from "../dealer/DealerWallet"
+// import { Dealer } from "../dealer/Dealer"
 
 // const main = async () => {
 //   const lastPrice = await getCurrentPrice()
@@ -11,7 +11,7 @@
 
 //   const logger = baseLogger.child({ module: "cron" })
 //   const dealerUser = await User.findOne({ role: "dealer" })
-//   const dealer = new DealerWallet({ user: dealerUser, logger })
+//   const dealer = new Dealer({ user: dealerUser, logger })
 
 //   await dealer.updatePositionAndLeverage()
 
