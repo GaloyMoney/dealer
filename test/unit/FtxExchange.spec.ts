@@ -74,11 +74,23 @@ describe("FtxExchange", () => {
       }
     })
 
-    it("should throw when bad response from privateGetAccount api call", async () => {
+    it("should return proper leverageRatio", async () => {
       const exchangeConfig = new FtxExchangeConfiguration()
       const exchange = new FtxExchange(exchangeConfig, baseLogger)
-      // need a mock up of ccxt privateGetAccount()
-      // to cover the this.exchange.privateGetAccount()
+      // need a mock up of ExchangeBase.privateGetAccount()
+      // to test the logic in this.getAccountAndPositionRisk()
+      // TODO:
+      //  test leverageRatio result from mock'd ExchangeBase.privateGetAccount() response
+      expect(exchange).toBeInstanceOf(FtxExchange)
+    })
+
+    it("should return proper exposureInUsd", async () => {
+      const exchangeConfig = new FtxExchangeConfiguration()
+      const exchange = new FtxExchange(exchangeConfig, baseLogger)
+      // need a mock up of ExchangeBase.privateGetAccount()
+      // to test the logic in this.getAccountAndPositionRisk()
+      // TODO:
+      //  test exposureInUsd result from mock'd ExchangeBase.privateGetAccount() response
       expect(exchange).toBeInstanceOf(FtxExchange)
     })
   })
