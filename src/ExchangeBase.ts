@@ -9,6 +9,7 @@ import {
   GetInstrumentDetailsResult,
   PrivateGetAccountResult,
   FetchPositionResult,
+  FetchTickerResult,
   FetchBalanceResult,
 } from "./ExchangeTradingType"
 import { Result } from "./Result"
@@ -188,6 +189,27 @@ export abstract class ExchangeBase {
       )
 
       const result = this.exchangeConfig.fetchPositionProcessApiResponse(response)
+
+      return {
+        ok: true,
+        value: result,
+      }
+    } catch (error) {
+      return { ok: false, error: error }
+    }
+  }
+
+  public async fetchTicker(instrumentId: string): Promise<Result<FetchTickerResult>> {
+    try {
+      this.exchangeConfig.fetchTickerValidateInput(instrumentId)
+
+      const response = await this.exchange.fetchTicker(instrumentId)
+      this.logger.debug(
+        { response },
+        `exchange.fetchTicker(${instrumentId}) returned: {response}`,
+      )
+
+      const result = this.exchangeConfig.fetchTickerProcessApiResponse(response)
 
       return {
         ok: true,

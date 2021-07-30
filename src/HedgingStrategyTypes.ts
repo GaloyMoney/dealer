@@ -34,6 +34,7 @@ export interface DepositOnExchangeCallback {
 }
 
 export interface HedgingStrategy {
+  getBtcSpotPriceInUsd(): Promise<Result<number>>
   updatePosition(
     liabilityInUsd: number,
     btcPriceInUsd: number,

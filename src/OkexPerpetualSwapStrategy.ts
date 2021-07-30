@@ -11,6 +11,7 @@ import {
 } from "./ExchangeTradingType"
 import { HedgingStrategy, UpdatedPosition, UpdatedBalance } from "./HedgingStrategyTypes"
 import { ExchangeBase } from "./ExchangeBase"
+import { ExchangeConfiguration } from "./ExchangeConfiguration"
 import { OkexExchangeConfiguration } from "./OkexExchangeConfiguration"
 import { OkexExchange } from "./OkexExchange"
 
@@ -57,12 +58,24 @@ export interface GetRiskAndOrderResult {
 
 export class OkexPerpetualSwapStrategy implements HedgingStrategy {
   exchange: ExchangeBase
+  exchangeConfig: ExchangeConfiguration
+  instrumentId
   logger
 
   constructor(logger) {
-    const exchangeConfig = new OkexExchangeConfiguration()
-    this.exchange = new OkexExchange(exchangeConfig, logger)
+    this.exchangeConfig = new OkexExchangeConfiguration()
+    this.exchange = new OkexExchange(this.exchangeConfig, logger)
+    this.instrumentId = this.exchangeConfig.instrumentId
     this.logger = logger.child({ class: OkexPerpetualSwapStrategy.name })
+  }
+
+  public async getBtcSpotPriceInUsd(): Promise<Result<number>> {
+    const result = await this.exchange.fetchTicker(this.instrumentId)
+    if (result.ok) {
+      return { ok: true, value: result.value.lastBtcPriceInUsd }
+    } else {
+      return { ok: false, error: result.error }
+    }
   }
 
   public async updatePosition(

@@ -6,6 +6,7 @@ import assert from "assert"
 import { Result } from "./Result"
 import { HedgingStrategy, UpdatedPosition, UpdatedBalance } from "./HedgingStrategyTypes"
 import { ExchangeBase } from "./ExchangeBase"
+import { ExchangeConfiguration } from "./ExchangeConfiguration"
 import { FtxExchangeConfiguration } from "./FtxExchangeConfiguration"
 import { FtxExchange } from "./FtxExchange"
 
@@ -18,14 +19,24 @@ if (!isSimulation) {
 
 export class FtxPerpetualSwapStrategy implements HedgingStrategy {
   exchange: ExchangeBase
+  exchangeConfig: ExchangeConfiguration
   instrumentId
   logger
 
   constructor(logger) {
-    const exchangeConfig = new FtxExchangeConfiguration()
-    this.exchange = new FtxExchange(exchangeConfig, logger)
-    this.instrumentId = exchangeConfig.instrumentId
+    this.exchangeConfig = new FtxExchangeConfiguration()
+    this.exchange = new FtxExchange(this.exchangeConfig, logger)
+    this.instrumentId = this.exchangeConfig.instrumentId
     this.logger = logger.child({ class: FtxPerpetualSwapStrategy.name })
+  }
+
+  public async getBtcSpotPriceInUsd(): Promise<Result<number>> {
+    const result = await this.exchange.fetchTicker(this.exchangeConfig.instrumentId)
+    if (result.ok) {
+      return { ok: true, value: result.value.lastBtcPriceInUsd }
+    } else {
+      return { ok: false, error: result.error }
+    }
   }
 
   public async updatePosition(

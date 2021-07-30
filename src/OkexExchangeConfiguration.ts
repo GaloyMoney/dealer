@@ -11,6 +11,7 @@ import {
   PrivateGetAccountResult,
   FetchBalanceResult,
   FetchPositionResult,
+  FetchTickerResult,
 } from "./ExchangeTradingType"
 import assert from "assert"
 import {
@@ -139,6 +140,25 @@ export class OkexExchangeConfiguration implements ExchangeConfiguration {
       last: response.last,
       notionalUsd: response.notionalUsd,
       margin: response.margin,
+    }
+  }
+
+  fetchTickerValidateInput(instrumentId: string) {
+    assert(
+      instrumentId === SupportedInstrument.OKEX_PERPETUAL_SWAP,
+      ApiError.UNSUPPORTED_INSTRUMENT,
+    )
+  }
+  fetchTickerProcessApiResponse(response): FetchTickerResult {
+    assert(response, ApiError.UNSUPPORTED_API_RESPONSE)
+    assert(response.last, ApiError.UNSUPPORTED_API_RESPONSE)
+    const numberRegex = /-?(?=[1-9]|0(?!\d))\d+(\.\d+)?([eE][+-]?\d+)?/
+    assert(typeof response.last === "string", ApiError.UNSUPPORTED_API_RESPONSE)
+    assert.match(response.last, numberRegex, ApiError.UNSUPPORTED_API_RESPONSE)
+
+    return {
+      originalResponseAsIs: response,
+      lastBtcPriceInUsd: response.last,
     }
   }
 }

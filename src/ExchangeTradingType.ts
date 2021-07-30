@@ -105,6 +105,11 @@ export interface FetchPositionResult {
   margin: number
 }
 
+export interface FetchTickerResult {
+  originalResponseAsIs
+  lastBtcPriceInUsd: number
+}
+
 export interface GetAccountAndPositionRiskResult {
   originalResponseAsIs
   lastBtcPriceInUsd: number

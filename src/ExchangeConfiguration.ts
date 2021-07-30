@@ -5,6 +5,7 @@ import {
   PrivateGetAccountResult,
   FetchBalanceResult,
   FetchPositionResult,
+  FetchTickerResult,
   //   GetAccountAndPositionRiskResult,
   //   GetInstrumentDetailsResult,
 } from "./ExchangeTradingType"
@@ -43,6 +44,9 @@ export interface ExchangeConfiguration {
 
   fetchPositionValidateInput(instrumentId: string)
   fetchPositionProcessApiResponse(response): FetchPositionResult
+
+  fetchTickerValidateInput(instrumentId: string)
+  fetchTickerProcessApiResponse(response): FetchTickerResult
 
   //   getAccountAndPositionRisk(
   //     btcPriceInUsd: number,
