@@ -123,7 +123,7 @@ export class OkexExchangeConfiguration implements ExchangeConfiguration {
     )
   }
   fetchPositionProcessApiResponse(response): FetchPositionResult {
-    assert(response, ApiError.UNSUPPORTED_API_RESPONSE)
+    assert(response, ApiError.EMPTY_API_RESPONSE)
     assert(response.last, ApiError.UNSUPPORTED_API_RESPONSE)
     assert(response.notionalUsd, ApiError.UNSUPPORTED_API_RESPONSE)
     assert(response.margin, ApiError.UNSUPPORTED_API_RESPONSE)
@@ -152,9 +152,7 @@ export class OkexExchangeConfiguration implements ExchangeConfiguration {
   fetchTickerProcessApiResponse(response): FetchTickerResult {
     assert(response, ApiError.UNSUPPORTED_API_RESPONSE)
     assert(response.last, ApiError.UNSUPPORTED_API_RESPONSE)
-    const numberRegex = /-?(?=[1-9]|0(?!\d))\d+(\.\d+)?([eE][+-]?\d+)?/
-    assert(typeof response.last === "string", ApiError.UNSUPPORTED_API_RESPONSE)
-    assert.match(response.last, numberRegex, ApiError.UNSUPPORTED_API_RESPONSE)
+    assert(typeof response.last === "number", ApiError.UNSUPPORTED_API_RESPONSE)
 
     return {
       originalResponseAsIs: response,
