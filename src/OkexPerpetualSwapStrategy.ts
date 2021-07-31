@@ -310,7 +310,7 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
     try {
       let orderSizeInUsd = 0
       let tradeSide: TradeSide = TradeSide.NoTrade
-      const exposureRatio = liabilityInUsd / exposureInUsd
+      const exposureRatio = exposureInUsd / liabilityInUsd
 
       if (exposureRatio < hedgingBounds.LOW_BOUND_RATIO_SHORTING) {
         const newExposureInUsd =
