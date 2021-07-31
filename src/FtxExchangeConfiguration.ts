@@ -139,9 +139,7 @@ export class FtxExchangeConfiguration implements ExchangeConfiguration {
   fetchTickerProcessApiResponse(response): FetchTickerResult {
     assert(response, ApiError.UNSUPPORTED_API_RESPONSE)
     assert(response.last, ApiError.UNSUPPORTED_API_RESPONSE)
-    const numberRegex = /-?(?=[1-9]|0(?!\d))\d+(\.\d+)?([eE][+-]?\d+)?/
-    assert(typeof response.last === "string", ApiError.UNSUPPORTED_API_RESPONSE)
-    assert.match(response.last, numberRegex, ApiError.UNSUPPORTED_API_RESPONSE)
+    assert(typeof response.last === "number", ApiError.UNSUPPORTED_API_RESPONSE)
 
     return {
       originalResponseAsIs: response,
