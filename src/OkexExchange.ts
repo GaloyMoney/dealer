@@ -21,10 +21,11 @@ export class OkexExchange extends ExchangeBase {
     btcPriceInUsd,
   ): Promise<Result<GetAccountAndPositionRiskResult>> {
     try {
-      // OKEx has last price as apart of position data, may forgo input validation
       assert(btcPriceInUsd !== 0, ApiError.NON_POSITIVE_PRICE)
       assert(btcPriceInUsd, ApiError.MISSING_PARAMETERS)
       assert(btcPriceInUsd > 0, ApiError.NON_POSITIVE_PRICE)
+
+      const result = {} as GetAccountAndPositionRiskResult
 
       const positionResult = await this.fetchPosition(this.instrumentId)
       this.logger.debug(
@@ -32,14 +33,23 @@ export class OkexExchange extends ExchangeBase {
         `fetchPosition(${this.instrumentId}) returned: {positionResult}`,
       )
       if (!positionResult.ok) {
-        return { ok: false, error: positionResult.error }
+        if (positionResult.error.message === ApiError.EMPTY_API_RESPONSE) {
+          // No position in the derivative yet
+          result.lastBtcPriceInUsd = btcPriceInUsd
+          result.leverageRatio = 0
+          result.collateralInUsd = 0
+          result.exposureInUsd = 0
+        } else {
+          return { ok: false, error: positionResult.error }
+        }
+      } else {
+        const position = positionResult.value
+        result.originalPositionResponseAsIs = position
+        result.lastBtcPriceInUsd = position.last
+        result.leverageRatio = position.notionalUsd / position.last / position.margin
+        result.collateralInUsd = position.margin * position.last
+        result.exposureInUsd = position.notionalUsd
       }
-      const position = positionResult.value
-
-      const lastBtcPriceInUsd = position.last
-      const leverageRatio = position.notionalUsd / position.last / position.margin
-      const collateralInUsd = position.margin * position.last
-      const exposureInUsd = position.notionalUsd
 
       const balanceResult = await this.fetchBalance()
       this.logger.debug({ balanceResult }, "fetchBalance() returned: {balanceResult}")
@@ -47,18 +57,12 @@ export class OkexExchange extends ExchangeBase {
         return { ok: false, error: balanceResult.error }
       }
       const balance = balanceResult.value
-      const totalAccountValueInUsd = balance.totalEq
+      result.originalBalanceResponseAsIs = balance
+      result.totalAccountValueInUsd = balance.totalEq
 
       return {
         ok: true,
-        value: {
-          originalResponseAsIs: { positionResponse: position, balanceResponse: balance },
-          lastBtcPriceInUsd: lastBtcPriceInUsd,
-          leverageRatio: leverageRatio,
-          collateralInUsd: collateralInUsd,
-          exposureInUsd: exposureInUsd,
-          totalAccountValueInUsd: totalAccountValueInUsd,
-        },
+        value: result,
       }
     } catch (error) {
       return { ok: false, error: error }

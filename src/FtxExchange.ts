@@ -39,7 +39,8 @@ export class FtxExchange extends ExchangeBase {
       return {
         ok: true,
         value: {
-          originalResponseAsIs: response,
+          originalPositionResponseAsIs: response,
+          originalBalanceResponseAsIs: response,
           lastBtcPriceInUsd: btcPriceInUsd,
           leverageRatio: leverage,
           collateralInUsd: response.collateral,

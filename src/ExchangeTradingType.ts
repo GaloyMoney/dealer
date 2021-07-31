@@ -111,7 +111,8 @@ export interface FetchTickerResult {
 }
 
 export interface GetAccountAndPositionRiskResult {
-  originalResponseAsIs
+  originalPositionResponseAsIs
+  originalBalanceResponseAsIs
   lastBtcPriceInUsd: number
   leverageRatio: number
   collateralInUsd: number
@@ -133,6 +134,7 @@ export enum ApiError {
   UNSUPPORTED_INSTRUMENT = "Unsupported Instrument",
   UNSUPPORTED_ADDRESS = "Unsupported Address",
   UNSUPPORTED_API_RESPONSE = "Unsupported API response",
+  EMPTY_API_RESPONSE = "Empty API response",
   MISSING_PARAMETERS = "Missing Parameters",
   NON_POSITIVE_QUANTITY = "Non Positive Quantity",
   INVALID_TRADE_SIDE = "Invalid Trade Side",
