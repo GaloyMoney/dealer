@@ -7,6 +7,8 @@ import { createHedgingStrategy } from "./HedgingStrategyFactory"
 // const activeStrategy = HedgingStrategies.FtxPerpetualSwap
 const activeStrategy = HedgingStrategies.OkexPerpetualSwap
 
+const MINIMUM_POSITIVE_LIABILITY = 1
+
 export class Dealer {
   wallet: DealerMockWallet
   strategy: HedgingStrategy
@@ -23,7 +25,10 @@ export class Dealer {
     if (!result.ok) {
       return NaN
     }
-    return result.value
+    // Wallet usd balance is negative if actual liability,
+    // return additive inverse to deal with positive liability onward
+    const usdLiability = -result.value
+    return usdLiability
   }
 
   async getWalletOnChainAddress(): Promise<string> {
@@ -49,8 +54,9 @@ export class Dealer {
     const btcPriceInUsd = priceResult.value
     const usdLiability = await this.getUsdLiability()
 
-    // Testing for 0 is tricky, assuming we wont hedge below 1.00 USD
-    if (Math.abs(usdLiability) < 1) {
+    // If liability is negative, treat as an asset and do not hedge
+    // If liability is below threshold, do not hedge
+    if (usdLiability < MINIMUM_POSITIVE_LIABILITY) {
       logger.debug({ usdLiability }, "No liabilities to hedge.")
       return
     }
