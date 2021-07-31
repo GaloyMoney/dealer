@@ -91,7 +91,7 @@ export class DealerMockWallet implements GaloyWallet {
     try {
       const result = await this.client.query({ query: GET_ONCHAIN_ADDRESS })
       logger.debug({ result })
-      return { ok: true, value: result.data }
+      return { ok: true, value: result.data.getLastOnChainAddress.id }
     } catch (error) {
       logger.error({ error })
       return { ok: false, error }
