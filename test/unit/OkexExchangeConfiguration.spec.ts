@@ -123,6 +123,51 @@ function getProcessedFetchPositionProcessApiResponse(response) {
   }
 }
 
+function getValidFetchTickerProcessApiResponse() {
+  return {
+    symbol: "BTC-USD-SWAP",
+    timestamp: 1627534560440,
+    datetime: "2021-07-29T04:56:00.440Z",
+    high: 40939.9,
+    low: 38782.6,
+    bid: 40014.1,
+    bidVolume: 60,
+    ask: 40014.2,
+    askVolume: 643,
+    vwap: 0.0025070800649317324,
+    open: 39751.7,
+    close: 40011,
+    last: 40011,
+    baseVolume: 12353898,
+    quoteVolume: 30972.2114,
+    info: {
+      instType: "SWAP",
+      instId: "BTC-USD-SWAP",
+      last: "40011",
+      lastSz: "88",
+      askPx: "40014.2",
+      askSz: "643",
+      bidPx: "40014.1",
+      bidSz: "60",
+      open24h: "39751.7",
+      high24h: "40939.9",
+      low24h: "38782.6",
+      volCcy24h: "30972.2114",
+      vol24h: "12353898",
+      ts: "1627534560440",
+      sodUtc0: "40043.2",
+      sodUtc8: "39708.6",
+    },
+  }
+}
+
+function getProcessedFetchTickerProcessApiResponse(response) {
+  return {
+    originalResponseAsIs: response,
+    lastBtcPriceInUsd: response.last,
+  }
+}
+
 const falsyArgs = [null, undefined, NaN, 0, "", false]
 
 describe("OkexExchangeConfiguration", () => {
@@ -621,7 +666,7 @@ describe("OkexExchangeConfiguration", () => {
       falsyArgs.forEach((response) => {
         expect(() =>
           configuration.fetchPositionProcessApiResponse(response),
-        ).toThrowError(ApiError.UNSUPPORTED_API_RESPONSE)
+        ).toThrowError(ApiError.EMPTY_API_RESPONSE)
       })
     })
 
@@ -702,6 +747,42 @@ describe("OkexExchangeConfiguration", () => {
       const response = getValidFetchPositionProcessApiResponse()
       const expected = getProcessedFetchPositionProcessApiResponse(response)
       const result = configuration.fetchPositionProcessApiResponse(response)
+      expect(result).toEqual(expected)
+    })
+  })
+
+  describe("fetchTickerValidateInput", () => {
+    it("should throw when instrumentId is not supported", async () => {
+      const configuration = new OkexExchangeConfiguration()
+      const id = "wrong"
+      expect(() => configuration.fetchTickerValidateInput(id)).toThrowError(
+        ApiError.UNSUPPORTED_INSTRUMENT,
+      )
+    })
+
+    it("should do nothing when instrumentId is supported", async () => {
+      const configuration = new OkexExchangeConfiguration()
+      const instrumentId = SupportedInstrument.OKEX_PERPETUAL_SWAP
+      const result = configuration.fetchTickerValidateInput(instrumentId)
+      expect(result).toBeUndefined()
+    })
+  })
+
+  describe("fetchTickerProcessApiResponse", () => {
+    it("should throw when response is falsy", async () => {
+      const configuration = new OkexExchangeConfiguration()
+      falsyArgs.forEach((response) => {
+        expect(() => configuration.fetchTickerProcessApiResponse(response)).toThrowError(
+          ApiError.UNSUPPORTED_API_RESPONSE,
+        )
+      })
+    })
+
+    it("should return processed response when response is valid", async () => {
+      const configuration = new OkexExchangeConfiguration()
+      const response = getValidFetchTickerProcessApiResponse()
+      const expected = getProcessedFetchTickerProcessApiResponse(response)
+      const result = configuration.fetchTickerProcessApiResponse(response)
       expect(result).toEqual(expected)
     })
   })
