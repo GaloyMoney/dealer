@@ -79,7 +79,7 @@ export class DealerMockWallet implements GaloyWallet {
     try {
       const result = await this.client.query({ query: WALLET })
       logger.debug({ result })
-      return { ok: true, value: result.data }
+      return { ok: true, value: result.data.wallet.balance.amount }
     } catch (error) {
       logger.error({ error })
       return { ok: false, error }
