@@ -24,6 +24,30 @@ function getValidFetchDepositAddressResponse() {
         selected: true,
       },
       {
+        chain: "BTC-Bitcoin",
+        ctAddr: "",
+        ccy: "BTC",
+        to: "18",
+        addr: "bc1qsd8nldvfc6k6xrx4z604wtldfkpskah77l43jwjexe2uc37zvevqaku65g",
+        selected: true,
+      },
+      {
+        chain: "BTC-Bitcoin",
+        ctAddr: "",
+        ccy: "BTC",
+        to: "18",
+        addr: "3JtDQUOy3vTmtJfg83nXYqRQBb99iW72qi",
+        selected: false,
+      },
+      {
+        chain: "BTC-Lightning",
+        ctAddr: "",
+        ccy: "BTC",
+        to: "18",
+        addr: "lnbc10u1pss2790pp5rcw5a03tqvm5zkwyjl5tul50edd2qv66hek",
+        selected: false,
+      },
+      {
         chain: "BTC-OKExChain_KIP10",
         ctAddr: "",
         ccy: "BTC",
@@ -72,6 +96,24 @@ function getValidWithdrawValidateInput(): WithdrawParameters {
     address: "validAddressString",
   }
   return args
+}
+
+function getValidWithdrawResponse() {
+  return {
+    id: "67485",
+    info: {
+      code: "0",
+      msg: "",
+      data: [
+        {
+          amt: "0.1",
+          wdId: "67485",
+          ccy: "BTC",
+          chain: "BTC-Bitcoin",
+        },
+      ],
+    },
+  }
 }
 
 function getValidCreateMarketOrderValidateInput(): CreateOrderParameters {
@@ -378,9 +420,12 @@ describe("OkexExchangeConfiguration", () => {
       })
     })
 
+    // TODO: add more failure test
+    // TODO: add exchange specific post-processing
+
     it("should do nothing when response is valid", async () => {
       const configuration = new OkexExchangeConfiguration()
-      const response = {}
+      const response = getValidWithdrawResponse()
       const result = configuration.withdrawValidateApiResponse(response)
       expect(result).toBeUndefined()
     })
@@ -390,7 +435,6 @@ describe("OkexExchangeConfiguration", () => {
     it("should throw when arguments is not a supported side property", async () => {
       const configuration = new OkexExchangeConfiguration()
       const args = getValidCreateMarketOrderValidateInput()
-      //   const supportedTradeSide = [TradeSide.Buy, TradeSide.Sell]
       for (const tradeSide in TradeSide) {
         if (tradeSide !== TradeSide.Buy && tradeSide !== TradeSide.Sell) {
           args.side = tradeSide as TradeSide

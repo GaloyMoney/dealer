@@ -144,4 +144,5 @@ export enum ApiError {
   NON_POSITIVE_MARGIN = "Non Positive Margin",
   MISSING_ACCOUNT_VALUE = "Missing Account Value",
   NON_POSITIVE_ACCOUNT_VALUE = "Non Positive Account Value",
+  MISSING_WITHDRAW_ID = "Missing withdraw id",
 }
