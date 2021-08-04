@@ -1,6 +1,11 @@
 import { Result } from "./Result"
 import { btc2sat } from "./utils"
-import { HedgingStrategies, HedgingStrategy } from "./HedgingStrategyTypes"
+import {
+  HedgingStrategies,
+  HedgingStrategy,
+  UpdatedBalance,
+  UpdatedPosition,
+} from "./HedgingStrategyTypes"
 import { DealerMockWallet } from "./DealerMockWallet"
 import { createHedgingStrategy } from "./HedgingStrategyFactory"
 
@@ -8,6 +13,12 @@ import { createHedgingStrategy } from "./HedgingStrategyFactory"
 const activeStrategy = HedgingStrategies.OkexPerpetualSwap
 
 const MINIMUM_POSITIVE_LIABILITY = 1
+
+export type UpdatedPositionAndLeverageResult = {
+  noActionNeeded: boolean
+  updatedPositionResult: Result<UpdatedPosition>
+  updatedLeverageResult: Result<UpdatedBalance>
+}
 
 export class Dealer {
   wallet: DealerMockWallet
@@ -44,32 +55,36 @@ export class Dealer {
     return result.ok
   }
 
-  async updatePositionAndLeverage() {
+  async updatePositionAndLeverage(): Promise<Result<UpdatedPositionAndLeverageResult>> {
     const logger = this.logger.child({ method: "updatePositionAndLeverage()" })
     const priceResult = await this.strategy.getBtcSpotPriceInUsd()
     if (!priceResult.ok) {
       logger.error({ error: priceResult.error }, "Cannot get BTC spot price.")
-      return
+      return { ok: false, error: priceResult.error }
     }
     const btcPriceInUsd = priceResult.value
     const usdLiability = await this.getUsdLiability()
+
+    const result = {} as UpdatedPositionAndLeverageResult
 
     // If liability is negative, treat as an asset and do not hedge
     // If liability is below threshold, do not hedge
     if (usdLiability < MINIMUM_POSITIVE_LIABILITY) {
       logger.debug({ usdLiability }, "No liabilities to hedge.")
-      return
+      result.noActionNeeded = true
+      return { ok: true, value: result }
     }
 
     logger.debug("starting with order loop")
 
-    const updatedPosition = await this.strategy.updatePosition(
+    const updatedPositionResult = await this.strategy.updatePosition(
       usdLiability,
       btcPriceInUsd,
     )
-    if (updatedPosition.ok) {
-      const originalPosition = updatedPosition.value.originalPosition
-      const newPosition = updatedPosition.value.newPosition
+    result.updatedPositionResult = updatedPositionResult
+    if (updatedPositionResult.ok) {
+      const originalPosition = updatedPositionResult.value.originalPosition
+      const newPosition = updatedPositionResult.value.newPosition
 
       logger.info(
         `The active ${activeStrategy} strategy was successful at UpdatePosition()`,
@@ -84,7 +99,7 @@ export class Dealer {
       )
     } else {
       logger.error(
-        { updatedPosition },
+        { updatedPosition: updatedPositionResult },
         `The active ${activeStrategy} strategy failed during the UpdatePosition() execution`,
       )
     }
@@ -100,6 +115,7 @@ export class Dealer {
       this.withdrawBookKeeping,
       this.depositOnExchangeCallback,
     )
+    result.updatedLeverageResult = updatedLeverageResult
     if (updatedLeverageResult.ok) {
       const updatedLeverage = updatedLeverageResult.value
       logger.info(
@@ -111,6 +127,12 @@ export class Dealer {
         { updatedLeverageResult },
         `The active ${activeStrategy} strategy failed during the UpdateLeverage() execution`,
       )
+    }
+
+    if (result.updatedPositionResult.ok && result.updatedLeverageResult.ok) {
+      return { ok: true, value: result }
+    } else {
+      return { ok: false, error: new Error() }
     }
   }
 
