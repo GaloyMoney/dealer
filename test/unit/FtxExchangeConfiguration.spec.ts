@@ -409,7 +409,6 @@ describe("FtxExchangeConfiguration", () => {
   })
 
   describe("privateGetAccountValidateCall", () => {
-    //
     it("should do nothing and return without error", async () => {
       const configuration = new FtxExchangeConfiguration()
       const result = configuration.privateGetAccountValidateCall()
@@ -599,7 +598,6 @@ describe("FtxExchangeConfiguration", () => {
   })
 
   describe("fetchBalanceValidateCall", () => {
-    //
     it("should throw not supported for now", async () => {
       const configuration = new FtxExchangeConfiguration()
       expect(() => configuration.fetchBalanceValidateCall()).toThrowError(
@@ -609,7 +607,6 @@ describe("FtxExchangeConfiguration", () => {
   })
 
   describe("fetchBalanceProcessApiResponse", () => {
-    //
     it("should throw not supported for ftx", async () => {
       const configuration = new FtxExchangeConfiguration()
       const response = {}
@@ -620,7 +617,6 @@ describe("FtxExchangeConfiguration", () => {
   })
 
   describe("fetchPositionValidateInput", () => {
-    //
     it("should throw not supported for ftx", async () => {
       const configuration = new FtxExchangeConfiguration()
       const id = ""
@@ -631,7 +627,6 @@ describe("FtxExchangeConfiguration", () => {
   })
 
   describe("fetchPositionProcessApiResponse", () => {
-    //
     it("should throw not supported for ftx", async () => {
       const configuration = new FtxExchangeConfiguration()
       const response = {}
