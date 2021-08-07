@@ -8,6 +8,7 @@ import {
 } from "./HedgingStrategyTypes"
 import { DealerMockWallet } from "./DealerMockWallet"
 import { createHedgingStrategy } from "./HedgingStrategyFactory"
+import { InFlightTransfer, InFlightTransferStatus } from "./InFlightTransfer"
 
 // const activeStrategy = HedgingStrategies.FtxPerpetualSwap
 const activeStrategy = HedgingStrategies.OkexPerpetualSwap
@@ -15,7 +16,7 @@ const activeStrategy = HedgingStrategies.OkexPerpetualSwap
 const MINIMUM_POSITIVE_LIABILITY = 1
 
 export type UpdatedPositionAndLeverageResult = {
-  noActionNeeded: boolean
+  updatePositionSkipped: boolean
   updatedPositionResult: Result<UpdatedPosition>
   updatedLeverageResult: Result<UpdatedBalance>
 }
@@ -31,82 +32,78 @@ export class Dealer {
     this.logger = logger.child({ topic: "dealer" })
   }
 
-  async getUsdLiability(): Promise<number> {
-    const result = await this.wallet.getWalletUsdBalance()
-    if (!result.ok) {
-      return NaN
-    }
-    // Wallet usd balance is negative if actual liability,
-    // return additive inverse to deal with positive liability onward
-    const usdLiability = -result.value
-    return usdLiability
-  }
-
-  async getWalletOnChainAddress(): Promise<string> {
-    const result = await this.wallet.getWalletOnChainDepositAddress()
-    if (!result.ok) {
-      return ""
-    }
-    return result.value
-  }
-
-  async onChainPay({ address, btcAmountInSats, memo }): Promise<boolean> {
-    const result = await this.wallet.payOnChain(address, btcAmountInSats, memo)
-    return result.ok
-  }
-
   async updatePositionAndLeverage(): Promise<Result<UpdatedPositionAndLeverageResult>> {
     const logger = this.logger.child({ method: "updatePositionAndLeverage()" })
+
+    // Check and update saved payment in-flight info
+
     const priceResult = await this.strategy.getBtcSpotPriceInUsd()
     if (!priceResult.ok) {
       logger.error({ error: priceResult.error }, "Cannot get BTC spot price.")
       return { ok: false, error: priceResult.error }
     }
     const btcPriceInUsd = priceResult.value
-    const usdLiability = await this.getUsdLiability()
-
-    const result = {} as UpdatedPositionAndLeverageResult
+    const usdLiabilityResult = await this.wallet.getWalletUsdBalance()
 
     // If liability is negative, treat as an asset and do not hedge
     // If liability is below threshold, do not hedge
-    if (usdLiability < MINIMUM_POSITIVE_LIABILITY) {
-      logger.debug({ usdLiability }, "No liabilities to hedge.")
-      result.noActionNeeded = true
-      return { ok: true, value: result }
+    if (!usdLiabilityResult.ok || Number.isNaN(usdLiabilityResult.value)) {
+      const message = "Liabilities is unavailable or NaN."
+      logger.debug({ usdLiabilityResult }, message)
+      return { ok: false, error: new Error(message) }
     }
 
-    logger.debug("starting with order loop")
+    // Wallet usd balance is negative if actual liability,
+    // return additive inverse to deal with positive liability onward
+    const usdLiability = -usdLiabilityResult.value
 
-    const updatedPositionResult = await this.strategy.updatePosition(
-      usdLiability,
-      btcPriceInUsd,
-    )
-    result.updatedPositionResult = updatedPositionResult
-    if (updatedPositionResult.ok) {
-      const originalPosition = updatedPositionResult.value.originalPosition
-      const newPosition = updatedPositionResult.value.newPosition
+    const result = {} as UpdatedPositionAndLeverageResult
 
-      logger.info(
-        `The active ${activeStrategy} strategy was successful at UpdatePosition()`,
-      )
-      logger.debug(
-        { originalPosition },
-        `Position BEFORE ${activeStrategy} strategy executed UpdatePosition()`,
-      )
-      logger.debug(
-        { newPosition },
-        `Position AFTER ${activeStrategy} strategy executed UpdatePosition()`,
-      )
+    if (usdLiability < MINIMUM_POSITIVE_LIABILITY) {
+      logger.debug({ usdLiability }, "No liabilities to hedge, skipping the order loop")
+      result.updatePositionSkipped = true
     } else {
-      logger.error(
-        { updatedPosition: updatedPositionResult },
-        `The active ${activeStrategy} strategy failed during the UpdatePosition() execution`,
+      logger.debug("starting with order loop")
+
+      const updatedPositionResult = await this.strategy.updatePosition(
+        usdLiability,
+        btcPriceInUsd,
       )
+      result.updatedPositionResult = updatedPositionResult
+      if (updatedPositionResult.ok) {
+        const originalPosition = updatedPositionResult.value.originalPosition
+        const updatedPosition = updatedPositionResult.value.updatedPosition
+
+        logger.info(
+          { originalPosition, updatedPosition },
+          `The active ${activeStrategy} strategy was successful at UpdatePosition()`,
+        )
+        logger.debug(
+          { originalPosition },
+          `Position BEFORE ${activeStrategy} strategy executed UpdatePosition()`,
+        )
+        logger.debug(
+          { updatedPosition },
+          `Position AFTER ${activeStrategy} strategy executed UpdatePosition()`,
+        )
+      } else {
+        logger.error(
+          { updatedPosition: updatedPositionResult },
+          `The active ${activeStrategy} strategy failed during the UpdatePosition() execution`,
+        )
+      }
     }
 
     logger.debug("starting with rebalance loop")
 
-    const withdrawOnChainAddress = await this.getWalletOnChainAddress()
+    const withdrawOnChainAddressResult =
+      await this.wallet.getWalletOnChainDepositAddress()
+    if (!withdrawOnChainAddressResult.ok || !withdrawOnChainAddressResult.value) {
+      const message = "WalletOnChainAddress is unavailable or invalid."
+      logger.debug({ withdrawOnChainAddressResult }, message)
+      return { ok: false, error: new Error(message) }
+    }
+    const withdrawOnChainAddress = withdrawOnChainAddressResult.value
 
     const updatedLeverageResult = await this.strategy.updateLeverage(
       usdLiability,
@@ -129,7 +126,10 @@ export class Dealer {
       )
     }
 
-    if (result.updatedPositionResult.ok && result.updatedLeverageResult.ok) {
+    if (
+      (result.updatePositionSkipped || result.updatedPositionResult.ok) &&
+      result.updatedLeverageResult.ok
+    ) {
       return { ok: true, value: result }
     } else {
       return { ok: false, error: new Error() }
@@ -143,13 +143,28 @@ export class Dealer {
     try {
       const memo = `deposit of ${transferSizeInBtc} btc to ${activeStrategy}`
       const transferSizeInSats = btc2sat(transferSizeInBtc)
-      await this.onChainPay({
-        address: onChainAddress,
-        btcAmountInSats: transferSizeInSats,
+      const payOnChainResult = await this.wallet.payOnChain(
+        onChainAddress,
+        transferSizeInSats,
         memo,
-      })
+      )
 
-      return { ok: true, value: undefined }
+      if (payOnChainResult.ok) {
+        // Save payment in-flight info
+        const transfer = new InFlightTransfer(
+          onChainAddress,
+          transferSizeInSats,
+          memo,
+          InFlightTransferStatus.PENDING,
+          this.logger,
+        )
+        transfer.save()
+
+        return { ok: true, value: undefined }
+      } else {
+        this.logger.debug({ payOnChainResult }, "WalletOnChainPay failed.")
+        return { ok: false, error: payOnChainResult.error }
+      }
     } catch (error) {
       return { ok: false, error: error }
     }
@@ -160,6 +175,8 @@ export class Dealer {
       const memo = `withdrawal of ${transferSizeInBtc} btc from ${activeStrategy}`
       const transferSizeInSats = btc2sat(transferSizeInBtc)
       this.logger.info({ transferSizeInSats, memo }, "withdrawBookKeeping")
+
+      // Save payment in-flight info
 
       return { ok: true, value: undefined }
     } catch (error) {
