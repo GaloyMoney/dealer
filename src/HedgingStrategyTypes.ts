@@ -15,7 +15,7 @@ export type Position = {
 
 export type UpdatedPosition = {
   originalPosition: Position
-  newPosition: Position
+  updatedPosition: Position
 }
 
 export type UpdatedBalance = {

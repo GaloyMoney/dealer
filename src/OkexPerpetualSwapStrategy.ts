@@ -6,6 +6,7 @@ import {
   TradeType,
   FundTransferSide,
   OrderStatus,
+  FundTransferStatus,
   GetAccountAndPositionRiskResult,
   TradeCurrency,
 } from "./ExchangeTradingType"
@@ -146,7 +147,7 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
       const updatedRisk = confirmRiskAndOrderResult.value.risk
       const confirmationOrder = confirmRiskAndOrderResult.value.order
 
-      updatedPosition.newPosition = updatedRisk
+      updatedPosition.updatedPosition = updatedRisk
 
       if (!isSimulation && confirmationOrder.out.tradeSide !== TradeSide.NoTrade) {
         return {
@@ -240,7 +241,8 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
         }
         const withdrawalResponse = withdrawalResult.value
 
-        if (withdrawalResponse.status === "requested") {
+        // TODO: might want to check the withdrawalResponse.id instead
+        if (withdrawalResponse.status === FundTransferStatus.Requested) {
           // TODO: wait until request succeed before updating tx
 
           const bookingResult = withdrawBookKeepingCallback(transferSizeInBtc)
