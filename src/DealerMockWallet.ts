@@ -8,6 +8,7 @@ import {
   InMemoryCache,
 } from "@apollo/client/core"
 import fetch from "node-fetch"
+import { pino } from "pino"
 
 const IN_MEMORY_CACHE_CONFIG = {
   typePolicies: {
@@ -64,9 +65,9 @@ const ONCHAIN_PAY = gql`
 
 export class DealerMockWallet implements GaloyWallet {
   client: ApolloClient<NormalizedCacheObject>
-  logger
+  logger: pino.Logger
 
-  constructor(logger) {
+  constructor(logger: pino.Logger) {
     const GRAPHQL_URI = process.env["GRAPHQL_URI"]
     const httpLink = createHttpLink({ uri: GRAPHQL_URI, fetch })
     const cache = new InMemoryCache(IN_MEMORY_CACHE_CONFIG)
