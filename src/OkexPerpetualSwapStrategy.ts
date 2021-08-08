@@ -79,6 +79,26 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
     }
   }
 
+  public async isDepositCompleted(
+    address: string,
+    amountInSats: number,
+  ): Promise<Result<boolean>> {
+    //
+    this.logger.error(`Not implemented isDepositCompleted(${address}, ${amountInSats})`)
+    return { ok: true, value: false }
+  }
+
+  public async isWithdrawalCompleted(
+    address: string,
+    amountInSats: number,
+  ): Promise<Result<boolean>> {
+    //
+    this.logger.error(
+      `Not implemented isWithdrawalCompleted(${address}, ${amountInSats})`,
+    )
+    return { ok: true, value: false }
+  }
+
   public async updatePosition(
     liabilityInUsd,
     btcPriceInUsd,
@@ -245,7 +265,10 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
         if (withdrawalResponse.status === FundTransferStatus.Requested) {
           // TODO: wait until request succeed before updating tx
 
-          const bookingResult = withdrawBookKeepingCallback(transferSizeInBtc)
+          const bookingResult = withdrawBookKeepingCallback(
+            withdrawOnChainAddress,
+            transferSizeInBtc,
+          )
           this.logger.debug(
             { transferSizeInBtc, bookingResult },
             "withdrawBookKeepingCallback() returned: {depositResult}",

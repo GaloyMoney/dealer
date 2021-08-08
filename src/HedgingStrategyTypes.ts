@@ -26,7 +26,7 @@ export type UpdatedBalance = {
 }
 
 export interface WithdrawBookKeepingCallback {
-  (transferSizeInBtc: number): Promise<Result<void>>
+  (onChainAddress, transferSizeInBtc: number): Promise<Result<void>>
 }
 
 export interface DepositOnExchangeCallback {
@@ -35,6 +35,8 @@ export interface DepositOnExchangeCallback {
 
 export interface HedgingStrategy {
   getBtcSpotPriceInUsd(): Promise<Result<number>>
+  isDepositCompleted(address: string, amountInSats: number): Promise<Result<boolean>>
+  isWithdrawalCompleted(address: string, amountInSats: number): Promise<Result<boolean>>
   updatePosition(
     liabilityInUsd: number,
     btcPriceInUsd: number,

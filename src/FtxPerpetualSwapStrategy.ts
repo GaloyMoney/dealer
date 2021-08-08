@@ -39,6 +39,26 @@ export class FtxPerpetualSwapStrategy implements HedgingStrategy {
     }
   }
 
+  public async isDepositCompleted(
+    address: string,
+    amountInSats: number,
+  ): Promise<Result<boolean>> {
+    //
+    this.logger.error(`Not implemented isDepositCompleted(${address}, ${amountInSats})`)
+    return { ok: true, value: false }
+  }
+
+  public async isWithdrawalCompleted(
+    address: string,
+    amountInSats: number,
+  ): Promise<Result<boolean>> {
+    //
+    this.logger.error(
+      `Not implemented isWithdrawalCompleted(${address}, ${amountInSats})`,
+    )
+    return { ok: true, value: false }
+  }
+
   public async updatePosition(
     usdLiability,
     btcPriceInUsd,
