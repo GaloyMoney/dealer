@@ -11,6 +11,8 @@ import {
   FetchPositionResult,
   FetchTickerResult,
   FetchBalanceResult,
+  FetchDepositsResult,
+  FetchWithdrawalsResult,
 } from "./ExchangeTradingType"
 import { Result } from "./Result"
 import ccxt, { ExchangeId } from "ccxt"
@@ -66,6 +68,62 @@ export abstract class ExchangeBase {
     }
   }
 
+  public async fetchDeposits(
+    address: string,
+    amountInSats: number,
+  ): Promise<Result<FetchDepositsResult>> {
+    try {
+      this.exchangeConfig.fetchDepositsValidateInput(address, amountInSats)
+
+      // No way to filter on request, so get them all...
+      const response = await this.fetchDepositsAllPages()
+      this.logger.debug(
+        { response },
+        `exchange.fetchDeposits(${address}, ${amountInSats}) returned: {response}`,
+      )
+
+      // ...then filter
+      const result = this.exchangeConfig.fetchDepositsProcessApiResponse(
+        address,
+        amountInSats,
+        response,
+      )
+
+      return {
+        ok: true,
+        value: result,
+      }
+    } catch (error) {
+      return { ok: false, error: error }
+    }
+  }
+
+  private async fetchDepositsAllPages() {
+    let page = 0
+    const allDeposits: unknown[] = []
+    const one = true
+    while (one) {
+      const code = undefined
+      const since = undefined
+      const limit = 100
+      const params = {
+        page: page,
+      }
+      const deposits = await this.exchange.fetchDeposits(code, since, limit, params)
+      if (deposits.length) {
+        page = this.exchange.last_json_response["cursor"]
+        console.log(`Got fetchDeposits() page=${page}`)
+        allDeposits.push(deposits)
+        if (!page) {
+          break
+        }
+      } else {
+        break
+      }
+    }
+    return allDeposits
+  }
+
   public async withdraw(args: WithdrawParameters): Promise<Result<WithdrawResult>> {
     try {
       this.exchangeConfig.withdrawValidateInput(args)
@@ -92,6 +150,61 @@ export abstract class ExchangeBase {
     } catch (error) {
       return { ok: false, error: error }
     }
+  }
+
+  public async fetchWithdrawals(
+    address: string,
+    amountInSats: number,
+  ): Promise<Result<FetchWithdrawalsResult>> {
+    try {
+      this.exchangeConfig.fetchWithdrawalsValidateInput(address, amountInSats)
+
+      // No way to filter on request, so get them all...
+      const response = await this.fetchWithdrawalsAllPages()
+      this.logger.debug(
+        { response },
+        `exchange.fetchWithdrawals(${address}, ${amountInSats}) returned: {response}`,
+      )
+
+      // ...then filter
+      const result = this.exchangeConfig.fetchWithdrawalsProcessApiResponse(
+        address,
+        amountInSats,
+        response,
+      )
+
+      return {
+        ok: true,
+        value: result,
+      }
+    } catch (error) {
+      return { ok: false, error: error }
+    }
+  }
+
+  private async fetchWithdrawalsAllPages() {
+    let page = 0
+    const allWithdrawals: unknown[] = []
+    const one = true
+    while (one) {
+      const code = undefined
+      const since = undefined
+      const limit = 100
+      const params = {
+        page: page,
+      }
+      const withdrawals = await this.exchange.fetchWithdrawals(code, since, limit, params)
+      if (withdrawals.length) {
+        page = this.exchange.last_json_response["cursor"]
+        allWithdrawals.push(withdrawals)
+        if (!page) {
+          break
+        }
+      } else {
+        break
+      }
+    }
+    return allWithdrawals
   }
 
   public async createMarketOrder(

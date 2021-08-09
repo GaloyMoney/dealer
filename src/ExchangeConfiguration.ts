@@ -6,6 +6,8 @@ import {
   FetchBalanceResult,
   FetchPositionResult,
   FetchTickerResult,
+  FetchDepositsResult,
+  FetchWithdrawalsResult,
   //   GetAccountAndPositionRiskResult,
   //   GetInstrumentDetailsResult,
 } from "./ExchangeTradingType"
@@ -27,8 +29,22 @@ export interface ExchangeConfiguration {
   fetchDepositAddressValidateInput(currency: string)
   fetchDepositAddressProcessApiResponse(response): FetchDepositAddressResult
 
+  fetchDepositsValidateInput(address: string, amountInSats: number)
+  fetchDepositsProcessApiResponse(
+    address: string,
+    amountInSats: number,
+    response,
+  ): FetchDepositsResult
+
   withdrawValidateInput(args: WithdrawParameters)
   withdrawValidateApiResponse(response)
+
+  fetchWithdrawalsValidateInput(address: string, amountInSats: number)
+  fetchWithdrawalsProcessApiResponse(
+    address: string,
+    amountInSats: number,
+    response,
+  ): FetchWithdrawalsResult
 
   createMarketOrderValidateInput(args: CreateOrderParameters)
   createMarketOrderValidateApiResponse(response)

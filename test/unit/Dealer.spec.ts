@@ -5,6 +5,9 @@ import { SupportedExchange } from "src/ExchangeConfiguration"
 import { OkexExchangeMockBuilder } from "../mocks/OkexExchangeMockBuilder"
 
 beforeAll(async () => {
+  // Init non-simulation for the tests
+  process.env["HEDGING_NOT_IN_SIMULATION"] = "TRUE"
+
   // Init exchange secrets
   for (const exchangeId in SupportedExchange) {
     process.env[`${exchangeId.toUpperCase()}_KEY`] = exchangeId
@@ -96,6 +99,11 @@ describe("Dealer", () => {
       const result = await dealer.updatePositionAndLeverage()
       console.log(JSON.stringify(result))
       expect(result.ok).toBeTruthy()
+      if (result.ok && result.value.updatedLeverageResult.ok) {
+        const updatedLeverage = result.value.updatedLeverageResult.value
+        expect(updatedLeverage.originalLeverageRatio).toBeNaN
+        expect(updatedLeverage.newLeverageRatio).toBeNaN
+      }
     })
   })
 })

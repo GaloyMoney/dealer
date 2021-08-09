@@ -257,7 +257,7 @@ export class OkexExchangeMockBuilder {
     this.walletMockObject.getWalletOnChainDepositAddress.mockImplementationOnce(
       (): Result<string> => {
         const datetime = dateFormat(new Date(), DATE_FORMAT_STRING)
-        const address = `bc1q00walle00000000000000000000000000000datetime${datetime}`
+        const address = `bc1q00wallet0000000000000000000000000000datetime${datetime}`
         return { ok: true, value: address }
       },
     )

@@ -23,7 +23,7 @@ export interface TradeOrder {
 export enum FundTransferSide {
   Withdraw = "withdraw",
   Deposit = "deposit",
-  NoTransfer = "",
+  NoTransfer = "no_transfer",
 }
 
 export enum FundTransferStatus {
@@ -58,6 +58,14 @@ export interface FetchDepositAddressResult {
   address: string
 }
 
+export interface FetchDepositsResult {
+  originalResponseAsIs
+  currency: TradeCurrency
+  address: string
+  amount: number
+  status: FundTransferStatus
+}
+
 export interface WithdrawParameters {
   currency: TradeCurrency
   quantity: number
@@ -66,6 +74,14 @@ export interface WithdrawParameters {
 
 export interface WithdrawResult {
   originalResponseAsIs
+  status: FundTransferStatus
+}
+
+export interface FetchWithdrawalsResult {
+  originalResponseAsIs
+  currency: TradeCurrency
+  address: string
+  amount: number
   status: FundTransferStatus
 }
 

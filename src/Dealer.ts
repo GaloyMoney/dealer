@@ -81,7 +81,7 @@ export class Dealer {
           const result = this.database.completedInFlightTransfers(address)
           if (!result.ok) {
             const message =
-              "Failed to update database on completed withdraw from exchange"
+              "Failed to update database on completed withdrawal from exchange"
             logger.debug({ result, transfer }, message)
           }
         }
