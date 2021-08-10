@@ -58,6 +58,11 @@ export interface FetchDepositAddressResult {
   address: string
 }
 
+export interface FetchDepositsParameters {
+  address: string
+  amountInSats: number
+}
+
 export interface FetchDepositsResult {
   originalResponseAsIs
   currency: TradeCurrency
@@ -75,6 +80,11 @@ export interface WithdrawParameters {
 export interface WithdrawResult {
   originalResponseAsIs
   status: FundTransferStatus
+}
+
+export interface FetchWithdrawalsParameters {
+  address: string
+  amountInSats: number
 }
 
 export interface FetchWithdrawalsResult {

@@ -45,7 +45,7 @@ export class FtxPerpetualSwapStrategy implements HedgingStrategy {
     address: string,
     amountInSats: number,
   ): Promise<Result<boolean>> {
-    const result = await this.exchange.fetchDeposits(address, amountInSats)
+    const result = await this.exchange.fetchDeposits({ address, amountInSats })
     if (!result.ok) {
       return result
     }
@@ -69,7 +69,7 @@ export class FtxPerpetualSwapStrategy implements HedgingStrategy {
     address: string,
     amountInSats: number,
   ): Promise<Result<boolean>> {
-    const result = await this.exchange.fetchWithdrawals(address, amountInSats)
+    const result = await this.exchange.fetchWithdrawals({ address, amountInSats })
     if (!result.ok) {
       return result
     }

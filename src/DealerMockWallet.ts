@@ -79,10 +79,16 @@ export class DealerMockWallet implements GaloyWallet {
     const logger = this.logger.child({ method: "getWalletUsdBalance()" })
     try {
       const result = await this.client.query({ query: WALLET })
-      logger.debug({ result })
+      logger.debug(
+        { WALLET, result },
+        "{WALLET} query to galoy graphql api successful with {result}",
+      )
       return { ok: true, value: result.data.wallet.balance.amount }
     } catch (error) {
-      logger.error({ error })
+      logger.error(
+        { WALLET, error },
+        "{WALLET} query to galoy graphql api failed with {error}",
+      )
       return { ok: false, error }
     }
   }
@@ -91,10 +97,16 @@ export class DealerMockWallet implements GaloyWallet {
     const logger = this.logger.child({ method: "getWalletOnChainDepositAddress()" })
     try {
       const result = await this.client.query({ query: GET_ONCHAIN_ADDRESS })
-      logger.debug({ result })
+      logger.debug(
+        { GET_ONCHAIN_ADDRESS, result },
+        "{GET_ONCHAIN_ADDRESS} query to galoy graphql api successful with {result}",
+      )
       return { ok: true, value: result.data.getLastOnChainAddress.id }
     } catch (error) {
-      logger.error({ error })
+      logger.error(
+        { GET_ONCHAIN_ADDRESS, error },
+        "{GET_ONCHAIN_ADDRESS} query to galoy graphql api failed with {error}",
+      )
       return { ok: false, error }
     }
   }
@@ -111,10 +123,16 @@ export class DealerMockWallet implements GaloyWallet {
         mutation: ONCHAIN_PAY,
         variables: variables,
       })
-      logger.debug({ variables, result })
+      logger.debug(
+        { ONCHAIN_PAY, variables, result },
+        "{ONCHAIN_PAY} mutation with {variables} to galoy graphql api successful with {result}",
+      )
       return { ok: true, value: undefined }
     } catch (error) {
-      logger.error({ error })
+      logger.error(
+        { ONCHAIN_PAY, error },
+        "{ONCHAIN_PAY} mutation to galoy graphql api failed with {error}",
+      )
       return { ok: false, error }
     }
   }

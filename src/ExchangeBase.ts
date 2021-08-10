@@ -13,6 +13,8 @@ import {
   FetchBalanceResult,
   FetchDepositsResult,
   FetchWithdrawalsResult,
+  FetchWithdrawalsParameters,
+  FetchDepositsParameters,
 } from "./ExchangeTradingType"
 import { Result } from "./Result"
 import ccxt, { ExchangeId } from "ccxt"
@@ -53,8 +55,8 @@ export abstract class ExchangeBase {
 
       const response = await this.exchange.fetchDepositAddress(currency)
       this.logger.debug(
-        { response },
-        `exchange.fetchDepositAddress(${currency}) returned: {response}`,
+        { currency, response },
+        "exchange.fetchDepositAddress({currency}) returned: {response}",
       )
 
       const result = this.exchangeConfig.fetchDepositAddressProcessApiResponse(response)
@@ -69,25 +71,20 @@ export abstract class ExchangeBase {
   }
 
   public async fetchDeposits(
-    address: string,
-    amountInSats: number,
+    args: FetchDepositsParameters,
   ): Promise<Result<FetchDepositsResult>> {
     try {
-      this.exchangeConfig.fetchDepositsValidateInput(address, amountInSats)
+      this.exchangeConfig.fetchDepositsValidateInput(args)
 
       // No way to filter on request, so get them all...
       const response = await this.fetchDepositsAllPages()
       this.logger.debug(
-        { response },
-        `exchange.fetchDeposits(${address}, ${amountInSats}) returned: {response}`,
+        { args, response },
+        "exchange.fetchDeposits({args}) returned: {response}",
       )
 
       // ...then filter
-      const result = this.exchangeConfig.fetchDepositsProcessApiResponse(
-        address,
-        amountInSats,
-        response,
-      )
+      const result = this.exchangeConfig.fetchDepositsProcessApiResponse(args, response)
 
       return {
         ok: true,
@@ -112,7 +109,6 @@ export abstract class ExchangeBase {
       const deposits = await this.exchange.fetchDeposits(code, since, limit, params)
       if (deposits.length) {
         page = this.exchange.last_json_response["cursor"]
-        console.log(`Got fetchDeposits() page=${page}`)
         allDeposits.push(deposits)
         if (!page) {
           break
@@ -134,8 +130,8 @@ export abstract class ExchangeBase {
         args.address,
       )
       this.logger.debug(
-        { response },
-        `exchange.withdraw(${args.currency}, ${args.quantity}, ${args.address}) returned: {response}`,
+        { args, response },
+        "exchange.withdraw({args}) returned: {response}",
       )
 
       this.exchangeConfig.withdrawValidateApiResponse(response)
@@ -153,23 +149,21 @@ export abstract class ExchangeBase {
   }
 
   public async fetchWithdrawals(
-    address: string,
-    amountInSats: number,
+    args: FetchWithdrawalsParameters,
   ): Promise<Result<FetchWithdrawalsResult>> {
     try {
-      this.exchangeConfig.fetchWithdrawalsValidateInput(address, amountInSats)
+      this.exchangeConfig.fetchWithdrawalsValidateInput(args)
 
       // No way to filter on request, so get them all...
       const response = await this.fetchWithdrawalsAllPages()
       this.logger.debug(
-        { response },
-        `exchange.fetchWithdrawals(${address}, ${amountInSats}) returned: {response}`,
+        { args, response },
+        "exchange.fetchWithdrawals({args}) returned: {response}",
       )
 
       // ...then filter
       const result = this.exchangeConfig.fetchWithdrawalsProcessApiResponse(
-        address,
-        amountInSats,
+        args,
         response,
       )
 
@@ -215,8 +209,8 @@ export abstract class ExchangeBase {
 
       const response = await this.exchange.createMarketOrder(args.side, args.quantity)
       this.logger.debug(
-        { response },
-        `exchange.createMarketOrder(${args.side}, ${args.quantity}) returned: {response}`,
+        { args, response },
+        "exchange.createMarketOrder({args}) returned: {response}",
       )
 
       this.exchangeConfig.createMarketOrderValidateApiResponse(response)
@@ -239,7 +233,10 @@ export abstract class ExchangeBase {
 
       // call api
       const response = await this.exchange.fetchOrder(id)
-      this.logger.debug({ response }, `exchange.fetchOrder(${id}) returned: {response}`)
+      this.logger.debug(
+        { id, response },
+        "exchange.fetchOrder({id}) returned: {response}",
+      )
 
       this.exchangeConfig.fetchOrderValidateApiResponse(response)
 
@@ -260,7 +257,7 @@ export abstract class ExchangeBase {
       this.exchangeConfig.privateGetAccountValidateCall()
 
       const response = await this.exchange.privateGetAccount()
-      this.logger.debug({ response }, `exchange.privateGetAccount() returned: {response}`)
+      this.logger.debug({ response }, "exchange.privateGetAccount() returned: {response}")
 
       const result = this.exchangeConfig.privateGetAccountProcessApiResponse(response)
 
@@ -297,8 +294,8 @@ export abstract class ExchangeBase {
 
       const response = await this.exchange.fetchPosition(instrumentId)
       this.logger.debug(
-        { response },
-        `exchange.fetchPosition(${instrumentId}) returned: {response}`,
+        { instrumentId, response },
+        "exchange.fetchPosition({instrumentId}) returned: {response}",
       )
 
       const result = this.exchangeConfig.fetchPositionProcessApiResponse(response)
@@ -318,8 +315,8 @@ export abstract class ExchangeBase {
 
       const response = await this.exchange.fetchTicker(instrumentId)
       this.logger.debug(
-        { response },
-        `exchange.fetchTicker(${instrumentId}) returned: {response}`,
+        { instrumentId, response },
+        "exchange.fetchTicker({instrumentId}) returned: {response}",
       )
 
       const result = this.exchangeConfig.fetchTickerProcessApiResponse(response)

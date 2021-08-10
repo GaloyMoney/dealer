@@ -143,21 +143,21 @@ export class Dealer {
         const updatedPosition = updatedPositionResult.value.updatedPosition
 
         logger.info(
-          { originalPosition, updatedPosition },
-          `The active ${activeStrategy} strategy was successful at UpdatePosition()`,
+          { activeStrategy, originalPosition, updatedPosition },
+          "The {activeStrategy} was successful at UpdatePosition()",
         )
         logger.debug(
-          { originalPosition },
-          `Position BEFORE ${activeStrategy} strategy executed UpdatePosition()`,
+          { activeStrategy, originalPosition },
+          "Position BEFORE {activeStrategy} executed UpdatePosition()",
         )
         logger.debug(
-          { updatedPosition },
-          `Position AFTER ${activeStrategy} strategy executed UpdatePosition()`,
+          { activeStrategy, updatedPosition },
+          "Position AFTER {activeStrategy} executed UpdatePosition()",
         )
       } else {
         logger.error(
-          { updatedPosition: updatedPositionResult },
-          `The active ${activeStrategy} strategy failed during the UpdatePosition() execution`,
+          { activeStrategy, updatedPosition: updatedPositionResult },
+          "The {activeStrategy} failed during the UpdatePosition() execution",
         )
       }
     }
@@ -187,13 +187,13 @@ export class Dealer {
       if (updatedLeverageResult.ok) {
         const updatedLeverage = updatedLeverageResult.value
         logger.info(
-          { updatedLeverage },
-          `The active ${activeStrategy} strategy was successful at UpdateLeverage()`,
+          { activeStrategy, updatedLeverage },
+          "The active {activeStrategy} was successful at UpdateLeverage()",
         )
       } else {
         logger.error(
-          { updatedLeverageResult },
-          `The active ${activeStrategy} strategy failed during the UpdateLeverage() execution`,
+          { activeStrategy, updatedLeverageResult },
+          "The active {activeStrategy} failed during the UpdateLeverage() execution",
         )
       }
     } else {

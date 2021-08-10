@@ -14,6 +14,8 @@ import {
   FetchTickerResult,
   FetchDepositsResult,
   FetchWithdrawalsResult,
+  FetchDepositsParameters,
+  FetchWithdrawalsParameters,
 } from "./ExchangeTradingType"
 import assert from "assert"
 import {
@@ -21,7 +23,7 @@ import {
   SupportedExchange,
   SupportedInstrument,
 } from "./ExchangeConfiguration"
-import { btc2sat, sat2btc } from "./utils"
+import { sat2btc } from "./utils"
 
 export class OkexExchangeConfiguration implements ExchangeConfiguration {
   exchangeId: SupportedExchange
@@ -52,29 +54,31 @@ export class OkexExchangeConfiguration implements ExchangeConfiguration {
     }
   }
 
-  fetchDepositsValidateInput(address: string, amountInSats: number) {
-    assert(address, ApiError.UNSUPPORTED_ADDRESS)
-    assert(amountInSats, ApiError.NON_POSITIVE_QUANTITY)
-    assert(amountInSats > 0, ApiError.NON_POSITIVE_QUANTITY)
+  fetchDepositsValidateInput(args: FetchDepositsParameters) {
+    assert(args.address, ApiError.UNSUPPORTED_ADDRESS)
+    assert(args.amountInSats, ApiError.NON_POSITIVE_QUANTITY)
+    assert(args.amountInSats > 0, ApiError.NON_POSITIVE_QUANTITY)
   }
   fetchDepositsProcessApiResponse(
-    address: string,
-    amountInSats: number,
+    args: FetchDepositsParameters,
     response,
   ): FetchDepositsResult {
     assert(response, ApiError.UNSUPPORTED_API_RESPONSE)
-    const amountInBtc = sat2btc(amountInSats)
-    // We should receive an array of array of response objects
+    const amountInBtc = sat2btc(args.amountInSats)
+    // We should receive an array of array of deposit objects
+    // response = [[{}, ...], ...]
+    // deposits = [{}, ...]
+    // deposit = {}
     // Since we're looking for one specific entry, don't fail until we're done
     const result = {} as FetchDepositsResult
-    response.forEach((responses) => {
-      responses.forEach((deposit) => {
+    response.forEach((deposits) => {
+      deposits.forEach((deposit) => {
         if (
           deposit &&
           deposit.has("currency") &&
           deposit.currency === TradeCurrency.BTC &&
           deposit.has("address") &&
-          deposit.address === address &&
+          deposit.address === args.address &&
           deposit.has("amount") &&
           deposit.amount === amountInBtc &&
           deposit.has("status")
@@ -111,29 +115,31 @@ export class OkexExchangeConfiguration implements ExchangeConfiguration {
     assert(response.info.data[0].wdId, ApiError.MISSING_WITHDRAW_ID)
   }
 
-  fetchWithdrawalsValidateInput(address: string, amountInSats: number) {
-    assert(address, ApiError.UNSUPPORTED_ADDRESS)
-    assert(amountInSats, ApiError.NON_POSITIVE_QUANTITY)
-    assert(amountInSats > 0, ApiError.NON_POSITIVE_QUANTITY)
+  fetchWithdrawalsValidateInput(args: FetchWithdrawalsParameters) {
+    assert(args.address, ApiError.UNSUPPORTED_ADDRESS)
+    assert(args.amountInSats, ApiError.NON_POSITIVE_QUANTITY)
+    assert(args.amountInSats > 0, ApiError.NON_POSITIVE_QUANTITY)
   }
   fetchWithdrawalsProcessApiResponse(
-    address: string,
-    amountInSats: number,
+    args: FetchWithdrawalsParameters,
     response,
   ): FetchWithdrawalsResult {
     assert(response, ApiError.UNSUPPORTED_API_RESPONSE)
-    const amountInBtc = sat2btc(amountInSats)
-    // We should receive an array of array of response objects
+    const amountInBtc = sat2btc(args.amountInSats)
+    // We should receive an array of array of withdrawal objects:
+    // response = [[{}, ...], ...]
+    // withdrawals = [{}, ...]
+    // withdrawal = {}
     // Since we're looking for one specific entry, don't fail until we're done
     const result = {} as FetchWithdrawalsResult
-    response.forEach((responses) => {
-      responses.forEach((withdrawal) => {
+    response.forEach((withdrawals) => {
+      withdrawals.forEach((withdrawal) => {
         if (
           withdrawal &&
           withdrawal.has("currency") &&
           withdrawal.currency === TradeCurrency.BTC &&
           withdrawal.has("address") &&
-          withdrawal.address === address &&
+          withdrawal.address === args.address &&
           withdrawal.has("amount") &&
           withdrawal.amount === amountInBtc &&
           withdrawal.has("status")

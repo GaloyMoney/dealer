@@ -14,6 +14,8 @@ import {
   FetchTickerResult,
   FetchWithdrawalsResult,
   FetchDepositsResult,
+  FetchDepositsParameters,
+  FetchWithdrawalsParameters,
 } from "./ExchangeTradingType"
 import assert from "assert"
 import {
@@ -47,29 +49,31 @@ export class FtxExchangeConfiguration implements ExchangeConfiguration {
     }
   }
 
-  fetchDepositsValidateInput(address: string, amountInSats: number) {
-    assert(address, ApiError.UNSUPPORTED_ADDRESS)
-    assert(amountInSats, ApiError.NON_POSITIVE_QUANTITY)
-    assert(amountInSats > 0, ApiError.NON_POSITIVE_QUANTITY)
+  fetchDepositsValidateInput(args: FetchDepositsParameters) {
+    assert(args.address, ApiError.UNSUPPORTED_ADDRESS)
+    assert(args.amountInSats, ApiError.NON_POSITIVE_QUANTITY)
+    assert(args.amountInSats > 0, ApiError.NON_POSITIVE_QUANTITY)
   }
   fetchDepositsProcessApiResponse(
-    address: string,
-    amountInSats: number,
+    args: FetchDepositsParameters,
     response,
   ): FetchDepositsResult {
     assert(response, ApiError.UNSUPPORTED_API_RESPONSE)
-    const amountInBtc = sat2btc(amountInSats)
-    // We should receive an array of array of response objects
+    const amountInBtc = sat2btc(args.amountInSats)
+    // We should receive an array of array of deposit objects
+    // response = [[{}, ...], ...]
+    // deposits = [{}, ...]
+    // deposit = {}
     // Since we're looking for one specific entry, don't fail until we're done
     const result = {} as FetchDepositsResult
-    response.forEach((responses) => {
-      responses.forEach((deposit) => {
+    response.forEach((deposits) => {
+      deposits.forEach((deposit) => {
         if (
           deposit &&
           deposit.has("currency") &&
           deposit.currency === TradeCurrency.BTC &&
           deposit.has("address") &&
-          deposit.address === address &&
+          deposit.address === args.address &&
           deposit.has("amount") &&
           deposit.amount === amountInBtc &&
           deposit.has("status")
@@ -97,29 +101,31 @@ export class FtxExchangeConfiguration implements ExchangeConfiguration {
     // assert(response.status) // we don't know enough to validate the status, TODO
   }
 
-  fetchWithdrawalsValidateInput(address: string, amountInSats: number) {
-    assert(address, ApiError.UNSUPPORTED_ADDRESS)
-    assert(amountInSats, ApiError.NON_POSITIVE_QUANTITY)
-    assert(amountInSats > 0, ApiError.NON_POSITIVE_QUANTITY)
+  fetchWithdrawalsValidateInput(args: FetchWithdrawalsParameters) {
+    assert(args.address, ApiError.UNSUPPORTED_ADDRESS)
+    assert(args.amountInSats, ApiError.NON_POSITIVE_QUANTITY)
+    assert(args.amountInSats > 0, ApiError.NON_POSITIVE_QUANTITY)
   }
   fetchWithdrawalsProcessApiResponse(
-    address: string,
-    amountInSats: number,
+    args: FetchWithdrawalsParameters,
     response,
   ): FetchWithdrawalsResult {
     assert(response, ApiError.UNSUPPORTED_API_RESPONSE)
-    const amountInBtc = sat2btc(amountInSats)
-    // We should receive an array of array of response objects
+    const amountInBtc = sat2btc(args.amountInSats)
+    // We should receive an array of array of withdrawal objects:
+    // response = [[{}, ...], ...]
+    // withdrawals = [{}, ...]
+    // withdrawal = {}
     // Since we're looking for one specific entry, don't fail until we're done
     const result = {} as FetchWithdrawalsResult
-    response.forEach((responses) => {
-      responses.forEach((withdrawal) => {
+    response.forEach((withdrawals) => {
+      withdrawals.forEach((withdrawal) => {
         if (
           withdrawal &&
           withdrawal.has("currency") &&
           withdrawal.currency === TradeCurrency.BTC &&
           withdrawal.has("address") &&
-          withdrawal.address === address &&
+          withdrawal.address === args.address &&
           withdrawal.has("amount") &&
           withdrawal.amount === amountInBtc &&
           withdrawal.has("status")
