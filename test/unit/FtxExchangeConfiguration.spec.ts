@@ -94,6 +94,50 @@ function getProcessedPrivateGetAccountResponse() {
   }
 }
 
+function getValidFetchTickerProcessApiResponse() {
+  return {
+    symbol: "BTC-PERP",
+    timestamp: 1627697319096,
+    datetime: "2021-07-31T02:08:39.096Z",
+    bid: 41923,
+    ask: 41924,
+    close: 41924,
+    last: 41924,
+    percentage: 0.042315150912435984,
+    quoteVolume: 3525557173.4343,
+    info: {
+      name: "BTC-PERP",
+      enabled: true,
+      postOnly: false,
+      priceIncrement: "1.0",
+      sizeIncrement: "0.0001",
+      minProvideSize: "0.001",
+      last: "41924.0",
+      bid: "41923.0",
+      ask: "41924.0",
+      price: "41924.0",
+      type: "future",
+      baseCurrency: null,
+      quoteCurrency: null,
+      underlying: "BTC",
+      restricted: false,
+      highLeverageFeeExempt: true,
+      change1h: "-0.0004768262445164982",
+      change24h: "0.042315150912435984",
+      changeBod: "-0.0004768262445164982",
+      quoteVolume24h: "3525557173.4343",
+      volumeUsd24h: "3525557173.4343",
+    },
+  }
+}
+
+function getProcessedFetchTickerProcessApiResponse(response) {
+  return {
+    originalResponseAsIs: response,
+    lastBtcPriceInUsd: response.last,
+  }
+}
+
 const falsyArgs = [null, undefined, NaN, 0, "", false]
 
 describe("FtxExchangeConfiguration", () => {
@@ -365,7 +409,6 @@ describe("FtxExchangeConfiguration", () => {
   })
 
   describe("privateGetAccountValidateCall", () => {
-    //
     it("should do nothing and return without error", async () => {
       const configuration = new FtxExchangeConfiguration()
       const result = configuration.privateGetAccountValidateCall()
@@ -555,7 +598,6 @@ describe("FtxExchangeConfiguration", () => {
   })
 
   describe("fetchBalanceValidateCall", () => {
-    //
     it("should throw not supported for now", async () => {
       const configuration = new FtxExchangeConfiguration()
       expect(() => configuration.fetchBalanceValidateCall()).toThrowError(
@@ -565,7 +607,6 @@ describe("FtxExchangeConfiguration", () => {
   })
 
   describe("fetchBalanceProcessApiResponse", () => {
-    //
     it("should throw not supported for ftx", async () => {
       const configuration = new FtxExchangeConfiguration()
       const response = {}
@@ -576,7 +617,6 @@ describe("FtxExchangeConfiguration", () => {
   })
 
   describe("fetchPositionValidateInput", () => {
-    //
     it("should throw not supported for ftx", async () => {
       const configuration = new FtxExchangeConfiguration()
       const id = ""
@@ -587,13 +627,48 @@ describe("FtxExchangeConfiguration", () => {
   })
 
   describe("fetchPositionProcessApiResponse", () => {
-    //
     it("should throw not supported for ftx", async () => {
       const configuration = new FtxExchangeConfiguration()
       const response = {}
       expect(() => configuration.fetchPositionProcessApiResponse(response)).toThrowError(
         ApiError.NOT_SUPPORTED,
       )
+    })
+  })
+
+  describe("fetchTickerValidateInput", () => {
+    it("should throw when instrumentId is not supported", async () => {
+      const configuration = new FtxExchangeConfiguration()
+      const id = "wrong"
+      expect(() => configuration.fetchTickerValidateInput(id)).toThrowError(
+        ApiError.UNSUPPORTED_INSTRUMENT,
+      )
+    })
+
+    it("should do nothing when instrumentId is supported", async () => {
+      const configuration = new FtxExchangeConfiguration()
+      const instrumentId = SupportedInstrument.FTX_PERPETUAL_SWAP
+      const result = configuration.fetchTickerValidateInput(instrumentId)
+      expect(result).toBeUndefined()
+    })
+  })
+
+  describe("fetchTickerProcessApiResponse", () => {
+    it("should throw when response is falsy", async () => {
+      const configuration = new FtxExchangeConfiguration()
+      falsyArgs.forEach((response) => {
+        expect(() => configuration.fetchTickerProcessApiResponse(response)).toThrowError(
+          ApiError.UNSUPPORTED_API_RESPONSE,
+        )
+      })
+    })
+
+    it("should return processed response when response is valid", async () => {
+      const configuration = new FtxExchangeConfiguration()
+      const response = getValidFetchTickerProcessApiResponse()
+      const expected = getProcessedFetchTickerProcessApiResponse(response)
+      const result = configuration.fetchTickerProcessApiResponse(response)
+      expect(result).toEqual(expected)
     })
   })
 })

@@ -6,48 +6,51 @@ import {
   TradeType,
   FundTransferSide,
   OrderStatus,
+  FundTransferStatus,
   GetAccountAndPositionRiskResult,
   TradeCurrency,
 } from "./ExchangeTradingType"
-import { HedgingStrategy, UpdatedPosition, UpdatedBalance } from "./HedgingStrategyTypes"
+import {
+  HedgingStrategy,
+  UpdatedPosition,
+  UpdatedBalance,
+  DepositOnExchangeCallback,
+  WithdrawBookKeepingCallback,
+} from "./HedgingStrategyTypes"
 import { ExchangeBase } from "./ExchangeBase"
-import { ExchangeConfiguration } from "./ExchangeConfiguration"
+import { ExchangeConfiguration, SupportedInstrument } from "./ExchangeConfiguration"
 import { OkexExchangeConfiguration } from "./OkexExchangeConfiguration"
 import { OkexExchange } from "./OkexExchange"
+import pino from "pino"
 
 const hedgingBounds = yamlConfig.hedging
 
-const isSimulation = !process.env["HEDGING_NOT_IN_SIMULATION"]
-if (!isSimulation) {
-  throw new Error(`Hedging active, please disable this safeguard.`)
-}
-
 export interface GetHedgingOrderResult {
   in: {
-    loBracket
-    exposureRatio
-    hiBracket
+    loBracket: number
+    exposureRatio: number
+    hiBracket: number
   }
   out: {
-    tradeSide
-    orderSizeInUsd
-    orderSizeInBtc
-    btcPriceInUsd
+    tradeSide: TradeSide
+    orderSizeInUsd: number
+    orderSizeInBtc: number
+    btcPriceInUsd: number
   }
 }
 
 export interface GetRebalanceTransferResult {
   in: {
-    loBracket
-    leverageRatio
-    hiBracket
+    loBracket: number
+    leverageRatio: number
+    hiBracket: number
   }
   out: {
-    fundTransferSide
-    transferSizeInUsd
-    transferSizeInBtc
-    btcPriceInUsd
-    newLeverageRatio
+    fundTransferSide: FundTransferSide
+    transferSizeInUsd: number
+    transferSizeInBtc: number
+    btcPriceInUsd: number
+    newLeverageRatio: number
   }
 }
 
@@ -57,12 +60,14 @@ export interface GetRiskAndOrderResult {
 }
 
 export class OkexPerpetualSwapStrategy implements HedgingStrategy {
+  private isSimulation: boolean
   exchange: ExchangeBase
   exchangeConfig: ExchangeConfiguration
-  instrumentId
-  logger
+  instrumentId: SupportedInstrument
+  private logger: pino.Logger
 
-  constructor(logger) {
+  constructor(logger: pino.Logger) {
+    this.isSimulation = !process.env["HEDGING_NOT_IN_SIMULATION"]
     this.exchangeConfig = new OkexExchangeConfiguration()
     this.exchange = new OkexExchange(this.exchangeConfig, logger)
     this.instrumentId = this.exchangeConfig.instrumentId
@@ -78,9 +83,57 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
     }
   }
 
+  public async isDepositCompleted(
+    address: string,
+    amountInSats: number,
+  ): Promise<Result<boolean>> {
+    const result = await this.exchange.fetchDeposits({ address, amountInSats })
+    if (!result.ok) {
+      return result
+    }
+    const deposit = result.value
+    this.logger.debug(
+      { address, amountInSats, deposit },
+      "exchange.fetchDeposits(address, amountInSats) returned: {deposit}",
+    )
+    if (
+      deposit.status === FundTransferStatus.Ok ||
+      deposit.status === FundTransferStatus.Canceled ||
+      deposit.status === FundTransferStatus.Failed
+    ) {
+      return { ok: true, value: true }
+    }
+
+    return { ok: true, value: false }
+  }
+
+  public async isWithdrawalCompleted(
+    address: string,
+    amountInSats: number,
+  ): Promise<Result<boolean>> {
+    const result = await this.exchange.fetchWithdrawals({ address, amountInSats })
+    if (!result.ok) {
+      return result
+    }
+    const withdrawal = result.value
+    this.logger.debug(
+      { address, amountInSats, deposit: withdrawal },
+      "exchange.fetchWithdrawals(address, amountInSats) returned: {withdrawal}",
+    )
+    if (
+      withdrawal.status === FundTransferStatus.Ok ||
+      withdrawal.status === FundTransferStatus.Canceled ||
+      withdrawal.status === FundTransferStatus.Failed
+    ) {
+      return { ok: true, value: true }
+    }
+
+    return { ok: true, value: false }
+  }
+
   public async updatePosition(
-    liabilityInUsd,
-    btcPriceInUsd,
+    liabilityInUsd: number,
+    btcPriceInUsd: number,
   ): Promise<Result<UpdatedPosition>> {
     try {
       const updatedPosition = {} as UpdatedPosition
@@ -112,7 +165,7 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
         }
       }
 
-      if (hedgingOrder.out.tradeSide !== TradeSide.NoTrade && isSimulation) {
+      if (/* hedgingOrder.out.tradeSide !== TradeSide.NoTrade && */ this.isSimulation) {
         logger.debug({ hedgingOrder }, "Calculated a SIMULATED new hedging order")
         return {
           ok: true,
@@ -146,9 +199,9 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
       const updatedRisk = confirmRiskAndOrderResult.value.risk
       const confirmationOrder = confirmRiskAndOrderResult.value.order
 
-      updatedPosition.newPosition = updatedRisk
+      updatedPosition.updatedPosition = updatedRisk
 
-      if (!isSimulation && confirmationOrder.out.tradeSide !== TradeSide.NoTrade) {
+      if (!this.isSimulation && confirmationOrder.out.tradeSide !== TradeSide.NoTrade) {
         return {
           ok: false,
           error: new Error(
@@ -167,11 +220,11 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
   }
 
   public async updateLeverage(
-    liabilityInUsd,
-    btcPriceInUsd,
-    withdrawOnChainAddress,
-    withdrawBookKeepingCallback,
-    depositOnExchangeCallback,
+    liabilityInUsd: number,
+    btcPriceInUsd: number,
+    withdrawOnChainAddress: string,
+    withdrawBookKeepingCallback: WithdrawBookKeepingCallback,
+    depositOnExchangeCallback: DepositOnExchangeCallback,
   ): Promise<Result<UpdatedBalance>> {
     try {
       const updatedBalance = {} as UpdatedBalance
@@ -201,7 +254,7 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
           hedgingBounds,
           rebalanceResult,
         },
-        "getRebalanceOrderIfNeeded() returned: {rebalanceResult}",
+        "getRebalanceTransferIfNeeded() returned: {rebalanceResult}",
       )
       if (!rebalanceResult.ok) {
         return { ok: false, error: rebalanceResult.error }
@@ -214,7 +267,7 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
       updatedBalance.originalLeverageRatio = rebalanceResult.value.in.leverageRatio
       updatedBalance.newLeverageRatio = rebalanceResult.value.out.newLeverageRatio
 
-      if (isSimulation) {
+      if (this.isSimulation) {
         this.logger.debug(
           { fundTransferSide, transferSizeInBtc, withdrawOnChainAddress },
           "Calculated a SIMULATED rebalance transfer",
@@ -240,10 +293,14 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
         }
         const withdrawalResponse = withdrawalResult.value
 
-        if (withdrawalResponse.status === "requested") {
+        // TODO: might want to check the withdrawalResponse.id instead
+        if (withdrawalResponse.status === FundTransferStatus.Requested) {
           // TODO: wait until request succeed before updating tx
 
-          const bookingResult = withdrawBookKeepingCallback(transferSizeInBtc)
+          const bookingResult = await withdrawBookKeepingCallback(
+            withdrawOnChainAddress,
+            transferSizeInBtc,
+          )
           this.logger.debug(
             { transferSizeInBtc, bookingResult },
             "withdrawBookKeepingCallback() returned: {depositResult}",
@@ -275,7 +332,7 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
         }
         const exchangeDepositOnChainAddress = fetchResult.value.address
 
-        const depositResult = depositOnExchangeCallback(
+        const depositResult = await depositOnExchangeCallback(
           exchangeDepositOnChainAddress,
           transferSizeInBtc,
         )
@@ -302,15 +359,15 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
   }
 
   static getHedgingOrderIfNeeded(
-    liabilityInUsd,
-    exposureInUsd,
-    btcPriceInUsd,
+    liabilityInUsd: number,
+    exposureInUsd: number,
+    btcPriceInUsd: number,
     hedgingBounds,
   ): Result<GetHedgingOrderResult> {
     try {
       let orderSizeInUsd = 0
       let tradeSide: TradeSide = TradeSide.NoTrade
-      const exposureRatio = liabilityInUsd / exposureInUsd
+      const exposureRatio = exposureInUsd / liabilityInUsd
 
       if (exposureRatio < hedgingBounds.LOW_BOUND_RATIO_SHORTING) {
         const newExposureInUsd =
@@ -347,8 +404,8 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
   }
 
   async getRiskAndOrder(
-    btcPriceInUsd,
-    liabilityInUsd,
+    btcPriceInUsd: number,
+    liabilityInUsd: number,
     hedgingBounds,
   ): Promise<Result<GetRiskAndOrderResult>> {
     try {
@@ -388,7 +445,10 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
     }
   }
 
-  async placeHedgingOrder(tradeSide, btcPriceInUsd): Promise<Result<void>> {
+  async placeHedgingOrder(
+    tradeSide: TradeSide,
+    btcPriceInUsd: number,
+  ): Promise<Result<void>> {
     const logger = this.logger.child({ method: "placeHedgingOrder()" })
 
     try {
@@ -466,9 +526,9 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
   }
 
   static getRebalanceTransferIfNeeded(
-    liabilityInUsd,
-    collateralInUsd,
-    btcPriceInUsd,
+    liabilityInUsd: number,
+    collateralInUsd: number,
+    btcPriceInUsd: number,
     hedgingBounds,
   ): Result<GetRebalanceTransferResult> {
     try {

@@ -1,29 +1,31 @@
 import { sleep } from "./utils"
 import _ from "lodash"
 import { yamlConfig } from "./config"
-import { TradeSide, FundTransferSide } from "./ExchangeTradingType"
+import { TradeSide, FundTransferSide, FundTransferStatus } from "./ExchangeTradingType"
 import assert from "assert"
 import { Result } from "./Result"
 import { HedgingStrategy, UpdatedPosition, UpdatedBalance } from "./HedgingStrategyTypes"
 import { ExchangeBase } from "./ExchangeBase"
-import { ExchangeConfiguration } from "./ExchangeConfiguration"
+import { ExchangeConfiguration, SupportedInstrument } from "./ExchangeConfiguration"
 import { FtxExchangeConfiguration } from "./FtxExchangeConfiguration"
 import { FtxExchange } from "./FtxExchange"
+import pino from "pino"
 
 const hedgingBounds = yamlConfig.hedging
 
-const isSimulation = !process.env["HEDGING_NOT_IN_SIMULATION"]
-if (!isSimulation) {
-  throw new Error(`Hedging active, please disable this safeguard.`)
-}
-
 export class FtxPerpetualSwapStrategy implements HedgingStrategy {
+  private isSimulation: boolean
   exchange: ExchangeBase
   exchangeConfig: ExchangeConfiguration
-  instrumentId
-  logger
+  instrumentId: SupportedInstrument
+  private logger: pino.Logger
 
-  constructor(logger) {
+  constructor(logger: pino.Logger) {
+    this.isSimulation = !process.env["HEDGING_NOT_IN_SIMULATION"]
+    if (!this.isSimulation) {
+      throw new Error(`Hedging active, please disable this safeguard.`)
+    }
+
     this.exchangeConfig = new FtxExchangeConfiguration()
     this.exchange = new FtxExchange(this.exchangeConfig, logger)
     this.instrumentId = this.exchangeConfig.instrumentId
@@ -37,6 +39,54 @@ export class FtxPerpetualSwapStrategy implements HedgingStrategy {
     } else {
       return { ok: false, error: result.error }
     }
+  }
+
+  public async isDepositCompleted(
+    address: string,
+    amountInSats: number,
+  ): Promise<Result<boolean>> {
+    const result = await this.exchange.fetchDeposits({ address, amountInSats })
+    if (!result.ok) {
+      return result
+    }
+    const deposit = result.value
+    this.logger.debug(
+      { address, amountInSats, deposit },
+      "exchange.fetchDeposits(address, amountInSats) returned: {deposit}",
+    )
+    if (
+      deposit.status === FundTransferStatus.Ok ||
+      deposit.status === FundTransferStatus.Canceled ||
+      deposit.status === FundTransferStatus.Failed
+    ) {
+      return { ok: true, value: true }
+    }
+
+    return { ok: true, value: false }
+  }
+
+  public async isWithdrawalCompleted(
+    address: string,
+    amountInSats: number,
+  ): Promise<Result<boolean>> {
+    const result = await this.exchange.fetchWithdrawals({ address, amountInSats })
+    if (!result.ok) {
+      return result
+    }
+    const withdrawal = result.value
+    this.logger.debug(
+      { address, amountInSats, deposit: withdrawal },
+      "exchange.fetchWithdrawals(address, amountInSats) returned: {withdrawal}",
+    )
+    if (
+      withdrawal.status === FundTransferStatus.Ok ||
+      withdrawal.status === FundTransferStatus.Canceled ||
+      withdrawal.status === FundTransferStatus.Failed
+    ) {
+      return { ok: true, value: true }
+    }
+
+    return { ok: true, value: false }
   }
 
   public async updatePosition(
@@ -68,7 +118,7 @@ export class FtxPerpetualSwapStrategy implements HedgingStrategy {
       subLogger.debug({ btcAmount, buyOrSell }, "isOrderNeeded result")
 
       // TODO fix this simulation flag so it's only at the API call location
-      if (buyOrSell && !isSimulation) {
+      if (buyOrSell && !this.isSimulation) {
         await this.executeOrder({ btcAmount, buyOrSell })
 
         // const { usd: usdLiability } = await this.getLocalLiabilities()
@@ -106,7 +156,7 @@ export class FtxPerpetualSwapStrategy implements HedgingStrategy {
             exposureInUsd: 0,
             totalAccountValueInUsd: 0,
           },
-          newPosition: {
+          updatedPosition: {
             leverageRatio: 0,
             collateralInUsd: 0,
             exposureInUsd: 0,

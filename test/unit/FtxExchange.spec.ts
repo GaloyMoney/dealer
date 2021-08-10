@@ -96,7 +96,7 @@ describe("FtxExchange", () => {
   })
 
   describe("getInstrumentDetails", () => {
-    it(`should return failed result with not implemented error`, async () => {
+    it("should return failed result with not implemented error", async () => {
       const exchangeConfig = new FtxExchangeConfiguration()
       const exchange = new FtxExchange(exchangeConfig, baseLogger)
       const result = await exchange.getInstrumentDetails()

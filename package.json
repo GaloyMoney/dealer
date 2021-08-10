@@ -15,10 +15,14 @@
     "test:unit": "jest --config ./test/jest-unit.config.js --bail --verbose $TEST | yarn pino-pretty -c -l"
   },
   "dependencies": {
+    "@apollo/client": "^3.3.21",
     "ccxt": "^1.53.54",
+    "dateformat": "^4.5.1",
     "dotenv": "^10.0.0",
+    "graphql": "^15.5.1",
     "js-yaml": "^4.1.0",
     "lodash": "^4.17.21",
+    "node-fetch": "^2.6.1",
     "pino": "^7.0.0-rc.1",
     "typescript": "^4.3.5"
   },

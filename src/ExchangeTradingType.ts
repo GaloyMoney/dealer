@@ -23,7 +23,7 @@ export interface TradeOrder {
 export enum FundTransferSide {
   Withdraw = "withdraw",
   Deposit = "deposit",
-  NoTransfer = "",
+  NoTransfer = "no_transfer",
 }
 
 export enum FundTransferStatus {
@@ -58,6 +58,19 @@ export interface FetchDepositAddressResult {
   address: string
 }
 
+export interface FetchDepositsParameters {
+  address: string
+  amountInSats: number
+}
+
+export interface FetchDepositsResult {
+  originalResponseAsIs
+  currency: TradeCurrency
+  address: string
+  amount: number
+  status: FundTransferStatus
+}
+
 export interface WithdrawParameters {
   currency: TradeCurrency
   quantity: number
@@ -66,6 +79,19 @@ export interface WithdrawParameters {
 
 export interface WithdrawResult {
   originalResponseAsIs
+  status: FundTransferStatus
+}
+
+export interface FetchWithdrawalsParameters {
+  address: string
+  amountInSats: number
+}
+
+export interface FetchWithdrawalsResult {
+  originalResponseAsIs
+  currency: TradeCurrency
+  address: string
+  amount: number
   status: FundTransferStatus
 }
 
@@ -111,7 +137,8 @@ export interface FetchTickerResult {
 }
 
 export interface GetAccountAndPositionRiskResult {
-  originalResponseAsIs
+  originalPositionResponseAsIs
+  originalBalanceResponseAsIs
   lastBtcPriceInUsd: number
   leverageRatio: number
   collateralInUsd: number
@@ -133,6 +160,7 @@ export enum ApiError {
   UNSUPPORTED_INSTRUMENT = "Unsupported Instrument",
   UNSUPPORTED_ADDRESS = "Unsupported Address",
   UNSUPPORTED_API_RESPONSE = "Unsupported API response",
+  EMPTY_API_RESPONSE = "Empty API response",
   MISSING_PARAMETERS = "Missing Parameters",
   NON_POSITIVE_QUANTITY = "Non Positive Quantity",
   INVALID_TRADE_SIDE = "Invalid Trade Side",
@@ -142,4 +170,5 @@ export enum ApiError {
   NON_POSITIVE_MARGIN = "Non Positive Margin",
   MISSING_ACCOUNT_VALUE = "Missing Account Value",
   NON_POSITIVE_ACCOUNT_VALUE = "Non Positive Account Value",
+  MISSING_WITHDRAW_ID = "Missing withdraw id",
 }
