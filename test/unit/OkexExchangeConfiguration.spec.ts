@@ -206,7 +206,7 @@ function getValidFetchBalanceProcessApiResponse() {
 function getProcessedFetchBalanceProcessApiResponse(response) {
   return {
     originalResponseAsIs: response,
-    totalEq: response.info.data[0].totalEq,
+    totalEq: Number(response.info.data[0].totalEq),
   }
 }
 
@@ -1166,6 +1166,7 @@ describe("OkexExchangeConfiguration", () => {
         const expected = getProcessedFetchBalanceProcessApiResponse(response)
         const result = configuration.fetchBalanceProcessApiResponse(response)
         expect(result).toEqual(expected)
+        expect(result.totalEq).toEqual(Number(totalEq))
       }
     })
 

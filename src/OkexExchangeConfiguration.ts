@@ -213,7 +213,7 @@ export class OkexExchangeConfiguration implements ExchangeConfiguration {
 
     return {
       originalResponseAsIs: response,
-      totalEq: response.info.data[0].totalEq,
+      totalEq: Number(response.info.data[0].totalEq),
     }
   }
 
