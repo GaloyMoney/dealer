@@ -36,7 +36,11 @@ class ScenarioBuilder {
       cast: this.castScenarioDataTypeFromString,
     })
     for (const scenario of scenarios) {
-      this.stepBuilder.addScenarioStep(scenario)
+      try {
+        this.stepBuilder.addScenarioStep(scenario)
+      } catch (error) {
+        baseLogger.error({ error }, `Error while stepBuilder.addScenarioStep(scenario)`)
+      }
     }
   }
 

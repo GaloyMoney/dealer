@@ -151,7 +151,6 @@ function getValidFetchTickerResponse(instrumentId: string, last: number) {
 }
 
 function getValidPublicGetPublicInstrumentsResponse({ instType, instId }) {
-  console.log("Called: getValidPublicGetPublicInstrumentsResponse()")
   const contractValue = 100
   const contractMinimumSize = 1
   const contractValueCurrency = TradeCurrency.USD
@@ -210,7 +209,7 @@ export class OkexExchangeScenarioStepBuilder {
 
   constructor() {
     this.exchangeMockObject = {
-      checkRequiredCredentials: jest.fn(),
+      checkRequiredCredentials: jest.fn().mockReturnValue(true),
       fetchDeposits: jest.fn(),
       fetchWithdrawals: jest.fn(),
       fetchTicker: jest.fn(),
@@ -221,8 +220,6 @@ export class OkexExchangeScenarioStepBuilder {
       fetchOrder: jest.fn(),
       withdraw: jest.fn(),
     }
-
-    this.exchangeMockObject.checkRequiredCredentials.mockReturnValue(true)
 
     this.walletMockObject = {
       getWalletUsdBalance: jest.fn(),
