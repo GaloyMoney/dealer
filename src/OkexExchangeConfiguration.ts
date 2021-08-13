@@ -238,9 +238,9 @@ export class OkexExchangeConfiguration implements ExchangeConfiguration {
 
     return {
       originalResponseAsIs: response,
-      last: response.last,
-      notionalUsd: response.notionalUsd,
-      margin: response.margin,
+      last: Number(response.last),
+      notionalUsd: Number(response.notionalUsd),
+      margin: Number(response.margin),
     }
   }
 
