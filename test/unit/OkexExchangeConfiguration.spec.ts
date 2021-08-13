@@ -9,7 +9,11 @@ import {
   TradeType,
   ApiError,
   OrderStatus,
+  FetchDepositsParameters,
+  FundTransferStatus,
+  FetchWithdrawalsParameters,
 } from "src/ExchangeTradingType"
+import { sat2btc } from "src/utils"
 
 function getValidFetchDepositAddressResponse() {
   return {
@@ -74,6 +78,64 @@ function getValidFetchDepositAddressResponse() {
     ],
     msg: "",
   }
+}
+
+function getValidFetchDepositsResponse(args) {
+  const address: string = args.address
+  const amountInBtc: number = args.amountInBtc
+  const status: FundTransferStatus = args.status
+  return [
+    [
+      {
+        info: {
+          ccy: TradeCurrency.BTC,
+          chain: "BTC-Bitcoin",
+          amt: `${amountInBtc}`,
+          to: address,
+        },
+        currency: TradeCurrency.BTC,
+        amount: amountInBtc,
+        addressTo: address,
+        address: address,
+        status: status,
+        type: "deposit",
+        fee: {
+          currency: TradeCurrency.BTC,
+          cost: 0,
+        },
+        page: 0,
+      },
+    ],
+  ]
+}
+
+function getValidFetchWithdrawalsResponse(args) {
+  const address: string = args.address
+  const amountInBtc: number = args.amountInBtc
+  const status: FundTransferStatus = args.status
+  return [
+    [
+      {
+        info: {
+          ccy: TradeCurrency.BTC,
+          chain: "BTC-Bitcoin",
+          amt: `${amountInBtc}`,
+          to: address,
+        },
+        currency: TradeCurrency.BTC,
+        amount: amountInBtc,
+        addressTo: address,
+        address: address,
+        status: status,
+        type: "withdrawal",
+        fee: {
+          currency: TradeCurrency.BTC,
+          cost: 0,
+        },
+        page: 0,
+      },
+    ],
+  ]
 }
 
 function getProcessedFetchDepositAddressResponse() {
@@ -373,6 +435,219 @@ describe("OkexExchangeConfiguration", () => {
     })
   })
 
+  describe("fetchDepositsValidateInput", () => {
+    it("should do nothing when arguments are all valid", async () => {
+      const configuration = new OkexExchangeConfiguration()
+      const args = { address: "bc1q", amountInSats: 1 } as FetchDepositsParameters
+      const result = configuration.fetchDepositsValidateInput(args)
+      expect(result).toBeUndefined()
+    })
+    it("should throw when address is invalid", async () => {
+      const configuration = new OkexExchangeConfiguration()
+      falsyArgs.forEach((falsyArg) => {
+        const args = { address: falsyArg, amountInSats: 1 } as FetchDepositsParameters
+        expect(() => configuration.fetchDepositsValidateInput(args)).toThrowError(
+          ApiError.UNSUPPORTED_ADDRESS,
+        )
+      })
+    })
+    it("should throw when amountInSats is not positive", async () => {
+      const configuration = new OkexExchangeConfiguration()
+      const invalidAmountInSats = [0, -1]
+      for (const amount of invalidAmountInSats) {
+        const args = { address: "bc1q", amountInSats: amount } as FetchDepositsParameters
+        expect(() => configuration.fetchDepositsValidateInput(args)).toThrowError(
+          ApiError.NON_POSITIVE_QUANTITY,
+        )
+      }
+    })
+  })
+
+  describe("fetchDepositsProcessApiResponse", () => {
+    it("should throw when response is falsy", async () => {
+      const configuration = new OkexExchangeConfiguration()
+      const args = { address: "bc1q", amountInSats: 1 } as FetchDepositsParameters
+      falsyArgs.forEach((response) => {
+        expect(() =>
+          configuration.fetchDepositsProcessApiResponse(args, response),
+        ).toThrowError(ApiError.UNSUPPORTED_API_RESPONSE)
+      })
+    })
+    it("should throw when response has no sub array", async () => {
+      const configuration = new OkexExchangeConfiguration()
+      const args = { address: "bc1q", amountInSats: 1 } as FetchDepositsParameters
+      const response = []
+      expect(() =>
+        configuration.fetchDepositsProcessApiResponse(args, response),
+      ).toThrowError(ApiError.UNSUPPORTED_API_RESPONSE)
+    })
+    it("should throw when response has no object in sub array", async () => {
+      const configuration = new OkexExchangeConfiguration()
+      const args = { address: "bc1q", amountInSats: 1 } as FetchDepositsParameters
+      const response = [[]]
+      expect(() =>
+        configuration.fetchDepositsProcessApiResponse(args, response),
+      ).toThrowError(ApiError.UNSUPPORTED_API_RESPONSE)
+    })
+    it("should throw when response has object but no currency property", async () => {
+      const configuration = new OkexExchangeConfiguration()
+      const args = { address: "bc1q", amountInSats: 1 } as FetchDepositsParameters
+      const response = [
+        [
+          {
+            // currency: TradeCurrency.BTC,
+            amount: sat2btc(args.amountInSats),
+            address: args.address,
+            status: "ok",
+          },
+        ],
+      ]
+      expect(() =>
+        configuration.fetchDepositsProcessApiResponse(args, response),
+      ).toThrowError(ApiError.UNSUPPORTED_API_RESPONSE)
+    })
+    it("should throw when response has object but currency not BTC", async () => {
+      const configuration = new OkexExchangeConfiguration()
+      const args = { address: "bc1q", amountInSats: 1 } as FetchDepositsParameters
+      const response = [
+        [
+          {
+            currency: "NOT_BTC",
+            amount: sat2btc(args.amountInSats),
+            address: args.address,
+            status: "ok",
+          },
+        ],
+      ]
+      expect(() =>
+        configuration.fetchDepositsProcessApiResponse(args, response),
+      ).toThrowError(ApiError.UNSUPPORTED_API_RESPONSE)
+    })
+    it("should throw when response has object but no amount property", async () => {
+      const configuration = new OkexExchangeConfiguration()
+      const args = { address: "bc1q", amountInSats: 1 } as FetchDepositsParameters
+      const response = [
+        [
+          {
+            currency: TradeCurrency.BTC,
+            // amount: sat2btc(args.amountInSats),
+            address: args.address,
+            status: "ok",
+          },
+        ],
+      ]
+      expect(() =>
+        configuration.fetchDepositsProcessApiResponse(args, response),
+      ).toThrowError(ApiError.UNSUPPORTED_API_RESPONSE)
+    })
+    it("should throw when response has object but no address property", async () => {
+      const configuration = new OkexExchangeConfiguration()
+      const args = { address: "bc1q", amountInSats: 1 } as FetchDepositsParameters
+      const response = [
+        [
+          {
+            currency: TradeCurrency.BTC,
+            amount: sat2btc(args.amountInSats),
+            // address: args.address,
+            status: "ok",
+          },
+        ],
+      ]
+      expect(() =>
+        configuration.fetchDepositsProcessApiResponse(args, response),
+      ).toThrowError(ApiError.UNSUPPORTED_API_RESPONSE)
+    })
+    it("should throw when response has object but no status property", async () => {
+      const configuration = new OkexExchangeConfiguration()
+      const args = { address: "bc1q", amountInSats: 1 } as FetchDepositsParameters
+      const response = [
+        [
+          {
+            currency: TradeCurrency.BTC,
+            amount: sat2btc(args.amountInSats),
+            address: args.address,
+            // status: "ok",
+          },
+        ],
+      ]
+      expect(() =>
+        configuration.fetchDepositsProcessApiResponse(args, response),
+      ).toThrowError(ApiError.UNSUPPORTED_API_RESPONSE)
+    })
+    it("should throw when response does not match on address", async () => {
+      const configuration = new OkexExchangeConfiguration()
+      const args = { address: "bc1q", amountInSats: 1 } as FetchDepositsParameters
+      const responseValues = {
+        address: `NOT_${args.address}`,
+        amountInBtc: sat2btc(args.amountInSats),
+        status: FundTransferStatus.Ok,
+      }
+      const validResponse = getValidFetchDepositsResponse(responseValues)
+      expect(() =>
+        configuration.fetchDepositsProcessApiResponse(args, validResponse),
+      ).toThrowError(ApiError.UNSUPPORTED_API_RESPONSE)
+    })
+    it("should throw when response does not match on amount", async () => {
+      const configuration = new OkexExchangeConfiguration()
+      const args = { address: "bc1q", amountInSats: 1 } as FetchDepositsParameters
+      const responseValues = {
+        address: args.address,
+        amountInBtc: sat2btc(12345 * args.amountInSats),
+        status: FundTransferStatus.Ok,
+      }
+      const validResponse = getValidFetchDepositsResponse(responseValues)
+      expect(() =>
+        configuration.fetchDepositsProcessApiResponse(args, validResponse),
+      ).toThrowError(ApiError.UNSUPPORTED_API_RESPONSE)
+    })
+    it("should return correct result when one response is good", async () => {
+      const configuration = new OkexExchangeConfiguration()
+      const args = { address: "bc1q", amountInSats: 1 } as FetchDepositsParameters
+      const responseValues = {
+        address: args.address,
+        amountInBtc: sat2btc(args.amountInSats),
+        status: FundTransferStatus.Ok,
+      }
+      const response = [
+        [],
+        [{}],
+        [{}, {}],
+        [
+          {
+            currency: TradeCurrency.BTC,
+            amount: responseValues.amountInBtc,
+            address: responseValues.address,
+            status: responseValues.status,
+          },
+        ],
+      ]
+      const result = configuration.fetchDepositsProcessApiResponse(args, response)
+      expect(result).toBeDefined()
+      expect(result.currency).toBe(TradeCurrency.BTC)
+      expect(result.address).toBe(responseValues.address)
+      expect(result.amount).toBe(responseValues.amountInBtc)
+      expect(result.status).toBe(responseValues.status)
+      expect(result.originalResponseAsIs).toBe(response)
+    })
+    it("should return correct result when response is good", async () => {
+      const configuration = new OkexExchangeConfiguration()
+      const args = { address: "bc1q", amountInSats: 1 } as FetchDepositsParameters
+      const responseValues = {
+        address: args.address,
+        amountInBtc: sat2btc(args.amountInSats),
+        status: FundTransferStatus.Ok,
+      }
+      const validResponse = getValidFetchDepositsResponse(responseValues)
+      const result = configuration.fetchDepositsProcessApiResponse(args, validResponse)
+      expect(result).toBeDefined()
+      expect(result.currency).toBe(TradeCurrency.BTC)
+      expect(result.address).toBe(responseValues.address)
+      expect(result.amount).toBe(responseValues.amountInBtc)
+      expect(result.status).toBe(responseValues.status)
+      expect(result.originalResponseAsIs).toBe(validResponse)
+    })
+  })
+
   describe("withdrawValidateInput", () => {
     it(`should throw when response has no ${TradeCurrency.BTC} currency property`, async () => {
       const configuration = new OkexExchangeConfiguration()
@@ -428,6 +703,222 @@ describe("OkexExchangeConfiguration", () => {
       const response = getValidWithdrawResponse()
       const result = configuration.withdrawValidateApiResponse(response)
       expect(result).toBeUndefined()
+    })
+  })
+
+  describe("fetchWithdrawalsValidateInput", () => {
+    it("should do nothing when arguments are all valid", async () => {
+      const configuration = new OkexExchangeConfiguration()
+      const args = { address: "bc1q", amountInSats: 1 } as FetchWithdrawalsParameters
+      const result = configuration.fetchWithdrawalsValidateInput(args)
+      expect(result).toBeUndefined()
+    })
+    it("should throw when address is invalid", async () => {
+      const configuration = new OkexExchangeConfiguration()
+      falsyArgs.forEach((falsyArg) => {
+        const args = { address: falsyArg, amountInSats: 1 } as FetchWithdrawalsParameters
+        expect(() => configuration.fetchWithdrawalsValidateInput(args)).toThrowError(
+          ApiError.UNSUPPORTED_ADDRESS,
+        )
+      })
+    })
+    it("should throw when amountInSats is not positive", async () => {
+      const configuration = new OkexExchangeConfiguration()
+      const invalidAmountInSats = [0, -1]
+      for (const amount of invalidAmountInSats) {
+        const args = {
+          address: "bc1q",
+          amountInSats: amount,
+        } as FetchWithdrawalsParameters
+        expect(() => configuration.fetchWithdrawalsValidateInput(args)).toThrowError(
+          ApiError.NON_POSITIVE_QUANTITY,
+        )
+      }
+    })
+  })
+
+  describe("fetchWithdrawalsProcessApiResponse", () => {
+    it("should throw when response is falsy", async () => {
+      const configuration = new OkexExchangeConfiguration()
+      const args = { address: "bc1q", amountInSats: 1 } as FetchWithdrawalsParameters
+      falsyArgs.forEach((response) => {
+        expect(() =>
+          configuration.fetchWithdrawalsProcessApiResponse(args, response),
+        ).toThrowError(ApiError.UNSUPPORTED_API_RESPONSE)
+      })
+    })
+    it("should throw when response has no sub array", async () => {
+      const configuration = new OkexExchangeConfiguration()
+      const args = { address: "bc1q", amountInSats: 1 } as FetchWithdrawalsParameters
+      const response = []
+      expect(() =>
+        configuration.fetchWithdrawalsProcessApiResponse(args, response),
+      ).toThrowError(ApiError.UNSUPPORTED_API_RESPONSE)
+    })
+    it("should throw when response has no object in sub array", async () => {
+      const configuration = new OkexExchangeConfiguration()
+      const args = { address: "bc1q", amountInSats: 1 } as FetchWithdrawalsParameters
+      const response = [[]]
+      expect(() =>
+        configuration.fetchWithdrawalsProcessApiResponse(args, response),
+      ).toThrowError(ApiError.UNSUPPORTED_API_RESPONSE)
+    })
+    it("should throw when response has object but no currency property", async () => {
+      const configuration = new OkexExchangeConfiguration()
+      const args = { address: "bc1q", amountInSats: 1 } as FetchWithdrawalsParameters
+      const response = [
+        [
+          {
+            // currency: TradeCurrency.BTC,
+            amount: sat2btc(args.amountInSats),
+            address: args.address,
+            status: "ok",
+          },
+        ],
+      ]
+      expect(() =>
+        configuration.fetchWithdrawalsProcessApiResponse(args, response),
+      ).toThrowError(ApiError.UNSUPPORTED_API_RESPONSE)
+    })
+    it("should throw when response has object but currency not BTC", async () => {
+      const configuration = new OkexExchangeConfiguration()
+      const args = { address: "bc1q", amountInSats: 1 } as FetchWithdrawalsParameters
+      const response = [
+        [
+          {
+            currency: "NOT_BTC",
+            amount: sat2btc(args.amountInSats),
+            address: args.address,
+            status: "ok",
+          },
+        ],
+      ]
+      expect(() =>
+        configuration.fetchWithdrawalsProcessApiResponse(args, response),
+      ).toThrowError(ApiError.UNSUPPORTED_API_RESPONSE)
+    })
+    it("should throw when response has object but no amount property", async () => {
+      const configuration = new OkexExchangeConfiguration()
+      const args = { address: "bc1q", amountInSats: 1 } as FetchWithdrawalsParameters
+      const response = [
+        [
+          {
+            currency: TradeCurrency.BTC,
+            // amount: sat2btc(args.amountInSats),
+            address: args.address,
+            status: "ok",
+          },
+        ],
+      ]
+      expect(() =>
+        configuration.fetchWithdrawalsProcessApiResponse(args, response),
+      ).toThrowError(ApiError.UNSUPPORTED_API_RESPONSE)
+    })
+    it("should throw when response has object but no address property", async () => {
+      const configuration = new OkexExchangeConfiguration()
+      const args = { address: "bc1q", amountInSats: 1 } as FetchWithdrawalsParameters
+      const response = [
+        [
+          {
+            currency: TradeCurrency.BTC,
+            amount: sat2btc(args.amountInSats),
+            // address: args.address,
+            status: "ok",
+          },
+        ],
+      ]
+      expect(() =>
+        configuration.fetchWithdrawalsProcessApiResponse(args, response),
+      ).toThrowError(ApiError.UNSUPPORTED_API_RESPONSE)
+    })
+    it("should throw when response has object but no status property", async () => {
+      const configuration = new OkexExchangeConfiguration()
+      const args = { address: "bc1q", amountInSats: 1 } as FetchWithdrawalsParameters
+      const response = [
+        [
+          {
+            currency: TradeCurrency.BTC,
+            amount: sat2btc(args.amountInSats),
+            address: args.address,
+            // status: "ok",
+          },
+        ],
+      ]
+      expect(() =>
+        configuration.fetchWithdrawalsProcessApiResponse(args, response),
+      ).toThrowError(ApiError.UNSUPPORTED_API_RESPONSE)
+    })
+    it("should throw when response does not match on address", async () => {
+      const configuration = new OkexExchangeConfiguration()
+      const args = { address: "bc1q", amountInSats: 1 } as FetchWithdrawalsParameters
+      const responseValues = {
+        address: `NOT_${args.address}`,
+        amountInBtc: sat2btc(args.amountInSats),
+        status: FundTransferStatus.Ok,
+      }
+      const validResponse = getValidFetchWithdrawalsResponse(responseValues)
+      expect(() =>
+        configuration.fetchWithdrawalsProcessApiResponse(args, validResponse),
+      ).toThrowError(ApiError.UNSUPPORTED_API_RESPONSE)
+    })
+    it("should throw when response does not match on amount", async () => {
+      const configuration = new OkexExchangeConfiguration()
+      const args = { address: "bc1q", amountInSats: 1 } as FetchWithdrawalsParameters
+      const responseValues = {
+        address: args.address,
+        amountInBtc: sat2btc(12345 * args.amountInSats),
+        status: FundTransferStatus.Ok,
+      }
+      const validResponse = getValidFetchWithdrawalsResponse(responseValues)
+      expect(() =>
+        configuration.fetchWithdrawalsProcessApiResponse(args, validResponse),
+      ).toThrowError(ApiError.UNSUPPORTED_API_RESPONSE)
+    })
+    it("should return correct result when one response is good", async () => {
+      const configuration = new OkexExchangeConfiguration()
+      const args = { address: "bc1q", amountInSats: 1 } as FetchWithdrawalsParameters
+      const responseValues = {
+        address: args.address,
+        amountInBtc: sat2btc(args.amountInSats),
+        status: FundTransferStatus.Ok,
+      }
+      const response = [
+        [],
+        [{}],
+        [{}, {}],
+        [
+          {
+            currency: TradeCurrency.BTC,
+            amount: responseValues.amountInBtc,
+            address: responseValues.address,
+            status: responseValues.status,
+          },
+        ],
+      ]
+      const result = configuration.fetchWithdrawalsProcessApiResponse(args, response)
+      expect(result).toBeDefined()
+      expect(result.currency).toBe(TradeCurrency.BTC)
+      expect(result.address).toBe(responseValues.address)
+      expect(result.amount).toBe(responseValues.amountInBtc)
+      expect(result.status).toBe(responseValues.status)
+      expect(result.originalResponseAsIs).toBe(response)
+    })
+    it("should return correct result when response is good", async () => {
+      const configuration = new OkexExchangeConfiguration()
+      const args = { address: "bc1q", amountInSats: 1 } as FetchWithdrawalsParameters
+      const responseValues = {
+        address: args.address,
+        amountInBtc: sat2btc(args.amountInSats),
+        status: FundTransferStatus.Ok,
+      }
+      const validResponse = getValidFetchWithdrawalsResponse(responseValues)
+      const result = configuration.fetchWithdrawalsProcessApiResponse(args, validResponse)
+      expect(result).toBeDefined()
+      expect(result.currency).toBe(TradeCurrency.BTC)
+      expect(result.address).toBe(responseValues.address)
+      expect(result.amount).toBe(responseValues.amountInBtc)
+      expect(result.status).toBe(responseValues.status)
+      expect(result.originalResponseAsIs).toBe(validResponse)
     })
   })
 
