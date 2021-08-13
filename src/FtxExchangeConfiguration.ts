@@ -204,22 +204,21 @@ export class FtxExchangeConfiguration implements ExchangeConfiguration {
     // Not supported
     throw new Error(ApiError.NOT_SUPPORTED)
   }
+  /* eslint-disable */
   fetchBalanceProcessApiResponse(response): FetchBalanceResult {
     // Not supported
-    console.log(response)
     throw new Error(ApiError.NOT_SUPPORTED)
   }
 
   fetchPositionValidateInput(instrumentId: string) {
     // Not supported
-    console.log(instrumentId)
     throw new Error(ApiError.NOT_SUPPORTED)
   }
   fetchPositionProcessApiResponse(response): FetchPositionResult {
     // Not supported
-    console.log(response)
     throw new Error(ApiError.NOT_SUPPORTED)
   }
+  /* eslint-enable */
 
   fetchTickerValidateInput(instrumentId: string) {
     assert(
