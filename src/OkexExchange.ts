@@ -80,19 +80,23 @@ export class OkexExchange extends ExchangeBase {
         `publicGetPublicInstruments(${this.instrumentId}) returned: {response}`,
       )
       assert(response, ApiError.UNSUPPORTED_API_RESPONSE)
-      assert(response.ctValCcy === TradeCurrency.USD, ApiError.INVALID_TRADE_SIDE)
-      assert(response.minSz > 0, ApiError.NON_POSITIVE_QUANTITY)
-      assert(response.ctVal > 0, ApiError.NON_POSITIVE_PRICE)
+      assert(
+        response.data[0].ctValCcy === TradeCurrency.USD,
+        ApiError.UNSUPPORTED_CURRENCY,
+      )
+      assert(response.data[0].minSz > 0, ApiError.NON_POSITIVE_QUANTITY)
+      assert(response.data[0].ctVal > 0, ApiError.NON_POSITIVE_PRICE)
 
       return {
         ok: true,
         value: {
           originalResponseAsIs: response,
-          minimumOrderSizeInContract: response.minSz,
-          contractFaceValue: response.ctVal,
+          minimumOrderSizeInContract: Number(response.data[0].minSz),
+          contractFaceValue: Number(response.data[0].ctVal),
         },
       }
     } catch (error) {
+      console.log(`Failure in getInstrumentDetails(): ${error.message}`)
       return { ok: false, error: error }
     }
   }
