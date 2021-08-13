@@ -66,19 +66,20 @@ export class FtxExchangeConfiguration implements ExchangeConfiguration {
     // deposit = {}
     // Since we're looking for one specific entry, don't fail until we're done
     const result = {} as FetchDepositsResult
+    let success = false
     response.forEach((deposits) => {
       deposits.forEach((deposit) => {
         if (
           deposit &&
-          deposit.has("currency") &&
+          "currency" in deposit &&
           deposit.currency === TradeCurrency.BTC &&
-          deposit.has("address") &&
+          "address" in deposit &&
           deposit.address === args.address &&
-          deposit.has("amount") &&
+          "amount" in deposit &&
           deposit.amount === amountInBtc &&
-          deposit.has("status")
+          "status" in deposit
         ) {
-          result.originalResponseAsIs = deposit
+          success = true
           result.currency = deposit.currency
           result.address = deposit.address
           result.amount = deposit.amount
@@ -86,7 +87,8 @@ export class FtxExchangeConfiguration implements ExchangeConfiguration {
         }
       })
     })
-    assert(result, ApiError.UNSUPPORTED_API_RESPONSE)
+    assert(success, ApiError.UNSUPPORTED_API_RESPONSE)
+    result.originalResponseAsIs = response
     return result
   }
 
@@ -118,19 +120,20 @@ export class FtxExchangeConfiguration implements ExchangeConfiguration {
     // withdrawal = {}
     // Since we're looking for one specific entry, don't fail until we're done
     const result = {} as FetchWithdrawalsResult
+    let success = false
     response.forEach((withdrawals) => {
       withdrawals.forEach((withdrawal) => {
         if (
           withdrawal &&
-          withdrawal.has("currency") &&
+          "currency" in withdrawal &&
           withdrawal.currency === TradeCurrency.BTC &&
-          withdrawal.has("address") &&
+          "address" in withdrawal &&
           withdrawal.address === args.address &&
-          withdrawal.has("amount") &&
+          "amount" in withdrawal &&
           withdrawal.amount === amountInBtc &&
-          withdrawal.has("status")
+          "status" in withdrawal
         ) {
-          result.originalResponseAsIs = withdrawal
+          success = true
           result.currency = withdrawal.currency
           result.address = withdrawal.address
           result.amount = withdrawal.amount
@@ -138,7 +141,8 @@ export class FtxExchangeConfiguration implements ExchangeConfiguration {
         }
       })
     })
-    assert(result, ApiError.UNSUPPORTED_API_RESPONSE)
+    assert(success, ApiError.UNSUPPORTED_API_RESPONSE)
+    result.originalResponseAsIs = response
     return result
   }
 
