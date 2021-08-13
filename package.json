@@ -17,6 +17,7 @@
   "dependencies": {
     "@apollo/client": "^3.3.21",
     "ccxt": "^1.53.54",
+    "csv-parse": "^4.16.0",
     "dateformat": "^4.5.1",
     "dotenv": "^10.0.0",
     "graphql": "^15.5.1",

@@ -1,12 +1,13 @@
 import dateFormat from "dateformat"
 import { UpdatedPositionAndLeverageResult } from "src/Dealer"
 import { OrderStatus, FundTransferStatus, TradeCurrency } from "src/ExchangeTradingType"
+import { Position, UpdatedBalance, UpdatedPosition } from "src/HedgingStrategyTypes"
 import { Result } from "src/Result"
+import { sat2btc } from "src/utils"
 
 const DATE_FORMAT_STRING = "yyyymmddHHMMss"
 
 function getValidFetchDepositAddressResponse() {
-  //   console.log("Called: getValidFetchDepositAddressResponse()")
   const datetime = dateFormat(new Date(), DATE_FORMAT_STRING)
   const address = `bc1q00exchange00000000000000000000000000datetime${datetime}`
   return {
@@ -24,6 +25,35 @@ function getValidFetchDepositAddressResponse() {
     ],
     msg: "",
   }
+}
+
+function getValidFetchDepositsResponse(args) {
+  const address: string = args.address
+  const amountInBtc: number = args.amountInBtc
+  const status: FundTransferStatus = args.status
+  return [
+    [
+      {
+        info: {
+          ccy: TradeCurrency.BTC,
+          chain: "BTC-Bitcoin",
+          amt: `${amountInBtc}`,
+          to: address,
+        },
+        currency: TradeCurrency.BTC,
+        amount: amountInBtc,
+        addressTo: address,
+        address: address,
+        status: status,
+        type: "deposit",
+        fee: {
+          currency: TradeCurrency.BTC,
+          cost: 0,
+        },
+        page: 0,
+      },
+    ],
+  ]
 }
 
 function getValidWithdrawResponse(id: string, currency, amountInBtc) {
@@ -46,6 +76,35 @@ function getValidWithdrawResponse(id: string, currency, amountInBtc) {
   }
 }
 
+function getValidFetchWithdrawalsResponse(args) {
+  const address: string = args.address
+  const amountInBtc: number = args.amountInBtc
+  const status: FundTransferStatus = args.status
+  return [
+    [
+      {
+        info: {
+          ccy: TradeCurrency.BTC,
+          chain: "BTC-Bitcoin",
+          amt: `${amountInBtc}`,
+          to: address,
+        },
+        currency: TradeCurrency.BTC,
+        amount: amountInBtc,
+        addressTo: address,
+        address: address,
+        status: status,
+        type: "withdrawal",
+        fee: {
+          currency: TradeCurrency.BTC,
+          cost: 0,
+        },
+        page: 0,
+      },
+    ],
+  ]
+}
+
 function getValidCreateMarketOrderResponse(id: number) {
   console.log(`Called: getValidCreateMarketOrderResponse(id=${id})`)
   return { id: `${id}` }
@@ -57,7 +116,6 @@ function getValidFetchOrderResponse(status: OrderStatus) {
 }
 
 function getValidFetchBalanceResponse(balance: number) {
-  //   console.log("Called: getValidFetchBalanceResponse()")
   return {
     info: {
       data: [
@@ -74,7 +132,6 @@ function getValidFetchPositionResponse(
   notionalUsd: number,
   margin: number,
 ) {
-  //   console.log("Called: getValidFetchPositionResponse()")
   return {
     last: `${last}`,
     notionalUsd: `${notionalUsd}`,
@@ -83,7 +140,6 @@ function getValidFetchPositionResponse(
 }
 
 function getValidFetchTickerResponse(instrumentId: string, last: number) {
-  //   console.log(`Called: getValidFetchTickerResponse(${instrumentId}, ${last})`)
   return {
     symbol: `${instrumentId}`,
     last: last,
@@ -114,17 +170,49 @@ function getValidPublicGetPublicInstrumentsResponse({ instType, instId }) {
   }
 }
 
-export class OkexExchangeMockBuilder {
+export interface StepInput {
+  lastPriceInUsd: number
+  liabilityInUsd: number
+  notionalUsd: number
+  marginInBtc: number
+  totalEquity: number
+  hasMinimalLiability: boolean
+  isOrderExpected: boolean
+  isOrderSizeOk: boolean
+  orderId: number
+  firstOrderStatus: OrderStatus
+  numberFetchIteration: number
+  lastOrderStatus: OrderStatus
+
+  wasFundTransferExpected: boolean
+  wasTransferWithdraw: boolean
+
+  isFundTransferExpected: boolean
+  isTransferWithdraw: boolean
+
+  comment: string
+  // updatePositionSkipped: boolean // !hasMinimalLiability
+  expectPositionUpdatedOk: boolean
+  // updateLeverageSkipped: boolean // !isFundTransferExpected
+  expectLeverageUpdatedOk: boolean
+}
+
+export interface ExpectedResult {
+  comment: string
+  result: UpdatedPositionAndLeverageResult
+}
+
+export class OkexExchangeScenarioStepBuilder {
   private exchangeMockObject
   private walletMockObject
 
-  private updatePositionSkipped
-  private expectPositionUpdatedOk
-  private expectLeverageUpdatedOk
+  private expectedResults = [] as ExpectedResult[]
 
   constructor() {
     this.exchangeMockObject = {
       checkRequiredCredentials: jest.fn(),
+      fetchDeposits: jest.fn(),
+      fetchWithdrawals: jest.fn(),
       fetchTicker: jest.fn(),
       fetchPosition: jest.fn(),
       fetchBalance: jest.fn(),
@@ -151,31 +239,80 @@ export class OkexExchangeMockBuilder {
     return this.walletMockObject
   }
 
-  public mockThis(
-    lastPriceInUsd: number,
-    liabilityInUsd: number,
-    notionalUsd: number,
-    marginInBtc: number,
-    totalEquity: number,
-    hasMinimalLiability: boolean,
-    isOrderExpected: boolean,
-    isOrderSizeOk: boolean,
-    orderId: number,
-    firstOrderStatus: OrderStatus,
-    numberFetchIteration: number,
-    lastOrderStatus: OrderStatus,
+  public getExpectedValues(): ExpectedResult[] {
+    return this.expectedResults
+  }
 
-    isFundTransferExpected: boolean,
-    isTransferWithdraw: boolean,
+  public addScenarioStep(args: StepInput) {
+    const {
+      lastPriceInUsd,
+      liabilityInUsd,
+      notionalUsd,
+      marginInBtc,
+      totalEquity,
+      hasMinimalLiability,
+      isOrderExpected,
+      isOrderSizeOk,
+      orderId,
+      firstOrderStatus,
+      numberFetchIteration,
+      lastOrderStatus,
 
-    updatePositionSkipped: boolean,
-    expectPositionUpdatedOk: boolean,
-    expectLeverageUpdatedOk: boolean,
-    // instrumentId: SupportedInstrument,
-  ) {
-    this.updatePositionSkipped = updatePositionSkipped
-    this.expectPositionUpdatedOk = expectPositionUpdatedOk
-    this.expectLeverageUpdatedOk = expectLeverageUpdatedOk
+      wasFundTransferExpected,
+      wasTransferWithdraw,
+
+      isFundTransferExpected,
+      isTransferWithdraw,
+
+      comment,
+      expectPositionUpdatedOk,
+      expectLeverageUpdatedOk,
+    } = args
+
+    // Prepare expected results first...
+    const expected: UpdatedPositionAndLeverageResult = {
+      updatePositionSkipped: !hasMinimalLiability,
+      updatedPositionResult: { ok: true, value: {} as UpdatedPosition },
+      updateLeverageSkipped: !isFundTransferExpected,
+      updatedLeverageResult: { ok: true, value: {} as UpdatedBalance },
+    }
+
+    expected.updatePositionSkipped = !hasMinimalLiability
+    expected.updatedPositionResult.ok = expectPositionUpdatedOk
+    expected.updateLeverageSkipped = !isFundTransferExpected
+    expected.updatedLeverageResult.ok = expectLeverageUpdatedOk
+
+    if (hasMinimalLiability && expected.updatedPositionResult.ok) {
+      const position: Position = {
+        leverageRatio: notionalUsd / lastPriceInUsd / marginInBtc,
+        collateralInUsd: marginInBtc * lastPriceInUsd,
+        exposureInUsd: notionalUsd,
+        totalAccountValueInUsd: NaN,
+      }
+      expected.updatedPositionResult.value.updatedPosition = position
+    }
+
+    if (hasMinimalLiability && expected.updatedLeverageResult.ok) {
+      const balance: UpdatedBalance = {
+        originalLeverageRatio: notionalUsd / lastPriceInUsd / marginInBtc,
+        liabilityInUsd: liabilityInUsd,
+        collateralInUsd: marginInBtc * lastPriceInUsd,
+        newLeverageRatio: notionalUsd / lastPriceInUsd / marginInBtc,
+      }
+      expected.updatedLeverageResult.value = balance
+    }
+
+    this.expectedResults.push({ comment: comment, result: expected })
+
+    // ...then sequence the api calls
+
+    // Update in-flight
+    // If wasFundTransferExpected (in the previous step)
+    //  If wasTransferWithdraw
+    //    exchange.fetchWithdrawals()
+    //  Else // deposit
+    //    exchange.fetchDeposits()
+
     // Position Loop
     //
     // exchange.fetchTicker()
@@ -204,6 +341,33 @@ export class OkexExchangeMockBuilder {
     //     Else // deposit
     //         exchange.fetchDepositAddress()
     //         wallet.payOnChain()
+
+    // Update in-flight
+    if (wasFundTransferExpected) {
+      if (wasTransferWithdraw) {
+        this.exchangeMockObject.fetchWithdrawals.mockImplementationOnce(
+          ({ address, amountInSats }) => {
+            const args = {
+              address: address,
+              amountInBtc: sat2btc(amountInSats),
+              status: FundTransferStatus.Ok, // <-- Always successful for now
+            }
+            return getValidFetchWithdrawalsResponse(args)
+          },
+        )
+      } else {
+        this.exchangeMockObject.fetchDeposits.mockImplementationOnce(
+          ({ address, amountInSats }) => {
+            const args = {
+              address: address,
+              amountInBtc: sat2btc(amountInSats),
+              status: FundTransferStatus.Ok, // <-- Always successful for now
+            }
+            return getValidFetchDepositsResponse(args)
+          },
+        )
+      }
+    }
 
     // Position Loop
     this.exchangeMockObject.fetchTicker.mockImplementationOnce((instrumentId: string) => {
@@ -236,10 +400,15 @@ export class OkexExchangeMockBuilder {
           this.exchangeMockObject.fetchOrder.mockImplementationOnce(() => {
             getValidFetchOrderResponse(firstOrderStatus)
           })
-          for (let i = 0; i < numberFetchIteration - 1; i++) {
+          if (numberFetchIteration > 1) {
+            if (numberFetchIteration > 2) {
+              for (let i = 0; i < numberFetchIteration - 1; i++) {
+                this.exchangeMockObject.fetchOrder.mockImplementationOnce(() => {
+                  getValidFetchOrderResponse(firstOrderStatus)
+                })
+              }
+            }
             this.exchangeMockObject.fetchOrder.mockImplementationOnce(() => {
-              // TODO: fix this
-              //   getValidFetchOrderResponse(firstOrderStatus)
               getValidFetchOrderResponse(lastOrderStatus)
             })
           }
@@ -282,37 +451,5 @@ export class OkexExchangeMockBuilder {
         })
       }
     }
-  }
-
-  public getExpectedValues(): UpdatedPositionAndLeverageResult {
-    const result = {} as UpdatedPositionAndLeverageResult
-    result.updatePositionSkipped = this.updatePositionSkipped
-    result.updatedPositionResult.ok = this.expectPositionUpdatedOk
-    if (result.updatedPositionResult.ok) {
-      // Before
-      result.updatedPositionResult.value.originalPosition.collateralInUsd = NaN
-      result.updatedPositionResult.value.originalPosition.exposureInUsd = NaN
-      result.updatedPositionResult.value.originalPosition.leverageRatio = NaN
-      result.updatedPositionResult.value.originalPosition.totalAccountValueInUsd = NaN
-      // After
-      result.updatedPositionResult.value.updatedPosition.collateralInUsd = NaN
-      result.updatedPositionResult.value.updatedPosition.exposureInUsd = NaN
-      result.updatedPositionResult.value.updatedPosition.leverageRatio = NaN
-      result.updatedPositionResult.value.updatedPosition.totalAccountValueInUsd = NaN
-    }
-    // else{
-    //     result.updatedPositionResult.error =
-    // }
-    result.updatedLeverageResult.ok = this.expectLeverageUpdatedOk
-    if (result.updatedLeverageResult.ok) {
-      result.updatedLeverageResult.value.collateralInUsd = NaN
-      result.updatedLeverageResult.value.liabilityInUsd = NaN
-      result.updatedLeverageResult.value.newLeverageRatio = NaN
-      result.updatedLeverageResult.value.originalLeverageRatio = NaN
-    }
-    // else{
-    //     result.updatedLeverageResult.error
-    // }
-    return result
   }
 }
