@@ -23,7 +23,7 @@ const MINIMUM_POSITIVE_LIABILITY = 1
 export type UpdatedPositionAndLeverageResult = {
   updatePositionSkipped: boolean
   updatedPositionResult: Result<UpdatedPosition>
-  updatedLeverageSkipped: boolean
+  updateLeverageSkipped: boolean
   updatedLeverageResult: Result<UpdatedBalance>
 }
 
@@ -197,7 +197,7 @@ export class Dealer {
         )
       }
     } else {
-      result.updatedLeverageSkipped = true
+      result.updateLeverageSkipped = true
       if (dbCallResult.ok) {
         const pendingInFlightTransfers = dbCallResult.value
         const message =
@@ -211,7 +211,7 @@ export class Dealer {
 
     if (
       (result.updatePositionSkipped || result.updatedPositionResult.ok) &&
-      (result.updatedLeverageSkipped || result.updatedLeverageResult.ok)
+      (result.updateLeverageSkipped || result.updatedLeverageResult.ok)
     ) {
       return { ok: true, value: result }
     } else {
