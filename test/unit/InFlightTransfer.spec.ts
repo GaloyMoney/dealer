@@ -18,7 +18,7 @@ afterAll(async () => {
 })
 
 describe("InFlightTransferDb", () => {
-  describe.only("constructor", () => {
+  describe("constructor", () => {
     it("should create a database file", async () => {
       const logger = baseLogger.child({ module: "InFlightTransfer.spec.ts" })
       new InFlightTransferDb(logger)
@@ -28,7 +28,7 @@ describe("InFlightTransferDb", () => {
     })
   })
 
-  describe.only("insertInFlightTransfers", () => {
+  describe("insertInFlightTransfers", () => {
     it("should insert a record with success", async () => {
       const logger = baseLogger.child({ module: "InFlightTransfer.spec.ts" })
       const database = new InFlightTransferDb(logger)
@@ -101,7 +101,7 @@ describe("InFlightTransferDb", () => {
     })
   })
 
-  describe.only("completedInFlightTransfers", () => {
+  describe("completedInFlightTransfers", () => {
     it("should mark the record completed", async () => {
       const logger = baseLogger.child({ module: "InFlightTransfer.spec.ts" })
       const database = new InFlightTransferDb(logger)
@@ -166,7 +166,7 @@ describe("InFlightTransferDb", () => {
     })
   })
 
-  describe.only("getThisInFlightTransfer", () => {
+  describe("getThisInFlightTransfer", () => {
     it("should return the expected record", async () => {
       const logger = baseLogger.child({ module: "InFlightTransfer.spec.ts" })
       const database = new InFlightTransferDb(logger)
@@ -205,7 +205,7 @@ describe("InFlightTransferDb", () => {
     })
   })
 
-  describe.only("getPendingInFlightTransfers", () => {
+  describe("getPendingInFlightTransfers", () => {
     it("should return empty when no records", async () => {
       const logger = baseLogger.child({ module: "InFlightTransfer.spec.ts" })
       const database = new InFlightTransferDb(logger)
@@ -306,7 +306,7 @@ describe("InFlightTransferDb", () => {
     })
   })
 
-  describe.only("getAllInFlightTransfers", () => {
+  describe("getAllInFlightTransfers", () => {
     it("should return correct number of records", async () => {
       const logger = baseLogger.child({ module: "InFlightTransfer.spec.ts" })
       const database = new InFlightTransferDb(logger)
