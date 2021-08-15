@@ -193,7 +193,7 @@ export class Dealer {
         usdLiability,
         btcPriceInUsd,
         withdrawOnChainAddress,
-        this.withdrawBookKeeping,
+        this.withdrawBookKeeping.bind(this),
         this.depositOnExchangeCallback.bind(this),
       )
       result.updatedLeverageResult = updatedLeverageResult
