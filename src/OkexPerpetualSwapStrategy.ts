@@ -157,8 +157,9 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
       updatedPosition.originalPosition = originalRisk
 
       if (hedgingOrder.out.tradeSide === TradeSide.NoTrade) {
-        const msg = `${hedgingOrder.in.loBracket} < ${hedgingOrder.in.exposureRatio} < ${hedgingOrder.in.hiBracket}`
-        logger.debug(`Calculated no hedging is needed: ${msg}`)
+        const msg =
+          "{hedgingOrder.in.loBracket} < {hedgingOrder.in.exposureRatio} < {hedgingOrder.in.hiBracket}"
+        logger.debug({ hedgingOrder }, `Calculated no hedging is needed: ${msg}`)
         return {
           ok: true,
           value: updatedPosition,
@@ -294,7 +295,7 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
         const withdrawalResponse = withdrawalResult.value
 
         // TODO: might want to check the withdrawalResponse.id instead
-        if (withdrawalResponse.status === FundTransferStatus.Requested) {
+        if (withdrawalResponse.id === FundTransferStatus.Requested) {
           // TODO: wait until request succeed before updating tx
 
           const bookingResult = await withdrawBookKeepingCallback(
@@ -311,12 +312,12 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
 
           this.logger.info(
             { withdrawalResponse },
-            `rebalancing withdrawal was successful`,
+            "rebalancing withdrawal was successful",
           )
         } else {
           this.logger.error(
             { withdrawalResponse },
-            `rebalancing withdrawal was NOT successful`,
+            "rebalancing withdrawal was NOT successful",
           )
         }
       } else if (fundTransferSide === FundTransferSide.Deposit) {
@@ -428,8 +429,8 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
         hedgingBounds,
       )
       this.logger.debug(
-        { hedgingBounds, orderResult },
-        `getHedgingOrderIfNeeded(${liabilityInUsd}, ${exposureInUsd}, ${lastBtcPriceInUsd}, {hedgingBounds}) returned: {orderResult}`,
+        { liabilityInUsd, exposureInUsd, lastBtcPriceInUsd, hedgingBounds, orderResult },
+        "getHedgingOrderIfNeeded({liabilityInUsd}, {exposureInUsd}, {lastBtcPriceInUsd}, {hedgingBounds}) returned: {orderResult}",
       )
       if (!orderResult.ok) {
         return { ok: false, error: orderResult.error }
@@ -470,13 +471,14 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
       }
 
       const orderResult = await this.exchange.createMarketOrder({
+        instrumentId: this.instrumentId,
         type: TradeType.Market,
         side: tradeSide,
         quantity: orderSizeInContract,
       })
       logger.debug(
-        { orderResult },
-        `this.exchange.createMarketOrder(${tradeSide}, ${orderSizeInContract}) returned: {orderResult}`,
+        { tradeSide, orderSizeInContract, orderResult },
+        "this.exchange.createMarketOrder({tradeSide}, {orderSizeInContract}) returned: {orderResult}",
       )
       if (!orderResult.ok) {
         return { ok: false, error: orderResult.error }
@@ -492,8 +494,8 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
         await sleep(waitTimeInMs)
         const fetchedOrderResult = await this.exchange.fetchOrder(placedOrder.id)
         logger.debug(
-          { fetchedOrderResult },
-          `this.exchange.fetchOrder(${placedOrder.id}) returned: {fetchedOrderResult}`,
+          { placedOrder, fetchedOrderResult },
+          "this.exchange.fetchOrder({placedOrder.id}) returned: {fetchedOrderResult}",
         )
         if (!fetchedOrderResult.ok) {
           return { ok: false, error: fetchedOrderResult.error }

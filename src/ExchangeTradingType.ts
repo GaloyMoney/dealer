@@ -79,7 +79,8 @@ export interface WithdrawParameters {
 
 export interface WithdrawResult {
   originalResponseAsIs
-  status: FundTransferStatus
+  id: string
+  // status: FundTransferStatus
 }
 
 export interface FetchWithdrawalsParameters {
@@ -96,6 +97,7 @@ export interface FetchWithdrawalsResult {
 }
 
 export interface CreateOrderParameters {
+  instrumentId: string
   type: TradeType
   side: TradeSide
   quantity: number

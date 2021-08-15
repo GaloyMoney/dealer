@@ -180,6 +180,7 @@ function getValidWithdrawResponse() {
 
 function getValidCreateMarketOrderValidateInput(): CreateOrderParameters {
   const args: CreateOrderParameters = {
+    instrumentId: SupportedInstrument.OKEX_PERPETUAL_SWAP,
     type: TradeType.Market,
     side: TradeSide.Buy,
     quantity: 1,
@@ -1011,9 +1012,25 @@ describe("OkexExchangeConfiguration", () => {
       })
     })
 
-    it("should throw when response has no status property", async () => {
+    it("should throw when response has no id property", async () => {
       const configuration = new OkexExchangeConfiguration()
       const response = {}
+      expect(() => configuration.fetchOrderValidateApiResponse(response)).toThrowError(
+        ApiError.MISSING_ORDER_ID,
+      )
+    })
+
+    it("should throw when response.id is not a supported id property", async () => {
+      const configuration = new OkexExchangeConfiguration()
+      const response = { id: "" }
+      expect(() => configuration.fetchOrderValidateApiResponse(response)).toThrowError(
+        ApiError.MISSING_ORDER_ID,
+      )
+    })
+
+    it("should throw when response has no status property", async () => {
+      const configuration = new OkexExchangeConfiguration()
+      const response = { id: "id" }
       expect(() => configuration.fetchOrderValidateApiResponse(response)).toThrowError(
         ApiError.UNSUPPORTED_API_RESPONSE,
       )
@@ -1021,7 +1038,7 @@ describe("OkexExchangeConfiguration", () => {
 
     it("should throw when response.status is not a supported OrderStatus property", async () => {
       const configuration = new OkexExchangeConfiguration()
-      const response = { status: "" }
+      const response = { id: "id", status: "" }
       expect(() => configuration.fetchOrderValidateApiResponse(response)).toThrowError(
         ApiError.UNSUPPORTED_API_RESPONSE,
       )
@@ -1030,7 +1047,7 @@ describe("OkexExchangeConfiguration", () => {
     it("should do nothing when response is valid", async () => {
       const configuration = new OkexExchangeConfiguration()
       for (const status in OrderStatus) {
-        const response = { status: status }
+        const response = { id: "id", status: status }
         const result = configuration.fetchOrderValidateApiResponse(response)
         expect(result).toBeUndefined()
       }

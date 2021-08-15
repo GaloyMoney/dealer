@@ -1,6 +1,11 @@
 import dateFormat from "dateformat"
 import { UpdatedPositionAndLeverageResult } from "src/Dealer"
-import { OrderStatus, FundTransferStatus, TradeCurrency } from "src/ExchangeTradingType"
+import {
+  OrderStatus,
+  FundTransferStatus,
+  TradeCurrency,
+  CreateOrderParameters,
+} from "src/ExchangeTradingType"
 import { Position, UpdatedBalance, UpdatedPosition } from "src/HedgingStrategyTypes"
 import { Result } from "src/Result"
 import { sat2btc } from "src/utils"
@@ -106,13 +111,16 @@ function getValidFetchWithdrawalsResponse(args) {
 }
 
 function getValidCreateMarketOrderResponse(id: number) {
-  console.log(`Called: getValidCreateMarketOrderResponse(id=${id})`)
   return { id: `${id}` }
 }
 
-function getValidFetchOrderResponse(status: OrderStatus) {
-  console.log("Called: getValidFetchOrderResponse()")
-  return { status: status }
+function getValidFetchOrderResponse(
+  id: string,
+  instrumentId: string,
+  status: OrderStatus,
+) {
+  console.log(`Called: getValidFetchOrderResponse(${id}, ${instrumentId}, ${status})`)
+  return { id: id, status: status }
 }
 
 function getValidFetchBalanceResponse(balance: number) {
@@ -219,6 +227,7 @@ export class OkexExchangeScenarioStepBuilder {
       createMarketOrder: jest.fn(),
       fetchOrder: jest.fn(),
       withdraw: jest.fn(),
+      fetchDepositAddress: jest.fn(),
     }
 
     this.walletMockObject = {
@@ -391,23 +400,31 @@ export class OkexExchangeScenarioStepBuilder {
           },
         )
         if (isOrderSizeOk) {
-          this.exchangeMockObject.createMarketOrder.mockImplementationOnce(() => {
-            return getValidCreateMarketOrderResponse(orderId)
-          })
-          this.exchangeMockObject.fetchOrder.mockImplementationOnce(() => {
-            getValidFetchOrderResponse(firstOrderStatus)
-          })
+          this.exchangeMockObject.createMarketOrder.mockImplementationOnce(
+            (args: CreateOrderParameters) => {
+              return getValidCreateMarketOrderResponse(orderId)
+            },
+          )
+          this.exchangeMockObject.fetchOrder.mockImplementationOnce(
+            (id: string, instrumentId: string) => {
+              return getValidFetchOrderResponse(id, instrumentId, firstOrderStatus)
+            },
+          )
           if (numberFetchIteration > 1) {
             if (numberFetchIteration > 2) {
               for (let i = 0; i < numberFetchIteration - 1; i++) {
-                this.exchangeMockObject.fetchOrder.mockImplementationOnce(() => {
-                  getValidFetchOrderResponse(firstOrderStatus)
-                })
+                this.exchangeMockObject.fetchOrder.mockImplementationOnce(
+                  (id: string, instrumentId: string) => {
+                    return getValidFetchOrderResponse(id, instrumentId, firstOrderStatus)
+                  },
+                )
               }
             }
-            this.exchangeMockObject.fetchOrder.mockImplementationOnce(() => {
-              getValidFetchOrderResponse(lastOrderStatus)
-            })
+            this.exchangeMockObject.fetchOrder.mockImplementationOnce(
+              (id: string, instrumentId: string) => {
+                return getValidFetchOrderResponse(id, instrumentId, lastOrderStatus)
+              },
+            )
           }
           this.exchangeMockObject.fetchPosition.mockImplementationOnce(() => {
             return getValidFetchPositionResponse(lastPriceInUsd, notionalUsd, marginInBtc)
@@ -442,10 +459,13 @@ export class OkexExchangeScenarioStepBuilder {
         this.exchangeMockObject.fetchDepositAddress.mockImplementationOnce(() => {
           return getValidFetchDepositAddressResponse()
         })
-        this.walletMockObject.payOnChain.mockImplementationOnce((): Result<void> => {
-          console.log("Called: payOnChain()")
-          return { ok: true, value: undefined }
-        })
+        console.log("Add this.walletMockObject.payOnChain() mock call")
+        this.walletMockObject.payOnChain.mockImplementationOnce(
+          (address: string, btcAmountInSats: number, memo: string): Result<void> => {
+            console.log(`Called: payOnChain(${address}, ${btcAmountInSats}, ${memo})`)
+            return { ok: true, value: undefined }
+          },
+        )
       }
     }
   }

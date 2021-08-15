@@ -15,16 +15,18 @@ import {
   FetchWithdrawalsResult,
   FetchWithdrawalsParameters,
   FetchDepositsParameters,
+  OrderStatus,
 } from "./ExchangeTradingType"
 import { Result } from "./Result"
 import ccxt, { ExchangeId } from "ccxt"
 import { ExchangeConfiguration } from "./ExchangeConfiguration"
+import pino from "pino"
 
 export abstract class ExchangeBase {
   exchangeConfig: ExchangeConfiguration
   exchangeId: ExchangeId
-  exchange
-  logger
+  exchange: ccxt.ftx | ccxt.okex5
+  logger: pino.Logger
 
   constructor(exchangeConfig: ExchangeConfiguration, logger) {
     this.exchangeConfig = exchangeConfig
@@ -140,7 +142,7 @@ export abstract class ExchangeBase {
         ok: true,
         value: {
           originalResponseAsIs: response,
-          status: response.status,
+          id: response.id,
         },
       }
     } catch (error) {
@@ -207,7 +209,11 @@ export abstract class ExchangeBase {
     try {
       this.exchangeConfig.createMarketOrderValidateInput(args)
 
-      const response = await this.exchange.createMarketOrder(args.side, args.quantity)
+      const response = await this.exchange.createMarketOrder(
+        args.instrumentId,
+        args.side as ccxt.Order["side"],
+        args.quantity,
+      )
       this.logger.debug(
         { args, response },
         "exchange.createMarketOrder({args}) returned: {response}",
@@ -232,7 +238,10 @@ export abstract class ExchangeBase {
       this.exchangeConfig.fetchOrderValidateInput(id)
 
       // call api
-      const response = await this.exchange.fetchOrder(id)
+      const response = await this.exchange.fetchOrder(
+        id,
+        this.exchangeConfig.instrumentId,
+      )
       this.logger.debug(
         { id, response },
         "exchange.fetchOrder({id}) returned: {response}",
@@ -244,7 +253,7 @@ export abstract class ExchangeBase {
         ok: true,
         value: {
           originalResponseAsIs: response,
-          status: response.status,
+          status: response.status as OrderStatus,
         },
       }
     } catch (error) {

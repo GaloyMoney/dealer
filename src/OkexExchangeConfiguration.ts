@@ -163,6 +163,10 @@ export class OkexExchangeConfiguration implements ExchangeConfiguration {
   createMarketOrderValidateInput(args: CreateOrderParameters) {
     assert(args, ApiError.MISSING_PARAMETERS)
     assert(
+      args.instrumentId === SupportedInstrument.OKEX_PERPETUAL_SWAP,
+      ApiError.UNSUPPORTED_INSTRUMENT,
+    )
+    assert(
       args.side === TradeSide.Buy || args.side === TradeSide.Sell,
       ApiError.INVALID_TRADE_SIDE,
     )
@@ -178,6 +182,7 @@ export class OkexExchangeConfiguration implements ExchangeConfiguration {
   }
   fetchOrderValidateApiResponse(response) {
     assert(response, ApiError.UNSUPPORTED_API_RESPONSE)
+    assert(response.id, ApiError.MISSING_ORDER_ID)
     assert(response.status as OrderStatus, ApiError.UNSUPPORTED_API_RESPONSE)
   }
 

@@ -389,7 +389,7 @@ export class FtxPerpetualSwapStrategy implements HedgingStrategy {
     await sleep(5000)
 
     try {
-      orderStatus = await this.exchange.exchange.fetchOrder(order.id)
+      orderStatus = await this.exchange.exchange.fetchOrder(order.id, this.instrumentId)
     } catch (err) {
       logOrder.error({ err }, "error fetching order status")
       throw err
