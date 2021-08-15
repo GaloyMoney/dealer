@@ -51,7 +51,9 @@ export class Dealer {
     if (result.ok && result.value.size !== 0) {
       // Check if the funds arrived
       const transfers = result.value
-      transfers.forEach(async (transfer, address) => {
+
+      for (const [address, transfer] of transfers) {
+        // transfers.forEach(async (transfer, address) => {
         const result = await this.strategy.isDepositCompleted(
           address,
           transfer.transferSizeInSats,
@@ -63,7 +65,8 @@ export class Dealer {
             logger.debug({ result, transfer }, message)
           }
         }
-      })
+      }
+      // )
     }
 
     result = this.database.getPendingInFlightTransfers(
@@ -72,7 +75,8 @@ export class Dealer {
     if (result.ok && result.value.size !== 0) {
       // Check if the funds arrived
       const transfers = result.value
-      transfers.forEach(async (transfer, address) => {
+      for (const [address, transfer] of transfers) {
+        // transfers.forEach(async (transfer, address) => {
         const result = await this.strategy.isWithdrawalCompleted(
           address,
           transfer.transferSizeInSats,
@@ -85,7 +89,8 @@ export class Dealer {
             logger.debug({ result, transfer }, message)
           }
         }
-      })
+      }
+      // )
     }
 
     return { ok: true, value: undefined }
@@ -112,6 +117,10 @@ export class Dealer {
     }
     const btcPriceInUsd = priceResult.value
     const usdLiabilityResult = await this.wallet.getWalletUsdBalance()
+    logger.debug(
+      { usdLiabilityResult },
+      "wallet.getWalletUsdBalance() returned: {usdLiabilityResult}",
+    )
 
     // If liability is negative, treat as an asset and do not hedge
     // If liability is below threshold, do not hedge
@@ -169,6 +178,10 @@ export class Dealer {
 
       const withdrawOnChainAddressResult =
         await this.wallet.getWalletOnChainDepositAddress()
+      logger.debug(
+        { withdrawOnChainAddressResult },
+        "wallet.getWalletOnChainDepositAddress() returned: {withdrawOnChainAddressResult}",
+      )
       if (!withdrawOnChainAddressResult.ok || !withdrawOnChainAddressResult.value) {
         const message = "WalletOnChainAddress is unavailable or invalid."
         logger.debug({ withdrawOnChainAddressResult }, message)
@@ -181,7 +194,7 @@ export class Dealer {
         btcPriceInUsd,
         withdrawOnChainAddress,
         this.withdrawBookKeeping,
-        this.depositOnExchangeCallback,
+        this.depositOnExchangeCallback.bind(this),
       )
       result.updatedLeverageResult = updatedLeverageResult
       if (updatedLeverageResult.ok) {
@@ -215,7 +228,19 @@ export class Dealer {
     ) {
       return { ok: true, value: result }
     } else {
-      return { ok: false, error: new Error() }
+      const errors: Error[] = []
+      if (!result.updatedPositionResult.ok) {
+        errors.push(result.updatedPositionResult.error)
+        return { ok: false, error: result.updatedPositionResult.error }
+      } else if (!result.updatedLeverageResult.ok) {
+        errors.push(result.updatedLeverageResult.error)
+        return { ok: false, error: result.updatedLeverageResult.error }
+      } else {
+        return {
+          ok: false,
+          error: new Error(`Unknown error: ${errors}`),
+        }
+      }
     }
   }
 
@@ -230,6 +255,10 @@ export class Dealer {
         onChainAddress,
         transferSizeInSats,
         memo,
+      )
+      this.logger.debug(
+        { payOnChainResult },
+        "WalletOnChainPay returned: {payOnChainResult}",
       )
 
       if (payOnChainResult.ok) {

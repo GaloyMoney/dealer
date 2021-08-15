@@ -5,6 +5,7 @@ import { SupportedExchange } from "src/ExchangeConfiguration"
 import {
   ExpectedResult,
   OkexExchangeScenarioStepBuilder,
+  StepInput,
 } from "../mocks/OkexExchangeScenarioStepBuilder"
 import { InFlightTransferDb } from "src/InFlightTransferDb"
 import parse from "csv-parse/lib/sync"
@@ -24,23 +25,21 @@ beforeAll(async () => {
 
 class ScenarioBuilder {
   stepBuilder: OkexExchangeScenarioStepBuilder
+  scenarios: StepInput[]
+
   constructor() {
     this.stepBuilder = new OkexExchangeScenarioStepBuilder()
 
     const input = fs.readFileSync(__dirname + "/../data/scenarios.csv", {
       encoding: "utf8",
     })
-    const scenarios = parse(input, {
+    this.scenarios = parse(input, {
       columns: true,
       skipEmptyLines: true,
       cast: this.castScenarioDataTypeFromString,
     })
-    for (const scenario of scenarios) {
-      try {
-        this.stepBuilder.addScenarioStep(scenario)
-      } catch (error) {
-        baseLogger.error({ error }, `Error while stepBuilder.addScenarioStep(scenario)`)
-      }
+    for (const scenario of this.scenarios) {
+      this.stepBuilder.addScenarioStep(scenario)
     }
   }
 
@@ -75,7 +74,7 @@ class ScenarioBuilder {
       } else if (numberColumns.includes(context.column)) {
         return Number(value)
       } else if (booleanColumns.includes(context.column)) {
-        return Boolean(value)
+        return Boolean(value.toString().toLowerCase() === "true")
       } else {
         return value
       }
@@ -88,6 +87,14 @@ class ScenarioBuilder {
 
   public getWalletMock() {
     return this.stepBuilder.getWalletMockObject()
+  }
+
+  public getScenario(index: number): StepInput {
+    return this.scenarios[index]
+  }
+
+  public getScenarios(): StepInput[] {
+    return this.scenarios
   }
 
   public getExpectedResult(): ExpectedResult[] {
@@ -133,23 +140,29 @@ function validateResult(
 }
 
 describe("Dealer", () => {
-  describe.only("first call", () => {
+  describe("first call", () => {
     it("should run return an order", async () => {
       const logger = baseLogger.child({ module: "cron" })
       const database = new InFlightTransferDb(logger)
       database.clear()
       const expectedResults = scenarios.getExpectedResult()
       const dealer = new Dealer(logger)
+      // await dealer.testWalletCalls()
 
-      expectedResults.forEach(async (expected) => {
+      let index = 0
+      for (const expected of expectedResults) {
+        const scenario = scenarios.getScenario(index++)
+        logger.info({ scenario }, `Step '${scenario.comment}' starting ------->`)
         const result = await dealer.updatePositionAndLeverage()
-        logger.info({ result }, `'${expected.comment}' step resulted in {result}`)
+        logger.info({ scenario }, `Step '${scenario.comment}' ended <-------`)
 
-        expect(result.ok).toBeTruthy()
+        logger.info({ result }, `'Step ${expected.comment}' resulted in {result}`)
+
+        // expect(result.ok).toBeTruthy()
         // if (result.ok) {
         //   validateResult(result.value, expected.result)
         // }
-      })
+      }
     })
   })
 })
