@@ -387,9 +387,9 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
         ok: true,
         value: {
           in: {
-            loBracket: hedgingBounds.HIGH_BOUND_RATIO_SHORTING,
+            loBracket: hedgingBounds.LOW_BOUND_RATIO_SHORTING,
             exposureRatio,
-            hiBracket: hedgingBounds.LOW_BOUND_RATIO_SHORTING,
+            hiBracket: hedgingBounds.HIGH_BOUND_RATIO_SHORTING,
           },
           out: {
             tradeSide,
@@ -555,9 +555,9 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
         ok: true,
         value: {
           in: {
-            loBracket: hedgingBounds.HIGH_BOUND_RATIO_SHORTING,
+            loBracket: hedgingBounds.LOW_BOUND_LEVERAGE,
             leverageRatio,
-            hiBracket: hedgingBounds.LOW_BOUND_RATIO_SHORTING,
+            hiBracket: hedgingBounds.HIGH_BOUND_LEVERAGE,
           },
           out: {
             fundTransferSide,
