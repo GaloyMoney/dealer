@@ -96,7 +96,6 @@ export class OkexExchange extends ExchangeBase {
         },
       }
     } catch (error) {
-      console.log(`Failure in getInstrumentDetails(): ${error.message}`)
       return { ok: false, error: error }
     }
   }
