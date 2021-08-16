@@ -37,27 +37,25 @@ function getValidFetchDepositsResponse(args) {
   const amountInBtc: number = args.amountInBtc
   const status: FundTransferStatus = args.status
   return [
-    [
-      {
-        info: {
-          ccy: TradeCurrency.BTC,
-          chain: "BTC-Bitcoin",
-          amt: `${amountInBtc}`,
-          to: address,
-        },
-        currency: TradeCurrency.BTC,
-        amount: amountInBtc,
-        addressTo: address,
-        address: address,
-        status: status,
-        type: "deposit",
-        fee: {
-          currency: TradeCurrency.BTC,
-          cost: 0,
-        },
-        page: 0,
+    {
+      info: {
+        ccy: TradeCurrency.BTC,
+        chain: "BTC-Bitcoin",
+        amt: `${amountInBtc}`,
+        to: address,
       },
-    ],
+      currency: TradeCurrency.BTC,
+      amount: amountInBtc,
+      addressTo: address,
+      address: address,
+      status: status,
+      type: "deposit",
+      fee: {
+        currency: TradeCurrency.BTC,
+        cost: 0,
+      },
+      page: 0,
+    },
   ]
 }
 
@@ -86,27 +84,25 @@ function getValidFetchWithdrawalsResponse(args) {
   const amountInBtc: number = args.amountInBtc
   const status: FundTransferStatus = args.status
   return [
-    [
-      {
-        info: {
-          ccy: TradeCurrency.BTC,
-          chain: "BTC-Bitcoin",
-          amt: `${amountInBtc}`,
-          to: address,
-        },
-        currency: TradeCurrency.BTC,
-        amount: amountInBtc,
-        addressTo: address,
-        address: address,
-        status: status,
-        type: "withdrawal",
-        fee: {
-          currency: TradeCurrency.BTC,
-          cost: 0,
-        },
-        page: 0,
+    {
+      info: {
+        ccy: TradeCurrency.BTC,
+        chain: "BTC-Bitcoin",
+        amt: `${amountInBtc}`,
+        to: address,
       },
-    ],
+      currency: TradeCurrency.BTC,
+      amount: amountInBtc,
+      addressTo: address,
+      address: address,
+      status: status,
+      type: "withdrawal",
+      fee: {
+        currency: TradeCurrency.BTC,
+        cost: 0,
+      },
+      page: 0,
+    },
   ]
 }
 
@@ -218,6 +214,9 @@ export class OkexExchangeScenarioStepBuilder {
   constructor() {
     this.exchangeMockObject = {
       checkRequiredCredentials: jest.fn().mockReturnValue(true),
+      last_json_response: jest
+        .fn()
+        .mockReturnValue(new Map<string, number>([["cursor", 0]])),
       fetchDeposits: jest.fn(),
       fetchWithdrawals: jest.fn(),
       fetchTicker: jest.fn(),
@@ -351,24 +350,30 @@ export class OkexExchangeScenarioStepBuilder {
     // Update in-flight
     if (wasFundTransferExpected) {
       if (wasTransferWithdraw) {
+        console.log("Mock: fetchWithdrawals()")
         this.exchangeMockObject.fetchWithdrawals.mockImplementationOnce(
-          ({ address, amountInSats }) => {
+          (code, since, limit, params) => {
             const args = {
-              address: address,
-              amountInBtc: sat2btc(amountInSats),
+              address: params.address,
+              amountInBtc: sat2btc(params.amountInSats),
               status: FundTransferStatus.Ok, // <-- Always successful for now
             }
+            console.log(
+              `Called: getValidFetchWithdrawalsResponse(${JSON.stringify(args)}`,
+            )
             return getValidFetchWithdrawalsResponse(args)
           },
         )
       } else {
+        console.log("Mock: fetchDeposits()")
         this.exchangeMockObject.fetchDeposits.mockImplementationOnce(
-          ({ address, amountInSats }) => {
+          (code, since, limit, params) => {
             const args = {
-              address: address,
-              amountInBtc: sat2btc(amountInSats),
+              address: params.address,
+              amountInBtc: sat2btc(params.amountInSats),
               status: FundTransferStatus.Ok, // <-- Always successful for now
             }
+            console.log(`Called: getValidFetchDepositsResponse(${JSON.stringify(args)}`)
             return getValidFetchDepositsResponse(args)
           },
         )
@@ -405,6 +410,7 @@ export class OkexExchangeScenarioStepBuilder {
               return getValidCreateMarketOrderResponse(orderId)
             },
           )
+          console.log("Mock: fetchOrder(0)")
           this.exchangeMockObject.fetchOrder.mockImplementationOnce(
             (id: string, instrumentId: string) => {
               return getValidFetchOrderResponse(id, instrumentId, firstOrderStatus)
@@ -413,6 +419,7 @@ export class OkexExchangeScenarioStepBuilder {
           if (numberFetchIteration > 1) {
             if (numberFetchIteration > 2) {
               for (let i = 0; i < numberFetchIteration - 1; i++) {
+                console.log(`Mock: fetchOrder(${i + 1})`)
                 this.exchangeMockObject.fetchOrder.mockImplementationOnce(
                   (id: string, instrumentId: string) => {
                     return getValidFetchOrderResponse(id, instrumentId, firstOrderStatus)
@@ -420,6 +427,7 @@ export class OkexExchangeScenarioStepBuilder {
                 )
               }
             }
+            console.log(`Mock: fetchOrder(${numberFetchIteration})`)
             this.exchangeMockObject.fetchOrder.mockImplementationOnce(
               (id: string, instrumentId: string) => {
                 return getValidFetchOrderResponse(id, instrumentId, lastOrderStatus)
