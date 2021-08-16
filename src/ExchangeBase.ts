@@ -79,7 +79,7 @@ export abstract class ExchangeBase {
       this.exchangeConfig.fetchDepositsValidateInput(args)
 
       // No way to filter on request, so get them all...
-      const response = await this.fetchDepositsAllPages()
+      const response = await this.fetchDepositsAllPages(args)
       this.logger.debug(
         { args, response },
         "exchange.fetchDeposits({args}) returned: {response}",
@@ -97,29 +97,40 @@ export abstract class ExchangeBase {
     }
   }
 
-  private async fetchDepositsAllPages() {
-    let page = 0
-    const allDeposits: unknown[] = []
-    const one = true
-    while (one) {
-      const code = undefined
-      const since = undefined
-      const limit = 100
-      const params = {
-        page: page,
-      }
-      const deposits = await this.exchange.fetchDeposits(code, since, limit, params)
-      if (deposits.length) {
-        page = this.exchange.last_json_response["cursor"]
-        allDeposits.push(deposits)
-        if (!page) {
+  private async fetchDepositsAllPages(args: FetchDepositsParameters) {
+    try {
+      let page = 0
+      const allDeposits: unknown[] = []
+      const one = true
+      while (one) {
+        const code = undefined
+        const since = undefined
+        const limit = 100
+        const params = {
+          address: args.address,
+          amountInSats: args.amountInSats,
+          page: page,
+        }
+        const deposits = await this.exchange.fetchDeposits(code, since, limit, params)
+        this.logger.debug(
+          { code, since, limit, params, deposits },
+          "exchange.fetchDeposits({code}, {since}, {limit}, {params}) returned: {deposits}",
+        )
+        if (deposits.length) {
+          page = this.exchange.last_json_response["cursor"]
+          allDeposits.push(deposits)
+          if (!page) {
+            break
+          }
+        } else {
           break
         }
-      } else {
-        break
       }
+      return allDeposits
+    } catch (error) {
+      this.logger.debug({ error }, "Error in fetchDepositsAllPages()" + error.message)
+      throw error
     }
-    return allDeposits
   }
 
   public async withdraw(args: WithdrawParameters): Promise<Result<WithdrawResult>> {
@@ -157,7 +168,7 @@ export abstract class ExchangeBase {
       this.exchangeConfig.fetchWithdrawalsValidateInput(args)
 
       // No way to filter on request, so get them all...
-      const response = await this.fetchWithdrawalsAllPages()
+      const response = await this.fetchWithdrawalsAllPages(args)
       this.logger.debug(
         { args, response },
         "exchange.fetchWithdrawals({args}) returned: {response}",
@@ -178,29 +189,45 @@ export abstract class ExchangeBase {
     }
   }
 
-  private async fetchWithdrawalsAllPages() {
-    let page = 0
-    const allWithdrawals: unknown[] = []
-    const one = true
-    while (one) {
-      const code = undefined
-      const since = undefined
-      const limit = 100
-      const params = {
-        page: page,
-      }
-      const withdrawals = await this.exchange.fetchWithdrawals(code, since, limit, params)
-      if (withdrawals.length) {
-        page = this.exchange.last_json_response["cursor"]
-        allWithdrawals.push(withdrawals)
-        if (!page) {
+  private async fetchWithdrawalsAllPages(args: FetchWithdrawalsParameters) {
+    try {
+      let page = 0
+      const allWithdrawals: unknown[] = []
+      const one = true
+      while (one) {
+        const code = undefined
+        const since = undefined
+        const limit = 100
+        const params = {
+          address: args.address,
+          amountInSats: args.amountInSats,
+          page: page,
+        }
+        const withdrawals = await this.exchange.fetchWithdrawals(
+          code,
+          since,
+          limit,
+          params,
+        )
+        this.logger.debug(
+          { code, since, limit, params, withdrawals },
+          "exchange.fetchWithdrawals({code}, {since}, {limit}, {params}) returned: {withdrawals}",
+        )
+        if (withdrawals.length) {
+          page = this.exchange.last_json_response["cursor"]
+          allWithdrawals.push(withdrawals)
+          if (!page) {
+            break
+          }
+        } else {
           break
         }
-      } else {
-        break
       }
+      return allWithdrawals
+    } catch (error) {
+      this.logger.debug({ error }, "Error in fetchWithdrawalsAllPages()" + error.message)
+      throw error
     }
-    return allWithdrawals
   }
 
   public async createMarketOrder(
