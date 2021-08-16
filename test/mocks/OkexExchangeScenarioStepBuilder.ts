@@ -60,7 +60,6 @@ function getValidFetchDepositsResponse(args) {
 }
 
 function getValidWithdrawResponse(id: string, currency, amountInBtc) {
-  console.log("Called: getValidWithdrawResponse()")
   return {
     id: id,
     status: FundTransferStatus.Requested,
@@ -115,7 +114,6 @@ function getValidFetchOrderResponse(
   instrumentId: string,
   status: OrderStatus,
 ) {
-  console.log(`Called: getValidFetchOrderResponse(${id}, ${instrumentId}, ${status})`)
   return { id: id, status: status }
 }
 
@@ -351,7 +349,6 @@ export class OkexExchangeScenarioStepBuilder {
     // Update in-flight
     if (wasFundTransferExpected) {
       if (wasTransferWithdraw) {
-        console.log("Mock: fetchWithdrawals()")
         this.exchangeMockObject.fetchWithdrawals.mockImplementationOnce(
           (code, since, limit, params) => {
             const args = {
@@ -359,14 +356,10 @@ export class OkexExchangeScenarioStepBuilder {
               amountInBtc: sat2btc(params.amountInSats),
               status: FundTransferStatus.Ok, // <-- Always successful for now
             }
-            console.log(
-              `Called: getValidFetchWithdrawalsResponse(${JSON.stringify(args)}`,
-            )
             return getValidFetchWithdrawalsResponse(args)
           },
         )
       } else {
-        console.log("Mock: fetchDeposits()")
         this.exchangeMockObject.fetchDeposits.mockImplementationOnce(
           (code, since, limit, params) => {
             const args = {
@@ -374,7 +367,6 @@ export class OkexExchangeScenarioStepBuilder {
               amountInBtc: sat2btc(params.amountInSats),
               status: FundTransferStatus.Ok, // <-- Always successful for now
             }
-            console.log(`Called: getValidFetchDepositsResponse(${JSON.stringify(args)}`)
             return getValidFetchDepositsResponse(args)
           },
         )
@@ -472,10 +464,8 @@ export class OkexExchangeScenarioStepBuilder {
         this.exchangeMockObject.fetchDepositAddress.mockImplementationOnce(() => {
           return getValidFetchDepositAddressResponse()
         })
-        console.log("Add this.walletMockObject.payOnChain() mock call")
         this.walletMockObject.payOnChain.mockImplementationOnce(
           (address: string, btcAmountInSats: number, memo: string): Result<void> => {
-            console.log(`Called: payOnChain(${address}, ${btcAmountInSats}, ${memo})`)
             return { ok: true, value: undefined }
           },
         )
