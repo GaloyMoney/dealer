@@ -287,17 +287,14 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
         const withdrawalResult = await this.exchange.withdraw(withdrawArgs)
         this.logger.debug(
           { withdrawArgs, withdrawalResult },
-          "withdraw() returned: {fetchResult}",
+          "withdraw() returned: {withdrawalResult}",
         )
         if (!withdrawalResult.ok) {
           return { ok: false, error: withdrawalResult.error }
         }
         const withdrawalResponse = withdrawalResult.value
 
-        // TODO: might want to check the withdrawalResponse.id instead
-        if (withdrawalResponse.id === FundTransferStatus.Requested) {
-          // TODO: wait until request succeed before updating tx
-
+        if (withdrawalResponse.id) {
           const bookingResult = await withdrawBookKeepingCallback(
             withdrawOnChainAddress,
             transferSizeInBtc,
