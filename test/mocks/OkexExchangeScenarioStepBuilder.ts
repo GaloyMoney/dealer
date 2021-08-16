@@ -252,7 +252,7 @@ export class OkexExchangeScenarioStepBuilder {
     const {
       lastPriceInUsd,
       liabilityInUsd,
-      notionalUsd,
+      // notionalUsd,
       marginInBtc,
       totalEquity,
       hasMinimalLiability,
@@ -273,6 +273,7 @@ export class OkexExchangeScenarioStepBuilder {
       expectPositionUpdatedOk,
       expectLeverageUpdatedOk,
     } = args
+    let { notionalUsd } = args
 
     // Prepare expected results first...
     const expected: UpdatedPositionAndLeverageResult = {
@@ -433,6 +434,10 @@ export class OkexExchangeScenarioStepBuilder {
                 return getValidFetchOrderResponse(id, instrumentId, lastOrderStatus)
               },
             )
+          }
+          // set notional to total equity to represent the order
+          if (wasFundTransferExpected) {
+            notionalUsd = liabilityInUsd
           }
           this.exchangeMockObject.fetchPosition.mockImplementationOnce(() => {
             return getValidFetchPositionResponse(lastPriceInUsd, notionalUsd, marginInBtc)

@@ -156,7 +156,7 @@ describe("Dealer", () => {
         const result = await dealer.updatePositionAndLeverage()
         logger.info({ scenario }, `Step '${scenario.comment}' ended <-------`)
 
-        logger.info({ result }, `'Step ${expected.comment}' resulted in {result}`)
+        logger.info({ result }, `Step '${expected.comment}' resulted in {result}`)
 
         // expect(result.ok).toBeTruthy()
         // if (result.ok) {
