@@ -88,14 +88,14 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
     amountInSats: number,
   ): Promise<Result<boolean>> {
     const result = await this.exchange.fetchDeposits({ address, amountInSats })
+    this.logger.debug(
+      { address, amountInSats, result },
+      "exchange.fetchDeposits(address, amountInSats) returned: {result}",
+    )
     if (!result.ok) {
       return result
     }
     const deposit = result.value
-    this.logger.debug(
-      { address, amountInSats, deposit },
-      "exchange.fetchDeposits(address, amountInSats) returned: {deposit}",
-    )
     if (
       deposit.status === FundTransferStatus.Ok ||
       deposit.status === FundTransferStatus.Canceled ||
@@ -112,14 +112,14 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
     amountInSats: number,
   ): Promise<Result<boolean>> {
     const result = await this.exchange.fetchWithdrawals({ address, amountInSats })
+    this.logger.debug(
+      { address, amountInSats, deposit: result },
+      "exchange.fetchWithdrawals(address, amountInSats) returned: {result}",
+    )
     if (!result.ok) {
       return result
     }
     const withdrawal = result.value
-    this.logger.debug(
-      { address, amountInSats, deposit: withdrawal },
-      "exchange.fetchWithdrawals(address, amountInSats) returned: {withdrawal}",
-    )
     if (
       withdrawal.status === FundTransferStatus.Ok ||
       withdrawal.status === FundTransferStatus.Canceled ||
