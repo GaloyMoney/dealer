@@ -48,6 +48,10 @@ export class Dealer {
     let result = this.database.getPendingInFlightTransfers(
       InFlightTransferDirection.DEPOSIT_ON_EXCHANGE,
     )
+    logger.debug(
+      { result },
+      "database.getPendingInFlightTransfers(Deposits) returned: {result}",
+    )
     if (result.ok && result.value.size !== 0) {
       // Check if the funds arrived
       const transfers = result.value
@@ -58,8 +62,16 @@ export class Dealer {
           address,
           transfer.transferSizeInSats,
         )
+        logger.debug(
+          { address, transfer, result },
+          "strategy.isDepositCompleted({address}, {transferSizeInSats}) returned: {result}",
+        )
         if (result.ok && result.value) {
           const result = this.database.completedInFlightTransfers(address)
+          logger.debug(
+            { address, result },
+            "database.completedInFlightTransfers({address}) returned: {result}",
+          )
           if (!result.ok) {
             const message = "Failed to update database on completed deposit to exchange"
             logger.debug({ result, transfer }, message)
@@ -72,6 +84,10 @@ export class Dealer {
     result = this.database.getPendingInFlightTransfers(
       InFlightTransferDirection.WITHDRAW_TO_WALLET,
     )
+    logger.debug(
+      { result },
+      "database.getPendingInFlightTransfers(Withdrawals) returned: {result}",
+    )
     if (result.ok && result.value.size !== 0) {
       // Check if the funds arrived
       const transfers = result.value
@@ -81,8 +97,16 @@ export class Dealer {
           address,
           transfer.transferSizeInSats,
         )
+        logger.debug(
+          { address, transfer, result },
+          "strategy.isWithdrawalCompleted({address}, {transferSizeInSats}) returned: {result}",
+        )
         if (result.ok && result.value) {
           const result = this.database.completedInFlightTransfers(address)
+          logger.debug(
+            { address, result },
+            "database.completedInFlightTransfers({address}) returned: {result}",
+          )
           if (!result.ok) {
             const message =
               "Failed to update database on completed withdrawal from exchange"
