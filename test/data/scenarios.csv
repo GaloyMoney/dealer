@@ -1,2 +1,0 @@
-comment,lastPriceInUsd,liabilityInUsd,notionalUsd,marginInBtc,totalEquity,hasMinimalLiability,isOrderExpected,isOrderSizeOk,orderId,firstOrderStatus,numberFetchIteration,lastOrderStatus,wasFundTransferExpected,wasTransferWithdraw,isFundTransferExpected,isTransferWithdraw,expectPositionUpdatedOk,expectLeverageUpdatedOk
-"Initial Conditions",10000,0,0,0,0,false,false,false,NaN,"canceled",0,"canceled",false,false,false,false,true,true

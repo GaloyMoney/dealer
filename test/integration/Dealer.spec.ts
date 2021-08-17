@@ -1,15 +1,12 @@
 import { baseLogger } from "src/logger"
 import { Dealer, UpdatedPositionAndLeverageResult } from "src/Dealer"
-import { OrderStatus } from "src/ExchangeTradingType"
 import { SupportedExchange } from "src/ExchangeConfiguration"
 import {
-  ExpectedResult,
-  OkexExchangeScenarioStepBuilder,
+  OkexExchangeScenarioStepBuilder as OkexScenarioStepBuilder,
   StepInput,
-} from "../mocks/OkexExchangeScenarioStepBuilder"
+} from "../mocks/OkexScenarioStepBuilder"
+import { ScenarioReader } from "../mocks/ScenarioReader"
 import { InFlightTransferDb } from "src/InFlightTransferDb"
-import parse from "csv-parse/lib/sync"
-import fs from "fs"
 
 beforeAll(async () => {
   // Init non-simulation for the tests
@@ -23,97 +20,23 @@ beforeAll(async () => {
   }
 })
 
-class ScenarioBuilder {
-  stepBuilder: OkexExchangeScenarioStepBuilder
-  scenarios: StepInput[]
-
-  constructor() {
-    this.stepBuilder = new OkexExchangeScenarioStepBuilder()
-
-    const input = fs.readFileSync(__dirname + "/../data/scenarios.csv", {
-      encoding: "utf8",
-    })
-    this.scenarios = parse(input, {
-      columns: true,
-      skipEmptyLines: true,
-      cast: this.castScenarioDataTypeFromString,
-    })
-    for (const scenario of this.scenarios) {
-      this.stepBuilder.addScenarioStep(scenario)
-    }
-  }
-
-  private castScenarioDataTypeFromString(value, context) {
-    const numberColumns = [
-      "lastPriceInUsd",
-      "liabilityInUsd",
-      "notionalUsd",
-      "marginInBtc",
-      "totalEquity",
-      "orderId",
-      "numberFetchIteration",
-    ]
-
-    const booleanColumns = [
-      "hasMinimalLiability",
-      "isOrderExpected",
-      "isOrderSizeOk",
-      "wasFundTransferExpected",
-      "wasTransferWithdraw",
-      "isFundTransferExpected",
-      "isTransferWithdraw",
-      "expectPositionUpdatedOk",
-      "expectLeverageUpdatedOk",
-    ]
-
-    if (context.header === true) {
-      return value
-    } else {
-      if (context.column === "firstOrderStatus" || context.column === "lastOrderStatus") {
-        return value as OrderStatus
-      } else if (numberColumns.includes(context.column)) {
-        return Number(value)
-      } else if (booleanColumns.includes(context.column)) {
-        return Boolean(value.toString().toLowerCase() === "true")
-      } else {
-        return value
-      }
-    }
-  }
-
-  public getExchangeMock() {
-    return this.stepBuilder.getExchangeMockObject()
-  }
-
-  public getWalletMock() {
-    return this.stepBuilder.getWalletMockObject()
-  }
-
-  public getScenario(index: number): StepInput {
-    return this.scenarios[index]
-  }
-
-  public getScenarios(): StepInput[] {
-    return this.scenarios
-  }
-
-  public getExpectedResult(): ExpectedResult[] {
-    return this.stepBuilder.getExpectedValues()
-  }
+enum SCENARIO_FILE_PATH {
+  SCENARIO_00 = "/../data/scenarios.csv",
+  SCENARIO_01 = "/../data/scenario_01.csv",
+  SCENARIO_02 = "/../data/scenario_02.csv",
 }
 
-const scenarios = new ScenarioBuilder()
+const exchangeMock = OkexScenarioStepBuilder.getCleanExchangeMock()
+const walletMock = OkexScenarioStepBuilder.getCleanWalletMock()
 
 jest.mock("ccxt", () => ({
   okex5: function () {
-    const exchangeMock = scenarios.getExchangeMock()
     return exchangeMock
   },
 }))
 
 jest.mock("src/DealerMockWallet", () => ({
   DealerMockWallet: function () {
-    const walletMock = scenarios.getWalletMock()
     return walletMock
   },
 }))
@@ -140,24 +63,51 @@ function validateResult(
 }
 
 describe("Dealer", () => {
-  describe("first call", () => {
-    it("should run return an order", async () => {
+  describe.only("first scenario", () => {
+    it.only("should execute successfully scenario 01", async () => {
       const logger = baseLogger.child({ module: "cron" })
       const database = new InFlightTransferDb(logger)
       database.clear()
-      const expectedResults = scenarios.getExpectedResult()
-      const dealer = new Dealer(logger)
-      // await dealer.testWalletCalls()
+      let dealer = {} as Dealer
+      let initDealer = true
 
-      let index = 0
-      for (const expected of expectedResults) {
-        const scenario = scenarios.getScenario(index++)
-        logger.info({ scenario }, `Step '${scenario.comment}' starting ------->`)
+      // get the data for the scenario
+      const result = ScenarioReader.getScenarioStepData(SCENARIO_FILE_PATH.SCENARIO_01)
+      if (!result.ok) {
+        expect(result.ok).toBeTruthy()
+        return
+      }
+
+      // while there's data do:
+      const steps: StepInput[] = result.value
+      for (const step of steps) {
+        // setup a step
+        const expected = OkexScenarioStepBuilder.mockScenarioStep(
+          step,
+          exchangeMock,
+          walletMock,
+        )
+
+        // run the step
+        if (initDealer) {
+          initDealer = !initDealer
+          dealer = new Dealer(logger)
+        }
+        logger.info({ step }, `Step '${step.comment}' starting ------->`)
         const result = await dealer.updatePositionAndLeverage()
-        logger.info({ scenario }, `Step '${scenario.comment}' ended <-------`)
+        logger.info({ step }, `Step '${step.comment}' ended <-------`)
+        logger.info({ result }, `Step '${step.comment}' resulted in {result}`)
 
-        logger.info({ result }, `Step '${expected.comment}' resulted in {result}`)
+        // check the step completed
+        expect(
+          OkexScenarioStepBuilder.checkScenarioCallStats(
+            expected,
+            exchangeMock,
+            walletMock,
+          ),
+        ).toBeTruthy()
 
+        // check the result
         // expect(result.ok).toBeTruthy()
         // if (result.ok) {
         //   validateResult(result.value, expected.result)
