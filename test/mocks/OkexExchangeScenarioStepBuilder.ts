@@ -175,6 +175,7 @@ export interface StepInput {
   lastPriceInUsd: number
   liabilityInUsd: number
   notionalUsd: number
+  notionalUsdAfterOrder: number
   marginInBtc: number
   totalEquity: number
   hasMinimalLiability: boolean
@@ -203,9 +204,30 @@ export interface ExpectedResult {
   result: UpdatedPositionAndLeverageResult
 }
 
+export interface ExchangeMock {
+  checkRequiredCredentials: jest.Mock
+  last_json_response: jest.Mock
+  fetchDeposits: jest.Mock
+  fetchWithdrawals: jest.Mock
+  fetchTicker: jest.Mock
+  fetchPosition: jest.Mock
+  fetchBalance: jest.Mock
+  publicGetPublicInstruments: jest.Mock
+  createMarketOrder: jest.Mock
+  fetchOrder: jest.Mock
+  withdraw: jest.Mock
+  fetchDepositAddress: jest.Mock
+}
+
+export interface WalletMock {
+  getWalletUsdBalance: jest.Mock
+  getWalletOnChainDepositAddress: jest.Mock
+  payOnChain: jest.Mock
+}
+
 export class OkexExchangeScenarioStepBuilder {
-  private exchangeMockObject
-  private walletMockObject
+  private exchangeMockObject: ExchangeMock
+  private walletMockObject: WalletMock
 
   private expectedResults = [] as ExpectedResult[]
 
@@ -234,11 +256,11 @@ export class OkexExchangeScenarioStepBuilder {
     }
   }
 
-  public getExchangeMockObject() {
+  public getExchangeMockObject(): ExchangeMock {
     return this.exchangeMockObject
   }
 
-  public getWalletMockObject() {
+  public getWalletMockObject(): WalletMock {
     return this.walletMockObject
   }
 
@@ -251,6 +273,7 @@ export class OkexExchangeScenarioStepBuilder {
       lastPriceInUsd,
       liabilityInUsd,
       // notionalUsd,
+      notionalUsdAfterOrder,
       marginInBtc,
       totalEquity,
       hasMinimalLiability,
@@ -288,9 +311,10 @@ export class OkexExchangeScenarioStepBuilder {
 
     if (hasMinimalLiability && expected.updatedPositionResult.ok) {
       const position: Position = {
-        leverageRatio: notionalUsd / lastPriceInUsd / marginInBtc,
+        leverageRatio:
+          Math.max(notionalUsd, notionalUsdAfterOrder) / lastPriceInUsd / marginInBtc,
         collateralInUsd: marginInBtc * lastPriceInUsd,
-        exposureInUsd: notionalUsd,
+        exposureInUsd: Math.max(notionalUsd, notionalUsdAfterOrder),
         totalAccountValueInUsd: NaN,
       }
       expected.updatedPositionResult.value.updatedPosition = position
@@ -298,10 +322,12 @@ export class OkexExchangeScenarioStepBuilder {
 
     if (hasMinimalLiability && expected.updatedLeverageResult.ok) {
       const balance: UpdatedBalance = {
-        originalLeverageRatio: notionalUsd / lastPriceInUsd / marginInBtc,
+        originalLeverageRatio:
+          Math.max(notionalUsd, notionalUsdAfterOrder) / lastPriceInUsd / marginInBtc,
         liabilityInUsd: liabilityInUsd,
         collateralInUsd: marginInBtc * lastPriceInUsd,
-        newLeverageRatio: notionalUsd / lastPriceInUsd / marginInBtc,
+        newLeverageRatio:
+          Math.max(notionalUsd, notionalUsdAfterOrder) / lastPriceInUsd / marginInBtc,
       }
       expected.updatedLeverageResult.value = balance
     }
@@ -330,8 +356,9 @@ export class OkexExchangeScenarioStepBuilder {
     //      if order size ok
     //          exchange.createMarketOrder()
     //          exchange.fetchOrder()           x this.numberFetchIteration
-    //          exchange.fetchPosition()
-    //          exchange.fetchBalance()
+    //          if lastOrderStatus is "closed"
+    //            exchange.fetchPosition()
+    //            exchange.fetchBalance()
 
     // Collateral Loop
     //
@@ -374,6 +401,7 @@ export class OkexExchangeScenarioStepBuilder {
     }
 
     // Position Loop
+    console.log("Mock: fetchTicker()")
     this.exchangeMockObject.fetchTicker.mockImplementationOnce((instrumentId: string) => {
       return getValidFetchTickerResponse(instrumentId, lastPriceInUsd)
     })
@@ -427,16 +455,22 @@ export class OkexExchangeScenarioStepBuilder {
               },
             )
           }
-          // set notional to total equity to represent the order
-          if (wasFundTransferExpected) {
-            notionalUsd = liabilityInUsd
+          if (lastOrderStatus === OrderStatus.Closed) {
+            // set notional to total equity to represent the order
+            if (wasFundTransferExpected) {
+              notionalUsd = notionalUsdAfterOrder
+            }
+            this.exchangeMockObject.fetchPosition.mockImplementationOnce(() => {
+              return getValidFetchPositionResponse(
+                lastPriceInUsd,
+                notionalUsdAfterOrder,
+                marginInBtc,
+              )
+            })
+            this.exchangeMockObject.fetchBalance.mockImplementationOnce(() => {
+              return getValidFetchBalanceResponse(totalEquity)
+            })
           }
-          this.exchangeMockObject.fetchPosition.mockImplementationOnce(() => {
-            return getValidFetchPositionResponse(lastPriceInUsd, notionalUsd, marginInBtc)
-          })
-          this.exchangeMockObject.fetchBalance.mockImplementationOnce(() => {
-            return getValidFetchBalanceResponse(totalEquity)
-          })
         }
       }
     }
