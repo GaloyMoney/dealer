@@ -36,7 +36,7 @@ export class OkexExchange extends ExchangeBase {
         if (positionResult.error.message === ApiError.EMPTY_API_RESPONSE) {
           // No position in the derivative yet
           result.lastBtcPriceInUsd = btcPriceInUsd
-          result.leverageRatio = 0
+          result.leverage = 0
           result.collateralInUsd = 0
           result.exposureInUsd = 0
         } else {
@@ -46,7 +46,7 @@ export class OkexExchange extends ExchangeBase {
         const position = positionResult.value
         result.originalPositionResponseAsIs = position
         result.lastBtcPriceInUsd = position.last
-        result.leverageRatio = position.notionalUsd / position.last / position.margin
+        result.leverage = position.notionalUsd / position.last / position.margin
         result.collateralInUsd = position.margin * position.last
         result.exposureInUsd = position.notionalUsd
       }

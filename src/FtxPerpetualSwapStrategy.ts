@@ -151,13 +151,13 @@ export class FtxPerpetualSwapStrategy implements HedgingStrategy {
         ok: true,
         value: {
           originalPosition: {
-            leverageRatio: 0,
+            leverage: 0,
             collateralInUsd: 0,
             exposureInUsd: 0,
             totalAccountValueInUsd: 0,
           },
           updatedPosition: {
-            leverageRatio: 0,
+            leverage: 0,
             collateralInUsd: 0,
             exposureInUsd: 0,
             totalAccountValueInUsd: 0,

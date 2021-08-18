@@ -42,7 +42,7 @@ export class FtxExchange extends ExchangeBase {
           originalPositionResponseAsIs: response,
           originalBalanceResponseAsIs: response,
           lastBtcPriceInUsd: btcPriceInUsd,
-          leverageRatio: leverage,
+          leverage: leverage,
           collateralInUsd: response.collateral,
           exposureInUsd: exposureInUsd,
           totalAccountValueInUsd: response.totalAccountValue,

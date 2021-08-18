@@ -142,7 +142,7 @@ export interface GetAccountAndPositionRiskResult {
   originalPositionResponseAsIs
   originalBalanceResponseAsIs
   lastBtcPriceInUsd: number
-  leverageRatio: number
+  leverage: number
   collateralInUsd: number
   exposureInUsd: number
   totalAccountValueInUsd: number
