@@ -180,6 +180,13 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
         hedgingOrder.out.tradeSide,
         hedgingOrder.out.orderSizeInUsd,
       )
+      logger.debug(
+        {
+          tradeSide: hedgingOrder.out.tradeSide,
+          orderSizeInUsd: hedgingOrder.out.orderSizeInUsd,
+        },
+        "placeHedgingOrder({tradeSide}, {orderSizeInUsd}",
+      )
       if (!placedOrderResult.ok) {
         return { ok: false, error: placedOrderResult.error }
       }
@@ -202,12 +209,26 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
 
       updatedPosition.updatedPosition = updatedRisk
 
+      // TODO: Need to verify that the confirmOrder is above minimum contract side before concluding to a problem
       if (!this.isSimulation && confirmationOrder.out.tradeSide !== TradeSide.NoTrade) {
-        return {
-          ok: false,
-          error: new Error(
-            `New hedging order required immediately after one was executed: ${hedgingOrder} vs ${confirmationOrder}`,
-          ),
+        const validateOrderResult = await this.validateConfirmOrder(
+          confirmationOrder.out.tradeSide,
+          confirmationOrder.out.orderSizeInUsd,
+        )
+        logger.debug(
+          {
+            tradeSide: confirmationOrder.out.tradeSide,
+            orderSizeInUsd: confirmationOrder.out.orderSizeInUsd,
+          },
+          "validateConfirmOrder({tradeSide}, {orderSizeInUsd}",
+        )
+        if (validateOrderResult.ok) {
+          return {
+            ok: false,
+            error: new Error(
+              `New hedging order required immediately after one was executed: ${hedgingOrder} vs ${confirmationOrder}`,
+            ),
+          }
         }
       }
 
@@ -443,6 +464,36 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
     }
   }
 
+  async validateConfirmOrder(
+    tradeSide: TradeSide,
+    btcPriceInUsd: number,
+  ): Promise<Result<void>> {
+    const logger = this.logger.child({ method: "validateConfirmOrder()" })
+
+    try {
+      const result = await this.exchange.getInstrumentDetails()
+      logger.debug({ result }, "getInstrumentDetails() returned: {result}")
+      if (!result.ok) {
+        return { ok: false, error: result.error }
+      }
+      const contractDetail = result.value
+
+      const minOrderSizeInContract = contractDetail.minimumOrderSizeInContract
+      const contractFaceValue = contractDetail.contractFaceValue
+      const orderSizeInContract = Math.round(btcPriceInUsd / contractFaceValue)
+
+      if (orderSizeInContract < minOrderSizeInContract) {
+        const msg = `Order size (${orderSizeInContract}) is smaller than minimum (${minOrderSizeInContract}). Cannot place order`
+        logger.warn(msg)
+        return { ok: false, error: new Error(msg) }
+      }
+
+      return { ok: true, value: undefined }
+    } catch (error) {
+      return { ok: false, error: error }
+    }
+  }
+
   async placeHedgingOrder(
     tradeSide: TradeSide,
     btcPriceInUsd: number,
@@ -505,11 +556,8 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
       )
 
       if (fetchedOrder.status === OrderStatus.Closed) {
-        logger.info("Order has been place successfully.")
-        return {
-          ok: true,
-          value: undefined,
-        }
+        logger.info("Order has been executed successfully.")
+        return { ok: true, value: undefined }
       } else if (fetchedOrder.status === OrderStatus.Canceled) {
         const msg = "Order has been cancelled."
         logger.error(msg)
