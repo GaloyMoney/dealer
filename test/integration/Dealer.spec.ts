@@ -114,5 +114,55 @@ describe("Dealer", () => {
         // }
       }
     })
+    it("should execute successfully scenario 02", async () => {
+      const logger = baseLogger.child({ module: "cron" })
+      const database = new InFlightTransferDb(logger)
+      database.clear()
+      let dealer = {} as Dealer
+      let initDealer = true
+
+      // get the data for the scenario
+      const result = ScenarioReader.getScenarioStepData(SCENARIO_FILE_PATH.SCENARIO_02)
+      if (!result.ok) {
+        expect(result.ok).toBeTruthy()
+        return
+      }
+
+      // while there's data do:
+      const steps: StepInput[] = result.value
+      for (const step of steps) {
+        // setup a step
+        const expected = OkexScenarioStepBuilder.mockScenarioStep(
+          step,
+          exchangeMock,
+          walletMock,
+        )
+
+        // run the step
+        if (initDealer) {
+          initDealer = !initDealer
+          dealer = new Dealer(logger)
+        }
+        logger.info({ step }, `Step '${step.comment}' starting ------->`)
+        const result = await dealer.updatePositionAndLeverage()
+        logger.info({ step }, `Step '${step.comment}' ended <-------`)
+        logger.info({ result }, `Step '${step.comment}' resulted in {result}`)
+
+        // check the step completed
+        expect(
+          OkexScenarioStepBuilder.checkScenarioCallStats(
+            expected,
+            exchangeMock,
+            walletMock,
+          ),
+        ).toBeTruthy()
+
+        // check the result
+        // expect(result.ok).toBeTruthy()
+        // if (result.ok) {
+        //   validateResult(result.value, expected.result)
+        // }
+      }
+    })
   })
 })
