@@ -64,7 +64,7 @@ function validateResult(
 
 describe("Dealer", () => {
   describe.only("first scenario", () => {
-    it.only("should execute successfully scenario 01", async () => {
+    it("should execute successfully scenario 01", async () => {
       const logger = baseLogger.child({ module: "cron" })
       const database = new InFlightTransferDb(logger)
       database.clear()
@@ -114,7 +114,7 @@ describe("Dealer", () => {
         // }
       }
     })
-    it("should execute successfully scenario 02", async () => {
+    it.only("should execute successfully scenario 02", async () => {
       const logger = baseLogger.child({ module: "cron" })
       const database = new InFlightTransferDb(logger)
       database.clear()

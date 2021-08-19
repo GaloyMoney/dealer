@@ -1,8 +1,10 @@
-comment,lastPriceInUsd,liabilityInUsd,notionalUsd,notionalUsdAfterOrder,marginInBtc,totalEquity,hasMinimalLiability,isOrderExpected,isOrderSizeOk,orderId,firstOrderStatus,numberFetchIteration,lastOrderStatus,wasFundTransferExpected,wasTransferWithdraw,isFundTransferExpected,isTransferWithdraw,expectPositionUpdatedOk,expectLeverageUpdatedOk
-"Initial Conditions",10000,0,0,0,0,0,false,false,false,NaN,"canceled",0,"canceled",false,false,false,false,true,true
-"Liability, no funding",10000,100,0,0,0,0,true,true,true,1,"canceled",1,"canceled",false,false,true,false,true,true
-"Liability, with funding",10000,100,0,100,0.00444444,44.4444,true,true,true,2,"closed",1,"closed",true,false,false,false,true,true
-"Liability down, no change expected",10000,55,100,0,0.00444444,44.4444,true,true,false,NaN,"canceled",0,"canceled",false,false,false,false,false,true
-"Liability down, rebalance expected",10000,51,100,0,0.00444444,44.4444,true,true,false,NaN,"canceled",0,"canceled",false,false,true,true,false,true
-"Funds transferring",10000,51,63.75,0,0.00283333,28.3333,true,true,false,NaN,"canceled",0,"canceled",true,true,false,false,false,true
-"Sideways market",10000,51,63.75,0,0.00283333,28.3333,true,true,false,NaN,"canceled",0,"canceled",false,false,false,false,false,true
+comment,lastPriceInUsd,liabilityInUsd,notionalUsd,notionalUsdAfterOrder,marginInBtc,marginInBtcAfterTransfer,hasMinimalLiability,isOrderExpected,isOrderSizeOk,orderId,firstOrderStatus,numberFetchIteration,lastOrderStatus,wasFundTransferExpected,wasTransferWithdraw,isFundTransferExpected,isTransferWithdraw,expectPositionUpdatedOk,expectLeverageUpdatedOk
+"Initial Conditions",10000.00,0.00,0.00,0.00,0.00000000,0.00000000,FALSE,FALSE,FALSE,NaN,"canceled",0,"canceled",FALSE,FALSE,FALSE,FALSE,TRUE,TRUE
+"Liability; no funding",10000.00,200.00,0.00,0.00,0.00000000,0.00888889,TRUE,TRUE,TRUE,1,"canceled",1,"canceled",FALSE,FALSE,TRUE,FALSE,TRUE,TRUE
+"Liability; with funding",10000.00,200.00,0.00,200.00,0.00888889,0.00888889,TRUE,TRUE,TRUE,2,"closed",1,"closed",TRUE,FALSE,FALSE,FALSE,TRUE,TRUE
+"Liability down; no change expected",10000.00,155.00,200.00,200.00,0.00888889,0.00888889,TRUE,TRUE,FALSE,NaN,"canceled",0,"canceled",FALSE,FALSE,FALSE,FALSE,TRUE,TRUE
+"Liability down; rebalance expected",10000.00,130.00,200.00,100.00,0.00888889,0.00888889,TRUE,TRUE,TRUE,1,"closed",1,"closed",FALSE,FALSE,FALSE,FALSE,TRUE,TRUE
+"Funds transferring",10000.00,130.00,100.00,100.00,0.00888889,0.00888889,TRUE,TRUE,FALSE,NaN,"canceled",0,"canceled",FALSE,FALSE,FALSE,FALSE,TRUE,TRUE
+"Sideways market",10000.00,130.00,100.00,100.00,0.00888889,0.00888889,TRUE,TRUE,FALSE,NaN,"canceled",0,"canceled",FALSE,FALSE,FALSE,FALSE,TRUE,TRUE
+"Liability down; rebalance expected",10000.00,15.00,100.00,0.00,0.00888889,0.00083333,TRUE,TRUE,TRUE,1,"closed",1,"closed",FALSE,FALSE,TRUE,TRUE,TRUE,TRUE
+"Funds transferring",10000.00,15.00,0.00,0.00,0.00083333,0.00083333,TRUE,TRUE,FALSE,NaN,"canceled",0,"canceled",TRUE,TRUE,FALSE,FALSE,TRUE,TRUE
