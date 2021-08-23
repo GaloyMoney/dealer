@@ -25,10 +25,8 @@ COPY ./*.js ./default.yaml ./package.json ./tsconfig.json ./yarn.lock ./.env ./
 
 ### debug only
 COPY --from=BUILD_IMAGE /app/src /app/src
-COPY ./junit.xml ./
 ###
 
 USER 1000
 
-ENTRYPOINT ["/busybox/sleep", "1d"]
 CMD ["lib/servers/graphql/WalletGraphqlServer.js"]

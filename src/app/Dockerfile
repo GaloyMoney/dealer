@@ -25,7 +25,6 @@ COPY ./*.js ./default.yaml ./package.json ./tsconfig.json ./yarn.lock ./.env ./
 
 ### debug only
 COPY --from=BUILD_IMAGE /app/src /app/src
-COPY ./junit.xml ./
 ###
 
 USER 1000
