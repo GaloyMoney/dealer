@@ -34,49 +34,33 @@ services:
       - 3000
     networks:
       - monitoring
-  galoy-dealer:
-    build:
-      context: src/app/
-    ports:
-      - 8080:8080
-    expose:
-      - 8080
-    networks:
-      - monitoring    
+#   galoy-dealer:
+#     build:
+#       context: .
+#       dockerfile: src/app/Dockerfile
+#     ports:
+#       - 8080:8080
+#     expose:
+#       - 8080
+#     networks:
+#       - monitoring    
   exporter:
     build:
-      context: src/servers/exporter/
+      context: .
+      dockerfile: src/servers/exporter/Dockerfile      
     ports:
-      - 3000:3000
+      - 3333:3333
     expose:
-      - 3000
+      - 3333
     networks:
       - monitoring    
   graphql:
     build:
-      context: src/servers/graphql/
+      context: .
+      dockerfile: src/servers/graphql/Dockerfile
     ports:
       - 4000:4000
     expose:
       - 4000
     networks:
       - monitoring    
-#   redis:
-#     image: bitnami/redis:6.2
-#     ports:
-#       - 6379:6379
-#     environment:
-#       - ALLOW_EMPTY_PASSWORD=yes
-#       - REDIS_DISABLE_COMMANDS=FLUSHDB,FLUSHALL
-#   mongodb:
-#     image: bitnami/mongodb:4.4.6-debian-10-r0
-#     ports:
-#       - 27017:27017
-#     environment:
-#       - MONGODB_PASSWORD=password
-#       - MONGODB_USERNAME=testGaloy
-#       - MONGODB_DATABASE=galoy
-#       - MONGODB_REPLICA_SET_MODE=primary
-#       - MONGODB_ROOT_PASSWORD=password
-#       - MONGODB_REPLICA_SET_KEY=replicasetkey
-#       - MONGODB_ADVERTISED_HOSTNAME=${DOCKER_HOST_IP:-127.0.0.1}

@@ -1,8 +1,11 @@
+import dotenv from "dotenv"
 import express from "express"
 import client, { register } from "prom-client"
 import { baseLogger } from "../../services/logger"
 import { Dealer } from "../../Dealer"
 import { PositionSide } from "../../ExchangeTradingType"
+
+dotenv.config()
 
 const logger = baseLogger.child({ module: "exporter" })
 
@@ -170,7 +173,7 @@ const main = async () => {
     res.send("OK")
   })
 
-  const port = process.env.PORT || 3000
+  const port = process.env.PORT || 3333
   logger.info(`Server listening to ${port}, metrics exposed on /metrics endpoint`)
   server.listen(port)
 }
