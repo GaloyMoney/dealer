@@ -48,6 +48,11 @@ services:
     build:
       context: .
       dockerfile: src/servers/exporter/Dockerfile      
+    volumes:
+      - ./data:/var/lib/dealer/exporter
+      - ./data:/var/lib/dealer
+    links: 
+      - graphql
     ports:
       - 3333:3333
     expose:
@@ -58,6 +63,8 @@ services:
     build:
       context: .
       dockerfile: src/servers/graphql/Dockerfile
+    volumes:
+      - ./data:/var/lib/dealer/graphql
     ports:
       - 4000:4000
     expose:
