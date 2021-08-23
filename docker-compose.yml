@@ -34,15 +34,33 @@ services:
       - 3000
     networks:
       - monitoring
-#   galoy-dealer:
-#     build:
-#       context: galoy-dealer
-#     ports:
-#       - 8080:8080
-#     expose:
-#       - 8080
-#     networks:
-#       - monitoring    
+  galoy-dealer:
+    build:
+      context: src/app/
+    ports:
+      - 8080:8080
+    expose:
+      - 8080
+    networks:
+      - monitoring    
+  exporter:
+    build:
+      context: src/servers/exporter/
+    ports:
+      - 3000:3000
+    expose:
+      - 3000
+    networks:
+      - monitoring    
+  graphql:
+    build:
+      context: src/servers/graphql/
+    ports:
+      - 4000:4000
+    expose:
+      - 4000
+    networks:
+      - monitoring    
 #   redis:
 #     image: bitnami/redis:6.2
 #     ports:

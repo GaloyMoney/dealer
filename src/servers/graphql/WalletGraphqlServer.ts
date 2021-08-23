@@ -1,4 +1,5 @@
 import fs from "fs"
+import dotenv from "dotenv"
 import {
   stringLength,
   ValidateDirectiveVisitor,
@@ -13,8 +14,11 @@ import pino from "pino"
 import PinoHttp from "pino-http"
 import { v4 as uuidv4 } from "uuid"
 
-const baseLogger = pino({ level: process.env.LOGLEVEL || "info" })
+import { baseLogger } from "../../services/logger"
+
 const graphqlLogger = baseLogger.child({ module: "graphql" })
+
+dotenv.config()
 
 const pino_http = PinoHttp({
   logger: graphqlLogger,
@@ -98,11 +102,27 @@ export async function startApolloServer() {
       onchain: OnChain
     }
   `
+  const defaultWallet = [
+    {
+      id: "dealer",
+      balance: {
+        currency: "USD",
+        amount: -100,
+      },
+    },
+  ]
+
+  const defaultLastOnChainAddress = {
+    id: "bc1qmyhq2rm8edqv076dj89r5utskt3394m7xu3pge",
+  }
 
   const resolvers = {
     Query: {
       wallet: async (_, __, { logger }) => {
-        const filename = "wallets.json"
+        const filename = __dirname + "/wallets.json"
+        if (!fs.existsSync(filename)) {
+          fs.writeFileSync(filename, JSON.stringify(defaultWallet))
+        }
         const data = fs.readFileSync(filename)
         const wallets = JSON.parse(data.toString())
         logger.debug(
@@ -112,7 +132,10 @@ export async function startApolloServer() {
         return wallets
       },
       getLastOnChainAddress: async (_, __, { logger }) => {
-        const filename = "lastOnChainAddress.json"
+        const filename = __dirname + "/lastOnChainAddress.json"
+        if (!fs.existsSync(filename)) {
+          fs.writeFileSync(filename, JSON.stringify(defaultLastOnChainAddress))
+        }
         const data = fs.readFileSync(filename)
         const lastOnChainAddress = JSON.parse(data.toString())
         logger.debug(
@@ -125,7 +148,7 @@ export async function startApolloServer() {
     Mutation: {
       onchain: async (_, __, { logger }) => ({
         pay: ({ address, amount, memo }) => {
-          const filename = "onchain.pay.json"
+          const filename = __dirname + "/onchain.pay.json"
           fs.writeFileSync(filename, JSON.stringify({ address, amount, memo }))
           logger.debug(
             { filename, address, amount, memo },

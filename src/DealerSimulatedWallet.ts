@@ -16,10 +16,12 @@ const IN_MEMORY_CACHE_CONFIG = {
       fields: {
         wallet: {
           read() {
-            return {
-              id: "dealer",
-              balance: { currency: "USD", amount: -100 },
-            }
+            return [
+              {
+                id: "dealer",
+                balance: { currency: "USD", amount: -100 },
+              },
+            ]
           },
         },
         getLastOnChainAddress: {
@@ -63,7 +65,7 @@ const ONCHAIN_PAY = gql`
   }
 `
 
-export class DealerMockWallet implements GaloyWallet {
+export class DealerSimulatedWallet implements GaloyWallet {
   client: ApolloClient<NormalizedCacheObject>
   logger: pino.Logger
 
@@ -72,7 +74,7 @@ export class DealerMockWallet implements GaloyWallet {
     const httpLink = createHttpLink({ uri: GRAPHQL_URI, fetch })
     const cache = new InMemoryCache(IN_MEMORY_CACHE_CONFIG)
     this.client = new ApolloClient({ link: httpLink, cache: cache })
-    this.logger = logger.child({ class: DealerMockWallet.name })
+    this.logger = logger.child({ class: DealerSimulatedWallet.name })
   }
 
   public async getWalletUsdBalance(): Promise<Result<number>> {
@@ -83,7 +85,7 @@ export class DealerMockWallet implements GaloyWallet {
         { WALLET, result },
         "{WALLET} query to galoy graphql api successful with {result}",
       )
-      return { ok: true, value: result.data.wallet.balance.amount }
+      return { ok: true, value: result.data.wallet[0].balance.amount }
     } catch (error) {
       logger.error(
         { WALLET, error },

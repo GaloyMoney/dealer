@@ -2,6 +2,7 @@ import {
   GetAccountAndPositionRiskResult,
   GetInstrumentDetailsResult,
   ApiError,
+  GetPublicFundingRateResult,
 } from "./ExchangeTradingType"
 import assert from "assert"
 import { ExchangeBase } from "./ExchangeBase"
@@ -39,8 +40,10 @@ export class FtxExchange extends ExchangeBase {
       return {
         ok: true,
         value: {
-          originalPositionResponseAsIs: response,
-          originalBalanceResponseAsIs: response,
+          originalPositionResponse: response,
+          originalBalanceResponse: response,
+          originalPosition: undefined,
+          originalBalance: undefined,
           lastBtcPriceInUsd: btcPriceInUsd,
           leverageRatio: leverage,
           collateralInUsd: response.collateral,
@@ -55,5 +58,35 @@ export class FtxExchange extends ExchangeBase {
 
   public async getInstrumentDetails(): Promise<Result<GetInstrumentDetailsResult>> {
     return { ok: false, error: new Error(ApiError.NOT_IMPLEMENTED) }
+  }
+
+  public async getPublicFundingRate(): Promise<Result<GetPublicFundingRateResult>> {
+    try {
+      const response = await this.exchange.publicGetFuturesFutureNameStats({
+        future_name: this.instrumentId,
+      })
+      this.logger.debug(
+        { future_name: this.instrumentId, response },
+        "exchange.publicGetFuturesFutureNameStats({future_name}) returned: {response}",
+      )
+      assert(response, ApiError.UNSUPPORTED_API_RESPONSE)
+      assert(response.success, ApiError.UNSUPPORTED_API_RESPONSE)
+      assert(response.result, ApiError.UNSUPPORTED_API_RESPONSE)
+      assert(
+        response.result.nextFundingRate === this.instrumentId,
+        ApiError.UNSUPPORTED_API_RESPONSE,
+      )
+
+      return {
+        ok: true,
+        value: {
+          originalResponseAsIs: response,
+          fundingRate: NaN,
+          nextFundingRate: response.result.nextFundingRate,
+        },
+      }
+    } catch (error) {
+      return { ok: false, error: error }
+    }
   }
 }

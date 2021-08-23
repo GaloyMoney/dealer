@@ -31,3 +31,4 @@ COPY ./junit.xml ./
 USER 1000
 
 ENTRYPOINT ["/busybox/sleep", "1d"]
+CMD ["lib/entrypoint/graphql.js"]

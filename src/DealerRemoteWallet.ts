@@ -63,7 +63,7 @@ const ONCHAIN_PAY = gql`
   }
 `
 
-export class DealerMockWallet implements GaloyWallet {
+export class DealerRemoteWallet implements GaloyWallet {
   client: ApolloClient<NormalizedCacheObject>
   logger: pino.Logger
 
@@ -72,7 +72,7 @@ export class DealerMockWallet implements GaloyWallet {
     const httpLink = createHttpLink({ uri: GRAPHQL_URI, fetch })
     const cache = new InMemoryCache(IN_MEMORY_CACHE_CONFIG)
     this.client = new ApolloClient({ link: httpLink, cache: cache })
-    this.logger = logger.child({ class: DealerMockWallet.name })
+    this.logger = logger.child({ class: DealerRemoteWallet.name })
   }
 
   public async getWalletUsdBalance(): Promise<Result<number>> {
@@ -83,7 +83,7 @@ export class DealerMockWallet implements GaloyWallet {
         { WALLET, result },
         "{WALLET} query to galoy graphql api successful with {result}",
       )
-      return { ok: true, value: result.data.wallet.balance.amount }
+      return { ok: true, value: result.data.wallet[0].balance.amount }
     } catch (error) {
       logger.error(
         { WALLET, error },

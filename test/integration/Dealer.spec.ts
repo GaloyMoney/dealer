@@ -1,12 +1,16 @@
-import { baseLogger } from "src/logger"
+import { baseLogger } from "src/services/logger"
 import { Dealer } from "src/Dealer"
 import { OrderStatus } from "src/ExchangeTradingType"
 import { SupportedExchange } from "src/ExchangeConfiguration"
 import { OkexExchangeMockBuilder } from "../mocks/OkexExchangeMockBuilder"
+import { WalletType } from "src/DealerWalletFactory"
+import { HedgingStrategies } from "src/HedgingStrategyTypes"
 
 beforeAll(async () => {
   // Init non-simulation for the tests
   process.env["HEDGING_NOT_IN_SIMULATION"] = "TRUE"
+  process.env["ACTIVE_STRATEGY"] = HedgingStrategies.OkexPerpetualSwap
+  process.env["ACTIVE_WALLET"] = WalletType.SimulatedWallet
 
   // Init exchange secrets
   for (const exchangeId in SupportedExchange) {
@@ -59,8 +63,8 @@ jest.mock("ccxt", () => ({
   },
 }))
 
-jest.mock("src/DealerMockWallet", () => ({
-  DealerMockWallet: function () {
+jest.mock("src/DealerSimulatedWallet", () => ({
+  DealerSimulatedWallet: function () {
     const walletMock = mockScenarios.getWalletMock()
     return walletMock
   },

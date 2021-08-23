@@ -20,6 +20,12 @@ export interface TradeOrder {
   currency: TradeCurrency
 }
 
+export enum PositionSide {
+  Short = "short",
+  Long = "long",
+  Net = "net",
+}
+
 export enum FundTransferSide {
   Withdraw = "withdraw",
   Deposit = "deposit",
@@ -121,6 +127,9 @@ export interface PrivateGetAccountResult {
 
 export interface FetchBalanceResult {
   originalResponseAsIs
+  btcFreeBalance: number
+  btcUsedBalance: number
+  btcTotalBalance: number
   totalEq: number
 }
 
@@ -129,6 +138,18 @@ export interface FetchPositionResult {
   last: number
   notionalUsd: number
   margin: number
+
+  // extra positional risk data for monitoring
+  autoDeleveragingIndicator: number // adl
+  liquidationPrice: number // liqPx
+  positionQuantity: number // pos
+  positionSide: PositionSide // posSide
+  averageOpenPrice: number // avgPx
+  unrealizedPnL: number // upl
+  unrealizedPnLRatio: number // uplRatio
+  marginRatio: number // mgnRatio
+  maintenanceMarginRequirement: number // mmr
+  exchangeLeverage: number // lever
 }
 
 export interface FetchTickerResult {
@@ -137,8 +158,10 @@ export interface FetchTickerResult {
 }
 
 export interface GetAccountAndPositionRiskResult {
-  originalPositionResponseAsIs
-  originalBalanceResponseAsIs
+  originalPositionResponse
+  originalBalanceResponse
+  originalPosition: FetchPositionResult | undefined
+  originalBalance: FetchBalanceResult | undefined
   lastBtcPriceInUsd: number
   leverageRatio: number
   collateralInUsd: number
@@ -150,6 +173,12 @@ export interface GetInstrumentDetailsResult {
   originalResponseAsIs
   minimumOrderSizeInContract: number
   contractFaceValue: number
+}
+
+export interface GetPublicFundingRateResult {
+  originalResponseAsIs
+  fundingRate: number
+  nextFundingRate: number
 }
 
 export enum ApiError {

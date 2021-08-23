@@ -15,6 +15,7 @@ import {
   FetchWithdrawalsResult,
   FetchWithdrawalsParameters,
   FetchDepositsParameters,
+  GetPublicFundingRateResult,
 } from "./ExchangeTradingType"
 import { Result } from "./Result"
 import ccxt, { ExchangeId } from "ccxt"
@@ -335,4 +336,6 @@ export abstract class ExchangeBase {
   ): Promise<Result<GetAccountAndPositionRiskResult>>
 
   abstract getInstrumentDetails(): Promise<Result<GetInstrumentDetailsResult>>
+
+  abstract getPublicFundingRate(): Promise<Result<GetPublicFundingRateResult>>
 }

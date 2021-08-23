@@ -10,24 +10,25 @@ RUN yarn install --frozen-lockfile
 
 COPY ./src ./src
 
-RUN find ./src -type d -depth -name '__tests__' -exec rm -r {} \; -prune
+
 
 RUN yarn build
 
-RUN yarn install --frozen-lockfile --production
 
-FROM gcr.io/distroless/nodejs:14
+
+FROM gcr.io/distroless/nodejs:14-debug
 COPY --from=BUILD_IMAGE /app/lib /app/lib
 COPY --from=BUILD_IMAGE /app/node_modules /app/node_modules
 
 WORKDIR /app
 COPY ./*.js ./default.yaml ./package.json ./tsconfig.json ./yarn.lock ./.env ./
 
-
-
-
-
+### debug only
+COPY --from=BUILD_IMAGE /app/src /app/src
+COPY ./junit.xml ./
+###
 
 USER 1000
 
-CMD ["lib/entrypoint/graphql.js"]
+ENTRYPOINT ["/busybox/sleep", "1d"]
+CMD ["lib/servers/graphql/WalletGraphqlServer.js"]

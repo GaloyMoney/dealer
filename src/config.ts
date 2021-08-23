@@ -1,7 +1,7 @@
 import fs from "fs"
 import yaml from "js-yaml"
 import _ from "lodash"
-import { baseLogger } from "./logger"
+import { baseLogger } from "./services/logger"
 
 const defaultContent = fs.readFileSync("./default.yaml", "utf8")
 export const defaultConfig = yaml.load(defaultContent)

@@ -1,5 +1,5 @@
 import fs from "fs"
-import { baseLogger } from "src/logger"
+import { baseLogger } from "src/services/logger"
 import {
   InFlightTransfer,
   InFlightTransferDb,

@@ -13,7 +13,12 @@
     "prettier-write": "prettier --write .",
     "build": "tsc -p tsconfig-build.json --skipLibCheck",
     "test:unit": "jest --config ./test/jest-unit.config.js --bail --verbose $TEST | yarn pino-pretty -c -l",
-    "graphql:server:elk": "yarn build && node lib/entrypoint/WalletGraphqlServer.js | pino-elasticsearch -u elastic -p changeme"
+    "test:integration": "jest --config ./test/jest-integration.config.js --bail --verbose $TEST | yarn pino-pretty -c -l",
+    "servers:graphql:pretty": "yarn build && node lib/servers/graphql/WalletGraphqlServer.js | pino-pretty -c -l",
+    "servers:graphql:elk": "yarn build && node lib/servers/graphql/WalletGraphqlServer.js | pino-elasticsearch -u elastic -p changeme",
+    "servers:exporter:pretty": "yarn build && node lib/servers/exporter/exporter.js | pino-pretty -c -l",
+    "servers:exporter:elk": "yarn build && node lib/servers/exporter/exporter.js | pino-elasticsearch -u elastic -p changeme",
+    "app:dealer": "yarn build && node lib/app/dealer.js | pino-elasticsearch -u elastic -p changeme"
   },
   "dependencies": {
     "@apollo/client": "^3.3.21",
