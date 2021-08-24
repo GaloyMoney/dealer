@@ -29,5 +29,4 @@ COPY --from=BUILD_IMAGE /app/src /app/src
 
 USER 1000
 
-ENTRYPOINT ["/busybox/sleep", "1d"]
-CMD ["lib/entrypoint/graphql.js"]
+CMD ["lib/app/dealer.js"]
