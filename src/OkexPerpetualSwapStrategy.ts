@@ -1,4 +1,4 @@
-import { sleep } from "./utils"
+import { roundBtc, sleep } from "./utils"
 import { yamlConfig } from "./config"
 import { Result } from "./Result"
 import {
@@ -441,7 +441,7 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
         tradeSide = TradeSide.Buy
       }
 
-      const orderSizeInBtc = orderSizeInUsd / btcPriceInUsd
+      const orderSizeInBtc = roundBtc(orderSizeInUsd / btcPriceInUsd)
       return {
         ok: true,
         value: {
@@ -643,7 +643,7 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
           result.out.transferSizeInUsd = transferSizeInUsd
           result.out.fundTransferSide = FundTransferSide.Withdraw
           result.out.newLeverageRatio = liabilityInUsd / newCollateralInUsd
-          result.out.transferSizeInBtc = result.out.transferSizeInUsd / btcPriceInUsd
+          result.out.transferSizeInBtc = roundBtc(result.out.transferSizeInUsd / btcPriceInUsd)
         }
       } else if (leverageRatio > hedgingBounds.HIGH_BOUND_LEVERAGE) {
         const newCollateralInUsd = liabilityInUsd / hedgingBounds.HIGH_SAFEBOUND_LEVERAGE
@@ -652,7 +652,7 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
           result.out.transferSizeInUsd = transferSizeInUsd
           result.out.fundTransferSide = FundTransferSide.Deposit
           result.out.newLeverageRatio = liabilityInUsd / newCollateralInUsd
-          result.out.transferSizeInBtc = result.out.transferSizeInUsd / btcPriceInUsd
+          result.out.transferSizeInBtc = roundBtc(result.out.transferSizeInUsd / btcPriceInUsd)
         }
       }
 
