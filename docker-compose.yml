@@ -16,6 +16,8 @@ services:
       - 9090:9090
     expose:
       - 9090
+    environment:
+      - LOGS_ENABLED=false
     networks:
       - monitoring
   grafana:
@@ -28,28 +30,26 @@ services:
       - GF_AUTH_DISABLE_LOGIN_FORM=true
       - GF_AUTH_ANONYMOUS_ENABLED=true
       - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - LOGS_ENABLED=false
     ports:
       - 3000:3000
     expose:
       - 3000
     networks:
       - monitoring
-#   galoy-dealer:
-#     build:
-#       context: .
-#       dockerfile: src/app/Dockerfile
-#     ports:
-#       - 8080:8080
-#     expose:
-#       - 8080
-#     networks:
-#       - monitoring    
+  # galoy-dealer:
+  #   build:
+  #     context: .
+  #     dockerfile: src/app/Dockerfile
+  #   volumes:
+  #     - ./data:/var/lib/dealer
+  #   networks:
+  #     - monitoring
   exporter:
     build:
       context: .
       dockerfile: src/servers/exporter/Dockerfile      
     volumes:
-      - ./data:/var/lib/dealer/exporter
       - ./data:/var/lib/dealer
     links: 
       - graphql
@@ -58,16 +58,16 @@ services:
     expose:
       - 3333
     networks:
-      - monitoring    
+      - monitoring
   graphql:
     build:
       context: .
       dockerfile: src/servers/graphql/Dockerfile
     volumes:
-      - ./data:/var/lib/dealer/graphql
+      - ./data:/var/lib/dealer
     ports:
       - 4000:4000
     expose:
       - 4000
     networks:
-      - monitoring    
+      - monitoring

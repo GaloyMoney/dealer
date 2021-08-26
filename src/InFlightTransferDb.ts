@@ -41,18 +41,18 @@ export class InFlightTransfer {
 }
 
 export class InFlightTransferDb {
-  public static databaseFileName = "/var/lib/dealer/__InFlightTransferDb.json"
+  public static databaseFilePath = `${process.env["IN_FLIGHT_TRANSFER_DB_PATH"]}/__InFlightTransferDb.json`
   private transfers: Map<string, InFlightTransfer>
   private logger: pino.Logger
 
   constructor(logger: pino.Logger) {
     this.logger = logger.child({ class: InFlightTransferDb.name })
     this.transfers = new Map<string, InFlightTransfer>()
-    if (!fs.existsSync(InFlightTransferDb.databaseFileName)) {
+    if (!fs.existsSync(InFlightTransferDb.databaseFilePath)) {
       const result = this.writeDbFile()
       if (!result.ok) {
         logger.error(
-          { databaseFileName: InFlightTransferDb.databaseFileName },
+          { databaseFileName: InFlightTransferDb.databaseFilePath },
           "Error: writeDbFile() failed on {databaseFileName}",
         )
         throw result.error
@@ -61,7 +61,7 @@ export class InFlightTransferDb {
       const result = this.readDbFile()
       if (!result.ok) {
         logger.error(
-          { databaseFileName: InFlightTransferDb.databaseFileName },
+          { databaseFileName: InFlightTransferDb.databaseFilePath },
           "Error: readDbFile() failed on {databaseFileName}",
         )
         throw result.error
@@ -72,7 +72,7 @@ export class InFlightTransferDb {
   private writeDbFile(): Result<void> {
     try {
       fs.writeFileSync(
-        InFlightTransferDb.databaseFileName,
+        InFlightTransferDb.databaseFilePath,
         JSON.stringify([...this.transfers]),
       )
       return { ok: true, value: undefined }
@@ -84,7 +84,7 @@ export class InFlightTransferDb {
 
   private readDbFile(): Result<void> {
     try {
-      const data = fs.readFileSync(InFlightTransferDb.databaseFileName)
+      const data = fs.readFileSync(InFlightTransferDb.databaseFilePath)
       this.transfers = new Map<string, InFlightTransfer>(JSON.parse(data.toString()))
       return { ok: true, value: undefined }
     } catch (error) {

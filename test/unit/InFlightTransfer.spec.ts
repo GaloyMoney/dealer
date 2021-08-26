@@ -10,7 +10,7 @@ import {
 
 afterAll(async () => {
   try {
-    const fileName = InFlightTransferDb.databaseFileName
+    const fileName = InFlightTransferDb.databaseFilePath
     if (fs.existsSync(fileName)) {
       fs.unlinkSync(fileName)
     }
@@ -22,7 +22,7 @@ describe("InFlightTransferDb", () => {
     it("should create a database file", async () => {
       const logger = baseLogger.child({ module: "InFlightTransfer.spec.ts" })
       new InFlightTransferDb(logger)
-      const fileName = InFlightTransferDb.databaseFileName
+      const fileName = InFlightTransferDb.databaseFilePath
       const doesFileExist = fs.existsSync(fileName)
       expect(doesFileExist).toBeTruthy()
     })

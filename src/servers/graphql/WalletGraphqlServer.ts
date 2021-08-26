@@ -119,7 +119,7 @@ export async function startApolloServer() {
   const resolvers = {
     Query: {
       wallet: async (_, __, { logger }) => {
-        const filename = "/var/lib/dealer/graphql/wallets.json"
+        const filename = `${process.env["WALLET_PATH"]}/wallets.json`
         if (!fs.existsSync(filename)) {
           fs.writeFileSync(filename, JSON.stringify(defaultWallet))
         }
@@ -132,7 +132,7 @@ export async function startApolloServer() {
         return wallets
       },
       getLastOnChainAddress: async (_, __, { logger }) => {
-        const filename = "/var/lib/dealer/graphql/lastOnChainAddress.json"
+        const filename = `${process.env["LAST_ON_CHAIN_ADDRESS_PATH"]}/lastOnChainAddress.json`
         if (!fs.existsSync(filename)) {
           fs.writeFileSync(filename, JSON.stringify(defaultLastOnChainAddress))
         }
@@ -148,7 +148,7 @@ export async function startApolloServer() {
     Mutation: {
       onchain: async (_, __, { logger }) => ({
         pay: ({ address, amount, memo }) => {
-          const filename = "/var/lib/dealer/graphql/onchain.pay.json"
+          const filename = `${process.env["ON_CHAIN_PAY_PATH"]}/onchain.pay.json`
           fs.writeFileSync(filename, JSON.stringify({ address, amount, memo }))
           logger.debug(
             { filename, address, amount, memo },

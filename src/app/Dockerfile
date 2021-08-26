@@ -29,4 +29,4 @@ COPY --from=BUILD_IMAGE /app/src /app/src
 
 USER 1000
 
-CMD ["lib/app/dealer.js"]
+CMD ["lib/app/scheduler.js"]
