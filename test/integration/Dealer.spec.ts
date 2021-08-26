@@ -1,8 +1,9 @@
 import { baseLogger } from "src/services/logger"
-import { Dealer } from "src/Dealer"
-import { OrderStatus } from "src/ExchangeTradingType"
+import { Dealer, UpdatedPositionAndLeverageResult } from "src/Dealer"
 import { SupportedExchange } from "src/ExchangeConfiguration"
-import { OkexExchangeMockBuilder } from "../mocks/OkexExchangeMockBuilder"
+import { OkexScenarioStepBuilder, StepInput } from "../mocks/OkexScenarioStepBuilder"
+import { ScenarioReader } from "../mocks/ScenarioReader"
+import { InFlightTransferDb } from "src/InFlightTransferDb"
 import { WalletType } from "src/DealerWalletFactory"
 import { HedgingStrategies } from "src/HedgingStrategyTypes"
 
@@ -20,93 +21,148 @@ beforeAll(async () => {
   }
 })
 
-class MockScenarioBuilder {
-  mockBuilder
-  constructor() {
-    this.mockBuilder = new OkexExchangeMockBuilder()
-    this.mockBuilder.mockThis(
-      10000,
-      0,
-      0,
-      0,
-      0,
-      false,
-      false,
-      false,
-      NaN,
-      OrderStatus.Canceled,
-      0,
-      OrderStatus.Canceled,
-      false,
-      false,
-      false,
-      true,
-      true,
-    )
-  }
-
-  public getExchangeMock() {
-    return this.mockBuilder.getExchangeMockObject()
-  }
-
-  public getWalletMock() {
-    return this.mockBuilder.getWalletMockObject()
-  }
+enum SCENARIO_FILE_PATH {
+  SCENARIO_00 = "/../data/scenarios.csv",
+  SCENARIO_01 = "/../data/scenario_01.csv",
+  SCENARIO_02 = "/../data/scenario_02.csv",
 }
 
-const mockScenarios = new MockScenarioBuilder()
+const exchangeMock = OkexScenarioStepBuilder.getCleanExchangeMock()
+const walletMock = OkexScenarioStepBuilder.getCleanWalletMock()
 
 jest.mock("ccxt", () => ({
   okex5: function () {
-    const exchangeMock = mockScenarios.getExchangeMock()
     return exchangeMock
   },
 }))
 
 jest.mock("src/DealerSimulatedWallet", () => ({
   DealerSimulatedWallet: function () {
-    const walletMock = mockScenarios.getWalletMock()
     return walletMock
   },
 }))
 
+function validateResult(
+  result: UpdatedPositionAndLeverageResult,
+  expected: UpdatedPositionAndLeverageResult,
+) {
+  expect(result.updatePositionSkipped).toBe(expected.updatePositionSkipped)
+  expect(result.updatedPositionResult.ok).toBe(expected.updatedPositionResult.ok)
+  if (result.updatedPositionResult.ok && expected.updatedPositionResult.ok) {
+    const updatedPositionResult = result.updatedPositionResult.value
+    const updatedPositionExpected = expected.updatedPositionResult.value
+    expect(updatedPositionResult).toBe(updatedPositionExpected)
+  }
+
+  expect(result.updateLeverageSkipped).toBe(expected.updateLeverageSkipped)
+  expect(result.updatedLeverageResult.ok).toBe(expected.updatedLeverageResult.ok)
+  if (result.updatedLeverageResult.ok && expected.updatedLeverageResult.ok) {
+    const updatedLeverageResult = result.updatedLeverageResult.value
+    const updatedLeverageExpected = expected.updatedLeverageResult.value
+    expect(updatedLeverageResult).toBe(updatedLeverageExpected)
+  }
+}
+
 describe("Dealer", () => {
-  describe("wallet mocks", () => {
-    it("should run clear", async () => {
+  describe.only("first scenario", () => {
+    it("should execute successfully scenario 01", async () => {
       const logger = baseLogger.child({ module: "cron" })
-      const dealer = new Dealer(logger)
+      const database = new InFlightTransferDb(logger)
+      database.clear()
+      let dealer = {} as Dealer
+      let initDealer = true
 
-      //   const r0 = await dealer.getWalletOnChainAddress()
-      //   console.log(JSON.stringify(r0))
+      // get the data for the scenario
+      const result = ScenarioReader.getScenarioStepData(SCENARIO_FILE_PATH.SCENARIO_01)
+      if (!result.ok) {
+        expect(result.ok).toBeTruthy()
+        return
+      }
 
-      //   const r1 = await dealer.getUsdLiability()
-      //   console.log(JSON.stringify(r1))
+      // while there's data do:
+      const steps: StepInput[] = result.value
+      for (const step of steps) {
+        // setup a step
+        const expected = OkexScenarioStepBuilder.mockScenarioStep(
+          step,
+          exchangeMock,
+          walletMock,
+        )
 
-      //   const r2 = await dealer.onChainPay({ address: "", btcAmountInSats: 1, memo: "" })
-      //   console.log(JSON.stringify(r2))
+        // run the step
+        if (initDealer) {
+          initDealer = !initDealer
+          dealer = new Dealer(logger)
+        }
+        logger.info({ step }, `Step '${step.comment}' starting ------->`)
+        const result = await dealer.updatePositionAndLeverage()
+        logger.info({ step }, `Step '${step.comment}' ended <-------`)
+        logger.info({ result }, `Step '${step.comment}' resulted in {result}`)
+
+        // check the step completed
+        expect(
+          OkexScenarioStepBuilder.checkScenarioCallStats(
+            expected,
+            exchangeMock,
+            walletMock,
+          ),
+        ).toBeTruthy()
+
+        // check the result
+        // expect(result.ok).toBeTruthy()
+        // if (result.ok) {
+        //   validateResult(result.value, expected.result)
+        // }
+      }
     })
-  })
-  describe.only("first call", () => {
-    it("should run return an order", async () => {
+    it.only("should execute successfully scenario 02", async () => {
       const logger = baseLogger.child({ module: "cron" })
-      const dealer = new Dealer(logger)
+      const database = new InFlightTransferDb(logger)
+      database.clear()
+      let dealer = {} as Dealer
+      let initDealer = true
 
-      //   const r0 = await dealer.getWalletOnChainAddress()
-      //   console.log(JSON.stringify(r0))
+      // get the data for the scenario
+      const result = ScenarioReader.getScenarioStepData(SCENARIO_FILE_PATH.SCENARIO_02)
+      if (!result.ok) {
+        expect(result.ok).toBeTruthy()
+        return
+      }
 
-      //   const r1 = await dealer.getUsdLiability()
-      //   console.log(JSON.stringify(r1))
+      // while there's data do:
+      const steps: StepInput[] = result.value
+      for (const step of steps) {
+        // setup a step
+        const expected = OkexScenarioStepBuilder.mockScenarioStep(
+          step,
+          exchangeMock,
+          walletMock,
+        )
 
-      //   const r2 = await dealer.onChainPay({ address: "", btcAmountInSats: 1, memo: "" })
-      //   console.log(JSON.stringify(r2))
+        // run the step
+        if (initDealer) {
+          initDealer = !initDealer
+          dealer = new Dealer(logger)
+        }
+        logger.info({ step }, `Step '${step.comment}' starting ------->`)
+        const result = await dealer.updatePositionAndLeverage()
+        logger.info({ step }, `Step '${step.comment}' ended <-------`)
+        logger.info({ result }, `Step '${step.comment}' resulted in {result}`)
 
-      const result = await dealer.updatePositionAndLeverage()
-      console.log(JSON.stringify(result))
-      expect(result.ok).toBeTruthy()
-      if (result.ok && result.value.updatedLeverageResult.ok) {
-        const updatedLeverage = result.value.updatedLeverageResult.value
-        expect(updatedLeverage.originalLeverageRatio).toBeNaN
-        expect(updatedLeverage.newLeverageRatio).toBeNaN
+        // check the step completed
+        expect(
+          OkexScenarioStepBuilder.checkScenarioCallStats(
+            expected,
+            exchangeMock,
+            walletMock,
+          ),
+        ).toBeTruthy()
+
+        // check the result
+        // expect(result.ok).toBeTruthy()
+        // if (result.ok) {
+        //   validateResult(result.value, expected.result)
+        // }
       }
     })
   })

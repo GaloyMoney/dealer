@@ -13,11 +13,12 @@ import {
   InFlightTransferDirection,
 } from "./InFlightTransferDb"
 import { GaloyWallet } from "./GaloyWalletTypes"
-import { createHedgingStrategy } from "./HedgingStrategyFactory"
 import { createDealerWallet, WalletType } from "./DealerWalletFactory"
+import { createHedgingStrategy } from "./HedgingStrategyFactory"
 import { GetAccountAndPositionRiskResult } from "./ExchangeTradingType"
 
-const MINIMUM_POSITIVE_LIABILITY = 1
+const MINIMUM_POSITIVE_LIABILITY_USD = 1
+const MINIMUM_TRANSFER_AMOUNT_USD = 100
 
 export type UpdatedPositionAndLeverageResult = {
   updatePositionSkipped: boolean
@@ -35,11 +36,13 @@ export class Dealer {
   constructor(logger: pino.Logger) {
     const activeStrategy = process.env["ACTIVE_STRATEGY"]
     const walletType = process.env["ACTIVE_WALLET"]
+    
     if (!activeStrategy) {
       throw new Error(`Missing dealer active strategy environment variable`)
     } else if (!walletType) {
       throw new Error(`Missing dealer wallet type environment variable`)
     }
+    
     this.wallet = createDealerWallet(walletType as WalletType, logger)
     this.strategy = createHedgingStrategy(activeStrategy as HedgingStrategies, logger)
     this.database = new InFlightTransferDb(logger)
@@ -166,7 +169,7 @@ export class Dealer {
 
     const result = {} as UpdatedPositionAndLeverageResult
 
-    if (usdLiability < MINIMUM_POSITIVE_LIABILITY) {
+    if (usdLiability < MINIMUM_POSITIVE_LIABILITY_USD) {
       logger.debug({ usdLiability }, "No liabilities to hedge, skipping the order loop")
       result.updatePositionSkipped = true
     } else {

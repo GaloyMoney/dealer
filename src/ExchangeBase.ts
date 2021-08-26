@@ -44,6 +44,8 @@ export abstract class ExchangeBase {
     const exchangeClass = ccxt[this.exchangeId]
     this.exchange = new exchangeClass({ apiKey, secret, password })
 
+    this.exchange.options["createMarketBuyOrderRequiresPrice"] = false
+
     // The following check throws if something is wrong
     this.exchange.checkRequiredCredentials()
 
@@ -237,10 +239,16 @@ export abstract class ExchangeBase {
     try {
       this.exchangeConfig.createMarketOrderValidateInput(args)
 
+      const limitPrice = undefined
+      const tdMode = "isolated"
+      const params = { tdMode: tdMode }
+
       const response = await this.exchange.createMarketOrder(
         args.instrumentId,
         args.side as ccxt.Order["side"],
         args.quantity,
+        limitPrice,
+        params,
       )
       this.logger.debug(
         { args, response },

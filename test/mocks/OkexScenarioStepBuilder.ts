@@ -101,7 +101,7 @@ export interface ExpectedResult {
   result: UpdatedPositionAndLeverageResult
 }
 
-export class OkexExchangeScenarioStepBuilder {
+export class OkexScenarioStepBuilder {
   public static getCleanExchangeMock(): ExchangeMock {
     const exchangeMock = {
       checkRequiredCredentials: jest.fn().mockReturnValue(true),
@@ -416,7 +416,7 @@ export class OkexExchangeScenarioStepBuilder {
     walletMock: WalletMock,
   ): boolean {
     // fetchDeposits
-    OkexExchangeScenarioStepBuilder.validateMockCalls(
+    OkexScenarioStepBuilder.validateMockCalls(
       "fetchDeposits",
       exchangeMock.fetchDeposits.mock.calls.length,
       exchangeMock.fetchDeposits.mock,
@@ -425,7 +425,7 @@ export class OkexExchangeScenarioStepBuilder {
     exchangeMock.fetchDeposits.mockClear()
 
     // fetchWithdrawals
-    OkexExchangeScenarioStepBuilder.validateMockCalls(
+    OkexScenarioStepBuilder.validateMockCalls(
       "fetchWithdrawals",
       exchangeMock.fetchWithdrawals.mock.calls.length,
       exchangeMock.fetchWithdrawals.mock,
@@ -434,7 +434,7 @@ export class OkexExchangeScenarioStepBuilder {
     exchangeMock.fetchWithdrawals.mockClear()
 
     // fetchTicker
-    OkexExchangeScenarioStepBuilder.validateMockCalls(
+    OkexScenarioStepBuilder.validateMockCalls(
       "fetchTicker",
       exchangeMock.fetchTicker.mock.calls.length,
       exchangeMock.fetchTicker.mock,
@@ -443,7 +443,7 @@ export class OkexExchangeScenarioStepBuilder {
     exchangeMock.fetchTicker.mockClear()
 
     // fetchPosition
-    OkexExchangeScenarioStepBuilder.validateMockCalls(
+    OkexScenarioStepBuilder.validateMockCalls(
       "fetchPosition",
       exchangeMock.fetchPosition.mock.calls.length,
       exchangeMock.fetchPosition.mock,
@@ -452,7 +452,7 @@ export class OkexExchangeScenarioStepBuilder {
     exchangeMock.fetchPosition.mockClear()
 
     // fetchBalance
-    OkexExchangeScenarioStepBuilder.validateMockCalls(
+    OkexScenarioStepBuilder.validateMockCalls(
       "fetchBalance",
       exchangeMock.fetchBalance.mock.calls.length,
       exchangeMock.fetchBalance.mock,
@@ -461,7 +461,7 @@ export class OkexExchangeScenarioStepBuilder {
     exchangeMock.fetchBalance.mockClear()
 
     // publicGetPublicInstruments
-    OkexExchangeScenarioStepBuilder.validateMockCalls(
+    OkexScenarioStepBuilder.validateMockCalls(
       "publicGetPublicInstruments",
       exchangeMock.publicGetPublicInstruments.mock.calls.length,
       exchangeMock.publicGetPublicInstruments.mock,
@@ -470,7 +470,7 @@ export class OkexExchangeScenarioStepBuilder {
     exchangeMock.publicGetPublicInstruments.mockClear()
 
     // createMarketOrder
-    OkexExchangeScenarioStepBuilder.validateMockCalls(
+    OkexScenarioStepBuilder.validateMockCalls(
       "createMarketOrder",
       exchangeMock.createMarketOrder.mock.calls.length,
       exchangeMock.createMarketOrder.mock,
@@ -479,7 +479,7 @@ export class OkexExchangeScenarioStepBuilder {
     exchangeMock.createMarketOrder.mockClear()
 
     // fetchOrder
-    OkexExchangeScenarioStepBuilder.validateMockCalls(
+    OkexScenarioStepBuilder.validateMockCalls(
       "fetchOrder",
       exchangeMock.fetchOrder.mock.calls.length,
       exchangeMock.fetchOrder.mock,
@@ -488,7 +488,7 @@ export class OkexExchangeScenarioStepBuilder {
     exchangeMock.fetchOrder.mockClear()
 
     // withdraw
-    OkexExchangeScenarioStepBuilder.validateMockCalls(
+    OkexScenarioStepBuilder.validateMockCalls(
       "withdraw",
       exchangeMock.withdraw.mock.calls.length,
       exchangeMock.withdraw.mock,
@@ -497,7 +497,7 @@ export class OkexExchangeScenarioStepBuilder {
     exchangeMock.withdraw.mockClear()
 
     // fetchDepositAddress
-    OkexExchangeScenarioStepBuilder.validateMockCalls(
+    OkexScenarioStepBuilder.validateMockCalls(
       "fetchDepositAddress",
       exchangeMock.fetchDepositAddress.mock.calls.length,
       exchangeMock.fetchDepositAddress.mock,
@@ -506,7 +506,7 @@ export class OkexExchangeScenarioStepBuilder {
     exchangeMock.fetchDepositAddress.mockClear()
 
     // getWalletUsdBalance
-    OkexExchangeScenarioStepBuilder.validateMockCalls(
+    OkexScenarioStepBuilder.validateMockCalls(
       "getWalletUsdBalance",
       walletMock.getWalletUsdBalance.mock.calls.length,
       walletMock.getWalletUsdBalance.mock,
@@ -515,7 +515,7 @@ export class OkexExchangeScenarioStepBuilder {
     walletMock.getWalletUsdBalance.mockClear()
 
     // getWalletOnChainDepositAddress
-    OkexExchangeScenarioStepBuilder.validateMockCalls(
+    OkexScenarioStepBuilder.validateMockCalls(
       "getWalletOnChainDepositAddress",
       walletMock.getWalletOnChainDepositAddress.mock.calls.length,
       walletMock.getWalletOnChainDepositAddress.mock,
@@ -524,7 +524,7 @@ export class OkexExchangeScenarioStepBuilder {
     walletMock.getWalletOnChainDepositAddress.mockClear()
 
     // payOnChain
-    OkexExchangeScenarioStepBuilder.validateMockCalls(
+    OkexScenarioStepBuilder.validateMockCalls(
       "payOnChain",
       walletMock.payOnChain.mock.calls.length,
       walletMock.payOnChain.mock,

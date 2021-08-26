@@ -34,7 +34,10 @@ export class OkexExchange extends ExchangeBase {
         "fetchPosition({instrumentId}) returned: {positionResult}",
       )
       if (!positionResult.ok) {
-        if (positionResult.error.message === ApiError.EMPTY_API_RESPONSE) {
+        if (
+          positionResult.error.message === ApiError.EMPTY_API_RESPONSE ||
+          positionResult.error.message === ApiError.UNSUPPORTED_API_RESPONSE
+        ) {
           // No position in the derivative yet
           result.lastBtcPriceInUsd = btcPriceInUsd
           result.leverage = 0
@@ -60,6 +63,13 @@ export class OkexExchange extends ExchangeBase {
       const balance = balanceResult.value
       result.originalBalance = balance
       result.totalAccountValueInUsd = balance.totalEq
+
+      if (!result.collateralInUsd) {
+        if (balance.originalResponseAsIs?.BTC?.free && result.lastBtcPriceInUsd) {
+          result.collateralInUsd =
+            balance.originalResponseAsIs.BTC.free * result.lastBtcPriceInUsd
+        }
+      }
 
       return {
         ok: true,

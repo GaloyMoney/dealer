@@ -566,8 +566,8 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
         quantity: orderSizeInContract,
       })
       logger.debug(
-        { tradeSide, orderSizeInContract, orderResult },
-        "this.exchange.createMarketOrder({tradeSide}, {orderSizeInContract}) returned: {orderResult}",
+        { instrumentId: this.instrumentId, tradeSide, orderSizeInContract, orderResult },
+        "this.exchange.createMarketOrder({instrumentId}, {tradeSide}, {orderSizeInContract}) returned: {orderResult}",
       )
       if (!orderResult.ok) {
         return { ok: false, error: orderResult.error }
