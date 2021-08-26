@@ -42,6 +42,7 @@ jest.mock("src/DealerSimulatedWallet", () => ({
   },
 }))
 
+/* eslint-disable */
 function validateResult(
   result: UpdatedPositionAndLeverageResult,
   expected: UpdatedPositionAndLeverageResult,
@@ -62,6 +63,7 @@ function validateResult(
     expect(updatedLeverageResult).toBe(updatedLeverageExpected)
   }
 }
+/* eslint-enable */
 
 describe("Dealer", () => {
   describe.only("first scenario", () => {

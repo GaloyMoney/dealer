@@ -308,7 +308,9 @@ export class OkexScenarioStepBuilder {
         if (isOrderSizeOk) {
           expectedResult.exchangeMockStats.createMarketOrder++
           exchangeMock.createMarketOrder.mockImplementationOnce(
+            /* eslint-disable */
             (args: CreateOrderParameters) => {
+              /* eslint-enable */
               return getValidCreateMarketOrderResponse(orderId)
             },
           )
@@ -400,7 +402,9 @@ export class OkexScenarioStepBuilder {
         })
         expectedResult.walletMockStats.payOnChain++
         walletMock.payOnChain.mockImplementationOnce(
+          /* eslint-disable */
           (address: string, btcAmountInSats: number, memo: string): Result<void> => {
+            /* eslint-enable */
             return { ok: true, value: undefined }
           },
         )
@@ -537,7 +541,9 @@ export class OkexScenarioStepBuilder {
   public static validateMockCalls(
     fnName: string,
     callCount: number,
+    /* eslint-disable */
     context: jest.MockContext<any, any>,
+    /* eslint-enable */
     expectedCallCount: number,
   ) {
     if (callCount !== expectedCallCount) {
