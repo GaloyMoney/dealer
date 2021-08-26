@@ -44,7 +44,9 @@ export abstract class ExchangeBase {
     const exchangeClass = ccxt[this.exchangeId]
     this.exchange = new exchangeClass({ apiKey, secret, password })
 
-    this.exchange.options["createMarketBuyOrderRequiresPrice"] = false
+    if (this.exchange.options) {
+      this.exchange.options["createMarketBuyOrderRequiresPrice"] = false
+    }
 
     // The following check throws if something is wrong
     this.exchange.checkRequiredCredentials()
