@@ -36,9 +36,13 @@ const lastBtcPriceInUsd_g = new client.Gauge({
   name: `${prefix}_lastBtcPriceInUsd`,
   help: "btc price used to calculate last risk figures, in usd",
 })
+const leverage_g = new client.Gauge({
+  name: `${prefix}_leverage`,
+  help: "position leverage, i.e. notional / posted collateral",
+})
 const leverageRatio_g = new client.Gauge({
   name: `${prefix}_leverageRatio`,
-  help: "position leverage, i.e. notional / posted collateral",
+  help: "rebalance leverageRatio, i.e. liability / posted collateral",
 })
 const collateralInUsd_g = new client.Gauge({
   name: `${prefix}_collateralInUsd`,
@@ -112,19 +116,22 @@ const main = async () => {
     const dealer = new Dealer(logger)
 
     try {
+      const liabilityInUsd = await dealer.getLiabilityInUsd()
       const result = await dealer.getAccountAndPositionRisk()
       if (result.ok) {
         const {
           originalPosition,
           originalBalance,
           lastBtcPriceInUsd,
-          leverageRatio,
+          leverage,
           collateralInUsd,
           exposureInUsd,
           totalAccountValueInUsd,
         } = result.value
 
         lastBtcPriceInUsd_g.set(lastBtcPriceInUsd)
+        leverage_g.set(leverage)
+        const leverageRatio = liabilityInUsd / collateralInUsd
         leverageRatio_g.set(leverageRatio)
         collateralInUsd_g.set(collateralInUsd)
         exposureInUsd_g.set(exposureInUsd)
@@ -159,7 +166,7 @@ const main = async () => {
       nextFundingRate_g.set(await dealer.getNextFundingRateInBtc())
       btcSpotPriceInUsd_g.set(await dealer.getDerivativePriceInUsd())
       btcDerivativePriceInUsd_g.set(await dealer.getDerivativePriceInUsd())
-      liabilityInUsd_g.set(await dealer.getLiabilityInUsd())
+      liabilityInUsd_g.set(liabilityInUsd)
     } catch (error) {
       console.log(error)
       logger.error("Couldn't set dealer wallet metrics")
