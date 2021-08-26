@@ -216,6 +216,17 @@ function getValidFetchPositionProcessApiResponse() {
     last: "44444.4",
     notionalUsd: "99.99999999999996",
     margin: "0.000615615271145",
+
+    adl: "3",
+    liqPx: "59884.07806250006",
+    pos: "-1",
+    posSide: "net",
+    avgPx: "48123.9",
+    upl: "0.0000010467393406",
+    uplRatio: "0.0025186589675597",
+    mgnRatio: "44.533951675653064",
+    mmr: "0.0000083160652548",
+    lever: "5",
   }
 }
 
@@ -225,6 +236,17 @@ function getProcessedFetchPositionProcessApiResponse(response) {
     last: Number(response.last),
     notionalUsd: Number(response.notionalUsd),
     margin: Number(response.margin),
+
+    autoDeleveragingIndicator: Number(response.adl),
+    liquidationPrice: Number(response.liqPx),
+    positionQuantity: Number(response.pos),
+    positionSide: response.posSide,
+    averageOpenPrice: Number(response.avgPx),
+    unrealizedPnL: Number(response.upl),
+    unrealizedPnLRatio: Number(response.uplRatio),
+    marginRatio: Number(response.mgnRatio),
+    maintenanceMarginRequirement: Number(response.mmr),
+    exchangeLeverage: Number(response.lever),
   }
 }
 

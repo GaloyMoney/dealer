@@ -6,7 +6,7 @@ import {
   CreateOrderParameters,
 } from "src/ExchangeTradingType"
 import { Position, UpdatedBalance, UpdatedPosition } from "src/HedgingStrategyTypes"
-import { baseLogger } from "src/logger"
+import { baseLogger } from "src/services/logger"
 import { Result } from "src/Result"
 import { sat2btc } from "src/utils"
 import {
@@ -55,6 +55,7 @@ export interface StepInput {
 }
 
 export interface ExchangeMock {
+  options: jest.Mock
   checkRequiredCredentials: jest.Mock
   last_json_response: jest.Mock
   fetchDeposits: jest.Mock
@@ -104,6 +105,11 @@ export interface ExpectedResult {
 export class OkexScenarioStepBuilder {
   public static getCleanExchangeMock(): ExchangeMock {
     const exchangeMock = {
+      options: jest
+        .fn()
+        .mockReturnValue(
+          new Map<string, boolean>([["createMarketBuyOrderRequiresPrice", true]]),
+        ),
       checkRequiredCredentials: jest.fn().mockReturnValue(true),
       last_json_response: jest
         .fn()
