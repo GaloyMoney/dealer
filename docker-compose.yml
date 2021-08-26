@@ -37,14 +37,14 @@ services:
       - 3000
     networks:
       - monitoring
-  # galoy-dealer:
-  #   build:
-  #     context: .
-  #     dockerfile: src/app/Dockerfile
-  #   volumes:
-  #     - ./data:/var/lib/dealer
-  #   networks:
-  #     - monitoring
+  galoy-dealer:
+    build:
+      context: .
+      dockerfile: src/app/Dockerfile
+    volumes:
+      - ./data:/var/lib/dealer
+    networks:
+      - monitoring
   exporter:
     build:
       context: .
