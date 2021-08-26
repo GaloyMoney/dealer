@@ -15,10 +15,13 @@
     "test:unit": "jest --config ./test/jest-unit.config.js --bail --verbose $TEST | yarn pino-pretty -c -l",
     "test:integration": "jest --config ./test/jest-integration.config.js --bail --verbose $TEST | yarn pino-pretty -c -l",
     "servers:graphql:pretty": "yarn build && node lib/servers/graphql/WalletGraphqlServer.js | pino-pretty -c -l",
-    "servers:graphql:elk": "yarn build && node lib/servers/graphql/WalletGraphqlServer.js | pino-elasticsearch -u elastic -p changeme",
+    "servers:graphql:elk": "yarn build && node lib/servers/graphql/WalletGraphqlServer.js | pino-elasticsearch",
     "servers:exporter:pretty": "yarn build && node lib/servers/exporter/exporter.js | pino-pretty -c -l",
-    "servers:exporter:elk": "yarn build && node lib/servers/exporter/exporter.js | pino-elasticsearch -u elastic -p changeme",
-    "app:dealer": "yarn build && node lib/app/dealer.js | pino-elasticsearch -u elastic -p changeme"
+    "servers:exporter:elk": "yarn build && node lib/servers/exporter/exporter.js | pino-elasticsearch",
+    "app:scheduler:pretty": "yarn build && node lib/app/scheduler.js | pino-pretty -c -l",
+    "app:scheduler:elk": "yarn build && node lib/app/scheduler.js | pino-elasticsearch",
+    "app:dealer:pretty": "yarn build && node lib/app/dealer.js | pino-pretty -c -l",
+    "app:dealer:elk": "yarn build && node lib/app/dealer.js | pino-elasticsearch"
   },
   "dependencies": {
     "@apollo/client": "^3.3.21",
@@ -35,6 +38,7 @@
     "graphql-tools": "^8.1.0",
     "js-yaml": "^4.1.0",
     "lodash": "^4.17.21",
+    "node-cron": "^3.0.0",
     "node-fetch": "^2.6.1",
     "pino": "^7.0.0-rc.1",
     "pino-http": "^5.6.0",
@@ -47,6 +51,7 @@
     "@types/jest": "^26.0.24",
     "@types/lodash": "^4.14.171",
     "@types/node": "^16.4.1",
+    "@types/node-cron": "^2.0.4",
     "@types/pino": "^6.3.9",
     "@typescript-eslint/eslint-plugin": "^4.28.4",
     "@typescript-eslint/parser": "^4.28.4",
