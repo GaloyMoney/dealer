@@ -12,6 +12,9 @@ hedging:
   HIGH_SAFEBOUND_LEVERAGE: 2.25
   HIGH_BOUND_LEVERAGE: 3
 
+  MINIMUM_POSITIVE_LIABILITY_USD: 1
+  MINIMUM_TRANSFER_AMOUNT_USD: 100
+
 rebalancing:
   lndHoldingBase: 50000000 # 0.5
   ratioTargetDeposit: 1
