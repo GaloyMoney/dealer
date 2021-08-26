@@ -218,6 +218,9 @@ export class OkexExchangeConfiguration implements ExchangeConfiguration {
 
     return {
       originalResponseAsIs: response,
+      btcFreeBalance: response?.BTC?.free,
+      btcUsedBalance: response?.BTC?.used,
+      btcTotalBalance: response?.BTC?.total,
       totalEq: Number(response.info.data[0].totalEq),
     }
   }
@@ -246,12 +249,24 @@ export class OkexExchangeConfiguration implements ExchangeConfiguration {
       last: Number(response.last),
       notionalUsd: Number(response.notionalUsd),
       margin: Number(response.margin),
+
+      autoDeleveragingIndicator: Number(response.adl),
+      liquidationPrice: Number(response.liqPx),
+      positionQuantity: Number(response.pos),
+      positionSide: response.posSide,
+      averageOpenPrice: Number(response.avgPx),
+      unrealizedPnL: Number(response.upl),
+      unrealizedPnLRatio: Number(response.uplRatio),
+      marginRatio: Number(response.mgnRatio),
+      maintenanceMarginRequirement: Number(response.mmr),
+      exchangeLeverage: Number(response.lever),
     }
   }
 
   fetchTickerValidateInput(instrumentId: string) {
     assert(
-      instrumentId === SupportedInstrument.OKEX_PERPETUAL_SWAP,
+      instrumentId === SupportedInstrument.OKEX_PERPETUAL_SWAP ||
+        instrumentId === SupportedInstrument.OKEX_BTC_USD_SPOT,
       ApiError.UNSUPPORTED_INSTRUMENT,
     )
   }

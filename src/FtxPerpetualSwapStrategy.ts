@@ -1,7 +1,12 @@
 import { sleep } from "./utils"
 import _ from "lodash"
 import { yamlConfig } from "./config"
-import { TradeSide, FundTransferSide, FundTransferStatus } from "./ExchangeTradingType"
+import {
+  TradeSide,
+  FundTransferSide,
+  FundTransferStatus,
+  GetAccountAndPositionRiskResult,
+} from "./ExchangeTradingType"
 import assert from "assert"
 import { Result } from "./Result"
 import { HedgingStrategy, UpdatedPosition, UpdatedBalance } from "./HedgingStrategyTypes"
@@ -18,6 +23,7 @@ export class FtxPerpetualSwapStrategy implements HedgingStrategy {
   exchange: ExchangeBase
   exchangeConfig: ExchangeConfiguration
   instrumentId: SupportedInstrument
+  public name = FtxPerpetualSwapStrategy.name
   private logger: pino.Logger
 
   constructor(logger: pino.Logger) {
@@ -36,6 +42,44 @@ export class FtxPerpetualSwapStrategy implements HedgingStrategy {
     const result = await this.exchange.fetchTicker(this.exchangeConfig.instrumentId)
     if (result.ok) {
       return { ok: true, value: result.value.lastBtcPriceInUsd }
+    } else {
+      return { ok: false, error: result.error }
+    }
+  }
+
+  public async getSpotPriceInUsd(): Promise<Result<number>> {
+    const result = await this.exchange.fetchTicker(SupportedInstrument.FTX_BTC_USD_SPOT)
+    if (result.ok) {
+      return { ok: true, value: result.value.lastBtcPriceInUsd }
+    } else {
+      return { ok: false, error: result.error }
+    }
+  }
+
+  public async getDerivativePriceInUsd(): Promise<Result<number>> {
+    const result = await this.exchange.fetchTicker(SupportedInstrument.FTX_PERPETUAL_SWAP)
+    if (result.ok) {
+      return { ok: true, value: result.value.lastBtcPriceInUsd }
+    } else {
+      return { ok: false, error: result.error }
+    }
+  }
+
+  public async getNextFundingRateInBtc(): Promise<Result<number>> {
+    const result = await this.exchange.getPublicFundingRate()
+    if (result.ok) {
+      return { ok: true, value: result.value.nextFundingRate }
+    } else {
+      return { ok: false, error: result.error }
+    }
+  }
+
+  public async getAccountAndPositionRisk(): Promise<
+    Result<GetAccountAndPositionRiskResult>
+  > {
+    const result = await this.getSpotPriceInUsd()
+    if (result.ok) {
+      return this.exchange.getAccountAndPositionRisk(result.value)
     } else {
       return { ok: false, error: result.error }
     }

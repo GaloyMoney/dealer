@@ -3,6 +3,7 @@ import {
   GetInstrumentDetailsResult,
   TradeCurrency,
   ApiError,
+  GetPublicFundingRateResult,
 } from "./ExchangeTradingType"
 import assert from "assert"
 import { ExchangeBase } from "./ExchangeBase"
@@ -29,8 +30,8 @@ export class OkexExchange extends ExchangeBase {
 
       const positionResult = await this.fetchPosition(this.instrumentId)
       this.logger.debug(
-        { positionResult },
-        `fetchPosition(${this.instrumentId}) returned: {positionResult}`,
+        { instrumentId: this.instrumentId, positionResult },
+        "fetchPosition({instrumentId}) returned: {positionResult}",
       )
       if (!positionResult.ok) {
         if (positionResult.error.message === ApiError.EMPTY_API_RESPONSE) {
@@ -44,7 +45,7 @@ export class OkexExchange extends ExchangeBase {
         }
       } else {
         const position = positionResult.value
-        result.originalPositionResponseAsIs = position
+        result.originalPosition = position
         result.lastBtcPriceInUsd = position.last
         result.leverage = position.notionalUsd / position.last / position.margin
         result.collateralInUsd = position.margin * position.last
@@ -57,7 +58,7 @@ export class OkexExchange extends ExchangeBase {
         return { ok: false, error: balanceResult.error }
       }
       const balance = balanceResult.value
-      result.originalBalanceResponseAsIs = balance
+      result.originalBalance = balance
       result.totalAccountValueInUsd = balance.totalEq
 
       return {
@@ -76,8 +77,8 @@ export class OkexExchange extends ExchangeBase {
         instId: this.instrumentId,
       })
       this.logger.debug(
-        { response },
-        `publicGetPublicInstruments(${this.instrumentId}) returned: {response}`,
+        { instrumentId: this.instrumentId, response },
+        "publicGetPublicInstruments({instrumentId}) returned: {response}",
       )
       assert(response, ApiError.UNSUPPORTED_API_RESPONSE)
       assert(
@@ -93,6 +94,36 @@ export class OkexExchange extends ExchangeBase {
           originalResponseAsIs: response,
           minimumOrderSizeInContract: Number(response.data[0].minSz),
           contractFaceValue: Number(response.data[0].ctVal),
+        },
+      }
+    } catch (error) {
+      return { ok: false, error: error }
+    }
+  }
+
+  public async getPublicFundingRate(): Promise<Result<GetPublicFundingRateResult>> {
+    try {
+      const response = await this.exchange.publicGetPublicFundingRate({
+        instId: this.instrumentId,
+      })
+      this.logger.debug(
+        { instrumentId: this.instrumentId, response },
+        "exchange.publicGetPublicFundingRate({instrumentId}) returned: {response}",
+      )
+      assert(response, ApiError.UNSUPPORTED_API_RESPONSE)
+      assert(
+        response.data[0].instId === this.instrumentId,
+        ApiError.UNSUPPORTED_INSTRUMENT,
+      )
+      assert(response.data[0].fundingRate, ApiError.UNSUPPORTED_API_RESPONSE)
+      assert(response.data[0].nextFundingRate, ApiError.UNSUPPORTED_API_RESPONSE)
+
+      return {
+        ok: true,
+        value: {
+          originalResponseAsIs: response,
+          fundingRate: response.data[0].fundingRate,
+          nextFundingRate: response.data[0].nextFundingRate,
         },
       }
     } catch (error) {

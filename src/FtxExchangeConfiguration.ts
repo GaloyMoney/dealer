@@ -205,6 +205,7 @@ export class FtxExchangeConfiguration implements ExchangeConfiguration {
     }
   }
 
+  /* eslint-disable */
   fetchBalanceValidateCall() {
     // Not supported
     throw new Error(ApiError.NOT_SUPPORTED)

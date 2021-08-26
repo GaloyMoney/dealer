@@ -41,7 +41,7 @@ export class InFlightTransfer {
 }
 
 export class InFlightTransferDb {
-  public static databaseFileName = "__InFlightTransferDb.json"
+  public static databaseFileName = "/var/lib/dealer/__InFlightTransferDb.json"
   private transfers: Map<string, InFlightTransfer>
   private logger: pino.Logger
 
@@ -51,11 +51,19 @@ export class InFlightTransferDb {
     if (!fs.existsSync(InFlightTransferDb.databaseFileName)) {
       const result = this.writeDbFile()
       if (!result.ok) {
+        logger.error(
+          { databaseFileName: InFlightTransferDb.databaseFileName },
+          "Error: writeDbFile() failed on {databaseFileName}",
+        )
         throw result.error
       }
     } else {
       const result = this.readDbFile()
       if (!result.ok) {
+        logger.error(
+          { databaseFileName: InFlightTransferDb.databaseFileName },
+          "Error: readDbFile() failed on {databaseFileName}",
+        )
         throw result.error
       }
     }

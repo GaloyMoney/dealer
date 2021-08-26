@@ -1,4 +1,4 @@
-import { baseLogger } from "src/logger"
+import { baseLogger } from "src/services/logger"
 import { SupportedExchange, SupportedInstrument } from "src/ExchangeConfiguration"
 import { OkexExchangeConfiguration } from "src/OkexExchangeConfiguration"
 import { OkexExchange } from "src/OkexExchange"
