@@ -1,4 +1,5 @@
 import pino from "pino"
+import { yamlConfig } from "./config"
 import { Result } from "./Result"
 import { btc2sat } from "./utils"
 import {
@@ -7,35 +8,43 @@ import {
   UpdatedBalance,
   UpdatedPosition,
 } from "./HedgingStrategyTypes"
-import { DealerMockWallet } from "./DealerMockWallet"
-import { createHedgingStrategy } from "./HedgingStrategyFactory"
 import {
   InFlightTransfer,
   InFlightTransferDb,
   InFlightTransferDirection,
 } from "./InFlightTransferDb"
+import { GaloyWallet } from "./GaloyWalletTypes"
+import { createDealerWallet, WalletType } from "./DealerWalletFactory"
+import { createHedgingStrategy } from "./HedgingStrategyFactory"
+import { GetAccountAndPositionRiskResult } from "./ExchangeTradingType"
 
-// const activeStrategy = HedgingStrategies.FtxPerpetualSwap
-const activeStrategy = HedgingStrategies.OkexPerpetualSwap
-
-const MINIMUM_POSITIVE_LIABILITY = 1
+const hedgingBounds = yamlConfig.hedging
 
 export type UpdatedPositionAndLeverageResult = {
   updatePositionSkipped: boolean
   updatedPositionResult: Result<UpdatedPosition>
-  updatedLeverageSkipped: boolean
+  updateLeverageSkipped: boolean
   updatedLeverageResult: Result<UpdatedBalance>
 }
 
 export class Dealer {
-  private wallet: DealerMockWallet
+  private wallet: GaloyWallet
   private strategy: HedgingStrategy
   private database: InFlightTransferDb
   private logger: pino.Logger
 
   constructor(logger: pino.Logger) {
-    this.wallet = new DealerMockWallet(logger)
-    this.strategy = createHedgingStrategy(activeStrategy, logger)
+    const activeStrategy = process.env["ACTIVE_STRATEGY"]
+    const walletType = process.env["ACTIVE_WALLET"]
+
+    if (!activeStrategy) {
+      throw new Error(`Missing dealer active strategy environment variable`)
+    } else if (!walletType) {
+      throw new Error(`Missing dealer wallet type environment variable`)
+    }
+
+    this.wallet = createDealerWallet(walletType as WalletType, logger)
+    this.strategy = createHedgingStrategy(activeStrategy as HedgingStrategies, logger)
     this.database = new InFlightTransferDb(logger)
 
     this.logger = logger.child({ topic: "dealer" })
@@ -48,44 +57,73 @@ export class Dealer {
     let result = this.database.getPendingInFlightTransfers(
       InFlightTransferDirection.DEPOSIT_ON_EXCHANGE,
     )
+    logger.debug(
+      { result },
+      "database.getPendingInFlightTransfers(Deposits) returned: {result}",
+    )
     if (result.ok && result.value.size !== 0) {
       // Check if the funds arrived
       const transfers = result.value
-      transfers.forEach(async (transfer, address) => {
+
+      for (const [address, transfer] of transfers) {
+        // transfers.forEach(async (transfer, address) => {
         const result = await this.strategy.isDepositCompleted(
           address,
           transfer.transferSizeInSats,
         )
+        logger.debug(
+          { address, transfer, result },
+          "strategy.isDepositCompleted({address}, {transferSizeInSats}) returned: {result}",
+        )
         if (result.ok && result.value) {
           const result = this.database.completedInFlightTransfers(address)
+          logger.debug(
+            { address, result },
+            "database.completedInFlightTransfers({address}) returned: {result}",
+          )
           if (!result.ok) {
             const message = "Failed to update database on completed deposit to exchange"
             logger.debug({ result, transfer }, message)
           }
         }
-      })
+      }
+      // )
     }
 
     result = this.database.getPendingInFlightTransfers(
       InFlightTransferDirection.WITHDRAW_TO_WALLET,
     )
+    logger.debug(
+      { result },
+      "database.getPendingInFlightTransfers(Withdrawals) returned: {result}",
+    )
     if (result.ok && result.value.size !== 0) {
       // Check if the funds arrived
       const transfers = result.value
-      transfers.forEach(async (transfer, address) => {
+      for (const [address, transfer] of transfers) {
+        // transfers.forEach(async (transfer, address) => {
         const result = await this.strategy.isWithdrawalCompleted(
           address,
           transfer.transferSizeInSats,
         )
+        logger.debug(
+          { address, transfer, result },
+          "strategy.isWithdrawalCompleted({address}, {transferSizeInSats}) returned: {result}",
+        )
         if (result.ok && result.value) {
           const result = this.database.completedInFlightTransfers(address)
+          logger.debug(
+            { address, result },
+            "database.completedInFlightTransfers({address}) returned: {result}",
+          )
           if (!result.ok) {
             const message =
               "Failed to update database on completed withdrawal from exchange"
             logger.debug({ result, transfer }, message)
           }
         }
-      })
+      }
+      // )
     }
 
     return { ok: true, value: undefined }
@@ -112,6 +150,10 @@ export class Dealer {
     }
     const btcPriceInUsd = priceResult.value
     const usdLiabilityResult = await this.wallet.getWalletUsdBalance()
+    logger.debug(
+      { usdLiabilityResult },
+      "wallet.getWalletUsdBalance() returned: {usdLiabilityResult}",
+    )
 
     // If liability is negative, treat as an asset and do not hedge
     // If liability is below threshold, do not hedge
@@ -127,7 +169,7 @@ export class Dealer {
 
     const result = {} as UpdatedPositionAndLeverageResult
 
-    if (usdLiability < MINIMUM_POSITIVE_LIABILITY) {
+    if (usdLiability < hedgingBounds.MINIMUM_POSITIVE_LIABILITY_USD) {
       logger.debug({ usdLiability }, "No liabilities to hedge, skipping the order loop")
       result.updatePositionSkipped = true
     } else {
@@ -143,20 +185,20 @@ export class Dealer {
         const updatedPosition = updatedPositionResult.value.updatedPosition
 
         logger.info(
-          { activeStrategy, originalPosition, updatedPosition },
+          { activeStrategy: this.strategy.name, originalPosition, updatedPosition },
           "The {activeStrategy} was successful at UpdatePosition()",
         )
         logger.debug(
-          { activeStrategy, originalPosition },
+          { activeStrategy: this.strategy.name, originalPosition },
           "Position BEFORE {activeStrategy} executed UpdatePosition()",
         )
         logger.debug(
-          { activeStrategy, updatedPosition },
+          { activeStrategy: this.strategy.name, updatedPosition },
           "Position AFTER {activeStrategy} executed UpdatePosition()",
         )
       } else {
         logger.error(
-          { activeStrategy, updatedPosition: updatedPositionResult },
+          { activeStrategy: this.strategy.name, updatedPosition: updatedPositionResult },
           "The {activeStrategy} failed during the UpdatePosition() execution",
         )
       }
@@ -169,6 +211,10 @@ export class Dealer {
 
       const withdrawOnChainAddressResult =
         await this.wallet.getWalletOnChainDepositAddress()
+      logger.debug(
+        { withdrawOnChainAddressResult },
+        "wallet.getWalletOnChainDepositAddress() returned: {withdrawOnChainAddressResult}",
+      )
       if (!withdrawOnChainAddressResult.ok || !withdrawOnChainAddressResult.value) {
         const message = "WalletOnChainAddress is unavailable or invalid."
         logger.debug({ withdrawOnChainAddressResult }, message)
@@ -180,24 +226,24 @@ export class Dealer {
         usdLiability,
         btcPriceInUsd,
         withdrawOnChainAddress,
-        this.withdrawBookKeeping,
-        this.depositOnExchangeCallback,
+        this.withdrawBookKeeping.bind(this),
+        this.depositOnExchangeCallback.bind(this),
       )
       result.updatedLeverageResult = updatedLeverageResult
       if (updatedLeverageResult.ok) {
         const updatedLeverage = updatedLeverageResult.value
         logger.info(
-          { activeStrategy, updatedLeverage },
+          { activeStrategy: this.strategy.name, updatedLeverage },
           "The active {activeStrategy} was successful at UpdateLeverage()",
         )
       } else {
         logger.error(
-          { activeStrategy, updatedLeverageResult },
+          { activeStrategy: this.strategy.name, updatedLeverageResult },
           "The active {activeStrategy} failed during the UpdateLeverage() execution",
         )
       }
     } else {
-      result.updatedLeverageSkipped = true
+      result.updateLeverageSkipped = true
       if (dbCallResult.ok) {
         const pendingInFlightTransfers = dbCallResult.value
         const message =
@@ -211,11 +257,23 @@ export class Dealer {
 
     if (
       (result.updatePositionSkipped || result.updatedPositionResult.ok) &&
-      (result.updatedLeverageSkipped || result.updatedLeverageResult.ok)
+      (result.updateLeverageSkipped || result.updatedLeverageResult.ok)
     ) {
       return { ok: true, value: result }
     } else {
-      return { ok: false, error: new Error() }
+      const errors: Error[] = []
+      if (!result.updatedPositionResult.ok) {
+        errors.push(result.updatedPositionResult.error)
+        return { ok: false, error: result.updatedPositionResult.error }
+      } else if (!result.updatedLeverageResult.ok) {
+        errors.push(result.updatedLeverageResult.error)
+        return { ok: false, error: result.updatedLeverageResult.error }
+      } else {
+        return {
+          ok: false,
+          error: new Error(`Unknown error: ${errors}`),
+        }
+      }
     }
   }
 
@@ -224,12 +282,16 @@ export class Dealer {
     transferSizeInBtc: number,
   ): Promise<Result<void>> {
     try {
-      const memo = `deposit of ${transferSizeInBtc} btc to ${activeStrategy}`
+      const memo = `deposit of ${transferSizeInBtc} btc to ${this.strategy.name}`
       const transferSizeInSats = btc2sat(transferSizeInBtc)
       const payOnChainResult = await this.wallet.payOnChain(
         onChainAddress,
         transferSizeInSats,
         memo,
+      )
+      this.logger.debug(
+        { payOnChainResult },
+        "WalletOnChainPay returned: {payOnChainResult}",
       )
 
       if (payOnChainResult.ok) {
@@ -268,7 +330,7 @@ export class Dealer {
     transferSizeInBtc: number,
   ): Promise<Result<void>> {
     try {
-      const memo = `withdrawal of ${transferSizeInBtc} btc from ${activeStrategy}`
+      const memo = `withdrawal of ${transferSizeInBtc} btc from ${this.strategy.name}`
       const transferSizeInSats = btc2sat(transferSizeInBtc)
       this.logger.info({ transferSizeInSats, memo }, "withdrawBookKeeping")
 
@@ -296,5 +358,43 @@ export class Dealer {
     } catch (error) {
       return { ok: false, error: error }
     }
+  }
+
+  public async getSpotPriceInUsd(): Promise<number> {
+    const result = await this.strategy.getSpotPriceInUsd()
+    if (!result.ok) {
+      return NaN
+    }
+    return result.value
+  }
+
+  public async getDerivativePriceInUsd(): Promise<number> {
+    const result = await this.strategy.getDerivativePriceInUsd()
+    if (!result.ok) {
+      return NaN
+    }
+    return result.value
+  }
+
+  public async getNextFundingRateInBtc(): Promise<number> {
+    const result = await this.strategy.getNextFundingRateInBtc()
+    if (!result.ok) {
+      return NaN
+    }
+    return result.value
+  }
+
+  public async getAccountAndPositionRisk(): Promise<
+    Result<GetAccountAndPositionRiskResult>
+  > {
+    return this.strategy.getAccountAndPositionRisk()
+  }
+
+  public async getLiabilityInUsd(): Promise<number> {
+    const result = await this.wallet.getWalletUsdBalance()
+    if (!result.ok) {
+      return NaN
+    }
+    return result.value
   }
 }

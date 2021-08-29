@@ -1,0 +1,10 @@
+comment,lastPriceInUsd,liabilityInUsd,notionalUsd,notionalUsdAfterOrder,marginInBtc,marginInBtcAfterTransfer,hasMinimalLiability,isOrderExpected,isOrderSizeOk,orderId,firstOrderStatus,numberFetchIteration,lastOrderStatus,wasFundTransferExpected,wasTransferWithdraw,isFundTransferExpected,isTransferWithdraw,expectPositionUpdatedOk,expectLeverageUpdatedOk
+"Initial Conditions",10000.00,0.00,0.00,0.00,0.00000000,0.00000000,FALSE,FALSE,FALSE,NaN,"canceled",0,"canceled",FALSE,FALSE,FALSE,FALSE,TRUE,TRUE
+"Liability; no funding",10000.00,100.00,0.00,0.00,0.00000000,0.00444444,TRUE,TRUE,TRUE,1,"canceled",1,"canceled",FALSE,FALSE,TRUE,FALSE,TRUE,TRUE
+"Liability; with funding",10000.00,100.00,0.00,100.00,0.00444444,0.00444444,TRUE,TRUE,TRUE,2,"closed",1,"closed",TRUE,FALSE,FALSE,FALSE,TRUE,TRUE
+"Liability down; no change expected",10000.00,55.00,100.00,100.00,0.00444444,0.00444444,TRUE,TRUE,FALSE,NaN,"canceled",0,"canceled",FALSE,FALSE,FALSE,FALSE,TRUE,TRUE
+"Liability down; rebalance expected",10000.00,51.00,100.00,100.00,0.00444444,0.00283333,TRUE,TRUE,FALSE,NaN,"canceled",0,"canceled",FALSE,FALSE,TRUE,TRUE,TRUE,TRUE
+"Funds transferring",10000.00,51.00,100.00,100.00,0.00283333,0.00283333,TRUE,TRUE,FALSE,NaN,"canceled",0,"canceled",TRUE,TRUE,FALSE,FALSE,TRUE,TRUE
+"Sideways market",10000.00,51.00,100.00,100.00,0.00283333,0.00283333,TRUE,TRUE,FALSE,NaN,"canceled",0,"canceled",FALSE,FALSE,FALSE,FALSE,TRUE,TRUE
+"Liability down; rebalance expected",10000.00,15.00,100.00,0.00,0.00283333,0.00083333,TRUE,TRUE,TRUE,1,"closed",1,"closed",FALSE,FALSE,TRUE,TRUE,TRUE,TRUE
+"Funds transferring",10000.00,15.00,0.00,0.00,0.00083333,0.00083333,TRUE,TRUE,FALSE,NaN,"canceled",0,"canceled",TRUE,TRUE,FALSE,FALSE,TRUE,TRUE

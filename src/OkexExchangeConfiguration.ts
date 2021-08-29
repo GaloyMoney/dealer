@@ -71,19 +71,20 @@ export class OkexExchangeConfiguration implements ExchangeConfiguration {
     // deposit = {}
     // Since we're looking for one specific entry, don't fail until we're done
     const result = {} as FetchDepositsResult
+    let success = false
     response.forEach((deposits) => {
       deposits.forEach((deposit) => {
         if (
           deposit &&
-          deposit.has("currency") &&
+          "currency" in deposit &&
           deposit.currency === TradeCurrency.BTC &&
-          deposit.has("address") &&
+          "address" in deposit &&
           deposit.address === args.address &&
-          deposit.has("amount") &&
+          "amount" in deposit &&
           deposit.amount === amountInBtc &&
-          deposit.has("status")
+          "status" in deposit
         ) {
-          result.originalResponseAsIs = deposit
+          success = true
           result.currency = deposit.currency
           result.address = deposit.address
           result.amount = deposit.amount
@@ -91,7 +92,8 @@ export class OkexExchangeConfiguration implements ExchangeConfiguration {
         }
       })
     })
-    assert(result, ApiError.UNSUPPORTED_API_RESPONSE)
+    assert(success, ApiError.UNSUPPORTED_API_RESPONSE)
+    result.originalResponseAsIs = response
     return result
   }
 
@@ -132,19 +134,20 @@ export class OkexExchangeConfiguration implements ExchangeConfiguration {
     // withdrawal = {}
     // Since we're looking for one specific entry, don't fail until we're done
     const result = {} as FetchWithdrawalsResult
+    let success = false
     response.forEach((withdrawals) => {
       withdrawals.forEach((withdrawal) => {
         if (
           withdrawal &&
-          withdrawal.has("currency") &&
+          "currency" in withdrawal &&
           withdrawal.currency === TradeCurrency.BTC &&
-          withdrawal.has("address") &&
+          "address" in withdrawal &&
           withdrawal.address === args.address &&
-          withdrawal.has("amount") &&
+          "amount" in withdrawal &&
           withdrawal.amount === amountInBtc &&
-          withdrawal.has("status")
+          "status" in withdrawal
         ) {
-          result.originalResponseAsIs = withdrawal
+          success = true
           result.currency = withdrawal.currency
           result.address = withdrawal.address
           result.amount = withdrawal.amount
@@ -152,12 +155,17 @@ export class OkexExchangeConfiguration implements ExchangeConfiguration {
         }
       })
     })
-    assert(result, ApiError.UNSUPPORTED_API_RESPONSE)
+    assert(success, ApiError.UNSUPPORTED_API_RESPONSE)
+    result.originalResponseAsIs = response
     return result
   }
 
   createMarketOrderValidateInput(args: CreateOrderParameters) {
     assert(args, ApiError.MISSING_PARAMETERS)
+    assert(
+      args.instrumentId === SupportedInstrument.OKEX_PERPETUAL_SWAP,
+      ApiError.UNSUPPORTED_INSTRUMENT,
+    )
     assert(
       args.side === TradeSide.Buy || args.side === TradeSide.Sell,
       ApiError.INVALID_TRADE_SIDE,
@@ -174,6 +182,7 @@ export class OkexExchangeConfiguration implements ExchangeConfiguration {
   }
   fetchOrderValidateApiResponse(response) {
     assert(response, ApiError.UNSUPPORTED_API_RESPONSE)
+    assert(response.id, ApiError.MISSING_ORDER_ID)
     assert(response.status as OrderStatus, ApiError.UNSUPPORTED_API_RESPONSE)
   }
 
@@ -209,7 +218,10 @@ export class OkexExchangeConfiguration implements ExchangeConfiguration {
 
     return {
       originalResponseAsIs: response,
-      totalEq: response.info.data[0].totalEq,
+      btcFreeBalance: response?.BTC?.free,
+      btcUsedBalance: response?.BTC?.used,
+      btcTotalBalance: response?.BTC?.total,
+      totalEq: Number(response.info.data[0].totalEq),
     }
   }
 
@@ -234,15 +246,27 @@ export class OkexExchangeConfiguration implements ExchangeConfiguration {
 
     return {
       originalResponseAsIs: response,
-      last: response.last,
-      notionalUsd: response.notionalUsd,
-      margin: response.margin,
+      last: Number(response.last),
+      notionalUsd: Number(response.notionalUsd),
+      margin: Number(response.margin),
+
+      autoDeleveragingIndicator: Number(response.adl),
+      liquidationPrice: Number(response.liqPx),
+      positionQuantity: Number(response.pos),
+      positionSide: response.posSide,
+      averageOpenPrice: Number(response.avgPx),
+      unrealizedPnL: Number(response.upl),
+      unrealizedPnLRatio: Number(response.uplRatio),
+      marginRatio: Number(response.mgnRatio),
+      maintenanceMarginRequirement: Number(response.mmr),
+      exchangeLeverage: Number(response.lever),
     }
   }
 
   fetchTickerValidateInput(instrumentId: string) {
     assert(
-      instrumentId === SupportedInstrument.OKEX_PERPETUAL_SWAP,
+      instrumentId === SupportedInstrument.OKEX_PERPETUAL_SWAP ||
+        instrumentId === SupportedInstrument.OKEX_BTC_USD_SPOT,
       ApiError.UNSUPPORTED_INSTRUMENT,
     )
   }

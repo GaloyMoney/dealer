@@ -1,4 +1,4 @@
-import { baseLogger } from "../logger"
+import { baseLogger } from "../services/logger"
 import { Dealer } from "../Dealer"
 
 const main = async () => {

@@ -1,13 +1,14 @@
+import { GetAccountAndPositionRiskResult } from "./ExchangeTradingType"
 import { Result } from "./Result"
 
 export enum HedgingStrategies {
-  FtxPerpetualSwap = "FtxPerpetualSwap",
-  OkexPerpetualSwap = "OkexPerpetualSwap",
-  OkexInverseFutures = "OkexInverseFutures",
+  FtxPerpetualSwap = "FTX_PERPETUAL_SWAP",
+  OkexPerpetualSwap = "OKEX_PERPETUAL_SWAP",
+  OkexInverseFutures = "OKEX_INVERSE_FUTURES",
 }
 
 export type Position = {
-  leverageRatio: number
+  leverage: number
   collateralInUsd: number
   exposureInUsd: number
   totalAccountValueInUsd: number
@@ -34,7 +35,14 @@ export interface DepositOnExchangeCallback {
 }
 
 export interface HedgingStrategy {
+  name: string
   getBtcSpotPriceInUsd(): Promise<Result<number>>
+
+  getSpotPriceInUsd(): Promise<Result<number>>
+  getDerivativePriceInUsd(): Promise<Result<number>>
+  getNextFundingRateInBtc(): Promise<Result<number>>
+  getAccountAndPositionRisk(): Promise<Result<GetAccountAndPositionRiskResult>>
+
   isDepositCompleted(address: string, amountInSats: number): Promise<Result<boolean>>
   isWithdrawalCompleted(address: string, amountInSats: number): Promise<Result<boolean>>
   updatePosition(

@@ -1,4 +1,4 @@
-import { baseLogger } from "src/logger"
+import { baseLogger } from "src/services/logger"
 import { SupportedExchange } from "src/ExchangeConfiguration"
 import { OkexPerpetualSwapStrategy } from "src/OkexPerpetualSwapStrategy"
 

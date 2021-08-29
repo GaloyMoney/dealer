@@ -1,4 +1,4 @@
-import { sleep } from "./utils"
+import { roundBtc, sleep } from "./utils"
 import { yamlConfig } from "./config"
 import { Result } from "./Result"
 import {
@@ -64,6 +64,7 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
   exchange: ExchangeBase
   exchangeConfig: ExchangeConfiguration
   instrumentId: SupportedInstrument
+  public name = OkexPerpetualSwapStrategy.name
   private logger: pino.Logger
 
   constructor(logger: pino.Logger) {
@@ -83,19 +84,59 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
     }
   }
 
+  public async getSpotPriceInUsd(): Promise<Result<number>> {
+    const result = await this.exchange.fetchTicker(SupportedInstrument.OKEX_BTC_USD_SPOT)
+    if (result.ok) {
+      return { ok: true, value: result.value.lastBtcPriceInUsd }
+    } else {
+      return { ok: false, error: result.error }
+    }
+  }
+
+  public async getDerivativePriceInUsd(): Promise<Result<number>> {
+    const result = await this.exchange.fetchTicker(
+      SupportedInstrument.OKEX_PERPETUAL_SWAP,
+    )
+    if (result.ok) {
+      return { ok: true, value: result.value.lastBtcPriceInUsd }
+    } else {
+      return { ok: false, error: result.error }
+    }
+  }
+
+  public async getNextFundingRateInBtc(): Promise<Result<number>> {
+    const result = await this.exchange.getPublicFundingRate()
+    if (result.ok) {
+      return { ok: true, value: Number(result.value.nextFundingRate) }
+    } else {
+      return { ok: false, error: result.error }
+    }
+  }
+
+  public async getAccountAndPositionRisk(): Promise<
+    Result<GetAccountAndPositionRiskResult>
+  > {
+    const result = await this.getSpotPriceInUsd()
+    if (result.ok) {
+      return this.exchange.getAccountAndPositionRisk(result.value)
+    } else {
+      return { ok: false, error: result.error }
+    }
+  }
+
   public async isDepositCompleted(
     address: string,
     amountInSats: number,
   ): Promise<Result<boolean>> {
     const result = await this.exchange.fetchDeposits({ address, amountInSats })
+    this.logger.debug(
+      { address, amountInSats, result },
+      "exchange.fetchDeposits(address, amountInSats) returned: {result}",
+    )
     if (!result.ok) {
       return result
     }
     const deposit = result.value
-    this.logger.debug(
-      { address, amountInSats, deposit },
-      "exchange.fetchDeposits(address, amountInSats) returned: {deposit}",
-    )
     if (
       deposit.status === FundTransferStatus.Ok ||
       deposit.status === FundTransferStatus.Canceled ||
@@ -112,14 +153,14 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
     amountInSats: number,
   ): Promise<Result<boolean>> {
     const result = await this.exchange.fetchWithdrawals({ address, amountInSats })
+    this.logger.debug(
+      { address, amountInSats, deposit: result },
+      "exchange.fetchWithdrawals(address, amountInSats) returned: {result}",
+    )
     if (!result.ok) {
       return result
     }
     const withdrawal = result.value
-    this.logger.debug(
-      { address, amountInSats, deposit: withdrawal },
-      "exchange.fetchWithdrawals(address, amountInSats) returned: {withdrawal}",
-    )
     if (
       withdrawal.status === FundTransferStatus.Ok ||
       withdrawal.status === FundTransferStatus.Canceled ||
@@ -157,8 +198,9 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
       updatedPosition.originalPosition = originalRisk
 
       if (hedgingOrder.out.tradeSide === TradeSide.NoTrade) {
-        const msg = `${hedgingOrder.in.loBracket} < ${hedgingOrder.in.exposureRatio} < ${hedgingOrder.in.hiBracket}`
-        logger.debug(`Calculated no hedging is needed: ${msg}`)
+        const msg =
+          "{hedgingOrder.in.loBracket} < {hedgingOrder.in.exposureRatio} < {hedgingOrder.in.hiBracket}"
+        logger.debug({ hedgingOrder }, `Calculated no hedging is needed: ${msg}`)
         return {
           ok: true,
           value: updatedPosition,
@@ -178,6 +220,13 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
       const placedOrderResult = await this.placeHedgingOrder(
         hedgingOrder.out.tradeSide,
         hedgingOrder.out.orderSizeInUsd,
+      )
+      logger.debug(
+        {
+          tradeSide: hedgingOrder.out.tradeSide,
+          orderSizeInUsd: hedgingOrder.out.orderSizeInUsd,
+        },
+        "placeHedgingOrder({tradeSide}, {orderSizeInUsd}",
       )
       if (!placedOrderResult.ok) {
         return { ok: false, error: placedOrderResult.error }
@@ -201,12 +250,26 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
 
       updatedPosition.updatedPosition = updatedRisk
 
+      // TODO: Need to verify that the confirmOrder is above minimum contract side before concluding to a problem
       if (!this.isSimulation && confirmationOrder.out.tradeSide !== TradeSide.NoTrade) {
-        return {
-          ok: false,
-          error: new Error(
-            `New hedging order required immediately after one was executed: ${hedgingOrder} vs ${confirmationOrder}`,
-          ),
+        const validateOrderResult = await this.validateConfirmOrder(
+          confirmationOrder.out.tradeSide,
+          confirmationOrder.out.orderSizeInUsd,
+        )
+        logger.debug(
+          {
+            tradeSide: confirmationOrder.out.tradeSide,
+            orderSizeInUsd: confirmationOrder.out.orderSizeInUsd,
+          },
+          "validateConfirmOrder({tradeSide}, {orderSizeInUsd}",
+        )
+        if (validateOrderResult.ok) {
+          return {
+            ok: false,
+            error: new Error(
+              `New hedging order required immediately after one was executed: ${hedgingOrder} vs ${confirmationOrder}`,
+            ),
+          }
         }
       }
 
@@ -286,17 +349,14 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
         const withdrawalResult = await this.exchange.withdraw(withdrawArgs)
         this.logger.debug(
           { withdrawArgs, withdrawalResult },
-          "withdraw() returned: {fetchResult}",
+          "withdraw() returned: {withdrawalResult}",
         )
         if (!withdrawalResult.ok) {
           return { ok: false, error: withdrawalResult.error }
         }
         const withdrawalResponse = withdrawalResult.value
 
-        // TODO: might want to check the withdrawalResponse.id instead
-        if (withdrawalResponse.status === FundTransferStatus.Requested) {
-          // TODO: wait until request succeed before updating tx
-
+        if (withdrawalResponse.id) {
           const bookingResult = await withdrawBookKeepingCallback(
             withdrawOnChainAddress,
             transferSizeInBtc,
@@ -311,12 +371,12 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
 
           this.logger.info(
             { withdrawalResponse },
-            `rebalancing withdrawal was successful`,
+            "rebalancing withdrawal was successful",
           )
         } else {
           this.logger.error(
             { withdrawalResponse },
-            `rebalancing withdrawal was NOT successful`,
+            "rebalancing withdrawal was NOT successful",
           )
         }
       } else if (fundTransferSide === FundTransferSide.Deposit) {
@@ -381,14 +441,14 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
         tradeSide = TradeSide.Buy
       }
 
-      const orderSizeInBtc = orderSizeInUsd / btcPriceInUsd
+      const orderSizeInBtc = roundBtc(orderSizeInUsd / btcPriceInUsd)
       return {
         ok: true,
         value: {
           in: {
-            loBracket: hedgingBounds.HIGH_BOUND_RATIO_SHORTING,
+            loBracket: hedgingBounds.LOW_BOUND_RATIO_SHORTING,
             exposureRatio,
-            hiBracket: hedgingBounds.LOW_BOUND_RATIO_SHORTING,
+            hiBracket: hedgingBounds.HIGH_BOUND_RATIO_SHORTING,
           },
           out: {
             tradeSide,
@@ -428,8 +488,8 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
         hedgingBounds,
       )
       this.logger.debug(
-        { hedgingBounds, orderResult },
-        `getHedgingOrderIfNeeded(${liabilityInUsd}, ${exposureInUsd}, ${lastBtcPriceInUsd}, {hedgingBounds}) returned: {orderResult}`,
+        { liabilityInUsd, exposureInUsd, lastBtcPriceInUsd, hedgingBounds, orderResult },
+        "getHedgingOrderIfNeeded({liabilityInUsd}, {exposureInUsd}, {lastBtcPriceInUsd}, {hedgingBounds}) returned: {orderResult}",
       )
       if (!orderResult.ok) {
         return { ok: false, error: orderResult.error }
@@ -440,6 +500,36 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
         ok: true,
         value: { risk, order },
       }
+    } catch (error) {
+      return { ok: false, error: error }
+    }
+  }
+
+  async validateConfirmOrder(
+    tradeSide: TradeSide,
+    btcPriceInUsd: number,
+  ): Promise<Result<void>> {
+    const logger = this.logger.child({ method: "validateConfirmOrder()" })
+
+    try {
+      const result = await this.exchange.getInstrumentDetails()
+      logger.debug({ result }, "getInstrumentDetails() returned: {result}")
+      if (!result.ok) {
+        return { ok: false, error: result.error }
+      }
+      const contractDetail = result.value
+
+      const minOrderSizeInContract = contractDetail.minimumOrderSizeInContract
+      const contractFaceValue = contractDetail.contractFaceValue
+      const orderSizeInContract = Math.round(btcPriceInUsd / contractFaceValue)
+
+      if (orderSizeInContract < minOrderSizeInContract) {
+        const msg = `Order size (${orderSizeInContract}) is smaller than minimum (${minOrderSizeInContract}). Cannot place order`
+        logger.warn(msg)
+        return { ok: false, error: new Error(msg) }
+      }
+
+      return { ok: true, value: undefined }
     } catch (error) {
       return { ok: false, error: error }
     }
@@ -470,13 +560,14 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
       }
 
       const orderResult = await this.exchange.createMarketOrder({
+        instrumentId: this.instrumentId,
         type: TradeType.Market,
         side: tradeSide,
         quantity: orderSizeInContract,
       })
       logger.debug(
-        { orderResult },
-        `this.exchange.createMarketOrder(${tradeSide}, ${orderSizeInContract}) returned: {orderResult}`,
+        { instrumentId: this.instrumentId, tradeSide, orderSizeInContract, orderResult },
+        "this.exchange.createMarketOrder({instrumentId}, {tradeSide}, {orderSizeInContract}) returned: {orderResult}",
       )
       if (!orderResult.ok) {
         return { ok: false, error: orderResult.error }
@@ -492,8 +583,8 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
         await sleep(waitTimeInMs)
         const fetchedOrderResult = await this.exchange.fetchOrder(placedOrder.id)
         logger.debug(
-          { fetchedOrderResult },
-          `this.exchange.fetchOrder(${placedOrder.id}) returned: {fetchedOrderResult}`,
+          { placedOrder, fetchedOrderResult },
+          "this.exchange.fetchOrder({placedOrder.id}) returned: {fetchedOrderResult}",
         )
         if (!fetchedOrderResult.ok) {
           return { ok: false, error: fetchedOrderResult.error }
@@ -506,11 +597,8 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
       )
 
       if (fetchedOrder.status === OrderStatus.Closed) {
-        logger.info("Order has been place successfully.")
-        return {
-          ok: true,
-          value: undefined,
-        }
+        logger.info("Order has been executed successfully.")
+        return { ok: true, value: undefined }
       } else if (fetchedOrder.status === OrderStatus.Canceled) {
         const msg = "Order has been cancelled."
         logger.error(msg)
@@ -532,39 +620,49 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
     hedgingBounds,
   ): Result<GetRebalanceTransferResult> {
     try {
-      let transferSizeInUsd = 0
-      let fundTransferSide: FundTransferSide = FundTransferSide.NoTransfer
       const leverageRatio = liabilityInUsd / collateralInUsd
-      let newCollateralInUsd
+      const result: GetRebalanceTransferResult = {
+        in: {
+          loBracket: hedgingBounds.LOW_BOUND_LEVERAGE,
+          leverageRatio,
+          hiBracket: hedgingBounds.HIGH_BOUND_LEVERAGE,
+        },
+        out: {
+          fundTransferSide: FundTransferSide.NoTransfer,
+          transferSizeInUsd: 0,
+          transferSizeInBtc: 0,
+          btcPriceInUsd,
+          newLeverageRatio: leverageRatio,
+        },
+      }
 
       if (leverageRatio < hedgingBounds.LOW_BOUND_LEVERAGE) {
-        newCollateralInUsd = liabilityInUsd / hedgingBounds.LOW_SAFEBOUND_LEVERAGE
-        transferSizeInUsd = collateralInUsd - newCollateralInUsd
-        fundTransferSide = FundTransferSide.Withdraw
+        const newCollateralInUsd = liabilityInUsd / hedgingBounds.LOW_SAFEBOUND_LEVERAGE
+        const transferSizeInUsd = collateralInUsd - newCollateralInUsd
+        if (transferSizeInUsd > hedgingBounds.MINIMUM_TRANSFER_AMOUNT_USD) {
+          result.out.transferSizeInUsd = transferSizeInUsd
+          result.out.fundTransferSide = FundTransferSide.Withdraw
+          result.out.newLeverageRatio = liabilityInUsd / newCollateralInUsd
+          result.out.transferSizeInBtc = roundBtc(
+            result.out.transferSizeInUsd / btcPriceInUsd,
+          )
+        }
       } else if (leverageRatio > hedgingBounds.HIGH_BOUND_LEVERAGE) {
-        newCollateralInUsd = liabilityInUsd / hedgingBounds.HIGH_SAFEBOUND_LEVERAGE
-        transferSizeInUsd = newCollateralInUsd - collateralInUsd
-        fundTransferSide = FundTransferSide.Deposit
+        const newCollateralInUsd = liabilityInUsd / hedgingBounds.HIGH_SAFEBOUND_LEVERAGE
+        const transferSizeInUsd = newCollateralInUsd - collateralInUsd
+        if (transferSizeInUsd > hedgingBounds.MINIMUM_TRANSFER_AMOUNT_USD) {
+          result.out.transferSizeInUsd = transferSizeInUsd
+          result.out.fundTransferSide = FundTransferSide.Deposit
+          result.out.newLeverageRatio = liabilityInUsd / newCollateralInUsd
+          result.out.transferSizeInBtc = roundBtc(
+            result.out.transferSizeInUsd / btcPriceInUsd,
+          )
+        }
       }
-      const newLeverageRatio = liabilityInUsd / newCollateralInUsd
 
-      const transferSizeInBtc = transferSizeInUsd / btcPriceInUsd
       return {
         ok: true,
-        value: {
-          in: {
-            loBracket: hedgingBounds.HIGH_BOUND_RATIO_SHORTING,
-            leverageRatio,
-            hiBracket: hedgingBounds.LOW_BOUND_RATIO_SHORTING,
-          },
-          out: {
-            fundTransferSide,
-            transferSizeInUsd,
-            transferSizeInBtc,
-            btcPriceInUsd,
-            newLeverageRatio,
-          },
-        },
+        value: result,
       }
     } catch (error) {
       return { ok: false, error: error }

@@ -1,4 +1,4 @@
-import { baseLogger } from "src/logger"
+import { baseLogger } from "src/services/logger"
 import { HedgingStrategies } from "src/HedgingStrategyTypes"
 import { createHedgingStrategy } from "src/HedgingStrategyFactory"
 import { FtxPerpetualSwapStrategy } from "src/FtxPerpetualSwapStrategy"
