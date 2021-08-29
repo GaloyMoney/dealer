@@ -16,12 +16,9 @@ import {
 // import { Result } from "./Result"
 
 export enum SupportedExchange {
-  FTX = "ftx",
   OKEX5 = "okex5",
 }
 export enum SupportedInstrument {
-  FTX_PERPETUAL_SWAP = "BTC-PERP",
-  FTX_BTC_USD_SPOT = "BTC/USD",
   OKEX_PERPETUAL_SWAP = "BTC-USD-SWAP",
   OKEX_BTC_USD_SPOT = "BTC/USDT",
 }

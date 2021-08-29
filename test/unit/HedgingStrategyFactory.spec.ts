@@ -1,7 +1,6 @@
 import { baseLogger } from "src/services/logger"
 import { HedgingStrategies } from "src/HedgingStrategyTypes"
 import { createHedgingStrategy } from "src/HedgingStrategyFactory"
-import { FtxPerpetualSwapStrategy } from "src/FtxPerpetualSwapStrategy"
 import { OkexPerpetualSwapStrategy } from "src/OkexPerpetualSwapStrategy"
 import { SupportedExchange } from "src/ExchangeConfiguration"
 
@@ -16,15 +15,6 @@ beforeAll(async () => {
 
 describe("HedgingStrategyFactory", () => {
   describe("createHedgingStrategy", () => {
-    it("should return a FtxPerpetualSwap", async () => {
-      const strategy = createHedgingStrategy(
-        HedgingStrategies.FtxPerpetualSwap,
-        baseLogger,
-      )
-
-      expect(strategy).toBeInstanceOf(FtxPerpetualSwapStrategy)
-    })
-
     it("should return a OkexPerpetualSwapStrategy", async () => {
       const strategy = createHedgingStrategy(
         HedgingStrategies.OkexPerpetualSwap,
