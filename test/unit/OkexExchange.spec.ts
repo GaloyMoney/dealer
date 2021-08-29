@@ -1,18 +1,16 @@
 import { baseLogger } from "src/services/logger"
 import { SupportedExchange, SupportedInstrument } from "src/ExchangeConfiguration"
-import { OkexExchangeConfiguration } from "src/OkexExchangeConfiguration"
+import {
+  MarginMode,
+  OkexExchangeConfiguration,
+  PositionMode,
+} from "src/OkexExchangeConfiguration"
 import { OkexExchange } from "src/OkexExchange"
 import {
-  WithdrawParameters,
-  CreateOrderParameters,
-  SupportedChain,
-  TradeCurrency,
-  TradeSide,
-  TradeType,
-  ApiError,
-  OrderStatus,
-} from "src/ExchangeTradingType"
-import { AssertionError } from "assert"
+  getValidPrivatePostAccountSetLeverageResponse,
+  getValidPrivatePostAccountSetPositionModeResponse,
+} from "../mocks/ExchangeApiResponseHelper"
+import { TradeCurrency, ApiError } from "src/ExchangeTradingType"
 
 beforeAll(async () => {
   // Init exchange secrets
@@ -73,6 +71,32 @@ const falsyArgs = [null, undefined, NaN, 0, "", false]
 
 const exchangeMock = {
   checkRequiredCredentials: jest.fn().mockReturnValue(true),
+
+  options: jest
+    .fn()
+    .mockReturnValue(
+      new Map<string, boolean>([["createMarketBuyOrderRequiresPrice", true]]),
+    ),
+  privatePostAccountSetPositionMode: jest
+    .fn()
+    .mockImplementation((args: { posMode: PositionMode }) => {
+      return getValidPrivatePostAccountSetPositionModeResponse({
+        posMode: args.posMode,
+      })
+    }),
+  privatePostAccountSetLeverage: jest
+    .fn()
+    .mockImplementation(
+      (args: { instId: SupportedInstrument; lever: number; mgnMode: MarginMode }) => {
+        return getValidPrivatePostAccountSetLeverageResponse({
+          instrumentId: args.instId,
+          lever: args.lever,
+          marginMode: args.mgnMode,
+        })
+      },
+    ),
+  last_json_response: jest.fn().mockReturnValue(new Map<string, number>([["cursor", 0]])),
+
   fetchPosition: jest.fn(),
   fetchBalance: jest.fn(),
   publicGetPublicInstruments: jest.fn(),

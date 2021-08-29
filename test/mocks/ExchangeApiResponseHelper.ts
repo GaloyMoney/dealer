@@ -1,5 +1,7 @@
 import dateFormat from "dateformat"
+import { SupportedInstrument } from "src/ExchangeConfiguration"
 import { OrderStatus, FundTransferStatus, TradeCurrency } from "src/ExchangeTradingType"
+import { MarginMode, PositionMode } from "src/OkexExchangeConfiguration"
 
 export const DATE_FORMAT_STRING = "yyyymmddHHMMss"
 
@@ -156,6 +158,38 @@ export function getValidPublicGetPublicInstrumentsResponse({ instType, instId })
         ctValCcy: `${contractValueCurrency}`,
         instId: `${instId}`,
         instType: `${instType}`,
+      },
+    ],
+    msg: "",
+  }
+}
+
+export function getValidPrivatePostAccountSetPositionModeResponse(args: {
+  posMode: PositionMode
+}) {
+  return {
+    code: "0",
+    data: [
+      {
+        posMode: `${args.posMode}`,
+      },
+    ],
+    msg: "",
+  }
+}
+
+export function getValidPrivatePostAccountSetLeverageResponse(args: {
+  instrumentId: SupportedInstrument
+  lever: number
+  marginMode: MarginMode
+}) {
+  return {
+    code: "0",
+    data: [
+      {
+        instId: `${args.instrumentId}`,
+        lever: `${args.lever}`,
+        mgnMode: `${args.marginMode}`,
       },
     ],
     msg: "",

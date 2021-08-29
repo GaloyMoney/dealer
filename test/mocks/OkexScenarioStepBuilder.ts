@@ -21,8 +21,12 @@ import {
   getValidFetchPositionResponse,
   getValidFetchTickerResponse,
   getValidPublicGetPublicInstrumentsResponse,
+  getValidPrivatePostAccountSetLeverageResponse,
+  getValidPrivatePostAccountSetPositionModeResponse,
 } from "./ExchangeApiResponseHelper"
 import { yamlConfig } from "src/config"
+import { MarginMode, PositionMode } from "src/OkexExchangeConfiguration"
+import { SupportedInstrument } from "src/ExchangeConfiguration"
 
 const hedgingBounds = yamlConfig.hedging
 
@@ -57,6 +61,8 @@ export interface StepInput {
 export interface ExchangeMock {
   options: jest.Mock
   checkRequiredCredentials: jest.Mock
+  privatePostAccountSetPositionMode: jest.Mock
+  privatePostAccountSetLeverage: jest.Mock
   last_json_response: jest.Mock
   fetchDeposits: jest.Mock
   fetchWithdrawals: jest.Mock
@@ -111,6 +117,8 @@ export class OkexScenarioStepBuilder {
           new Map<string, boolean>([["createMarketBuyOrderRequiresPrice", true]]),
         ),
       checkRequiredCredentials: jest.fn().mockReturnValue(true),
+      privatePostAccountSetPositionMode: jest.fn(),
+      privatePostAccountSetLeverage: jest.fn(),
       last_json_response: jest
         .fn()
         .mockReturnValue(new Map<string, number>([["cursor", 0]])),
@@ -254,6 +262,24 @@ export class OkexScenarioStepBuilder {
     //     Else // deposit
     //         exchange.fetchDepositAddress()
     //         wallet.payOnChain()
+
+    // Init
+    exchangeMock.privatePostAccountSetPositionMode.mockImplementationOnce(
+      (args: { posMode: PositionMode }) => {
+        return getValidPrivatePostAccountSetPositionModeResponse({
+          posMode: args.posMode,
+        })
+      },
+    )
+    exchangeMock.privatePostAccountSetLeverage.mockImplementationOnce(
+      (args: { instId: SupportedInstrument; lever: number; mgnMode: MarginMode }) => {
+        return getValidPrivatePostAccountSetLeverageResponse({
+          instrumentId: args.instId,
+          lever: args.lever,
+          marginMode: args.mgnMode,
+        })
+      },
+    )
 
     // Update in-flight
     if (wasFundTransferExpected) {
