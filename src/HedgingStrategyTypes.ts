@@ -2,7 +2,6 @@ import { GetAccountAndPositionRiskResult } from "./ExchangeTradingType"
 import { Result } from "./Result"
 
 export enum HedgingStrategies {
-  FtxPerpetualSwap = "FTX_PERPETUAL_SWAP",
   OkexPerpetualSwap = "OKEX_PERPETUAL_SWAP",
   OkexInverseFutures = "OKEX_INVERSE_FUTURES",
 }

@@ -26,7 +26,7 @@ import pino from "pino"
 export abstract class ExchangeBase {
   exchangeConfig: ExchangeConfiguration
   exchangeId: ExchangeId
-  exchange: ccxt.ftx | ccxt.okex5
+  exchange: ccxt.okex5
   logger: pino.Logger
 
   constructor(exchangeConfig: ExchangeConfiguration, logger) {

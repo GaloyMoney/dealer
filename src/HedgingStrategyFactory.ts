@@ -1,5 +1,4 @@
 import { HedgingStrategy, HedgingStrategies } from "./HedgingStrategyTypes"
-import { FtxPerpetualSwapStrategy } from "./FtxPerpetualSwapStrategy"
 import { OkexPerpetualSwapStrategy } from "./OkexPerpetualSwapStrategy"
 
 export function createHedgingStrategy(
@@ -7,9 +6,6 @@ export function createHedgingStrategy(
   logger,
 ): HedgingStrategy {
   switch (strategy) {
-    case HedgingStrategies.FtxPerpetualSwap:
-      return new FtxPerpetualSwapStrategy(logger)
-
     case HedgingStrategies.OkexPerpetualSwap:
       return new OkexPerpetualSwapStrategy(logger)
 
