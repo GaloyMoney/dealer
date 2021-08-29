@@ -183,6 +183,10 @@ export interface GetPublicFundingRateResult {
   nextFundingRate: number
 }
 
+export interface SetAccountConfigurationResult {
+  originalResponseAsIs
+}
+
 export enum ApiError {
   NOT_IMPLEMENTED = "Not Implemented",
   NOT_SUPPORTED = "Not Supported",
@@ -195,6 +199,8 @@ export enum ApiError {
   MISSING_PARAMETERS = "Missing Parameters",
   NON_POSITIVE_QUANTITY = "Non Positive Quantity",
   INVALID_TRADE_SIDE = "Invalid Trade Side",
+  INVALID_POSITION_MODE = "Invalid Position Mode",
+  INVALID_LEVERAGE_CONFIG = "Invalid Leverage Configuration",
   MISSING_ORDER_ID = "Missing Order Id",
   NON_POSITIVE_PRICE = "Non Positive Price",
   NON_POSITIVE_NOTIONAL = "Non Positive Notional",

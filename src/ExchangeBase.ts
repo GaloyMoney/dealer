@@ -17,6 +17,7 @@ import {
   FetchDepositsParameters,
   OrderStatus,
   GetPublicFundingRateResult,
+  SetAccountConfigurationResult,
 } from "./ExchangeTradingType"
 import { Result } from "./Result"
 import ccxt, { ExchangeId } from "ccxt"
@@ -29,7 +30,7 @@ export abstract class ExchangeBase {
   exchange: ccxt.okex5
   logger: pino.Logger
 
-  constructor(exchangeConfig: ExchangeConfiguration, logger) {
+  constructor(exchangeConfig: ExchangeConfiguration, logger: pino.Logger) {
     this.exchangeConfig = exchangeConfig
     this.exchangeId = exchangeConfig.exchangeId as ExchangeId
 
@@ -50,6 +51,8 @@ export abstract class ExchangeBase {
 
     // The following check throws if something is wrong
     this.exchange.checkRequiredCredentials()
+
+    this.setAccountConfiguration()
 
     this.logger = logger.child({ class: `${ExchangeBase.name}-${this.exchangeId}` })
   }
@@ -384,4 +387,6 @@ export abstract class ExchangeBase {
   abstract getInstrumentDetails(): Promise<Result<GetInstrumentDetailsResult>>
 
   abstract getPublicFundingRate(): Promise<Result<GetPublicFundingRateResult>>
+
+  abstract setAccountConfiguration(): Promise<Result<SetAccountConfigurationResult>>
 }

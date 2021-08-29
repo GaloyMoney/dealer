@@ -24,14 +24,33 @@ import {
   SupportedInstrument,
 } from "./ExchangeConfiguration"
 import { sat2btc } from "./utils"
+import { yamlConfig } from "./config"
+
+export enum PositionMode {
+  LongShort = "long_short_mode",
+  Net = "net_mode",
+}
+
+export enum MarginMode {
+  Isolated = "isolated",
+  Cross = "cross",
+}
+
+const hedgingBounds = yamlConfig.hedging
 
 export class OkexExchangeConfiguration implements ExchangeConfiguration {
   exchangeId: SupportedExchange
   instrumentId: SupportedInstrument
+  positionMode: PositionMode
+  marginMode: MarginMode
+  leverage: number
 
   constructor() {
     this.exchangeId = SupportedExchange.OKEX5
     this.instrumentId = SupportedInstrument.OKEX_PERPETUAL_SWAP
+    this.positionMode = PositionMode.Net
+    this.marginMode = MarginMode.Isolated
+    this.leverage = hedgingBounds.HIGH_BOUND_LEVERAGE
   }
 
   fetchDepositAddressValidateInput(currency: string) {
