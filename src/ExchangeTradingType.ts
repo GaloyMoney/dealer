@@ -129,6 +129,7 @@ export interface PrivateGetAccountResult {
 
 export interface FetchBalanceResult {
   originalResponseAsIs
+  notionalLever: number
   btcFreeBalance: number
   btcUsedBalance: number
   btcTotalBalance: number

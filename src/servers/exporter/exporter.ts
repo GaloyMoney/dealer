@@ -98,6 +98,11 @@ const exchangeLeverage_g = new client.Gauge({
   help: "leverage used when opening position, liquidating, etc.",
 })
 
+const notionalLever_g = new client.Gauge({
+  name: `${prefix}_notionalLever`,
+  help: "notional lever",
+})
+
 const btcFreeBalance_g = new client.Gauge({
   name: `${prefix}_btcFreeBalance`,
   help: "BTC balance not used as collateral",
@@ -158,6 +163,7 @@ const main = async () => {
           exchangeLeverage_g.set(originalPosition.exchangeLeverage)
         }
         if (originalBalance) {
+          notionalLever_g.set(originalBalance.notionalLever)
           btcFreeBalance_g.set(originalBalance.btcFreeBalance)
           btcUsedBalance_g.set(originalBalance.btcUsedBalance)
           btcTotalBalance_g.set(originalBalance.btcTotalBalance)
