@@ -49,7 +49,7 @@ export class OkexExchangeConfiguration implements ExchangeConfiguration {
     this.exchangeId = SupportedExchange.OKEX5
     this.instrumentId = SupportedInstrument.OKEX_PERPETUAL_SWAP
     this.positionMode = PositionMode.Net
-    this.marginMode = MarginMode.Isolated
+    this.marginMode = MarginMode.Cross
     this.leverage = hedgingBounds.HIGH_BOUND_LEVERAGE
   }
 
