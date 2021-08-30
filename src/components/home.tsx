@@ -7,11 +7,9 @@ import Jumbotron from "react-bootstrap/Jumbotron"
 import { gql, useQuery } from "@apollo/client"
 
 const GET_NODE_STATS = gql`
-  query nodeStats {
-    nodeStats {
-      peersCount
-      channelsCount
-      id
+  query nodeIds {
+    globals {
+      nodesIds
     }
   }
 `
@@ -45,7 +43,7 @@ function Home() {
                               ? "Unavailable"
                               : loading
                               ? "Loading..."
-                              : data.nodeStats.id}
+                              : data.globals.nodesIds[0]}
                           </p>
                         </ListGroup.Item>
                         <ListGroup.Item>
@@ -54,35 +52,10 @@ function Home() {
                           ) : loading ? (
                             "Loading..."
                           ) : (
-                            <a href={nodeUrl + `${data.nodeStats.id}`}>
+                            <a href={nodeUrl + `${data.globals.nodesIds[0]}`}>
                               Connect the Bitcoin Beach Lightning node
                             </a>
                           )}
-                        </ListGroup.Item>
-                      </ListGroup>
-                    </Card.Body>
-                  </Card>
-                </Col>
-                <Col>
-                  <Card>
-                    <Card.Header>Node Stats</Card.Header>
-                    <Card.Body>
-                      <ListGroup>
-                        <ListGroup.Item variant="success">
-                          Peers:{" "}
-                          {error
-                            ? "Unavailable"
-                            : loading
-                            ? "Loading..."
-                            : data.nodeStats.peersCount}
-                        </ListGroup.Item>
-                        <ListGroup.Item variant="success">
-                          Channels:{" "}
-                          {error
-                            ? "Unavailable"
-                            : loading
-                            ? "Loading..."
-                            : data.nodeStats.channelsCount}
                         </ListGroup.Item>
                       </ListGroup>
                     </Card.Body>
