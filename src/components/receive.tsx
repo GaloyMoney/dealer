@@ -8,7 +8,6 @@ import Image from "react-bootstrap/Image"
 import OverlayTrigger from "react-bootstrap/OverlayTrigger"
 import Tooltip from "react-bootstrap/Tooltip"
 import { QRCode } from "react-qrcode-logo"
-import Header from "./header"
 import { gql, useLazyQuery, useMutation } from "@apollo/client"
 import { getOS, appStoreLink, playStoreLink } from "./downloadApp"
 import copy from "copy-to-clipboard"
@@ -84,111 +83,106 @@ function Receive({ username }: { username: string }) {
   }
 
   return (
-    <div>
-      <Header />
-      <Container fluid>
-        {os === undefined && <br />}
-        <Row className="justify-content-md-center">
-          <Col md="auto" style={{ padding: 0 }}>
-            <Card className="text-center">
-              <Card.Header>Pay {username}</Card.Header>
-              {error?.message === "User not found" && (
-                <div>
-                  {" "}
-                  <br /> User not found{" "}
-                </div>
-              )}
-              {(invoiceLoading || !invoice) && !error && (
-                <div>
-                  {" "}
-                  <br />
-                  Loading...
-                </div>
-              )}
-              {invoicePaid && (
-                <div>
-                  <Lottie
-                    options={{ animationData: animationData, loop: false }}
-                    height="150"
-                    width="150"
-                  ></Lottie>
-                </div>
-              )}
-              {!invoiceLoading && !invoicePaid && !error && (
-                <Card.Body style={{ paddingBottom: "0", paddingTop: "5px" }}>
-                  <small>Scan using a lightning enabled wallet</small>
+    <Container fluid>
+      {os === undefined && <br />}
+      <Row className="justify-content-md-center">
+        <Col md="auto" style={{ padding: 0 }}>
+          <Card className="text-center">
+            <Card.Header>Pay {username}</Card.Header>
+            {error?.message === "User not found" && (
+              <div>
+                {" "}
+                <br /> User not found{" "}
+              </div>
+            )}
+            {(invoiceLoading || !invoice) && !error && (
+              <div>
+                {" "}
+                <br />
+                Loading...
+              </div>
+            )}
+            {invoicePaid && (
+              <div>
+                <Lottie
+                  options={{ animationData: animationData, loop: false }}
+                  height="150"
+                  width="150"
+                ></Lottie>
+              </div>
+            )}
+            {!invoiceLoading && !invoicePaid && !error && (
+              <Card.Body style={{ paddingBottom: "0", paddingTop: "5px" }}>
+                <small>Scan using a lightning enabled wallet</small>
 
-                  <OverlayTrigger
-                    show={showCopied}
-                    placement="top"
-                    overlay={<Tooltip id="copy">Copied!</Tooltip>}
-                  >
-                    <div onClick={copyInvoice}>
-                      <QRCode
-                        value={`${invoice}`}
-                        size={320}
-                        logoImage={process.env.PUBLIC_URL + "/BBQRLogo.png"}
-                        logoWidth={100}
-                      />
-                    </div>
-                  </OverlayTrigger>
-                  <p>Click on the QR code to copy</p>
-                  <p>Waiting for payment confirmation...</p>
-                </Card.Body>
-              )}
+                <OverlayTrigger
+                  show={showCopied}
+                  placement="top"
+                  overlay={<Tooltip id="copy">Copied!</Tooltip>}
+                >
+                  <div onClick={copyInvoice}>
+                    <QRCode
+                      value={`${invoice}`}
+                      size={320}
+                      logoImage={process.env.PUBLIC_URL + "/BBQRLogo.png"}
+                      logoWidth={100}
+                    />
+                  </div>
+                </OverlayTrigger>
+                <p>Click on the QR code to copy</p>
+                <p>Waiting for payment confirmation...</p>
+              </Card.Body>
+            )}
 
-              <Card.Body>
-                {os === "android" && (
+            <Card.Body>
+              {os === "android" && (
+                <a href={playStoreLink}>
+                  <Image
+                    src={process.env.PUBLIC_URL + "/google-play-badge.png"}
+                    height="40px"
+                    rounded
+                  />
+                </a>
+              )}
+              {os === "ios" && (
+                <a href={playStoreLink}>
+                  <Image
+                    src={process.env.PUBLIC_URL + "/apple-app-store.png"}
+                    height="40px"
+                    rounded
+                  />
+                </a>
+              )}
+              {os === undefined && (
+                <div>
+                  <a href={appStoreLink}>
+                    <Image
+                      src={process.env.PUBLIC_URL + "/apple-app-store.png"}
+                      height="45px"
+                      rounded
+                    />
+                  </a>
+                  &nbsp;
                   <a href={playStoreLink}>
                     <Image
                       src={process.env.PUBLIC_URL + "/google-play-badge.png"}
-                      height="40px"
+                      height="45px"
                       rounded
                     />
                   </a>
-                )}
-                {os === "ios" && (
-                  <a href={playStoreLink}>
-                    <Image
-                      src={process.env.PUBLIC_URL + "/apple-app-store.png"}
-                      height="40px"
-                      rounded
-                    />
-                  </a>
-                )}
-                {os === undefined && (
-                  <div>
-                    <a href={appStoreLink}>
-                      <Image
-                        src={process.env.PUBLIC_URL + "/apple-app-store.png"}
-                        height="45px"
-                        rounded
-                      />
-                    </a>
-                    &nbsp;
-                    <a href={playStoreLink}>
-                      <Image
-                        src={process.env.PUBLIC_URL + "/google-play-badge.png"}
-                        height="45px"
-                        rounded
-                      />
-                    </a>
-                  </div>
-                )}
-              </Card.Body>
-              <Card.Footer className="text-muted">
-                Powered by <Card.Link href="https://galoy.io">Galoy </Card.Link>
-                <br />
-                <Card.Link href={window.location.origin}>
-                  Open a channel with us
-                </Card.Link>
-              </Card.Footer>
-            </Card>
-          </Col>
-        </Row>
-        <br />
-      </Container>
-    </div>
+                </div>
+              )}
+            </Card.Body>
+            <Card.Footer className="text-muted">
+              Powered by <Card.Link href="https://galoy.io">Galoy </Card.Link>
+              <br />
+              <Card.Link href={window.location.origin}>Open a channel with us</Card.Link>
+            </Card.Footer>
+          </Card>
+        </Col>
+      </Row>
+      <br />
+    </Container>
   )
 }
 

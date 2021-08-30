@@ -5,7 +5,6 @@ import Container from "react-bootstrap/Container"
 import Row from "react-bootstrap/Row"
 import Col from "react-bootstrap/Col"
 import Button from "react-bootstrap/Button"
-import Header from "./header"
 
 export const getOS = () => {
   const userAgent = navigator.userAgent || navigator.vendor || window.opera
@@ -43,47 +42,44 @@ const DownloadApp = () => {
   }
 
   return (
-    <div>
-      <Header />
-      <Container>
-        <br />
-        <h3>Download the Bitcoin Beach Wallet</h3>
-        <br />
-        <Row>
-          <Col>
-            <a href={appStoreLink}>
-              <Image src={process.env.PUBLIC_URL + "/apple-app-store.png"} rounded />
-            </a>
-            <br />
-            <br />
-          </Col>
-          <Col>
-            <a href={playStoreLink}>
-              <Image src={process.env.PUBLIC_URL + "/google-play-badge.png"} rounded />
-            </a>
-          </Col>
-          <Col>
-            <div style={{ width: 200 }}>
-              <Button href={apkLink} block variant="outline-dark">
-                Download APK
-                <br /> for Android
-              </Button>
-            </div>
-          </Col>
-        </Row>
-        <Row>
-          <Col>
-            <QRCode value={appStoreLink} size={200} />
-          </Col>
-          <Col>
-            <QRCode value={playStoreLink} size={200} />
-          </Col>
-          <Col>
-            <QRCode value={apkLink} size={200} />
-          </Col>
-        </Row>
-      </Container>
-    </div>
+    <Container>
+      <br />
+      <h3>Download the Bitcoin Beach Wallet</h3>
+      <br />
+      <Row>
+        <Col>
+          <a href={appStoreLink}>
+            <Image src={process.env.PUBLIC_URL + "/apple-app-store.png"} rounded />
+          </a>
+          <br />
+          <br />
+        </Col>
+        <Col>
+          <a href={playStoreLink}>
+            <Image src={process.env.PUBLIC_URL + "/google-play-badge.png"} rounded />
+          </a>
+        </Col>
+        <Col>
+          <div style={{ width: 200 }}>
+            <Button href={apkLink} block variant="outline-dark">
+              Download APK
+              <br /> for Android
+            </Button>
+          </div>
+        </Col>
+      </Row>
+      <Row>
+        <Col>
+          <QRCode value={appStoreLink} size={200} />
+        </Col>
+        <Col>
+          <QRCode value={playStoreLink} size={200} />
+        </Col>
+        <Col>
+          <QRCode value={apkLink} size={200} />
+        </Col>
+      </Row>
+    </Container>
   )
 }
 

@@ -6,7 +6,6 @@ import Container from "react-bootstrap/Container"
 import Button from "react-bootstrap/Button"
 import ReactToPrint from "react-to-print"
 import { QRCode } from "react-qrcode-logo"
-import Header from "./header"
 
 const QRContainer = React.forwardRef((props: { username: string }, ref) => {
   return (
@@ -43,8 +42,7 @@ const PrintQR = ({ username }: { username: string }) => {
   const componentRef = useRef()
 
   return (
-    <div>
-      <Header />
+    <>
       <QRContainer username={username} ref={componentRef} />
       <Container fluid>
         <br />
@@ -85,7 +83,7 @@ const PrintQR = ({ username }: { username: string }) => {
           }}
         />
       </Row>
-    </div>
+    </>
   )
 }
 
