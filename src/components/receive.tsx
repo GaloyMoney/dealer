@@ -1,3 +1,4 @@
+import lightningPayReq from "bolt11"
 import React, { useEffect, useState } from "react"
 import Row from "react-bootstrap/Row"
 import Col from "react-bootstrap/Col"
@@ -67,7 +68,7 @@ function Receive({ username }: { username: string }) {
   }, [generatePublicInvoice, username])
 
   const updateInvoiceStatus = async (invoice: string) => {
-    const decoded = window.lightningPayReq.decode(invoice)
+    const decoded = lightningPayReq.decode(invoice)
     const [{ data: hash }] = decoded.tags.filter(
       (item) => item.tagName === "payment_hash",
     )
