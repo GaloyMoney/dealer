@@ -73,6 +73,10 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
     this.exchange = new OkexExchange(this.exchangeConfig, logger)
     this.instrumentId = this.exchangeConfig.instrumentId
     this.logger = logger.child({ class: OkexPerpetualSwapStrategy.name })
+
+    if (!this.isSimulation) {
+      this.exchange.setAccountConfiguration()
+    }
   }
 
   public async getBtcSpotPriceInUsd(): Promise<Result<number>> {
