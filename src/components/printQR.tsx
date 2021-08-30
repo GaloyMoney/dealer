@@ -1,4 +1,4 @@
-import React, { useRef } from "react"
+import { forwardRef, useRef } from "react"
 import Row from "react-bootstrap/Row"
 import Col from "react-bootstrap/Col"
 import Card from "react-bootstrap/Card"
@@ -7,7 +7,7 @@ import Button from "react-bootstrap/Button"
 import ReactToPrint from "react-to-print"
 import { QRCode } from "react-qrcode-logo"
 
-const QRContainer = React.forwardRef((props: { username: string }, ref) => {
+const QRContainer = forwardRef((props: { username: string }, ref) => {
   return (
     <div style={{ display: "none" }}>
       {/* @ts-expect-error: TODO */}

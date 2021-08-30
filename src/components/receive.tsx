@@ -1,5 +1,5 @@
 import lightningPayReq from "bolt11"
-import React, { useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import Row from "react-bootstrap/Row"
 import Col from "react-bootstrap/Col"
 import Card from "react-bootstrap/Card"
