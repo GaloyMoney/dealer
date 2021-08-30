@@ -18,6 +18,8 @@ import {
   OrderStatus,
   GetPublicFundingRateResult,
   SetAccountConfigurationResult,
+  GetPublicMarkPriceResult,
+  GetMarketIndexTickersResult,
 } from "./ExchangeTradingType"
 import { Result } from "./Result"
 import ccxt, { ExchangeId } from "ccxt"
@@ -383,6 +385,8 @@ export abstract class ExchangeBase {
   abstract getInstrumentDetails(): Promise<Result<GetInstrumentDetailsResult>>
 
   abstract getPublicFundingRate(): Promise<Result<GetPublicFundingRateResult>>
+  abstract getPublicMarkPrice(): Promise<Result<GetPublicMarkPriceResult>>
+  abstract getMarketIndexTickers(): Promise<Result<GetMarketIndexTickersResult>>
 
   abstract setAccountConfiguration(): Promise<Result<SetAccountConfigurationResult>>
 }

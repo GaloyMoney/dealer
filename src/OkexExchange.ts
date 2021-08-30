@@ -5,10 +5,16 @@ import {
   ApiError,
   GetPublicFundingRateResult,
   SetAccountConfigurationResult,
+  GetPublicMarkPriceResult,
+  GetMarketIndexTickersResult,
 } from "./ExchangeTradingType"
 import assert from "assert"
 import { ExchangeBase } from "./ExchangeBase"
-import { ExchangeConfiguration, SupportedInstrument } from "./ExchangeConfiguration"
+import {
+  ExchangeConfiguration,
+  SupportedInstrument,
+  SupportedInstrumentType,
+} from "./ExchangeConfiguration"
 import { OkexExchangeConfiguration } from "./OkexExchangeConfiguration"
 import { Result } from "./Result"
 import pino from "pino"
@@ -86,7 +92,7 @@ export class OkexExchange extends ExchangeBase {
   public async getInstrumentDetails(): Promise<Result<GetInstrumentDetailsResult>> {
     try {
       const response = await this.exchange.publicGetPublicInstruments({
-        instType: "SWAP",
+        instType: SupportedInstrumentType.Swap,
         instId: this.instrumentId,
       })
       this.logger.debug(
@@ -137,6 +143,67 @@ export class OkexExchange extends ExchangeBase {
           originalResponseAsIs: response,
           fundingRate: response.data[0].fundingRate,
           nextFundingRate: response.data[0].nextFundingRate,
+        },
+      }
+    } catch (error) {
+      return { ok: false, error: error }
+    }
+  }
+
+  public async getPublicMarkPrice(): Promise<Result<GetPublicMarkPriceResult>> {
+    try {
+      const response = await this.exchange.publicGetPublicMarkPrice({
+        instType: SupportedInstrumentType.Swap,
+        instId: this.instrumentId,
+      })
+      this.logger.debug(
+        { instrumentId: this.instrumentId, response },
+        "exchange.publicGetPublicMarkPrice({instrumentId}) returned: {response}",
+      )
+      assert(response, ApiError.UNSUPPORTED_API_RESPONSE)
+      assert(
+        response?.data[0]?.instType === SupportedInstrumentType.Swap,
+        ApiError.UNSUPPORTED_INSTRUMENT,
+      )
+      assert(
+        response?.data[0]?.instId === this.instrumentId,
+        ApiError.UNSUPPORTED_INSTRUMENT,
+      )
+      assert(response?.data[0]?.markPx, ApiError.UNSUPPORTED_API_RESPONSE)
+
+      return {
+        ok: true,
+        value: {
+          originalResponseAsIs: response,
+          markPriceInUsd: Number(response.data[0].markPx),
+        },
+      }
+    } catch (error) {
+      return { ok: false, error: error }
+    }
+  }
+
+  public async getMarketIndexTickers(): Promise<Result<GetMarketIndexTickersResult>> {
+    try {
+      const response = await this.exchange.publicGetMarketIndexTickers({
+        instId: SupportedInstrument.OKEX_BTC_USD_SPOT,
+      })
+      this.logger.debug(
+        { instrumentId: this.instrumentId, response },
+        "exchange.publicGetMarketIndexTickers({instrumentId}) returned: {response}",
+      )
+      assert(response, ApiError.UNSUPPORTED_API_RESPONSE)
+      assert(
+        response?.data[0]?.instId === SupportedInstrument.OKEX_BTC_USD_SPOT,
+        ApiError.UNSUPPORTED_INSTRUMENT,
+      )
+      assert(response?.data[0]?.idxPx, ApiError.UNSUPPORTED_API_RESPONSE)
+
+      return {
+        ok: true,
+        value: {
+          originalResponseAsIs: response,
+          indexPriceInUsd: Number(response.data[0].idxPx),
         },
       }
     } catch (error) {

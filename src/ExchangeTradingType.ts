@@ -184,6 +184,16 @@ export interface GetPublicFundingRateResult {
   nextFundingRate: number
 }
 
+export interface GetPublicMarkPriceResult {
+  originalResponseAsIs
+  markPriceInUsd: number
+}
+
+export interface GetMarketIndexTickersResult {
+  originalResponseAsIs
+  indexPriceInUsd: number
+}
+
 export interface SetAccountConfigurationResult {
   originalResponseAsIs
 }

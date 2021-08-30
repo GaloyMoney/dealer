@@ -89,20 +89,22 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
   }
 
   public async getSpotPriceInUsd(): Promise<Result<number>> {
-    const result = await this.exchange.fetchTicker(SupportedInstrument.OKEX_BTC_USD_SPOT)
+    const result = await this.exchange.getMarketIndexTickers()
+    // const result = await this.exchange.fetchTicker(SupportedInstrument.OKEX_BTC_USD_SPOT)
     if (result.ok) {
-      return { ok: true, value: result.value.lastBtcPriceInUsd }
+      return { ok: true, value: result.value.indexPriceInUsd }
     } else {
       return { ok: false, error: result.error }
     }
   }
 
   public async getDerivativePriceInUsd(): Promise<Result<number>> {
-    const result = await this.exchange.fetchTicker(
-      SupportedInstrument.OKEX_PERPETUAL_SWAP,
-    )
+    const result = await this.exchange.getPublicMarkPrice()
+    // const result = await this.exchange.fetchTicker(
+    //   SupportedInstrument.OKEX_PERPETUAL_SWAP,
+    // )
     if (result.ok) {
-      return { ok: true, value: result.value.lastBtcPriceInUsd }
+      return { ok: true, value: result.value.markPriceInUsd }
     } else {
       return { ok: false, error: result.error }
     }
