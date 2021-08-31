@@ -21,7 +21,6 @@ jobs:
           npm run build
           rm -rf node_modules
           rm package-lock.json
-          cd ..
           git rm -rf .
           mv build/* build/.well* .
           git config user.name "github-actions"
