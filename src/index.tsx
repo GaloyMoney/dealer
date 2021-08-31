@@ -12,12 +12,14 @@ import { getMainDefinition } from "@apollo/client/utilities"
 import "./index.css"
 import App from "./App"
 
+import { GRAPHQL_URI, GRAPHQL_SUBSCRIPTION_URI } from "./config"
+
 const httpLink = new HttpLink({
-  uri: window.env.GRAPHQL_URI,
+  uri: GRAPHQL_URI,
 })
 
 const wsLink = new WebSocketLink({
-  uri: window.env.GRAPHQL_SUBSCRIPTION_URI,
+  uri: GRAPHQL_SUBSCRIPTION_URI,
   options: {
     reconnect: true,
   },

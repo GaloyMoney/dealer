@@ -6,6 +6,8 @@ import ListGroup from "react-bootstrap/ListGroup"
 import Jumbotron from "react-bootstrap/Jumbotron"
 import { gql, useQuery } from "@apollo/client"
 
+import { GRAPHQL_URI } from "../config"
+
 const GET_NODE_STATS = gql`
   query nodeIds {
     globals {
@@ -16,7 +18,7 @@ const GET_NODE_STATS = gql`
 
 function Home() {
   const nodeUrl =
-    window.env.GRAPHQL_URI.indexOf("testnet") === -1
+    GRAPHQL_URI.indexOf("testnet") === -1
       ? `https://1ml.com/node/`
       : `https://1ml.com/testnet/node/`
 

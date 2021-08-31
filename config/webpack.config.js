@@ -645,6 +645,9 @@ module.exports = function (webpackEnv) {
       // https://github.com/jmblog/how-to-optimize-momentjs-with-webpack
       // You can remove this if you don't use Moment.js:
       new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
+
+      new webpack.EnvironmentPlugin(["GRAPHQL_URI", "GRAPHQL_SUBSCRIPTION_URI"]),
+
       // Generate a service worker script that will precache, and keep up to date,
       // the HTML & assets that are part of the webpack build.
       isEnvProduction &&
