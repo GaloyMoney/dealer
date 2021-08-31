@@ -1,4 +1,4 @@
-import React, { useRef } from "react"
+import { forwardRef, useRef } from "react"
 import Row from "react-bootstrap/Row"
 import Col from "react-bootstrap/Col"
 import Card from "react-bootstrap/Card"
@@ -6,9 +6,8 @@ import Container from "react-bootstrap/Container"
 import Button from "react-bootstrap/Button"
 import ReactToPrint from "react-to-print"
 import { QRCode } from "react-qrcode-logo"
-import Header from "./header"
 
-const QRContainer = React.forwardRef((props: { username: string }, ref) => {
+const QRContainer = forwardRef((props: { username: string }, ref) => {
   return (
     <div style={{ display: "none" }}>
       {/* @ts-expect-error: TODO */}
@@ -43,8 +42,7 @@ const PrintQR = ({ username }: { username: string }) => {
   const componentRef = useRef()
 
   return (
-    <div>
-      <Header />
+    <>
       <QRContainer username={username} ref={componentRef} />
       <Container fluid>
         <br />
@@ -85,7 +83,7 @@ const PrintQR = ({ username }: { username: string }) => {
           }}
         />
       </Row>
-    </div>
+    </>
   )
 }
 

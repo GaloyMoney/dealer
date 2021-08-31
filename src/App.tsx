@@ -1,10 +1,10 @@
-import React from "react"
 import "bootstrap/dist/css/bootstrap.min.css"
 import Home from "./components/home"
 import Receive from "./components/receive"
 import PrintQR from "./components/printQR"
 import DownloadApp from "./components/downloadApp"
 import { useRoutes } from "hookrouter"
+import Header from "./components/header"
 
 const routes = {
   "/": () => <Home />,
@@ -19,7 +19,12 @@ function App() {
   // @ts-expect-error: TODO
   const routeResult = useRoutes(routes)
 
-  return routeResult || <Home />
+  return (
+    <div>
+      <Header />
+      {routeResult || <Home />}
+    </div>
+  )
 }
 
 export default App
