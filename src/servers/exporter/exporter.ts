@@ -136,7 +136,7 @@ const main = async () => {
 
         lastBtcPriceInUsd_g.set(lastBtcPriceInUsd)
         leverage_g.set(leverage)
-        const leverageRatio = liabilityInUsd / collateralInUsd
+        const leverageRatio = exposureInUsd / collateralInUsd
         leverageRatio_g.set(leverageRatio)
         collateralInUsd_g.set(collateralInUsd)
         exposureInUsd_g.set(exposureInUsd)

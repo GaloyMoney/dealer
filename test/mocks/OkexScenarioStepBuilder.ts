@@ -177,9 +177,9 @@ export class OkexScenarioStepBuilder {
     } = args
 
     const collateralInUsd = marginInBtc * lastPriceInUsd
-    const originalLeverageRatio = liabilityInUsd / collateralInUsd
+    const originalLeverageRatio = notionalUsd / collateralInUsd
     const collateralInUsdAfterTransfer = marginInBtcAfterTransfer * lastPriceInUsd
-    const newLeverageRatio = liabilityInUsd / collateralInUsdAfterTransfer
+    const newLeverageRatio = notionalUsd / collateralInUsdAfterTransfer
     const totalEquity = collateralInUsd
     const exposureRatioAfterOrder = notionalUsdAfterOrder / liabilityInUsd
 
@@ -209,7 +209,7 @@ export class OkexScenarioStepBuilder {
     if (hasMinimalLiability && expected.updatedLeverageResult.ok) {
       const balance: UpdatedBalance = {
         originalLeverageRatio: originalLeverageRatio,
-        liabilityInUsd: liabilityInUsd,
+        exposureInUsd: liabilityInUsd,
         collateralInUsd: marginInBtc * lastPriceInUsd,
         newLeverageRatio: newLeverageRatio,
       }

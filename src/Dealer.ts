@@ -167,6 +167,8 @@ export class Dealer {
     // return additive inverse to deal with positive liability onward
     const usdLiability = -usdLiabilityResult.value
 
+    let exposureInUsd = 0
+
     const result = {} as UpdatedPositionAndLeverageResult
 
     if (usdLiability < hedgingBounds.MINIMUM_POSITIVE_LIABILITY_USD) {
@@ -183,6 +185,8 @@ export class Dealer {
       if (updatedPositionResult.ok) {
         const originalPosition = updatedPositionResult.value.originalPosition
         const updatedPosition = updatedPositionResult.value.updatedPosition
+
+        exposureInUsd = updatedPosition.exposureInUsd
 
         logger.info(
           { activeStrategy: this.strategy.name, originalPosition, updatedPosition },
@@ -223,7 +227,7 @@ export class Dealer {
       const withdrawOnChainAddress = withdrawOnChainAddressResult.value
 
       const updatedLeverageResult = await this.strategy.updateLeverage(
-        usdLiability,
+        exposureInUsd,
         btcPriceInUsd,
         withdrawOnChainAddress,
         this.withdrawBookKeeping.bind(this),

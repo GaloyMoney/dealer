@@ -20,7 +20,7 @@ export type UpdatedPosition = {
 
 export type UpdatedBalance = {
   originalLeverageRatio: number
-  liabilityInUsd: number
+  exposureInUsd: number
   collateralInUsd: number
   newLeverageRatio: number
 }
@@ -49,7 +49,7 @@ export interface HedgingStrategy {
     btcPriceInUsd: number,
   ): Promise<Result<UpdatedPosition>>
   updateLeverage(
-    liabilityInUsd: number,
+    exposureInUsd: number,
     btcPriceInUsd: number,
     withdrawFromExchangeOnChainAddress,
     withdrawBookKeepingCallback: WithdrawBookKeepingCallback,

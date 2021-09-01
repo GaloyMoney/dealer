@@ -289,7 +289,7 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
   }
 
   public async updateLeverage(
-    liabilityInUsd: number,
+    exposureInUsd: number,
     btcPriceInUsd: number,
     withdrawOnChainAddress: string,
     withdrawBookKeepingCallback: WithdrawBookKeepingCallback,
@@ -310,14 +310,14 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
       const lastBtcPriceInUsd = risk.lastBtcPriceInUsd
 
       const rebalanceResult = OkexPerpetualSwapStrategy.getRebalanceTransferIfNeeded(
-        liabilityInUsd,
+        exposureInUsd,
         collateralInUsd,
         lastBtcPriceInUsd,
         hedgingBounds,
       )
       this.logger.debug(
         {
-          liabilityInUsd,
+          exposureInUsd,
           collateralInUsd,
           lastBtcPriceInUsd,
           hedgingBounds,
@@ -331,7 +331,7 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
       const fundTransferSide = rebalanceResult.value.out.fundTransferSide
       const transferSizeInBtc = rebalanceResult.value.out.transferSizeInBtc
 
-      updatedBalance.liabilityInUsd = liabilityInUsd
+      updatedBalance.exposureInUsd = exposureInUsd
       updatedBalance.collateralInUsd = collateralInUsd
       updatedBalance.originalLeverageRatio = rebalanceResult.value.in.leverageRatio
       updatedBalance.newLeverageRatio = rebalanceResult.value.out.newLeverageRatio
@@ -620,13 +620,13 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
   }
 
   static getRebalanceTransferIfNeeded(
-    liabilityInUsd: number,
+    exposureInUsd: number,
     collateralInUsd: number,
     btcPriceInUsd: number,
     hedgingBounds,
   ): Result<GetRebalanceTransferResult> {
     try {
-      const leverageRatio = liabilityInUsd / collateralInUsd
+      const leverageRatio = exposureInUsd / collateralInUsd
       const result: GetRebalanceTransferResult = {
         in: {
           loBracket: hedgingBounds.LOW_BOUND_LEVERAGE,
@@ -643,23 +643,23 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
       }
 
       if (leverageRatio < hedgingBounds.LOW_BOUND_LEVERAGE) {
-        const newCollateralInUsd = liabilityInUsd / hedgingBounds.LOW_SAFEBOUND_LEVERAGE
+        const newCollateralInUsd = exposureInUsd / hedgingBounds.LOW_SAFEBOUND_LEVERAGE
         const transferSizeInUsd = collateralInUsd - newCollateralInUsd
         if (transferSizeInUsd > hedgingBounds.MINIMUM_TRANSFER_AMOUNT_USD) {
           result.out.transferSizeInUsd = transferSizeInUsd
           result.out.fundTransferSide = FundTransferSide.Withdraw
-          result.out.newLeverageRatio = liabilityInUsd / newCollateralInUsd
+          result.out.newLeverageRatio = exposureInUsd / newCollateralInUsd
           result.out.transferSizeInBtc = roundBtc(
             result.out.transferSizeInUsd / btcPriceInUsd,
           )
         }
       } else if (leverageRatio > hedgingBounds.HIGH_BOUND_LEVERAGE) {
-        const newCollateralInUsd = liabilityInUsd / hedgingBounds.HIGH_SAFEBOUND_LEVERAGE
+        const newCollateralInUsd = exposureInUsd / hedgingBounds.HIGH_SAFEBOUND_LEVERAGE
         const transferSizeInUsd = newCollateralInUsd - collateralInUsd
         if (transferSizeInUsd > hedgingBounds.MINIMUM_TRANSFER_AMOUNT_USD) {
           result.out.transferSizeInUsd = transferSizeInUsd
           result.out.fundTransferSide = FundTransferSide.Deposit
-          result.out.newLeverageRatio = liabilityInUsd / newCollateralInUsd
+          result.out.newLeverageRatio = exposureInUsd / newCollateralInUsd
           result.out.transferSizeInBtc = roundBtc(
             result.out.transferSizeInUsd / btcPriceInUsd,
           )
