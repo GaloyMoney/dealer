@@ -50,7 +50,6 @@ export class OkexExchange extends ExchangeBase {
           // No position in the derivative yet
           result.lastBtcPriceInUsd = btcPriceInUsd
           result.leverage = 0
-          result.collateralInUsd = 0
           result.exposureInUsd = 0
         } else {
           return { ok: false, error: positionResult.error }
@@ -60,7 +59,6 @@ export class OkexExchange extends ExchangeBase {
         result.originalPosition = position
         result.lastBtcPriceInUsd = position.last
         result.leverage = position.notionalUsd / position.last / position.margin
-        result.collateralInUsd = position.margin * position.last
         result.exposureInUsd = position.notionalUsd
       }
 
@@ -72,13 +70,7 @@ export class OkexExchange extends ExchangeBase {
       const balance = balanceResult.value
       result.originalBalance = balance
       result.totalAccountValueInUsd = balance.totalEq
-
-      if (!result.collateralInUsd) {
-        if (balance.originalResponseAsIs?.BTC?.free && result.lastBtcPriceInUsd) {
-          result.collateralInUsd =
-            balance.originalResponseAsIs.BTC.free * result.lastBtcPriceInUsd
-        }
-      }
+      result.collateralInUsd = balance.totalEq
 
       return {
         ok: true,
