@@ -6,28 +6,55 @@ on:
       - main
 
 jobs:
-  build-and-push:
+  build-staging:
     runs-on: ubuntu-latest
+    environment: "staging"
     steps:
       - uses: actions/checkout@v2
       - name: Build and push
         env:
           CI: false
         run: |
-          echo $(ls)
-          npm i
-          npm run build
+          yarn install
+          yarn build
           rm -rf node_modules
-          rm package-lock.json
           git rm -rf .
           mv build/* build/.well* .
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
           git pull -q
           git stash -u
-          git checkout build --
+          git checkout -B build-staging --
+          git rm -rf .
+          git stash pop
+          git add .
+          git diff-index --quiet HEAD || git commit -m 'Build for staging'
+          git push -f origin build-staging
+
+  build-main:
+    runs-on: ubuntu-latest
+    environment: "main-mainnet"
+    needs: [build-staging]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build and push
+        env:
+          CI: false
+          GRAPHQL_URI: ${{ secrets.GRAPHQL_URI }}
+          GRAPHQL_SUBSCRIPTION_URI: ${{ secrets.GRAPHQL_SUBSCRIPTION_URI }}
+        run: |
+          yarn install
+          yarn build
+          rm -rf node_modules
+          git rm -rf .
+          mv build/* build/.well* .
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git pull -q
+          git stash -u
+          git checkout -B build --
           git rm -rf .
           git stash pop
           git add .
           git diff-index --quiet HEAD || git commit -m 'Build'
-          git push origin build
+          git push -f origin build
