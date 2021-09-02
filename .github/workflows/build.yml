@@ -14,6 +14,8 @@ jobs:
       - name: Build and push
         env:
           CI: false
+          GRAPHQL_URI: ${{ secrets.GRAPHQL_URI }}
+          GRAPHQL_SUBSCRIPTION_URI: ${{ secrets.GRAPHQL_SUBSCRIPTION_URI }}
         run: |
           yarn install
           yarn build
@@ -24,7 +26,7 @@ jobs:
           git config user.email "github-actions@github.com"
           git pull -q
           git stash -u
-          git checkout -B build-staging --
+          git checkout build-staging --
           git rm -rf .
           git stash pop
           git add .
@@ -52,7 +54,7 @@ jobs:
           git config user.email "github-actions@github.com"
           git pull -q
           git stash -u
-          git checkout -B build --
+          git checkout build --
           git rm -rf .
           git stash pop
           git add .
