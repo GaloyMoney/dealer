@@ -227,6 +227,7 @@ export class Dealer {
       const withdrawOnChainAddress = withdrawOnChainAddressResult.value
 
       const updatedLeverageResult = await this.strategy.updateLeverage(
+        usdLiability,
         exposureInUsd,
         btcPriceInUsd,
         withdrawOnChainAddress,
@@ -266,10 +267,10 @@ export class Dealer {
       return { ok: true, value: result }
     } else {
       const errors: Error[] = []
-      if (!result.updatedPositionResult.ok) {
+      if (!result.updatePositionSkipped && !result.updatedPositionResult.ok) {
         errors.push(result.updatedPositionResult.error)
         return { ok: false, error: result.updatedPositionResult.error }
-      } else if (!result.updatedLeverageResult.ok) {
+      } else if (!result.updateLeverageSkipped && !result.updatedLeverageResult.ok) {
         errors.push(result.updatedLeverageResult.error)
         return { ok: false, error: result.updatedLeverageResult.error }
       } else {
@@ -366,6 +367,14 @@ export class Dealer {
 
   public async getSpotPriceInUsd(): Promise<number> {
     const result = await this.strategy.getSpotPriceInUsd()
+    if (!result.ok) {
+      return NaN
+    }
+    return result.value
+  }
+
+  public async getMarkPriceInUsd(): Promise<number> {
+    const result = await this.strategy.getMarkPriceInUsd()
     if (!result.ok) {
       return NaN
     }

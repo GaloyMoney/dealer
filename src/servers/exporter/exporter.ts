@@ -22,6 +22,10 @@ const btcSpotPriceInUsd_g = new client.Gauge({
   name: `${prefix}_btcSpotPriceInUsd`,
   help: "btc spot price from exchange, in usd",
 })
+const btcMarkPriceInUsd_g = new client.Gauge({
+  name: `${prefix}_btcMarkPriceInUsd`,
+  help: "btc mark price from exchange, in usd",
+})
 const btcDerivativePriceInUsd_g = new client.Gauge({
   name: `${prefix}_btcDerivativePriceInUsd`,
   help: "btc derivative instrument price from exchange, in usd",
@@ -170,7 +174,8 @@ const main = async () => {
         }
       }
       nextFundingRate_g.set(await dealer.getNextFundingRateInBtc())
-      btcSpotPriceInUsd_g.set(await dealer.getDerivativePriceInUsd())
+      btcSpotPriceInUsd_g.set(await dealer.getSpotPriceInUsd())
+      btcMarkPriceInUsd_g.set(await dealer.getMarkPriceInUsd())
       btcDerivativePriceInUsd_g.set(await dealer.getDerivativePriceInUsd())
       liabilityInUsd_g.set(liabilityInUsd)
     } catch (error) {

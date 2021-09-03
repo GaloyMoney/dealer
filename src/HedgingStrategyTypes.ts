@@ -38,6 +38,7 @@ export interface HedgingStrategy {
   getBtcSpotPriceInUsd(): Promise<Result<number>>
 
   getSpotPriceInUsd(): Promise<Result<number>>
+  getMarkPriceInUsd(): Promise<Result<number>>
   getDerivativePriceInUsd(): Promise<Result<number>>
   getNextFundingRateInBtc(): Promise<Result<number>>
   getAccountAndPositionRisk(): Promise<Result<GetAccountAndPositionRiskResult>>
@@ -49,6 +50,7 @@ export interface HedgingStrategy {
     btcPriceInUsd: number,
   ): Promise<Result<UpdatedPosition>>
   updateLeverage(
+    liabilityInUsd: number,
     exposureInUsd: number,
     btcPriceInUsd: number,
     withdrawFromExchangeOnChainAddress,
