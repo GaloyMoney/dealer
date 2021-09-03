@@ -243,15 +243,13 @@ export abstract class ExchangeBase {
       this.exchangeConfig.createMarketOrderValidateInput(args)
 
       const limitPrice = undefined
-      const tdMode = "isolated"
-      const params = { tdMode: tdMode }
 
       const response = await this.exchange.createMarketOrder(
         args.instrumentId,
         args.side as ccxt.Order["side"],
         args.quantity,
         limitPrice,
-        params,
+        args.params,
       )
       this.logger.debug(
         { args, response },

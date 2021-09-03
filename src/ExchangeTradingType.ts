@@ -1,3 +1,5 @@
+import { Params } from "ccxt"
+
 export enum TradeCurrency {
   BTC = "BTC",
   USD = "USD",
@@ -107,6 +109,7 @@ export interface CreateOrderParameters {
   type: TradeType
   side: TradeSide
   quantity: number
+  params: Params
 }
 
 export interface CreateOrderResult {

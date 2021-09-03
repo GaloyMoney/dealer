@@ -1,5 +1,5 @@
 import { SupportedExchange, SupportedInstrument } from "src/ExchangeConfiguration"
-import { OkexExchangeConfiguration } from "src/OkexExchangeConfiguration"
+import { MarginMode, OkexExchangeConfiguration } from "src/OkexExchangeConfiguration"
 import {
   WithdrawParameters,
   CreateOrderParameters,
@@ -184,6 +184,7 @@ function getValidCreateMarketOrderValidateInput(): CreateOrderParameters {
     type: TradeType.Market,
     side: TradeSide.Buy,
     quantity: 1,
+    params: { tdMode: MarginMode.Cross },
   }
   return args
 }
