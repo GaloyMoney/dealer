@@ -204,49 +204,56 @@ export class OkexExchange extends ExchangeBase {
   }
 
   public async setAccountConfiguration(): Promise<Result<SetAccountConfigurationResult>> {
-    const config = this.exchangeConfig as OkexExchangeConfiguration
+    try {
+      const config = this.exchangeConfig as OkexExchangeConfiguration
 
-    const args1 = { posMode: config.positionMode }
-    const positionResponse = await this.exchange.privatePostAccountSetPositionMode(args1)
-    this.logger.debug(
-      { args: args1, response: positionResponse },
-      "exchange.privatePostAccountSetPositionMode({args}) returned: {response}",
-    )
-    assert(positionResponse, ApiError.UNSUPPORTED_API_RESPONSE)
-    assert(
-      positionResponse.data[0].posMode === args1.posMode,
-      ApiError.INVALID_POSITION_MODE,
-    )
+      const args1 = { posMode: config.positionMode }
+      const positionResponse = await this.exchange.privatePostAccountSetPositionMode(
+        args1,
+      )
+      this.logger.debug(
+        { args: args1, response: positionResponse },
+        "exchange.privatePostAccountSetPositionMode({args}) returned: {response}",
+      )
+      assert(positionResponse, ApiError.UNSUPPORTED_API_RESPONSE)
+      assert(
+        positionResponse.data[0].posMode === args1.posMode,
+        ApiError.INVALID_POSITION_MODE,
+      )
 
-    const args2 = {
-      instId: this.instrumentId,
-      lever: config.leverage,
-      mgnMode: config.marginMode,
-    }
-    const leverageResponse = await this.exchange.privatePostAccountSetLeverage(args2)
-    this.logger.debug(
-      { args: args2, response: leverageResponse },
-      "exchange.privatePostAccountSetLeverage({args}) returned: {response}",
-    )
-    assert(leverageResponse, ApiError.UNSUPPORTED_API_RESPONSE)
-    assert(
-      leverageResponse.data[0].instId === args2.instId.toString(),
-      ApiError.INVALID_LEVERAGE_CONFIG,
-    )
-    assert(
-      leverageResponse.data[0].lever === args2.lever.toString(),
-      ApiError.INVALID_LEVERAGE_CONFIG,
-    )
-    assert(
-      leverageResponse.data[0].mgnMode === args2.mgnMode.toString(),
-      ApiError.INVALID_LEVERAGE_CONFIG,
-    )
+      const args2 = {
+        instId: this.instrumentId,
+        lever: config.leverage,
+        mgnMode: config.marginMode,
+      }
+      const leverageResponse = await this.exchange.privatePostAccountSetLeverage(args2)
+      this.logger.debug(
+        { args: args2, response: leverageResponse },
+        "exchange.privatePostAccountSetLeverage({args}) returned: {response}",
+      )
+      assert(leverageResponse, ApiError.UNSUPPORTED_API_RESPONSE)
+      assert(
+        leverageResponse.data[0].instId === args2.instId.toString(),
+        ApiError.INVALID_LEVERAGE_CONFIG,
+      )
+      assert(
+        leverageResponse.data[0].lever === args2.lever.toString(),
+        ApiError.INVALID_LEVERAGE_CONFIG,
+      )
+      assert(
+        leverageResponse.data[0].mgnMode === args2.mgnMode.toString(),
+        ApiError.INVALID_LEVERAGE_CONFIG,
+      )
 
-    return {
-      ok: true,
-      value: {
-        originalResponseAsIs: { positionResponse, leverageResponse },
-      },
+      return {
+        ok: true,
+        value: {
+          originalResponseAsIs: { positionResponse, leverageResponse },
+        },
+      }
+    } catch (error) {
+      this.logger.error({ error }, "exchange.setAccountConfiguration() failed: {error}")
+      return { ok: false, error: error }
     }
   }
 }
