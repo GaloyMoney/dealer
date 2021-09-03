@@ -235,9 +235,14 @@ export class OkexExchangeConfiguration implements ExchangeConfiguration {
       ApiError.MISSING_ACCOUNT_VALUE,
     )
 
+    let notionalLever = 0
+    if (response?.info?.data?.[0]?.details?.[0]?.notionalLever) {
+      notionalLever = Number(response?.info?.data?.[0]?.details?.[0]?.notionalLever)
+    }
+
     return {
       originalResponseAsIs: response,
-      notionalLever: Number(response?.info?.data[0]?.details[0]?.notionalLever),
+      notionalLever: notionalLever,
       btcFreeBalance: response?.BTC?.free,
       btcUsedBalance: response?.BTC?.used,
       btcTotalBalance: response?.BTC?.total,
