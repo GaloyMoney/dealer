@@ -70,7 +70,8 @@ export class OkexExchange extends ExchangeBase {
       const balance = balanceResult.value
       result.originalBalance = balance
       result.totalAccountValueInUsd = balance.totalEq
-      result.collateralInUsd = balance.totalEq
+      result.usedCollateralInUsd = balance.btcFreeBalance * result.lastBtcPriceInUsd
+      result.totalCollateralInUsd = balance.btcTotalBalance * result.lastBtcPriceInUsd
 
       return {
         ok: true,

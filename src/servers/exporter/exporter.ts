@@ -52,6 +52,10 @@ const collateralInUsd_g = new client.Gauge({
   name: `${prefix}_collateralInUsd`,
   help: "position collateral, in usd",
 })
+const usedCollateralInUsd_g = new client.Gauge({
+  name: `${prefix}_usedCollateralInUsd`,
+  help: "used collateral, in usd",
+})
 const exposureInUsd_g = new client.Gauge({
   name: `${prefix}_exposureInUsd`,
   help: "position exposure or notional, in usd",
@@ -137,16 +141,18 @@ const main = async () => {
           originalBalance,
           lastBtcPriceInUsd,
           leverage,
-          collateralInUsd,
+          usedCollateralInUsd,
+          totalCollateralInUsd,
           exposureInUsd,
           totalAccountValueInUsd,
         } = result.value
 
         lastBtcPriceInUsd_g.set(lastBtcPriceInUsd)
         leverage_g.set(leverage)
-        const leverageRatio = exposureInUsd / collateralInUsd
+        const leverageRatio = exposureInUsd / totalCollateralInUsd
         leverageRatio_g.set(leverageRatio)
-        collateralInUsd_g.set(collateralInUsd)
+        usedCollateralInUsd_g.set(usedCollateralInUsd)
+        collateralInUsd_g.set(totalCollateralInUsd)
         exposureInUsd_g.set(exposureInUsd)
         totalAccountValueInUsd_g.set(totalAccountValueInUsd)
 

@@ -170,7 +170,8 @@ export interface GetAccountAndPositionRiskResult {
   originalBalance: FetchBalanceResult | undefined
   lastBtcPriceInUsd: number
   leverage: number
-  collateralInUsd: number
+  usedCollateralInUsd: number
+  totalCollateralInUsd: number
   exposureInUsd: number
   totalAccountValueInUsd: number
 }

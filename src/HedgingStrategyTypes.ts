@@ -8,7 +8,8 @@ export enum HedgingStrategies {
 
 export type Position = {
   leverage: number
-  collateralInUsd: number
+  usedCollateralInUsd: number
+  totalCollateralInUsd: number
   exposureInUsd: number
   totalAccountValueInUsd: number
 }
