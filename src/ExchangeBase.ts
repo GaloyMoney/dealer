@@ -29,6 +29,7 @@ import pino from "pino"
 export abstract class ExchangeBase {
   exchangeConfig: ExchangeConfiguration
   exchangeId: ExchangeId
+  fundingPassword: string
   exchange: ccxt.okex5
   logger: pino.Logger
 
@@ -39,10 +40,13 @@ export abstract class ExchangeBase {
     const apiKey = process.env[`${this.exchangeId.toUpperCase()}_KEY`]
     const secret = process.env[`${this.exchangeId.toUpperCase()}_SECRET`]
     const password = process.env[`${this.exchangeId.toUpperCase()}_PASSWORD`]
+    const fundingPassword = process.env[`${this.exchangeId.toUpperCase()}_FUND_PASSWORD`]
 
-    if (!apiKey || !secret || !password) {
+    if (!apiKey || !secret || !password || !fundingPassword) {
       throw new Error(`Missing ${this.exchangeId} exchange environment variables`)
     }
+
+    this.fundingPassword = fundingPassword
 
     const exchangeClass = ccxt[this.exchangeId]
     this.exchange = new exchangeClass({ apiKey, secret, password })
@@ -143,10 +147,13 @@ export abstract class ExchangeBase {
     try {
       this.exchangeConfig.withdrawValidateInput(args)
 
+      const noTag = undefined
       const response = await this.exchange.withdraw(
         args.currency,
         args.quantity,
         args.address,
+        noTag,
+        args.params,
       )
       this.logger.debug(
         { args, response },

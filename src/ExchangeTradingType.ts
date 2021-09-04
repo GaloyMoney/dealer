@@ -83,6 +83,7 @@ export interface WithdrawParameters {
   currency: TradeCurrency
   quantity: number
   address: string
+  params: Params
 }
 
 export interface WithdrawResult {

@@ -19,7 +19,10 @@ import {
 } from "./HedgingStrategyTypes"
 import { ExchangeBase } from "./ExchangeBase"
 import { ExchangeConfiguration, SupportedInstrument } from "./ExchangeConfiguration"
-import { OkexExchangeConfiguration } from "./OkexExchangeConfiguration"
+import {
+  OkexExchangeConfiguration,
+  DestinationAddressType,
+} from "./OkexExchangeConfiguration"
 import { OkexExchange } from "./OkexExchange"
 import pino from "pino"
 
@@ -364,6 +367,11 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
           currency: TradeCurrency.BTC,
           quantity: transferSizeInBtc,
           address: withdrawOnChainAddress,
+          params: {
+            fee: "0", // probably need to fetch from galoy wallet api
+            dest: DestinationAddressType.OKEx, // TODO: fix this to external or get from api also
+            pwd: this.exchange.fundingPassword,
+          },
         }
         const withdrawalResult = await this.exchange.withdraw(withdrawArgs)
         this.logger.debug(

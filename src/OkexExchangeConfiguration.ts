@@ -36,6 +36,12 @@ export enum MarginMode {
   Cross = "cross",
 }
 
+export enum DestinationAddressType {
+  OKCoin = 2,
+  OKEx = 3,
+  External = 4,
+}
+
 const hedgingBounds = yamlConfig.hedging
 
 export class OkexExchangeConfiguration implements ExchangeConfiguration {
