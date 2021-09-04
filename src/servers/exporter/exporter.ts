@@ -93,6 +93,10 @@ const marginRatio_g = new client.Gauge({
   name: `${prefix}_marginRatio`,
   help: "margin ratio",
 })
+const margin_g = new client.Gauge({
+  name: `${prefix}_margin`,
+  help: "margin",
+})
 const maintenanceMarginRequirement_g = new client.Gauge({
   name: `${prefix}_maintenanceMarginRequirement`,
   help: "maintenance margin requirement",
@@ -160,17 +164,35 @@ const main = async () => {
           averageOpenPrice_g.set(originalPosition.averageOpenPrice)
           unrealizedPnL_g.set(originalPosition.unrealizedPnL)
           unrealizedPnLRatio_g.set(originalPosition.unrealizedPnLRatio)
+          margin_g.set(originalPosition.margin)
           marginRatio_g.set(originalPosition.marginRatio)
           maintenanceMarginRequirement_g.set(
             originalPosition.maintenanceMarginRequirement,
           )
           exchangeLeverage_g.set(originalPosition.exchangeLeverage)
+        } else {
+          autoDeleveragingIndicator_g.set(0)
+          liquidationPrice_g.set(0)
+          positionQuantity_g.set(0)
+          positionSide_g.set(0)
+          averageOpenPrice_g.set(0)
+          unrealizedPnL_g.set(0)
+          unrealizedPnLRatio_g.set(0)
+          margin_g.set(0)
+          marginRatio_g.set(0)
+          maintenanceMarginRequirement_g.set(0)
+          exchangeLeverage_g.set(0)
         }
         if (originalBalance) {
           notionalLever_g.set(originalBalance.notionalLever)
           btcFreeBalance_g.set(originalBalance.btcFreeBalance)
           btcUsedBalance_g.set(originalBalance.btcUsedBalance)
           btcTotalBalance_g.set(originalBalance.btcTotalBalance)
+        } else {
+          notionalLever_g.set(0)
+          btcFreeBalance_g.set(0)
+          btcUsedBalance_g.set(0)
+          btcTotalBalance_g.set(0)
         }
       }
       nextFundingRate_g.set(await dealer.getNextFundingRateInBtc())
