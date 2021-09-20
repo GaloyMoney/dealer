@@ -1,5 +1,9 @@
 import { SupportedExchange, SupportedInstrument } from "src/ExchangeConfiguration"
-import { MarginMode, OkexExchangeConfiguration } from "src/OkexExchangeConfiguration"
+import {
+  DestinationAddressType,
+  MarginMode,
+  OkexExchangeConfiguration,
+} from "src/OkexExchangeConfiguration"
 import {
   WithdrawParameters,
   CreateOrderParameters,
@@ -156,6 +160,11 @@ function getValidWithdrawValidateInput(): WithdrawParameters {
     currency: TradeCurrency.BTC,
     quantity: 1,
     address: "validAddressString",
+    params: {
+      dest: DestinationAddressType.External,
+      pwd: "pwd",
+      fee: "0", // probably need to fetch from galoy wallet api
+    },
   }
   return args
 }

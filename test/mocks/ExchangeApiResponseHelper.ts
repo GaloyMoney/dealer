@@ -110,7 +110,11 @@ export function getValidFetchOrderResponse(
   return { id: id, status: status }
 }
 
-export function getValidFetchBalanceResponse(balance: number) {
+export function getValidFetchBalanceResponse(
+  balance: number,
+  btcUsed: number,
+  btcTotal: number,
+) {
   return {
     info: {
       data: [
@@ -118,6 +122,10 @@ export function getValidFetchBalanceResponse(balance: number) {
           totalEq: `${balance}`,
         },
       ],
+    },
+    BTC: {
+      used: `${btcUsed}`,
+      total: `${btcTotal}`,
     },
   }
 }

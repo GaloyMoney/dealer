@@ -186,7 +186,8 @@ export class Dealer {
         const originalPosition = updatedPositionResult.value.originalPosition
         const updatedPosition = updatedPositionResult.value.updatedPosition
 
-        exposureInUsd = updatedPosition.exposureInUsd
+        if (updatedPosition) exposureInUsd = updatedPosition.exposureInUsd
+        else exposureInUsd = originalPosition.exposureInUsd
 
         logger.info(
           { activeStrategy: this.strategy.name, originalPosition, updatedPosition },

@@ -45,6 +45,7 @@ export interface GetHedgingOrderResult {
 export interface GetRebalanceTransferResult {
   in: {
     loBracket: number
+    liabilityRatio: number
     leverageRatio: number
     marginRatio: number
     hiBracket: number
@@ -54,6 +55,7 @@ export interface GetRebalanceTransferResult {
     transferSizeInUsd: number
     transferSizeInBtc: number
     btcPriceInUsd: number
+    newLiabilityRatio: number
     newLeverageRatio: number
     newMarginRatio: number
   }
@@ -333,7 +335,9 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
       )
       this.logger.debug(
         {
+          liabilityInUsd,
           exposureInUsd,
+          usedCollateralInUsd,
           totalCollateralInUsd,
           lastBtcPriceInUsd,
           hedgingBounds,
@@ -446,6 +450,7 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
   }
 
   static getHedgingOrderIfNeeded(
+    logger: pino.Logger,
     liabilityInUsd: number,
     exposureInUsd: number,
     btcPriceInUsd: number,
@@ -466,6 +471,29 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
           liabilityInUsd * hedgingBounds.HIGH_SAFEBOUND_RATIO_SHORTING
         orderSizeInUsd = exposureInUsd - newExposureInUsd
         tradeSide = TradeSide.Buy
+      }
+
+      if (tradeSide !== TradeSide.NoTrade) {
+        const minOrderSizeInContract = hedgingBounds.MINIMUM_ORDER_SIZE_IN_CONTRACT
+        const contractFaceValue = hedgingBounds.CONTRACT_FACE_VALUE
+        const orderSizeInContract = Math.round(orderSizeInUsd / contractFaceValue)
+
+        if (orderSizeInContract < minOrderSizeInContract) {
+          const msg =
+            "Order size {orderSizeInContract} is smaller than minimum {minOrderSizeInContract}. Forgoing the order"
+          logger.warn(
+            {
+              tradeSide,
+              orderSizeInUsd,
+              contractFaceValue,
+              orderSizeInContract,
+              minOrderSizeInContract,
+            },
+            msg,
+          )
+          orderSizeInUsd = 0
+          tradeSide = TradeSide.NoTrade
+        }
       }
 
       const orderSizeInBtc = roundBtc(orderSizeInUsd / btcPriceInUsd)
@@ -509,6 +537,7 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
       const exposureInUsd = risk.exposureInUsd
 
       const orderResult = OkexPerpetualSwapStrategy.getHedgingOrderIfNeeded(
+        this.logger,
         liabilityInUsd,
         exposureInUsd,
         lastBtcPriceInUsd,
@@ -534,7 +563,7 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
 
   async validateConfirmOrder(
     tradeSide: TradeSide,
-    btcPriceInUsd: number,
+    orderSizeInUsd: number,
   ): Promise<Result<void>> {
     const logger = this.logger.child({ method: "validateConfirmOrder()" })
 
@@ -548,7 +577,7 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
 
       const minOrderSizeInContract = contractDetail.minimumOrderSizeInContract
       const contractFaceValue = contractDetail.contractFaceValue
-      const orderSizeInContract = Math.round(btcPriceInUsd / contractFaceValue)
+      const orderSizeInContract = Math.round(orderSizeInUsd / contractFaceValue)
 
       if (orderSizeInContract < minOrderSizeInContract) {
         const msg = `Order size (${orderSizeInContract}) is smaller than minimum (${minOrderSizeInContract}). Cannot place order`
@@ -651,11 +680,20 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
     hedgingBounds,
   ): Result<GetRebalanceTransferResult> {
     try {
+      const liabilityRatio = liabilityInUsd / totalCollateralInUsd
       const leverageRatio = exposureInUsd / totalCollateralInUsd
       const marginRatio = totalCollateralInUsd / usedCollateralInUsd
+      console.log(
+        `leverageRatio = exposureInUsd / totalCollateralInUsd : ${leverageRatio} = ${exposureInUsd} / ${totalCollateralInUsd}`,
+      )
+      console.log(
+        `marginRatio = totalCollateralInUsd / usedCollateralInUsd : ${marginRatio} = ${totalCollateralInUsd} / ${usedCollateralInUsd}`,
+      )
+
       const result: GetRebalanceTransferResult = {
         in: {
           loBracket: hedgingBounds.LOW_BOUND_LEVERAGE,
+          liabilityRatio,
           leverageRatio,
           marginRatio,
           hiBracket: hedgingBounds.HIGH_BOUND_LEVERAGE,
@@ -665,13 +703,31 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
           transferSizeInUsd: 0,
           transferSizeInBtc: 0,
           btcPriceInUsd,
+          newLiabilityRatio: liabilityRatio,
           newLeverageRatio: leverageRatio,
           newMarginRatio: marginRatio,
         },
       }
 
-      if (
+      // console.log(`getRebalanceTransferIfNeeded results = ${JSON.stringify(result)}`)
+
+      if (exposureInUsd === 0 && totalCollateralInUsd === 0 && liabilityInUsd > 0) {
+        // Liability, no exposure and no collateral yet,
+        // deposit initial funds to the level of the liability
+        const newCollateralInUsd = liabilityInUsd / hedgingBounds.HIGH_SAFEBOUND_LEVERAGE
+        const transferSizeInUsd = newCollateralInUsd - totalCollateralInUsd
+        result.out.transferSizeInUsd = transferSizeInUsd
+        result.out.fundTransferSide = FundTransferSide.Deposit
+        result.out.newLiabilityRatio = liabilityInUsd / newCollateralInUsd
+        result.out.newLeverageRatio = exposureInUsd / newCollateralInUsd
+        result.out.newMarginRatio =
+          (totalCollateralInUsd + transferSizeInUsd) / usedCollateralInUsd
+        result.out.transferSizeInBtc = roundBtc(
+          result.out.transferSizeInUsd / btcPriceInUsd,
+        )
+      } else if (
         exposureInUsd === 0 &&
+        liabilityInUsd > 0 &&
         liabilityInUsd < hedgingBounds.MINIMUM_TRANSFER_AMOUNT_USD
       ) {
         // No exposure and no liability worth hedging, redraw all
@@ -679,41 +735,71 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
         const transferSizeInUsd = totalCollateralInUsd - newCollateralInUsd
         result.out.transferSizeInUsd = transferSizeInUsd
         result.out.fundTransferSide = FundTransferSide.Withdraw
+        result.out.newLiabilityRatio = liabilityInUsd / newCollateralInUsd
         result.out.newLeverageRatio = exposureInUsd / newCollateralInUsd
+        result.out.newMarginRatio =
+          (totalCollateralInUsd + transferSizeInUsd) / usedCollateralInUsd
         result.out.transferSizeInBtc = roundBtc(
           result.out.transferSizeInUsd / btcPriceInUsd,
         )
-      } else if (leverageRatio < hedgingBounds.LOW_BOUND_LEVERAGE) {
+      } else if (
+        exposureInUsd <
+        totalCollateralInUsd * hedgingBounds.LOW_BOUND_LEVERAGE
+      ) {
+        console.log(
+          `exposureInUsd < totalCollateralInUsd * hedgingBounds.LOW_BOUND_LEVERAGE : ${exposureInUsd} < ${totalCollateralInUsd} * ${hedgingBounds.LOW_BOUND_LEVERAGE}`,
+        )
+
+        // console.log("in 2nd if condition")
         const newCollateralInUsd = exposureInUsd / hedgingBounds.LOW_SAFEBOUND_LEVERAGE
         const transferSizeInUsd = totalCollateralInUsd - newCollateralInUsd
-        if (transferSizeInUsd > hedgingBounds.MINIMUM_TRANSFER_AMOUNT_USD) {
-          result.out.transferSizeInUsd = transferSizeInUsd
-          result.out.fundTransferSide = FundTransferSide.Withdraw
-          result.out.newLeverageRatio = exposureInUsd / newCollateralInUsd
-          result.out.transferSizeInBtc = roundBtc(
-            result.out.transferSizeInUsd / btcPriceInUsd,
-          )
-        }
-      } else if (leverageRatio > hedgingBounds.HIGH_BOUND_LEVERAGE) {
+        // if (transferSizeInUsd > hedgingBounds.MINIMUM_TRANSFER_AMOUNT_USD) {
+        result.out.transferSizeInUsd = transferSizeInUsd
+        result.out.fundTransferSide = FundTransferSide.Withdraw
+        result.out.newLiabilityRatio = liabilityInUsd / newCollateralInUsd
+        result.out.newLeverageRatio = exposureInUsd / newCollateralInUsd
+        result.out.newMarginRatio = newCollateralInUsd / usedCollateralInUsd
+        result.out.transferSizeInBtc = roundBtc(
+          result.out.transferSizeInUsd / btcPriceInUsd,
+        )
+        // }
+      } else if (
+        exposureInUsd >
+        totalCollateralInUsd * hedgingBounds.HIGH_BOUND_LEVERAGE
+      ) {
+        console.log(
+          `exposureInUsd > totalCollateralInUsd * hedgingBounds.HIGH_BOUND_LEVERAGE : ${exposureInUsd} > ${totalCollateralInUsd} * ${hedgingBounds.HIGH_BOUND_LEVERAGE}`,
+        )
+        // console.log("in 3rd if condition")
         const newCollateralInUsd = exposureInUsd / hedgingBounds.HIGH_SAFEBOUND_LEVERAGE
         const transferSizeInUsd = newCollateralInUsd - totalCollateralInUsd
-        if (transferSizeInUsd > hedgingBounds.MINIMUM_TRANSFER_AMOUNT_USD) {
-          result.out.transferSizeInUsd = transferSizeInUsd
-          result.out.fundTransferSide = FundTransferSide.Deposit
-          result.out.newLeverageRatio = exposureInUsd / newCollateralInUsd
-          result.out.transferSizeInBtc = roundBtc(
-            result.out.transferSizeInUsd / btcPriceInUsd,
-          )
-        }
-      } else if (marginRatio < hedgingBounds.LOW_BOUND_LEVERAGE) {
+        // if (transferSizeInUsd > hedgingBounds.MINIMUM_TRANSFER_AMOUNT_USD) {
+        result.out.transferSizeInUsd = transferSizeInUsd
+        result.out.fundTransferSide = FundTransferSide.Deposit
+        result.out.newLiabilityRatio = liabilityInUsd / newCollateralInUsd
+        result.out.newLeverageRatio = exposureInUsd / newCollateralInUsd
+        result.out.newMarginRatio = newCollateralInUsd / usedCollateralInUsd
+        result.out.transferSizeInBtc = roundBtc(
+          result.out.transferSizeInUsd / btcPriceInUsd,
+        )
+        // }
+      } else if (
+        totalCollateralInUsd <
+        usedCollateralInUsd * hedgingBounds.LOW_BOUND_LEVERAGE
+      ) {
+        console.log(
+          `totalCollateralInUsd < usedCollateralInUsd * hedgingBounds.LOW_BOUND_LEVERAGE : ${totalCollateralInUsd} < ${usedCollateralInUsd} * ${hedgingBounds.LOW_BOUND_LEVERAGE}`,
+        )
+        console.log("in 4th if condition")
         const transferSizeInUsd =
           hedgingBounds.LOW_SAFEBOUND_LEVERAGE * usedCollateralInUsd -
           totalCollateralInUsd
-        const newMarginRatio =
-          (totalCollateralInUsd + transferSizeInUsd) / usedCollateralInUsd
+        const newCollateralInUsd = totalCollateralInUsd + transferSizeInUsd
         result.out.transferSizeInUsd = transferSizeInUsd
         result.out.fundTransferSide = FundTransferSide.Deposit
-        result.out.newMarginRatio = newMarginRatio
+        result.out.newLiabilityRatio = liabilityInUsd / newCollateralInUsd
+        result.out.newLeverageRatio = exposureInUsd / newCollateralInUsd
+        result.out.newMarginRatio = newCollateralInUsd / usedCollateralInUsd
         result.out.transferSizeInBtc = roundBtc(
           result.out.transferSizeInUsd / btcPriceInUsd,
         )

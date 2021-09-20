@@ -28,7 +28,8 @@ export class ScenarioReader {
       "notionalUsd",
       "notionalUsdAfterOrder",
       "marginInBtc",
-      "marginInBtcAfterTransfer",
+      "totalEquityInUsd",
+      "totalEquityInUsdAfterTransfer",
       "orderId",
       "numberFetchIteration",
     ]
