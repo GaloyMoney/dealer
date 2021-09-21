@@ -187,7 +187,7 @@ describe("OkexExchange", () => {
         const risk = result.value
         expect(risk.lastBtcPriceInUsd).toBe(expectedLast)
         expect(risk.leverage).toBe(expectedLeverageRatio)
-        expect(risk.collateralInUsd).toBe(expectedCollateralInUsd)
+        expect(risk.totalCollateralInUsd).toBe(expectedCollateralInUsd)
         expect(risk.exposureInUsd).toBe(expectedExposureInUsd)
         expect(risk.totalAccountValueInUsd).toBe(expectedTotalEquity)
       }

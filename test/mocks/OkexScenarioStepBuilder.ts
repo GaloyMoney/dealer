@@ -8,7 +8,7 @@ import {
 import { Position, UpdatedBalance, UpdatedPosition } from "src/HedgingStrategyTypes"
 import { baseLogger } from "src/services/logger"
 import { Result } from "src/Result"
-import { sat2btc } from "src/utils"
+import { roundBtc, sat2btc } from "src/utils"
 import {
   DATE_FORMAT_STRING,
   getValidFetchDepositAddressResponse,
@@ -36,7 +36,8 @@ export interface StepInput {
   notionalUsd: number
   notionalUsdAfterOrder: number
   marginInBtc: number
-  marginInBtcAfterTransfer: number
+  totalEquityInUsd: number
+  totalEquityInUsdAfterTransfer: number
   hasMinimalLiability: boolean
   isOrderExpected: boolean
   isOrderSizeOk: boolean
@@ -156,7 +157,8 @@ export class OkexScenarioStepBuilder {
       notionalUsd,
       notionalUsdAfterOrder,
       marginInBtc,
-      marginInBtcAfterTransfer,
+      totalEquityInUsd,
+      totalEquityInUsdAfterTransfer,
       hasMinimalLiability,
       isOrderExpected,
       isOrderSizeOk,
@@ -176,12 +178,18 @@ export class OkexScenarioStepBuilder {
       expectLeverageUpdatedOk,
     } = args
 
-    const collateralInUsd = marginInBtc * lastPriceInUsd
-    const originalLeverageRatio = liabilityInUsd / collateralInUsd
-    const collateralInUsdAfterTransfer = marginInBtcAfterTransfer * lastPriceInUsd
-    const newLeverageRatio = liabilityInUsd / collateralInUsdAfterTransfer
-    const totalEquity = collateralInUsd
+    const totalCollateralInUsd = totalEquityInUsd
+    const totalCollateralInBtc = roundBtc(totalEquityInUsd / lastPriceInUsd)
+    const totalCollateralInUsdAfterTransfer = totalEquityInUsdAfterTransfer
+    const originalLeverageRatio = notionalUsd / totalCollateralInUsd
+    const newLeverageRatio = notionalUsd / totalCollateralInUsdAfterTransfer
     const exposureRatioAfterOrder = notionalUsdAfterOrder / liabilityInUsd
+    const marginInBtcAfterOrder = roundBtc(
+      notionalUsdAfterOrder / lastPriceInUsd / hedgingBounds.HIGH_BOUND_LEVERAGE,
+    )
+    const usedCollateralInBtc = marginInBtc
+    const usedCollateralInUsd = marginInBtc * lastPriceInUsd
+    const usedCollateralInBtcAfterOrder = roundBtc(marginInBtcAfterOrder)
 
     // Prepare expected results first...
     const expected: UpdatedPositionAndLeverageResult = {
@@ -198,10 +206,11 @@ export class OkexScenarioStepBuilder {
 
     if (hasMinimalLiability && expected.updatedPositionResult.ok) {
       const position: Position = {
-        leverage: notionalUsd / collateralInUsd,
-        collateralInUsd: collateralInUsd,
+        leverage: notionalUsd / totalCollateralInUsd,
+        usedCollateralInUsd: usedCollateralInUsd,
+        totalCollateralInUsd: totalCollateralInUsd,
         exposureInUsd: notionalUsd,
-        totalAccountValueInUsd: totalEquity,
+        totalAccountValueInUsd: totalEquityInUsd,
       }
       expected.updatedPositionResult.value.updatedPosition = position
     }
@@ -209,7 +218,7 @@ export class OkexScenarioStepBuilder {
     if (hasMinimalLiability && expected.updatedLeverageResult.ok) {
       const balance: UpdatedBalance = {
         originalLeverageRatio: originalLeverageRatio,
-        liabilityInUsd: liabilityInUsd,
+        exposureInUsd: liabilityInUsd,
         collateralInUsd: marginInBtc * lastPriceInUsd,
         newLeverageRatio: newLeverageRatio,
       }
@@ -328,16 +337,20 @@ export class OkexScenarioStepBuilder {
       })
       expectedResult.exchangeMockStats.fetchBalance++
       exchangeMock.fetchBalance.mockImplementationOnce(() => {
-        return getValidFetchBalanceResponse(totalEquity)
+        return getValidFetchBalanceResponse(
+          totalEquityInUsd,
+          usedCollateralInBtc,
+          totalCollateralInBtc,
+        )
       })
       if (isOrderExpected) {
-        expectedResult.exchangeMockStats.publicGetPublicInstruments++
-        exchangeMock.publicGetPublicInstruments.mockImplementationOnce(
-          ({ instType, instId }) => {
-            return getValidPublicGetPublicInstrumentsResponse({ instType, instId })
-          },
-        )
         if (isOrderSizeOk) {
+          expectedResult.exchangeMockStats.publicGetPublicInstruments++
+          exchangeMock.publicGetPublicInstruments.mockImplementationOnce(
+            ({ instType, instId }) => {
+              return getValidPublicGetPublicInstrumentsResponse({ instType, instId })
+            },
+          )
           expectedResult.exchangeMockStats.createMarketOrder++
           exchangeMock.createMarketOrder.mockImplementationOnce(
             /* eslint-disable */
@@ -376,25 +389,29 @@ export class OkexScenarioStepBuilder {
               return getValidFetchPositionResponse(
                 lastPriceInUsd,
                 notionalUsdAfterOrder,
-                marginInBtc,
+                marginInBtcAfterOrder,
               )
             })
             expectedResult.exchangeMockStats.fetchBalance++
             exchangeMock.fetchBalance.mockImplementationOnce(() => {
-              return getValidFetchBalanceResponse(totalEquity)
-            })
-            // If exposureRatio AfterOrder outside bounds
-            if (
-              exposureRatioAfterOrder < hedgingBounds.LOW_BOUND_RATIO_SHORTING ||
-              exposureRatioAfterOrder > hedgingBounds.HIGH_BOUND_RATIO_SHORTING
-            ) {
-              expectedResult.exchangeMockStats.publicGetPublicInstruments++
-              exchangeMock.publicGetPublicInstruments.mockImplementationOnce(
-                ({ instType, instId }) => {
-                  return getValidPublicGetPublicInstrumentsResponse({ instType, instId })
-                },
+              return getValidFetchBalanceResponse(
+                totalEquityInUsd,
+                usedCollateralInBtcAfterOrder,
+                totalCollateralInBtc,
               )
-            }
+            })
+            // // If exposureRatio AfterOrder outside bounds
+            // if (
+            //   exposureRatioAfterOrder < hedgingBounds.LOW_BOUND_RATIO_SHORTING ||
+            //   exposureRatioAfterOrder > hedgingBounds.HIGH_BOUND_RATIO_SHORTING
+            // ) {
+            //   expectedResult.exchangeMockStats.publicGetPublicInstruments++
+            //   exchangeMock.publicGetPublicInstruments.mockImplementationOnce(
+            //     ({ instType, instId }) => {
+            //       return getValidPublicGetPublicInstrumentsResponse({ instType, instId })
+            //     },
+            //   )
+            // }
           }
         }
       }
@@ -414,12 +431,16 @@ export class OkexScenarioStepBuilder {
       return getValidFetchPositionResponse(
         lastPriceInUsd,
         notionalUsdAfterOrder,
-        marginInBtc,
+        marginInBtcAfterOrder,
       )
     })
     expectedResult.exchangeMockStats.fetchBalance++
     exchangeMock.fetchBalance.mockImplementationOnce(() => {
-      return getValidFetchBalanceResponse(totalEquity)
+      return getValidFetchBalanceResponse(
+        totalEquityInUsd,
+        usedCollateralInBtcAfterOrder,
+        totalCollateralInBtc,
+      )
     })
     if (isFundTransferExpected) {
       if (isTransferWithdraw) {

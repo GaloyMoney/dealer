@@ -20,7 +20,14 @@ export enum SupportedExchange {
 }
 export enum SupportedInstrument {
   OKEX_PERPETUAL_SWAP = "BTC-USD-SWAP",
-  OKEX_BTC_USD_SPOT = "BTC/USDT",
+  OKEX_BTC_USD_SPOT = "BTC-USD",
+}
+
+export enum SupportedInstrumentType {
+  Margin = "MARGIN",
+  Swap = "SWAP",
+  Futures = "FUTURES",
+  Option = "OPTION",
 }
 
 export interface ExchangeConfiguration {

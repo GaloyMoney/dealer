@@ -36,6 +36,12 @@ export enum MarginMode {
   Cross = "cross",
 }
 
+export enum DestinationAddressType {
+  OKCoin = 2,
+  OKEx = 3,
+  External = 4,
+}
+
 const hedgingBounds = yamlConfig.hedging
 
 export class OkexExchangeConfiguration implements ExchangeConfiguration {
@@ -49,7 +55,7 @@ export class OkexExchangeConfiguration implements ExchangeConfiguration {
     this.exchangeId = SupportedExchange.OKEX5
     this.instrumentId = SupportedInstrument.OKEX_PERPETUAL_SWAP
     this.positionMode = PositionMode.Net
-    this.marginMode = MarginMode.Isolated
+    this.marginMode = MarginMode.Cross
     this.leverage = hedgingBounds.HIGH_BOUND_LEVERAGE
   }
 
@@ -235,8 +241,14 @@ export class OkexExchangeConfiguration implements ExchangeConfiguration {
       ApiError.MISSING_ACCOUNT_VALUE,
     )
 
+    let notionalLever = 0
+    if (response?.info?.data?.[0]?.details?.[0]?.notionalLever) {
+      notionalLever = Number(response?.info?.data?.[0]?.details?.[0]?.notionalLever)
+    }
+
     return {
       originalResponseAsIs: response,
+      notionalLever: notionalLever,
       btcFreeBalance: response?.BTC?.free,
       btcUsedBalance: response?.BTC?.used,
       btcTotalBalance: response?.BTC?.total,
@@ -254,20 +266,29 @@ export class OkexExchangeConfiguration implements ExchangeConfiguration {
     assert(response, ApiError.EMPTY_API_RESPONSE)
     assert(response.last, ApiError.UNSUPPORTED_API_RESPONSE)
     assert(response.notionalUsd, ApiError.UNSUPPORTED_API_RESPONSE)
-    assert(response.margin, ApiError.UNSUPPORTED_API_RESPONSE)
+    assert(response.margin || response.imr, ApiError.UNSUPPORTED_API_RESPONSE)
     const numberRegex = /-?(?=[1-9]|0(?!\d))\d+(\.\d+)?([eE][+-]?\d+)?/
     assert(typeof response.last === "string", ApiError.UNSUPPORTED_API_RESPONSE)
     assert.match(response.last, numberRegex, ApiError.UNSUPPORTED_API_RESPONSE)
     assert(typeof response.notionalUsd === "string", ApiError.UNSUPPORTED_API_RESPONSE)
     assert.match(response.notionalUsd, numberRegex, ApiError.UNSUPPORTED_API_RESPONSE)
-    assert(typeof response.margin === "string", ApiError.UNSUPPORTED_API_RESPONSE)
-    assert.match(response.margin, numberRegex, ApiError.UNSUPPORTED_API_RESPONSE)
+
+    let margin = 0
+    if (response.margin) {
+      assert(typeof response.margin === "string", ApiError.UNSUPPORTED_API_RESPONSE)
+      assert.match(response.margin, numberRegex, ApiError.UNSUPPORTED_API_RESPONSE)
+      margin = Number(response.margin)
+    } else {
+      assert(typeof response.imr === "string", ApiError.UNSUPPORTED_API_RESPONSE)
+      assert.match(response.imr, numberRegex, ApiError.UNSUPPORTED_API_RESPONSE)
+      margin = Number(response.imr)
+    }
 
     return {
       originalResponseAsIs: response,
       last: Number(response.last),
       notionalUsd: Number(response.notionalUsd),
-      margin: Number(response.margin),
+      margin: margin,
 
       autoDeleveragingIndicator: Number(response.adl),
       liquidationPrice: Number(response.liqPx),
