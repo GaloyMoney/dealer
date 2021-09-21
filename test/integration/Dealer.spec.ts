@@ -116,7 +116,7 @@ async function executeScenario(scenarioFilePath: string) {
 }
 
 describe("Dealer", () => {
-  describe.only("first scenario", () => {
+  describe("first scenario", () => {
     it("should execute successfully scenario 01", async () => {
       await executeScenario(SCENARIO_FILE_PATH.SCENARIO_01)
     })
@@ -129,7 +129,7 @@ describe("Dealer", () => {
     it("should execute successfully scenario 04", async () => {
       await executeScenario(SCENARIO_FILE_PATH.SCENARIO_04)
     })
-    it.only("should execute successfully scenario 05", async () => {
+    it("should execute successfully scenario 05", async () => {
       await executeScenario(SCENARIO_FILE_PATH.SCENARIO_05)
     })
   })
