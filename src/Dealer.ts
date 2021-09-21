@@ -193,14 +193,6 @@ export class Dealer {
           { activeStrategy: this.strategy.name, originalPosition, updatedPosition },
           "The {activeStrategy} was successful at UpdatePosition()",
         )
-        logger.debug(
-          { activeStrategy: this.strategy.name, originalPosition },
-          "Position BEFORE {activeStrategy} executed UpdatePosition()",
-        )
-        logger.debug(
-          { activeStrategy: this.strategy.name, updatedPosition },
-          "Position AFTER {activeStrategy} executed UpdatePosition()",
-        )
       } else {
         logger.error(
           { activeStrategy: this.strategy.name, updatedPosition: updatedPositionResult },
