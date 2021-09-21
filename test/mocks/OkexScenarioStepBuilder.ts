@@ -344,13 +344,13 @@ export class OkexScenarioStepBuilder {
         )
       })
       if (isOrderExpected) {
-        expectedResult.exchangeMockStats.publicGetPublicInstruments++
-        exchangeMock.publicGetPublicInstruments.mockImplementationOnce(
-          ({ instType, instId }) => {
-            return getValidPublicGetPublicInstrumentsResponse({ instType, instId })
-          },
-        )
         if (isOrderSizeOk) {
+          expectedResult.exchangeMockStats.publicGetPublicInstruments++
+          exchangeMock.publicGetPublicInstruments.mockImplementationOnce(
+            ({ instType, instId }) => {
+              return getValidPublicGetPublicInstrumentsResponse({ instType, instId })
+            },
+          )
           expectedResult.exchangeMockStats.createMarketOrder++
           exchangeMock.createMarketOrder.mockImplementationOnce(
             /* eslint-disable */
@@ -400,18 +400,18 @@ export class OkexScenarioStepBuilder {
                 totalCollateralInBtc,
               )
             })
-            // If exposureRatio AfterOrder outside bounds
-            if (
-              exposureRatioAfterOrder < hedgingBounds.LOW_BOUND_RATIO_SHORTING ||
-              exposureRatioAfterOrder > hedgingBounds.HIGH_BOUND_RATIO_SHORTING
-            ) {
-              expectedResult.exchangeMockStats.publicGetPublicInstruments++
-              exchangeMock.publicGetPublicInstruments.mockImplementationOnce(
-                ({ instType, instId }) => {
-                  return getValidPublicGetPublicInstrumentsResponse({ instType, instId })
-                },
-              )
-            }
+            // // If exposureRatio AfterOrder outside bounds
+            // if (
+            //   exposureRatioAfterOrder < hedgingBounds.LOW_BOUND_RATIO_SHORTING ||
+            //   exposureRatioAfterOrder > hedgingBounds.HIGH_BOUND_RATIO_SHORTING
+            // ) {
+            //   expectedResult.exchangeMockStats.publicGetPublicInstruments++
+            //   exchangeMock.publicGetPublicInstruments.mockImplementationOnce(
+            //     ({ instType, instId }) => {
+            //       return getValidPublicGetPublicInstrumentsResponse({ instType, instId })
+            //     },
+            //   )
+            // }
           }
         }
       }
