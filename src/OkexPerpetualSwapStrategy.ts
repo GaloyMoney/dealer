@@ -461,7 +461,11 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
       let tradeSide: TradeSide = TradeSide.NoTrade
       const exposureRatio = exposureInUsd / liabilityInUsd
 
-      if (exposureRatio < hedgingBounds.LOW_BOUND_RATIO_SHORTING) {
+      if (liabilityInUsd >= 0 && liabilityInUsd < hedgingBounds.CONTRACT_FACE_VALUE / 2) {
+        const newExposureInUsd = 0
+        orderSizeInUsd = exposureInUsd - newExposureInUsd
+        tradeSide = TradeSide.Buy
+      } else if (exposureRatio < hedgingBounds.LOW_BOUND_RATIO_SHORTING) {
         const newExposureInUsd =
           liabilityInUsd * hedgingBounds.LOW_SAFEBOUND_RATIO_SHORTING
         orderSizeInUsd = newExposureInUsd - exposureInUsd
@@ -683,12 +687,6 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
       const liabilityRatio = liabilityInUsd / totalCollateralInUsd
       const leverageRatio = exposureInUsd / totalCollateralInUsd
       const marginRatio = totalCollateralInUsd / usedCollateralInUsd
-      console.log(
-        `leverageRatio = exposureInUsd / totalCollateralInUsd : ${leverageRatio} = ${exposureInUsd} / ${totalCollateralInUsd}`,
-      )
-      console.log(
-        `marginRatio = totalCollateralInUsd / usedCollateralInUsd : ${marginRatio} = ${totalCollateralInUsd} / ${usedCollateralInUsd}`,
-      )
 
       const result: GetRebalanceTransferResult = {
         in: {
@@ -709,9 +707,11 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
         },
       }
 
-      // console.log(`getRebalanceTransferIfNeeded results = ${JSON.stringify(result)}`)
-
-      if (exposureInUsd === 0 && totalCollateralInUsd === 0 && liabilityInUsd > 0) {
+      if (
+        exposureInUsd === 0 &&
+        totalCollateralInUsd === 0 &&
+        liabilityInUsd > hedgingBounds.CONTRACT_FACE_VALUE / 2
+      ) {
         // Liability, no exposure and no collateral yet,
         // deposit initial funds to the level of the liability
         const newCollateralInUsd = liabilityInUsd / hedgingBounds.HIGH_SAFEBOUND_LEVERAGE
@@ -727,7 +727,8 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
         )
       } else if (
         exposureInUsd === 0 &&
-        liabilityInUsd > 0 &&
+        totalCollateralInUsd > 0 &&
+        liabilityInUsd >= 0 &&
         liabilityInUsd < hedgingBounds.MINIMUM_TRANSFER_AMOUNT_USD
       ) {
         // No exposure and no liability worth hedging, redraw all
@@ -746,14 +747,8 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
         exposureInUsd <
         totalCollateralInUsd * hedgingBounds.LOW_BOUND_LEVERAGE
       ) {
-        console.log(
-          `exposureInUsd < totalCollateralInUsd * hedgingBounds.LOW_BOUND_LEVERAGE : ${exposureInUsd} < ${totalCollateralInUsd} * ${hedgingBounds.LOW_BOUND_LEVERAGE}`,
-        )
-
-        // console.log("in 2nd if condition")
         const newCollateralInUsd = exposureInUsd / hedgingBounds.LOW_SAFEBOUND_LEVERAGE
         const transferSizeInUsd = totalCollateralInUsd - newCollateralInUsd
-        // if (transferSizeInUsd > hedgingBounds.MINIMUM_TRANSFER_AMOUNT_USD) {
         result.out.transferSizeInUsd = transferSizeInUsd
         result.out.fundTransferSide = FundTransferSide.Withdraw
         result.out.newLiabilityRatio = liabilityInUsd / newCollateralInUsd
@@ -762,18 +757,12 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
         result.out.transferSizeInBtc = roundBtc(
           result.out.transferSizeInUsd / btcPriceInUsd,
         )
-        // }
       } else if (
         exposureInUsd >
         totalCollateralInUsd * hedgingBounds.HIGH_BOUND_LEVERAGE
       ) {
-        console.log(
-          `exposureInUsd > totalCollateralInUsd * hedgingBounds.HIGH_BOUND_LEVERAGE : ${exposureInUsd} > ${totalCollateralInUsd} * ${hedgingBounds.HIGH_BOUND_LEVERAGE}`,
-        )
-        // console.log("in 3rd if condition")
         const newCollateralInUsd = exposureInUsd / hedgingBounds.HIGH_SAFEBOUND_LEVERAGE
         const transferSizeInUsd = newCollateralInUsd - totalCollateralInUsd
-        // if (transferSizeInUsd > hedgingBounds.MINIMUM_TRANSFER_AMOUNT_USD) {
         result.out.transferSizeInUsd = transferSizeInUsd
         result.out.fundTransferSide = FundTransferSide.Deposit
         result.out.newLiabilityRatio = liabilityInUsd / newCollateralInUsd
@@ -782,15 +771,10 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
         result.out.transferSizeInBtc = roundBtc(
           result.out.transferSizeInUsd / btcPriceInUsd,
         )
-        // }
       } else if (
         totalCollateralInUsd <
         usedCollateralInUsd * hedgingBounds.LOW_BOUND_LEVERAGE
       ) {
-        console.log(
-          `totalCollateralInUsd < usedCollateralInUsd * hedgingBounds.LOW_BOUND_LEVERAGE : ${totalCollateralInUsd} < ${usedCollateralInUsd} * ${hedgingBounds.LOW_BOUND_LEVERAGE}`,
-        )
-        console.log("in 4th if condition")
         const transferSizeInUsd =
           hedgingBounds.LOW_SAFEBOUND_LEVERAGE * usedCollateralInUsd -
           totalCollateralInUsd
