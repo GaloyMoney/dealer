@@ -17,21 +17,6 @@ type LnInvoiceObject = {
   paymentRequest: string
 }
 
-const LN_NOAMOUNT_INVOICE_CREATE_ON_BEHALF_OF_RECIPIENT = gql`
-  mutation lnNoAmountInvoiceCreateOnBehalfOfRecipient($walletName: WalletName!) {
-    mutationData: lnNoAmountInvoiceCreateOnBehalfOfRecipient(
-      input: { recipient: $walletName }
-    ) {
-      errors {
-        message
-      }
-      invoice {
-        paymentRequest
-      }
-    }
-  }
-`
-
 const LN_INVOICE_CREATE_ON_BEHALF_OF_RECIPIENT = gql`
   mutation lnInvoiceCreateOnBehalfOfRecipient(
     $walletName: WalletName!
@@ -60,35 +45,24 @@ function uiErrorMessage(errorMessage: string) {
   }
 }
 
-export default function Receive({
+export default function ReceiveAmount({
   username,
   amount,
 }: {
   username: string
-  amount?: number
+  amount: number
 }) {
-  let createInvoiceType
-  if (amount === undefined)
-    createInvoiceType = LN_NOAMOUNT_INVOICE_CREATE_ON_BEHALF_OF_RECIPIENT
-  else createInvoiceType = LN_INVOICE_CREATE_ON_BEHALF_OF_RECIPIENT
-
   const [createInvoice, { loading, error, data }] = useMutation<{
     mutationData: {
       errors: OperationError[]
       invoice?: LnInvoiceObject
     }
-  }>(createInvoiceType)
+  }>(LN_INVOICE_CREATE_ON_BEHALF_OF_RECIPIENT)
 
   useEffect(() => {
-    if (amount === undefined) {
-      createInvoice({
-        variables: { walletName: username },
-      })
-    } else {
-      createInvoice({
-        variables: { walletName: username, amount: amount },
-      })
-    }
+    createInvoice({
+      variables: { walletName: username, amount: amount },
+    })
   }, [createInvoice, username, amount])
 
   if (error) {
@@ -115,13 +89,9 @@ export default function Receive({
       <Row className="justify-content-md-center">
         <Col md="auto" style={{ padding: 0 }}>
           <Card className="text-center">
-            {amount ? (
-              <Card.Header>
-                Pay {username} {amount} Sats
-              </Card.Header>
-            ) : (
-              <Card.Header>Pay {username}</Card.Header>
-            )}
+            <Card.Header>
+              Pay {username} {amount} Sats
+            </Card.Header>
 
             {errorMessage && <div className="error">{uiErrorMessage(errorMessage)}</div>}
 
