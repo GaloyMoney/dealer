@@ -1,7 +1,6 @@
 import "bootstrap/dist/css/bootstrap.min.css"
 import Home from "./components/home"
-import ReceiveNoAmount from "./components/receiveNoAmount"
-import ReceiveAmount from "./components/receiveAmount"
+import Receive from "./components/receive"
 import PrintQR from "./components/printQR"
 import DownloadApp from "./components/downloadApp"
 import { useRoutes } from "hookrouter"
@@ -13,11 +12,9 @@ const routes = {
   "/:username/print": ({ username }: { username: string }) => (
     <PrintQR username={username} />
   ),
-  "/:username": ({ username }: { username: string }) => (
-    <ReceiveNoAmount username={username} />
-  ),
+  "/:username": ({ username }: { username: string }) => <Receive username={username} />,
   "/:username/:amount": ({ username, amount }: { username: string; amount: number }) => (
-    <ReceiveAmount username={username} amount={amount} />
+    <Receive username={username} amount={amount} />
   ),
 }
 
