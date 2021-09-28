@@ -1,7 +1,7 @@
 import { baseLogger } from "src/services/logger"
-import { InFlightTransfersRepository } from "../../src/database/repositories"
-import { InFlightTransfer } from "../../src/database/models"
-import { db, pgp } from "../../src/database"
+import { InFlightTransfersRepository } from "src/database/repositories"
+import { InFlightTransfer } from "src/database/models"
+import { db, pgp } from "src/database"
 
 describe("InFlightTransfersRepository", () => {
   describe("insertInFlightTransfer", () => {
