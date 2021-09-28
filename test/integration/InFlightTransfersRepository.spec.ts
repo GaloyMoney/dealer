@@ -4,7 +4,7 @@ import { InFlightTransfer } from "../../src/database/models"
 import { db, pgp } from "../../src/database"
 
 describe("InFlightTransfersRepository", () => {
-  describe.skip("insertInFlightTransfer", () => {
+  describe("insertInFlightTransfer", () => {
     it("should create a row in the database table", async () => {
       const aTransfer: InFlightTransfer = {
         isDepositOnExchange: false,
@@ -70,7 +70,7 @@ describe("InFlightTransfersRepository", () => {
       expect(result.value.isCompleted).toBe(aTransfer.isCompleted)
     })
   })
-  describe.skip("completedInFlightTransfer", () => {
+  describe("completedInFlightTransfer", () => {
     it("should update one row in the database table", async () => {
       // clear db
       const clearResult = await db.inFlightTransfers.clearAllInFlightTransfers()
@@ -157,8 +157,8 @@ describe("InFlightTransfersRepository", () => {
       expect(result.ok).toBeFalsy()
     })
   })
-  describe.only("getAllInFlightTransfers", () => {
-    it.only("should retrieve zero rows from the database table", async () => {
+  describe("getAllInFlightTransfers", () => {
+    it("should retrieve zero rows from the database table", async () => {
       // clear db
       const clearResult = await db.inFlightTransfers.clearAllInFlightTransfers()
       expect(clearResult).toBeTruthy()
@@ -207,9 +207,14 @@ describe("InFlightTransfersRepository", () => {
       expect(result.value.size).toBe(1)
 
       const localTx = transfers[0]
-      const dcTx = result.value.values()[0]
+      const dcTxs = result.value.get(localTx.address)
 
       // validate existing data
+      expect(dcTxs).toBeTruthy()
+      if (!dcTxs) {
+        return
+      }
+      const dcTx = dcTxs[0]
       expect(dcTx.isDepositOnExchange).toBe(localTx.isDepositOnExchange)
       expect(dcTx.address).toBe(localTx.address)
       expect(dcTx.transferSizeInSats).toBe(localTx.transferSizeInSats)
@@ -262,7 +267,7 @@ describe("InFlightTransfersRepository", () => {
       expect(result.value.size).toBeGreaterThan(1)
     })
   })
-  describe.skip("clearAllInFlightTransfers", () => {
+  describe("clearAllInFlightTransfers", () => {
     it("should truncate all rows from the database table", async () => {
       // insert dummy data
       const transfers: InFlightTransfer[] = [
@@ -302,11 +307,10 @@ describe("InFlightTransfersRepository", () => {
       if (!getResult.ok) {
         return
       }
-      expect(result.value).toBeTruthy()
-      expect(getResult.value.size).toBe(0)
+      expect(result.value).toBeFalsy()
     })
   })
-  describe.skip("getThisInFlightTransfer", () => {
+  describe("getThisInFlightTransfer", () => {
     it("should retrieve one specific row from the database table", async () => {
       // clear db
       const clearResult = await db.inFlightTransfers.clearAllInFlightTransfers()
@@ -364,7 +368,7 @@ describe("InFlightTransfersRepository", () => {
       expect(dcTx.createdTimestamp).toBe(dcTx.updatedTimestamp)
     })
   })
-  describe.skip("getPendingDepositInFlightTransfers", () => {
+  describe("getPendingDepositInFlightTransfers", () => {
     it("should retrieve only pending deposit rows from the database table", async () => {
       // clear db
       const clearResult = await db.inFlightTransfers.clearAllInFlightTransfers()
@@ -419,9 +423,14 @@ describe("InFlightTransfersRepository", () => {
       expect(result.value.size).toBe(1)
 
       const localTx = transfers[2]
-      const dcTx = result.value.values()[0]
+      const dcTxs = result.value.get(localTx.address)
 
       // validate existing data
+      expect(dcTxs).toBeTruthy()
+      if (!dcTxs) {
+        return
+      }
+      const dcTx = dcTxs[0]
       expect(dcTx.isDepositOnExchange).toBe(localTx.isDepositOnExchange)
       expect(dcTx.address).toBe(localTx.address)
       expect(dcTx.transferSizeInSats).toBe(localTx.transferSizeInSats)
@@ -435,7 +444,7 @@ describe("InFlightTransfersRepository", () => {
       expect(dcTx.createdTimestamp).toBe(dcTx.updatedTimestamp)
     })
   })
-  describe.skip("getPendingWithdrawInFlightTransfers", () => {
+  describe("getPendingWithdrawInFlightTransfers", () => {
     it("should retrieve only pending withdraw rows from the database table", async () => {
       // clear db
       const clearResult = await db.inFlightTransfers.clearAllInFlightTransfers()
@@ -490,9 +499,14 @@ describe("InFlightTransfersRepository", () => {
       expect(result.value.size).toBe(1)
 
       const localTx = transfers[0]
-      const dcTx = result.value.values()[0]
+      const dcTxs = result.value.get(localTx.address)
 
       // validate existing data
+      expect(dcTxs).toBeTruthy()
+      if (!dcTxs) {
+        return
+      }
+      const dcTx = dcTxs[0]
       expect(dcTx.isDepositOnExchange).toBe(localTx.isDepositOnExchange)
       expect(dcTx.address).toBe(localTx.address)
       expect(dcTx.transferSizeInSats).toBe(localTx.transferSizeInSats)
