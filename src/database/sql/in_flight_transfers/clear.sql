@@ -1,1 +1,1 @@
-truncate table dealer.in_flight cascade
+TRUNCATE TABLE dealer.in_flight CASCADE

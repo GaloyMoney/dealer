@@ -1,5 +1,5 @@
-select * 
-from dealer.in_flight 
-where address = ${address}
-order by updated_timestamp desc
-limit 1
+SELECT * 
+FROM dealer.in_flight 
+WHERE address = ${address}
+ORDER BY updated_timestamp DESC
+LIMIT 1

@@ -1,3 +1,3 @@
-select * 
-from dealer.in_flight 
-order by updated_timestamp desc
+SELECT * 
+FROM dealer.in_flight 
+ORDER BY updated_timestamp DESC
