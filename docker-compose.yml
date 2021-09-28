@@ -83,7 +83,7 @@ services:
     ports:
       - "5432:5432"
     volumes: 
-      - ./postgresdata:/var/lib/postgresql/data
+      - ../postgresdata:/var/lib/postgresql/data
     restart: always
     environment:
       POSTGRES_USER: postgres
