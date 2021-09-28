@@ -12,17 +12,28 @@ export class InFlightTransfersRepository {
     this.logger = logger.child({ class: InFlightTransfersRepository.name })
   }
 
+  private static transferSizeInSatsAsInteger(
+    transfer: InFlightTransfer,
+  ): InFlightTransfer {
+    transfer.transferSizeInSats = parseInt(`${transfer.transferSizeInSats}`)
+    return transfer
+  }
+
   public async insertInFlightTransfer(
     transfer: InFlightTransfer,
   ): Promise<Result<InFlightTransfer>> {
     try {
-      const result = await this.db.one(sql.insert, {
-        isDepositOnExchange: transfer.isDepositOnExchange,
-        address: transfer.address,
-        transferSizeInSats: transfer.transferSizeInSats,
-        memo: transfer.memo,
-        isCompleted: transfer.isCompleted,
-      })
+      const result = await this.db.one(
+        sql.insert,
+        {
+          isDepositOnExchange: transfer.isDepositOnExchange,
+          address: transfer.address,
+          transferSizeInSats: transfer.transferSizeInSats,
+          memo: transfer.memo,
+          isCompleted: transfer.isCompleted,
+        },
+        InFlightTransfersRepository.transferSizeInSatsAsInteger,
+      )
       this.logger.info(
         { transfer, result },
         "insertInFlightTransfer({transfer}) returned: {result}.",
@@ -39,11 +50,9 @@ export class InFlightTransfersRepository {
 
   public async completedInFlightTransfer(address: string): Promise<Result<number>> {
     try {
-      const rowCount = await this.db.result(
-        sql.complete,
-        { address },
-        (r: IResult) => r.rowCount,
-      )
+      const rowCount = await this.db.tx("update-completed", async (t) => {
+        return await this.db.result(sql.complete, { address }, (r: IResult) => r.rowCount)
+      })
       if (rowCount !== 1) {
         throw new Error(`completedInFlightTransfer({address}) updated ${rowCount} rows.`)
       }
@@ -63,9 +72,13 @@ export class InFlightTransfersRepository {
 
   public async getThisInFlightTransfer(
     address: string,
-  ): Promise<Result<InFlightTransfer>> {
+  ): Promise<Result<InFlightTransfer[]>> {
     try {
-      const result = await this.db.oneOrNone(sql.get_this, { address })
+      const result = await this.db.each(
+        sql.get_this,
+        { address },
+        InFlightTransfersRepository.transferSizeInSatsAsInteger,
+      )
       this.logger.info(
         { address, result },
         "getThisInFlightTransfer({address}) returned: {result}.",
@@ -84,7 +97,11 @@ export class InFlightTransfersRepository {
     Result<Map<string, InFlightTransfer[]>>
   > {
     try {
-      const result = await this.db.manyOrNone(sql.get_pending_deposit)
+      const result = await this.db.each(
+        sql.get_pending_deposit,
+        [],
+        InFlightTransfersRepository.transferSizeInSatsAsInteger,
+      )
       this.logger.info(
         { result },
         "getPendingDepositInFlightTransfers() returned: {result}.",
@@ -110,7 +127,11 @@ export class InFlightTransfersRepository {
     Result<Map<string, InFlightTransfer[]>>
   > {
     try {
-      const result = await this.db.manyOrNone(sql.get_pending_withdraw)
+      const result = await this.db.each(
+        sql.get_pending_withdraw,
+        [],
+        InFlightTransfersRepository.transferSizeInSatsAsInteger,
+      )
       this.logger.info(
         { result },
         "getPendingWithdrawInFlightTransfers() returned: {result}.",
@@ -127,7 +148,11 @@ export class InFlightTransfersRepository {
     Result<Map<string, InFlightTransfer[]>>
   > {
     try {
-      const result = await this.db.manyOrNone(sql.get_all)
+      const result = await this.db.each(
+        sql.get_all,
+        [],
+        InFlightTransfersRepository.transferSizeInSatsAsInteger,
+      )
       this.logger.info({ result }, "getAllInFlightTransfers() returned: {result}.")
       const transfers = InFlightTransfersRepository.arrayToMap(result)
       return { ok: true, value: transfers }
