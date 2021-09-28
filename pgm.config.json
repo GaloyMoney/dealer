@@ -1,0 +1,6 @@
+{
+    "db": {
+        "migration-filename-format": "utc",
+        "migration-file-language": "sql"
+    }
+}
