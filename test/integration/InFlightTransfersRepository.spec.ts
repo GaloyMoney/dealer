@@ -11,7 +11,7 @@ describe("InFlightTransfersRepository", () => {
         memo: "tx01",
         isCompleted: false,
       }
-      const result = await db.inFlightTransfers.insertInFlightTransfer(aTransfer)
+      const result = await db.inFlightTransfers.insert(aTransfer)
       expect(result).toBeTruthy()
       expect(result.ok).toBeTruthy()
       if (!result.ok) {
@@ -39,7 +39,7 @@ describe("InFlightTransfersRepository", () => {
         memo: "tx02",
         isCompleted: false,
       }
-      const result = await db.inFlightTransfers.insertInFlightTransfer(aTransfer)
+      const result = await db.inFlightTransfers.insert(aTransfer)
       expect(result).toBeTruthy()
       expect(result.ok).toBeTruthy()
       if (!result.ok) {
@@ -57,7 +57,7 @@ describe("InFlightTransfersRepository", () => {
         memo: "tx03",
         isCompleted: true,
       }
-      const result = await db.inFlightTransfers.insertInFlightTransfer(aTransfer)
+      const result = await db.inFlightTransfers.insert(aTransfer)
       expect(result).toBeTruthy()
       expect(result.ok).toBeTruthy()
       if (!result.ok) {
@@ -71,7 +71,7 @@ describe("InFlightTransfersRepository", () => {
   describe("completedInFlightTransfer", () => {
     it("should update one row in the database table", async () => {
       // clear db
-      const clearResult = await db.inFlightTransfers.clearAllInFlightTransfers()
+      const clearResult = await db.inFlightTransfers.clearAll()
       expect(clearResult).toBeTruthy()
       expect(clearResult.ok).toBeTruthy()
 
@@ -83,14 +83,12 @@ describe("InFlightTransfersRepository", () => {
         memo: "tx01",
         isCompleted: false,
       }
-      const insertResult = await db.inFlightTransfers.insertInFlightTransfer(aTransfer)
+      const insertResult = await db.inFlightTransfers.insert(aTransfer)
       expect(insertResult).toBeTruthy()
       expect(insertResult.ok).toBeTruthy()
 
       // test functionality
-      const result = await db.inFlightTransfers.completedInFlightTransfer(
-        aTransfer.address,
-      )
+      const result = await db.inFlightTransfers.completed(aTransfer.address)
       expect(result).toBeTruthy()
       expect(result.ok).toBeTruthy()
       if (!result.ok) {
@@ -100,7 +98,7 @@ describe("InFlightTransfersRepository", () => {
     })
     it("should update zero row in the database table and error out", async () => {
       // clear db
-      const clearResult = await db.inFlightTransfers.clearAllInFlightTransfers()
+      const clearResult = await db.inFlightTransfers.clearAll()
       expect(clearResult).toBeTruthy()
       expect(clearResult.ok).toBeTruthy()
 
@@ -112,20 +110,18 @@ describe("InFlightTransfersRepository", () => {
         memo: "tx01",
         isCompleted: true,
       }
-      const insertResult = await db.inFlightTransfers.insertInFlightTransfer(aTransfer)
+      const insertResult = await db.inFlightTransfers.insert(aTransfer)
       expect(insertResult).toBeTruthy()
       expect(insertResult.ok).toBeTruthy()
 
       // test functionality
-      const result = await db.inFlightTransfers.completedInFlightTransfer(
-        aTransfer.address,
-      )
+      const result = await db.inFlightTransfers.completed(aTransfer.address)
       expect(result).toBeTruthy()
       expect(result.ok).toBeFalsy()
     })
     it("should update more than one row in the database table and error out", async () => {
       // clear db
-      const clearResult = await db.inFlightTransfers.clearAllInFlightTransfers()
+      const clearResult = await db.inFlightTransfers.clearAll()
       expect(clearResult).toBeTruthy()
       expect(clearResult.ok).toBeTruthy()
 
@@ -137,20 +133,18 @@ describe("InFlightTransfersRepository", () => {
         memo: "tx01",
         isCompleted: false,
       }
-      let insertResult = await db.inFlightTransfers.insertInFlightTransfer(aTransfer)
+      let insertResult = await db.inFlightTransfers.insert(aTransfer)
       expect(insertResult).toBeTruthy()
       expect(insertResult.ok).toBeTruthy()
       // a second time
       aTransfer.transferSizeInSats = 123402
       aTransfer.memo = "tx02"
-      insertResult = await db.inFlightTransfers.insertInFlightTransfer(aTransfer)
+      insertResult = await db.inFlightTransfers.insert(aTransfer)
       expect(insertResult).toBeTruthy()
       expect(insertResult.ok).toBeTruthy()
 
       // test functionality
-      const result = await db.inFlightTransfers.completedInFlightTransfer(
-        aTransfer.address,
-      )
+      const result = await db.inFlightTransfers.completed(aTransfer.address)
       expect(result).toBeTruthy()
       expect(result.ok).toBeFalsy()
     })
@@ -158,12 +152,12 @@ describe("InFlightTransfersRepository", () => {
   describe("getAllInFlightTransfers", () => {
     it("should retrieve zero rows from the database table", async () => {
       // clear db
-      const clearResult = await db.inFlightTransfers.clearAllInFlightTransfers()
+      const clearResult = await db.inFlightTransfers.clearAll()
       expect(clearResult).toBeTruthy()
       expect(clearResult.ok).toBeTruthy()
 
       // test functionality
-      const result = await db.inFlightTransfers.getAllInFlightTransfers()
+      const result = await db.inFlightTransfers.getAll()
       expect(result).toBeTruthy()
       expect(result.ok).toBeTruthy()
       if (!result.ok) {
@@ -174,7 +168,7 @@ describe("InFlightTransfersRepository", () => {
     })
     it("should retrieve one rows from the database table", async () => {
       // clear db
-      const clearResult = await db.inFlightTransfers.clearAllInFlightTransfers()
+      const clearResult = await db.inFlightTransfers.clearAll()
       expect(clearResult).toBeTruthy()
       expect(clearResult.ok).toBeTruthy()
 
@@ -189,13 +183,13 @@ describe("InFlightTransfersRepository", () => {
         },
       ]
       for (const transfer of transfers) {
-        const insertResult = await db.inFlightTransfers.insertInFlightTransfer(transfer)
+        const insertResult = await db.inFlightTransfers.insert(transfer)
         expect(insertResult).toBeTruthy()
         expect(insertResult.ok).toBeTruthy()
       }
 
       // test functionality
-      const result = await db.inFlightTransfers.getAllInFlightTransfers()
+      const result = await db.inFlightTransfers.getAll()
       expect(result).toBeTruthy()
       expect(result.ok).toBeTruthy()
       if (!result.ok) {
@@ -227,7 +221,7 @@ describe("InFlightTransfersRepository", () => {
     })
     it("should retrieve more than one rows from the database table", async () => {
       // clear db
-      const clearResult = await db.inFlightTransfers.clearAllInFlightTransfers()
+      const clearResult = await db.inFlightTransfers.clearAll()
       expect(clearResult).toBeTruthy()
       expect(clearResult.ok).toBeTruthy()
 
@@ -249,13 +243,13 @@ describe("InFlightTransfersRepository", () => {
         },
       ]
       for (const transfer of transfers) {
-        const insertResult = await db.inFlightTransfers.insertInFlightTransfer(transfer)
+        const insertResult = await db.inFlightTransfers.insert(transfer)
         expect(insertResult).toBeTruthy()
         expect(insertResult.ok).toBeTruthy()
       }
 
       // test functionality
-      const result = await db.inFlightTransfers.getAllInFlightTransfers()
+      const result = await db.inFlightTransfers.getAll()
       expect(result).toBeTruthy()
       expect(result.ok).toBeTruthy()
       if (!result.ok) {
@@ -285,13 +279,13 @@ describe("InFlightTransfersRepository", () => {
         },
       ]
       for (const transfer of transfers) {
-        const insertResult = await db.inFlightTransfers.insertInFlightTransfer(transfer)
+        const insertResult = await db.inFlightTransfers.insert(transfer)
         expect(insertResult).toBeTruthy()
         expect(insertResult.ok).toBeTruthy()
       }
 
       // test functionality
-      const result = await db.inFlightTransfers.clearAllInFlightTransfers()
+      const result = await db.inFlightTransfers.clearAll()
       expect(result).toBeTruthy()
       expect(result.ok).toBeTruthy()
       if (!result.ok) {
@@ -299,7 +293,7 @@ describe("InFlightTransfersRepository", () => {
       }
 
       // validate
-      const getResult = await db.inFlightTransfers.getAllInFlightTransfers()
+      const getResult = await db.inFlightTransfers.getAll()
       expect(getResult).toBeTruthy()
       expect(getResult.ok).toBeTruthy()
       if (!getResult.ok) {
@@ -311,7 +305,7 @@ describe("InFlightTransfersRepository", () => {
   describe("getThisInFlightTransfer", () => {
     it("should retrieve one specific row from the database table", async () => {
       // clear db
-      const clearResult = await db.inFlightTransfers.clearAllInFlightTransfers()
+      const clearResult = await db.inFlightTransfers.clearAll()
       expect(clearResult).toBeTruthy()
       expect(clearResult.ok).toBeTruthy()
 
@@ -333,15 +327,13 @@ describe("InFlightTransfersRepository", () => {
         },
       ]
       for (const transfer of transfers) {
-        const insertResult = await db.inFlightTransfers.insertInFlightTransfer(transfer)
+        const insertResult = await db.inFlightTransfers.insert(transfer)
         expect(insertResult).toBeTruthy()
         expect(insertResult.ok).toBeTruthy()
       }
 
       // test functionality
-      const result = await db.inFlightTransfers.getThisInFlightTransfer(
-        transfers[0].address,
-      )
+      const result = await db.inFlightTransfers.getThisOne(transfers[0].address)
       expect(result).toBeTruthy()
       expect(result.ok).toBeTruthy()
       if (!result.ok) {
@@ -369,7 +361,7 @@ describe("InFlightTransfersRepository", () => {
   describe("getPendingInFlightTransfers", () => {
     it("should retrieve only pending  rows from the database table", async () => {
       // clear db
-      const clearResult = await db.inFlightTransfers.clearAllInFlightTransfers()
+      const clearResult = await db.inFlightTransfers.clearAll()
       expect(clearResult).toBeTruthy()
       expect(clearResult.ok).toBeTruthy()
 
@@ -405,13 +397,13 @@ describe("InFlightTransfersRepository", () => {
         },
       ]
       for (const transfer of transfers) {
-        const insertResult = await db.inFlightTransfers.insertInFlightTransfer(transfer)
+        const insertResult = await db.inFlightTransfers.insert(transfer)
         expect(insertResult).toBeTruthy()
         expect(insertResult.ok).toBeTruthy()
       }
 
       // test functionality
-      const result = await db.inFlightTransfers.getPendingInFlightTransfers()
+      const result = await db.inFlightTransfers.getPending()
       expect(result).toBeTruthy()
       expect(result.ok).toBeTruthy()
       if (!result.ok) {
@@ -466,7 +458,7 @@ describe("InFlightTransfersRepository", () => {
   describe("getPendingDepositInFlightTransfers", () => {
     it("should retrieve only pending deposit rows from the database table", async () => {
       // clear db
-      const clearResult = await db.inFlightTransfers.clearAllInFlightTransfers()
+      const clearResult = await db.inFlightTransfers.clearAll()
       expect(clearResult).toBeTruthy()
       expect(clearResult.ok).toBeTruthy()
 
@@ -502,13 +494,13 @@ describe("InFlightTransfersRepository", () => {
         },
       ]
       for (const transfer of transfers) {
-        const insertResult = await db.inFlightTransfers.insertInFlightTransfer(transfer)
+        const insertResult = await db.inFlightTransfers.insert(transfer)
         expect(insertResult).toBeTruthy()
         expect(insertResult.ok).toBeTruthy()
       }
 
       // test functionality
-      const result = await db.inFlightTransfers.getPendingDepositInFlightTransfers()
+      const result = await db.inFlightTransfers.getPendingDeposit()
       expect(result).toBeTruthy()
       expect(result.ok).toBeTruthy()
       if (!result.ok) {
@@ -542,7 +534,7 @@ describe("InFlightTransfersRepository", () => {
   describe("getPendingWithdrawInFlightTransfers", () => {
     it("should retrieve only pending withdraw rows from the database table", async () => {
       // clear db
-      const clearResult = await db.inFlightTransfers.clearAllInFlightTransfers()
+      const clearResult = await db.inFlightTransfers.clearAll()
       expect(clearResult).toBeTruthy()
       expect(clearResult.ok).toBeTruthy()
 
@@ -578,13 +570,13 @@ describe("InFlightTransfersRepository", () => {
         },
       ]
       for (const transfer of transfers) {
-        const insertResult = await db.inFlightTransfers.insertInFlightTransfer(transfer)
+        const insertResult = await db.inFlightTransfers.insert(transfer)
         expect(insertResult).toBeTruthy()
         expect(insertResult.ok).toBeTruthy()
       }
 
       // test functionality
-      const result = await db.inFlightTransfers.getPendingWithdrawInFlightTransfers()
+      const result = await db.inFlightTransfers.getPendingWithdraw()
       expect(result).toBeTruthy()
       expect(result.ok).toBeTruthy()
       if (!result.ok) {

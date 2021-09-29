@@ -12,16 +12,7 @@ export class InFlightTransfersRepository {
     this.logger = logger.child({ class: InFlightTransfersRepository.name })
   }
 
-  private static transferSizeInSatsAsInteger(
-    transfer: InFlightTransfer,
-  ): InFlightTransfer {
-    transfer.transferSizeInSats = parseInt(`${transfer.transferSizeInSats}`)
-    return transfer
-  }
-
-  public async insertInFlightTransfer(
-    transfer: InFlightTransfer,
-  ): Promise<Result<InFlightTransfer>> {
+  public async insert(transfer: InFlightTransfer): Promise<Result<InFlightTransfer>> {
     try {
       const result = await this.db.one(
         sql.insert,
@@ -48,7 +39,7 @@ export class InFlightTransfersRepository {
     }
   }
 
-  public async completedInFlightTransfer(address: string): Promise<Result<number>> {
+  public async completed(address: string): Promise<Result<number>> {
     try {
       const rowCount = await this.db.tx("update-completed", async (t) => {
         return await t.result(sql.complete, { address }, (r: IResult) => r.rowCount)
@@ -70,9 +61,7 @@ export class InFlightTransfersRepository {
     }
   }
 
-  public async getThisInFlightTransfer(
-    address: string,
-  ): Promise<Result<InFlightTransfer[]>> {
+  public async getThisOne(address: string): Promise<Result<InFlightTransfer[]>> {
     try {
       const result = await this.db.each(
         sql.get_this,
@@ -93,16 +82,14 @@ export class InFlightTransfersRepository {
     }
   }
 
-  public async getPendingInFlightTransfers(): Promise<
-    Result<Map<string, InFlightTransfer[]>>
-  > {
+  public async getPending(): Promise<Result<Map<string, InFlightTransfer[]>>> {
     try {
       const result = await this.db.each(
         sql.get_pending,
         [],
         InFlightTransfersRepository.transferSizeInSatsAsInteger,
       )
-      this.logger.info({ result }, "getPendingInFlightTransfers() returned: {result}.")
+      this.logger.info({ result }, "getPending() returned: {result}.")
 
       const transfers = new Map<string, InFlightTransfer[]>()
       for (const transfer of result) {
@@ -115,43 +102,35 @@ export class InFlightTransfersRepository {
 
       return { ok: true, value: transfers }
     } catch (error) {
-      this.logger.error({ error }, "Error: getPendingInFlightTransfers() failed.")
+      this.logger.error({ error }, "Error: getPending() failed.")
       return { ok: false, error: error }
     }
   }
 
-  public async getPendingInFlightTransfersCount(): Promise<Result<number>> {
+  public async getPendingCount(): Promise<Result<number>> {
     try {
       const rowCount = await this.db.one(
         sql.get_pending_count,
         [],
         (a: { count: string }) => +a.count,
       )
-      this.logger.info(
-        { rowCount },
-        "getPendingInFlightTransfersCount() returned: {result}.",
-      )
+      this.logger.info({ rowCount }, "getPendingCount() returned: {result}.")
 
       return { ok: true, value: rowCount }
     } catch (error) {
-      this.logger.error({ error }, "Error: getPendingInFlightTransfersCount() failed.")
+      this.logger.error({ error }, "Error: getPendingCount() failed.")
       return { ok: false, error: error }
     }
   }
 
-  public async getPendingDepositInFlightTransfers(): Promise<
-    Result<Map<string, InFlightTransfer[]>>
-  > {
+  public async getPendingDeposit(): Promise<Result<Map<string, InFlightTransfer[]>>> {
     try {
       const result = await this.db.each(
         sql.get_pending_deposit,
         [],
         InFlightTransfersRepository.transferSizeInSatsAsInteger,
       )
-      this.logger.info(
-        { result },
-        "getPendingDepositInFlightTransfers() returned: {result}.",
-      )
+      this.logger.info({ result }, "getPendingDeposit() returned: {result}.")
 
       const transfers = new Map<string, InFlightTransfer[]>()
       for (const transfer of result) {
@@ -164,58 +143,58 @@ export class InFlightTransfersRepository {
 
       return { ok: true, value: transfers }
     } catch (error) {
-      this.logger.error({ error }, "Error: getPendingDepositInFlightTransfers() failed.")
+      this.logger.error({ error }, "Error: getPendingDeposit() failed.")
       return { ok: false, error: error }
     }
   }
 
-  public async getPendingWithdrawInFlightTransfers(): Promise<
-    Result<Map<string, InFlightTransfer[]>>
-  > {
+  public async getPendingWithdraw(): Promise<Result<Map<string, InFlightTransfer[]>>> {
     try {
       const result = await this.db.each(
         sql.get_pending_withdraw,
         [],
         InFlightTransfersRepository.transferSizeInSatsAsInteger,
       )
-      this.logger.info(
-        { result },
-        "getPendingWithdrawInFlightTransfers() returned: {result}.",
-      )
+      this.logger.info({ result }, "getPendingWithdraw() returned: {result}.")
       const transfers = InFlightTransfersRepository.arrayToMap(result)
       return { ok: true, value: transfers }
     } catch (error) {
-      this.logger.error({ error }, "Error: getPendingWithdrawInFlightTransfers() failed.")
+      this.logger.error({ error }, "Error: getPendingWithdraw() failed.")
       return { ok: false, error: error }
     }
   }
 
-  public async getAllInFlightTransfers(): Promise<
-    Result<Map<string, InFlightTransfer[]>>
-  > {
+  public async getAll(): Promise<Result<Map<string, InFlightTransfer[]>>> {
     try {
       const result = await this.db.each(
         sql.get_all,
         [],
         InFlightTransfersRepository.transferSizeInSatsAsInteger,
       )
-      this.logger.info({ result }, "getAllInFlightTransfers() returned: {result}.")
+      this.logger.info({ result }, "getAll() returned: {result}.")
       const transfers = InFlightTransfersRepository.arrayToMap(result)
       return { ok: true, value: transfers }
     } catch (error) {
-      this.logger.error({ error }, "Error: getAllInFlightTransfers() failed.")
+      this.logger.error({ error }, "Error: getAll() failed.")
       return { ok: false, error: error }
     }
   }
 
-  public async clearAllInFlightTransfers(): Promise<Result<void>> {
+  public async clearAll(): Promise<Result<void>> {
     try {
       await this.db.none(sql.clear)
       return { ok: true, value: undefined }
     } catch (error) {
-      this.logger.error({ error }, "Error: clearAllInFlightTransfers() failed.")
+      this.logger.error({ error }, "Error: clearAll() failed.")
       return { ok: false, error: error }
     }
+  }
+
+  private static transferSizeInSatsAsInteger(
+    transfer: InFlightTransfer,
+  ): InFlightTransfer {
+    transfer.transferSizeInSats = parseInt(`${transfer.transferSizeInSats}`)
+    return transfer
   }
 
   private static arrayToMap(array: InFlightTransfer[]): Map<string, InFlightTransfer[]> {

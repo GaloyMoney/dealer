@@ -57,11 +57,8 @@ export class Dealer {
     const logger = this.logger.child({ method: "updateInFlightTransfer()" })
 
     // Check and Update persisted in-flight fund transfer
-    let result = await database.inFlightTransfers.getPendingDepositInFlightTransfers()
-    logger.debug(
-      { result },
-      "database.getPendingDepositInFlightTransfers() returned: {result}",
-    )
+    let result = await database.inFlightTransfers.getPendingDeposit()
+    logger.debug({ result }, "database.getPendingDeposit() returned: {result}")
     if (result.ok && result.value.size !== 0) {
       // Check if the funds arrived
       const transfersMap = result.value
@@ -77,9 +74,7 @@ export class Dealer {
             "strategy.isDepositCompleted({address}, {transferSizeInSats}) returned: {result}",
           )
           if (result.ok && result.value) {
-            const result = await database.inFlightTransfers.completedInFlightTransfer(
-              address,
-            )
+            const result = await database.inFlightTransfers.completed(address)
             logger.debug(
               { address, result },
               "database.completedInFlightTransfer({address}) returned: {result}",
@@ -93,11 +88,8 @@ export class Dealer {
       }
     }
 
-    result = await database.inFlightTransfers.getPendingWithdrawInFlightTransfers()
-    logger.debug(
-      { result },
-      "database.getPendingWithdrawInFlightTransfers() returned: {result}",
-    )
+    result = await database.inFlightTransfers.getPendingWithdraw()
+    logger.debug({ result }, "database.getPendingWithdraw() returned: {result}")
     if (result.ok && result.value.size !== 0) {
       // Check if the funds arrived
       const transfersMap = result.value
@@ -112,9 +104,7 @@ export class Dealer {
             "strategy.isWithdrawalCompleted({address}, {transferSizeInSats}) returned: {result}",
           )
           if (result.ok && result.value) {
-            const result = await database.inFlightTransfers.completedInFlightTransfer(
-              address,
-            )
+            const result = await database.inFlightTransfers.completed(address)
             logger.debug(
               { address, result },
               "database.completedInFlightTransfer({address}) returned: {result}",
@@ -208,8 +198,7 @@ export class Dealer {
     }
 
     // Check for any in-flight fund transfer, and skip if not all completed
-    const dbCallResult =
-      await database.inFlightTransfers.getPendingInFlightTransfersCount()
+    const dbCallResult = await database.inFlightTransfers.getPendingCount()
     if (dbCallResult.ok && dbCallResult.value === 0) {
       logger.debug("starting with rebalance loop")
 
@@ -249,10 +238,10 @@ export class Dealer {
     } else {
       result.updateLeverageSkipped = true
       if (dbCallResult.ok) {
-        const pendingInFlightTransfers = dbCallResult.value
+        const pending = dbCallResult.value
         const message =
           "Some funds are in-flight, skipping the rebalance until settlement"
-        logger.debug({ pendingInFlightTransfers }, message)
+        logger.debug({ pending }, message)
       } else {
         const message = "Error getting in-flight fund transfer data"
         logger.error({ dbCallResult }, message)
@@ -307,7 +296,7 @@ export class Dealer {
           memo,
           isCompleted: false,
         }
-        const result = await database.inFlightTransfers.insertInFlightTransfer(transfer)
+        const result = await database.inFlightTransfers.insert(transfer)
         this.logger.debug(
           { result, transfer },
           "Insert in-flight fund transfer in database.",
@@ -347,7 +336,7 @@ export class Dealer {
         memo,
         isCompleted: false,
       }
-      const result = await database.inFlightTransfers.insertInFlightTransfer(transfer)
+      const result = await database.inFlightTransfers.insert(transfer)
       this.logger.debug(
         { result, transfer },
         "Insert in-flight fund transfer in database.",
