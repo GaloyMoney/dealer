@@ -1,12 +1,12 @@
 import { Wallet, LastOnChainAddress, OnChainPay } from "src/database/models"
-import { db } from "src/database"
+import { db as database } from "src/database"
 import { baseLogger } from "src/services/logger"
 
 describe("GraphqlRepository", () => {
   describe("getWallet", () => {
     it("should retrieve a wallet row from the database table", async () => {
       // test functionality
-      const result = await db.graphql.getWallet()
+      const result = await database.graphql.getWallet()
       expect(result).toBeTruthy()
       expect(result.ok).toBeTruthy()
       if (!result.ok) {
@@ -29,7 +29,7 @@ describe("GraphqlRepository", () => {
   describe("getLastOnChainAddress", () => {
     it("should retrieve the last on chain address row from the database table", async () => {
       // test functionality
-      const result = await db.graphql.getLastOnChainAddress()
+      const result = await database.graphql.getLastOnChainAddress()
       expect(result).toBeTruthy()
       expect(result.ok).toBeTruthy()
       if (!result.ok) {
@@ -54,7 +54,7 @@ describe("GraphqlRepository", () => {
         memo: "tx01",
       }
       const jsonData = JSON.stringify(data)
-      const result = await db.graphql.setOnChainPay(jsonData)
+      const result = await database.graphql.setOnChainPay(jsonData)
       expect(result).toBeTruthy()
       expect(result.ok).toBeTruthy()
       if (!result.ok) {
