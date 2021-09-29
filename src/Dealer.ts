@@ -8,11 +8,14 @@ import {
   UpdatedBalance,
   UpdatedPosition,
 } from "./HedgingStrategyTypes"
-import {
-  InFlightTransfer,
-  InFlightTransferDb,
-  InFlightTransferDirection,
-} from "./InFlightTransferDb"
+// import {
+//   InFlightTransfer,
+//   InFlightTransferDb,
+//   InFlightTransferDirection,
+// } from "./InFlightTransferDb"
+import { InFlightTransfer } from "./database/models"
+import { db as database } from "./database"
+
 import { GaloyWallet } from "./GaloyWalletTypes"
 import { createDealerWallet, WalletType } from "./DealerWalletFactory"
 import { createHedgingStrategy } from "./HedgingStrategyFactory"
@@ -30,7 +33,7 @@ export type UpdatedPositionAndLeverageResult = {
 export class Dealer {
   private wallet: GaloyWallet
   private strategy: HedgingStrategy
-  private database: InFlightTransferDb
+  // private database: InFlightTransferDb
   private logger: pino.Logger
 
   constructor(logger: pino.Logger) {
@@ -45,7 +48,7 @@ export class Dealer {
 
     this.wallet = createDealerWallet(walletType as WalletType, logger)
     this.strategy = createHedgingStrategy(activeStrategy as HedgingStrategies, logger)
-    this.database = new InFlightTransferDb(logger)
+    // this.database = new InFlightTransferDb(logger)
 
     this.logger = logger.child({ topic: "dealer" })
   }
@@ -54,76 +57,76 @@ export class Dealer {
     const logger = this.logger.child({ method: "updateInFlightTransfer()" })
 
     // Check and Update persisted in-flight fund transfer
-    let result = this.database.getPendingInFlightTransfers(
-      InFlightTransferDirection.DEPOSIT_ON_EXCHANGE,
-    )
+    let result = await database.inFlightTransfers.getPendingDepositInFlightTransfers()
     logger.debug(
       { result },
-      "database.getPendingInFlightTransfers(Deposits) returned: {result}",
+      "database.getPendingDepositInFlightTransfers() returned: {result}",
     )
     if (result.ok && result.value.size !== 0) {
       // Check if the funds arrived
-      const transfers = result.value
+      const transfersMap = result.value
 
-      for (const [address, transfer] of transfers) {
-        // transfers.forEach(async (transfer, address) => {
-        const result = await this.strategy.isDepositCompleted(
-          address,
-          transfer.transferSizeInSats,
-        )
-        logger.debug(
-          { address, transfer, result },
-          "strategy.isDepositCompleted({address}, {transferSizeInSats}) returned: {result}",
-        )
-        if (result.ok && result.value) {
-          const result = this.database.completedInFlightTransfers(address)
-          logger.debug(
-            { address, result },
-            "database.completedInFlightTransfers({address}) returned: {result}",
+      for (const [address, transfers] of transfersMap) {
+        for (const transfer of transfers) {
+          const result = await this.strategy.isDepositCompleted(
+            address,
+            transfer.transferSizeInSats,
           )
-          if (!result.ok) {
-            const message = "Failed to update database on completed deposit to exchange"
-            logger.debug({ result, transfer }, message)
+          logger.debug(
+            { address, transfer, result },
+            "strategy.isDepositCompleted({address}, {transferSizeInSats}) returned: {result}",
+          )
+          if (result.ok && result.value) {
+            const result = await database.inFlightTransfers.completedInFlightTransfer(
+              address,
+            )
+            logger.debug(
+              { address, result },
+              "database.completedInFlightTransfer({address}) returned: {result}",
+            )
+            if (!result.ok) {
+              const message = "Failed to update database on completed deposit to exchange"
+              logger.debug({ result, transfer }, message)
+            }
           }
         }
       }
-      // )
     }
 
-    result = this.database.getPendingInFlightTransfers(
-      InFlightTransferDirection.WITHDRAW_TO_WALLET,
-    )
+    result = await database.inFlightTransfers.getPendingWithdrawInFlightTransfers()
     logger.debug(
       { result },
-      "database.getPendingInFlightTransfers(Withdrawals) returned: {result}",
+      "database.getPendingWithdrawInFlightTransfers() returned: {result}",
     )
     if (result.ok && result.value.size !== 0) {
       // Check if the funds arrived
-      const transfers = result.value
-      for (const [address, transfer] of transfers) {
-        // transfers.forEach(async (transfer, address) => {
-        const result = await this.strategy.isWithdrawalCompleted(
-          address,
-          transfer.transferSizeInSats,
-        )
-        logger.debug(
-          { address, transfer, result },
-          "strategy.isWithdrawalCompleted({address}, {transferSizeInSats}) returned: {result}",
-        )
-        if (result.ok && result.value) {
-          const result = this.database.completedInFlightTransfers(address)
-          logger.debug(
-            { address, result },
-            "database.completedInFlightTransfers({address}) returned: {result}",
+      const transfersMap = result.value
+      for (const [address, transfers] of transfersMap) {
+        for (const transfer of transfers) {
+          const result = await this.strategy.isWithdrawalCompleted(
+            address,
+            transfer.transferSizeInSats,
           )
-          if (!result.ok) {
-            const message =
-              "Failed to update database on completed withdrawal from exchange"
-            logger.debug({ result, transfer }, message)
+          logger.debug(
+            { address, transfer, result },
+            "strategy.isWithdrawalCompleted({address}, {transferSizeInSats}) returned: {result}",
+          )
+          if (result.ok && result.value) {
+            const result = await database.inFlightTransfers.completedInFlightTransfer(
+              address,
+            )
+            logger.debug(
+              { address, result },
+              "database.completedInFlightTransfer({address}) returned: {result}",
+            )
+            if (!result.ok) {
+              const message =
+                "Failed to update database on completed withdrawal from exchange"
+              logger.debug({ result, transfer }, message)
+            }
           }
         }
       }
-      // )
     }
 
     return { ok: true, value: undefined }
@@ -205,8 +208,9 @@ export class Dealer {
     }
 
     // Check for any in-flight fund transfer, and skip if not all completed
-    const dbCallResult = this.database.getPendingInFlightTransfers()
-    if (dbCallResult.ok && dbCallResult.value.size === 0) {
+    const dbCallResult =
+      await database.inFlightTransfers.getPendingInFlightTransfersCount()
+    if (dbCallResult.ok && dbCallResult.value === 0) {
       logger.debug("starting with rebalance loop")
 
       const withdrawOnChainAddressResult =
@@ -296,13 +300,14 @@ export class Dealer {
 
       if (payOnChainResult.ok) {
         // Persist in-flight fund transfer in database until completed
-        const transfer = new InFlightTransfer(
-          InFlightTransferDirection.DEPOSIT_ON_EXCHANGE,
-          onChainAddress,
+        const transfer: InFlightTransfer = {
+          isDepositOnExchange: true,
+          address: onChainAddress,
           transferSizeInSats,
           memo,
-        )
-        const result = this.database.insertInFlightTransfers(transfer)
+          isCompleted: false,
+        }
+        const result = await database.inFlightTransfers.insertInFlightTransfer(transfer)
         this.logger.debug(
           { result, transfer },
           "Insert in-flight fund transfer in database.",
@@ -335,13 +340,14 @@ export class Dealer {
       this.logger.info({ transferSizeInSats, memo }, "withdrawBookKeeping")
 
       // Persist in-flight fund transfer in database until completed
-      const transfer = new InFlightTransfer(
-        InFlightTransferDirection.WITHDRAW_TO_WALLET,
-        onChainAddress,
+      const transfer: InFlightTransfer = {
+        isDepositOnExchange: false,
+        address: onChainAddress,
         transferSizeInSats,
         memo,
-      )
-      const result = this.database.insertInFlightTransfers(transfer)
+        isCompleted: false,
+      }
+      const result = await database.inFlightTransfers.insertInFlightTransfer(transfer)
       this.logger.debug(
         { result, transfer },
         "Insert in-flight fund transfer in database.",
