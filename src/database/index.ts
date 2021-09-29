@@ -38,10 +38,10 @@ function camelizeColumnNames(data) {
 
 const pgp: IMain = pgPromise(initOptions)
 
-// 
+//
 // trying to get the bigint parse, but fails with a circular reference
 // probably due to the camelizeColumnNames
-// 
+//
 // // Allow for postgres bigint to be parsed (vs string)
 // // Type Id 20 = BIGINT | BIGSERIAL
 // pgp.pg.types.setTypeParser(20, BigInt)

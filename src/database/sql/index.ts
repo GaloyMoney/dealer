@@ -9,6 +9,8 @@ export const inFlightTransfersQueries = {
   complete: sql("in_flight_transfers/complete.sql"),
 
   get_all: sql("in_flight_transfers/get_all.sql"),
+  get_pending: sql("in_flight_transfers/get_pending.sql"),
+  get_pending_count: sql("in_flight_transfers/get_pending_count.sql"),
   get_pending_deposit: sql("in_flight_transfers/get_pending_deposit.sql"),
   get_pending_withdraw: sql("in_flight_transfers/get_pending_withdraw.sql"),
   get_this: sql("in_flight_transfers/get_this.sql"),

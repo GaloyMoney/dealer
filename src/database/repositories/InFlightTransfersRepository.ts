@@ -51,7 +51,7 @@ export class InFlightTransfersRepository {
   public async completedInFlightTransfer(address: string): Promise<Result<number>> {
     try {
       const rowCount = await this.db.tx("update-completed", async (t) => {
-        return await this.db.result(sql.complete, { address }, (r: IResult) => r.rowCount)
+        return await t.result(sql.complete, { address }, (r: IResult) => r.rowCount)
       })
       if (rowCount !== 1) {
         throw new Error(`completedInFlightTransfer({address}) updated ${rowCount} rows.`)
@@ -89,6 +89,52 @@ export class InFlightTransfersRepository {
         { error, address },
         "Error: getThisInFlightTransfer({address}) failed.",
       )
+      return { ok: false, error: error }
+    }
+  }
+
+  public async getPendingInFlightTransfers(): Promise<
+    Result<Map<string, InFlightTransfer[]>>
+  > {
+    try {
+      const result = await this.db.each(
+        sql.get_pending,
+        [],
+        InFlightTransfersRepository.transferSizeInSatsAsInteger,
+      )
+      this.logger.info({ result }, "getPendingInFlightTransfers() returned: {result}.")
+
+      const transfers = new Map<string, InFlightTransfer[]>()
+      for (const transfer of result) {
+        if (!transfers.has(transfer.address)) {
+          transfers.set(transfer.address, [transfer])
+        } else {
+          transfers[transfer.address].push(transfer)
+        }
+      }
+
+      return { ok: true, value: transfers }
+    } catch (error) {
+      this.logger.error({ error }, "Error: getPendingInFlightTransfers() failed.")
+      return { ok: false, error: error }
+    }
+  }
+
+  public async getPendingInFlightTransfersCount(): Promise<Result<number>> {
+    try {
+      const rowCount = await this.db.one(
+        sql.get_pending_count,
+        [],
+        (a: { count: string }) => +a.count,
+      )
+      this.logger.info(
+        { rowCount },
+        "getPendingInFlightTransfersCount() returned: {result}.",
+      )
+
+      return { ok: true, value: rowCount }
+    } catch (error) {
+      this.logger.error({ error }, "Error: getPendingInFlightTransfersCount() failed.")
       return { ok: false, error: error }
     }
   }

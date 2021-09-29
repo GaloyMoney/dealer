@@ -1,7 +1,5 @@
-import { baseLogger } from "src/services/logger"
-import { InFlightTransfersRepository } from "src/database/repositories"
 import { InFlightTransfer } from "src/database/models"
-import { db, pgp } from "src/database"
+import { db } from "src/database"
 
 describe("InFlightTransfersRepository", () => {
   describe("insertInFlightTransfer", () => {
@@ -355,6 +353,103 @@ describe("InFlightTransfersRepository", () => {
       const dcTx = result.value[0]
 
       // validate existing data
+      expect(dcTx.isDepositOnExchange).toBe(localTx.isDepositOnExchange)
+      expect(dcTx.address).toBe(localTx.address)
+      expect(dcTx.transferSizeInSats).toBe(localTx.transferSizeInSats)
+      expect(dcTx.memo).toBe(localTx.memo)
+      expect(dcTx.isCompleted).toBe(localTx.isCompleted)
+      // validate created data
+      expect(dcTx.id).toBeTruthy()
+      expect(dcTx.id).toBeGreaterThanOrEqual(0)
+      expect(dcTx.createdTimestamp).toBeTruthy()
+      expect(dcTx.updatedTimestamp).toBeTruthy()
+      expect(dcTx.createdTimestamp).toBe(dcTx.updatedTimestamp)
+    })
+  })
+  describe("getPendingInFlightTransfers", () => {
+    it("should retrieve only pending  rows from the database table", async () => {
+      // clear db
+      const clearResult = await db.inFlightTransfers.clearAllInFlightTransfers()
+      expect(clearResult).toBeTruthy()
+      expect(clearResult.ok).toBeTruthy()
+
+      // insert dummy data
+      const transfers: InFlightTransfer[] = [
+        {
+          isDepositOnExchange: false,
+          address: "bc1q.01.",
+          transferSizeInSats: 123401,
+          memo: "tx01",
+          isCompleted: false,
+        },
+        {
+          isDepositOnExchange: false,
+          address: "bc1q.02.",
+          transferSizeInSats: 123402,
+          memo: "tx02",
+          isCompleted: true,
+        },
+        {
+          isDepositOnExchange: true,
+          address: "bc1q.03.",
+          transferSizeInSats: 123403,
+          memo: "tx03",
+          isCompleted: false,
+        },
+        {
+          isDepositOnExchange: true,
+          address: "bc1q.04.",
+          transferSizeInSats: 123404,
+          memo: "tx04",
+          isCompleted: true,
+        },
+      ]
+      for (const transfer of transfers) {
+        const insertResult = await db.inFlightTransfers.insertInFlightTransfer(transfer)
+        expect(insertResult).toBeTruthy()
+        expect(insertResult.ok).toBeTruthy()
+      }
+
+      // test functionality
+      const result = await db.inFlightTransfers.getPendingInFlightTransfers()
+      expect(result).toBeTruthy()
+      expect(result.ok).toBeTruthy()
+      if (!result.ok) {
+        return
+      }
+      expect(result.value).toBeTruthy()
+      expect(result.value.size).toBe(2)
+
+      let localTx = transfers[2]
+      let dcTxs = result.value.get(localTx.address)
+
+      // validate existing data
+      expect(dcTxs).toBeTruthy()
+      if (!dcTxs) {
+        return
+      }
+      let dcTx = dcTxs[0]
+      expect(dcTx.isDepositOnExchange).toBe(localTx.isDepositOnExchange)
+      expect(dcTx.address).toBe(localTx.address)
+      expect(dcTx.transferSizeInSats).toBe(localTx.transferSizeInSats)
+      expect(dcTx.memo).toBe(localTx.memo)
+      expect(dcTx.isCompleted).toBe(localTx.isCompleted)
+      // validate created data
+      expect(dcTx.id).toBeTruthy()
+      expect(dcTx.id).toBeGreaterThanOrEqual(0)
+      expect(dcTx.createdTimestamp).toBeTruthy()
+      expect(dcTx.updatedTimestamp).toBeTruthy()
+      expect(dcTx.createdTimestamp).toBe(dcTx.updatedTimestamp)
+
+      localTx = transfers[0]
+      dcTxs = result.value.get(localTx.address)
+
+      // validate existing data
+      expect(dcTxs).toBeTruthy()
+      if (!dcTxs) {
+        return
+      }
+      dcTx = dcTxs[0]
       expect(dcTx.isDepositOnExchange).toBe(localTx.isDepositOnExchange)
       expect(dcTx.address).toBe(localTx.address)
       expect(dcTx.transferSizeInSats).toBe(localTx.transferSizeInSats)
