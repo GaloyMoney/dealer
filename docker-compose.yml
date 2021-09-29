@@ -53,8 +53,6 @@ services:
       dockerfile: src/servers/exporter/Dockerfile      
     depends_on:
       - postgres
-    volumes:
-      - ./data:/var/lib/dealer
     links: 
       - graphql
     ports:
@@ -69,8 +67,6 @@ services:
       dockerfile: src/servers/graphql/Dockerfile
     depends_on:
       - postgres
-    volumes:
-      - ./data:/var/lib/dealer
     ports:
       - 4000:4000
     expose:
