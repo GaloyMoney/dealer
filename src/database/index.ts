@@ -1,5 +1,9 @@
 import pgPromise, { IInitOptions, IDatabase, IMain } from "pg-promise"
-import { Extensions, InFlightTransfersRepository } from "./repositories"
+import {
+  Extensions,
+  InFlightTransfersRepository,
+  GraphqlRepository,
+} from "./repositories"
 import { baseLogger } from "../services/logger"
 import humps from "humps"
 
@@ -14,6 +18,7 @@ const initOptions: IInitOptions<Extensions> = {
     // Database Context (dc) is  for extending multiple databases with different access API.
 
     obj.inFlightTransfers = new InFlightTransfersRepository(baseLogger, obj, pgp)
+    obj.graphql = new GraphqlRepository(baseLogger, obj, pgp)
   },
   /* eslint-disable */
   receive: function (data, result, e) {

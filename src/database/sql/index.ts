@@ -18,6 +18,13 @@ export const inFlightTransfersQueries = {
   clear: sql("in_flight_transfers/clear.sql"),
 }
 
+export const graphql = {
+  get_last_on_chain_address: sql("graphql/get_last_on_chain_address.sql"),
+  get_wallet: sql("graphql/get_wallet.sql"),
+  get_on_chain_pay: sql("graphql/get_on_chain_pay.sql"),
+  set_on_chain_pay: sql("graphql/set_on_chain_pay.sql"),
+}
+
 function sql(file: string): QueryFile {
   const fullPath: string = joinPath(__dirname, file)
 
