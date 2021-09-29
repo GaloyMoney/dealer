@@ -1,4 +1,3 @@
-import fs from "fs"
 import dotenv from "dotenv"
 import {
   stringLength,
@@ -13,6 +12,8 @@ import { applyMiddleware } from "graphql-middleware"
 import pino from "pino"
 import PinoHttp from "pino-http"
 import { v4 as uuidv4 } from "uuid"
+
+import { db as database } from "../../database"
 
 import { baseLogger } from "../../services/logger"
 
@@ -102,59 +103,40 @@ export async function startApolloServer() {
       onchain: OnChain
     }
   `
-  const defaultWallet = [
-    {
-      id: "dealer",
-      balance: {
-        currency: "USD",
-        amount: -100,
-      },
-    },
-  ]
-
-  const defaultLastOnChainAddress = {
-    id: "bc1qmyhq2rm8edqv076dj89r5utskt3394m7xu3pge",
-  }
 
   const resolvers = {
     Query: {
       wallet: async (_, __, { logger }) => {
-        const filename = `${process.env["WALLET_PATH"]}/wallets.json`
-        if (!fs.existsSync(filename)) {
-          fs.writeFileSync(filename, JSON.stringify(defaultWallet))
+        const result = await database.graphql.getWallet()
+        logger.debug({ result }, "wallet: database.getWallet() returned: {result}")
+        if (result.ok && result.value && result.value.jsonData) {
+          return result.value.jsonData
         }
-        const data = fs.readFileSync(filename)
-        const wallets = JSON.parse(data.toString())
-        logger.debug(
-          { filename, wallets },
-          "wallet: fs.readFileSync(filename) returned: {wallets}",
-        )
-        return wallets
+        return []
       },
       getLastOnChainAddress: async (_, __, { logger }) => {
-        const filename = `${process.env["LAST_ON_CHAIN_ADDRESS_PATH"]}/lastOnChainAddress.json`
-        if (!fs.existsSync(filename)) {
-          fs.writeFileSync(filename, JSON.stringify(defaultLastOnChainAddress))
-        }
-        const data = fs.readFileSync(filename)
-        const lastOnChainAddress = JSON.parse(data.toString())
+        const result = await database.graphql.getLastOnChainAddress()
         logger.debug(
-          { filename, lastOnChainAddress },
-          "getLastOnChainAddress: fs.readFileSync(filename) returned: {lastOnChainAddress}",
+          { result },
+          "getLastOnChainAddress: database.getLastOnChainAddress() returned: {result}",
         )
-        return lastOnChainAddress
+        if (result.ok && result.value && result.value.jsonData) {
+          return result.value.jsonData
+        }
+        return ""
       },
     },
     Mutation: {
       onchain: async (_, __, { logger }) => ({
-        pay: ({ address, amount, memo }) => {
-          const filename = `${process.env["ON_CHAIN_PAY_PATH"]}/onchain.pay.json`
-          fs.writeFileSync(filename, JSON.stringify({ address, amount, memo }))
+        pay: async ({ address, amount, memo }) => {
+          const data = { address, amount, memo }
+          const jsonData = JSON.stringify(data)
+          const result = await database.graphql.setOnChainPay(jsonData)
           logger.debug(
-            { filename, address, amount, memo },
-            "onchain.pay: fs.writeFileSync({ address, amount, memo })",
+            { data, jsonData, result },
+            "onchain.pay: database.graphql.setOnChainPay({jsonData}) returned: {result}",
           )
-          return { success: true }
+          return { success: result.ok }
         },
       }),
     },
