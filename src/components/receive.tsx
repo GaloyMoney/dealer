@@ -1,77 +1,20 @@
-import { useEffect } from "react"
 import Row from "react-bootstrap/Row"
 import Col from "react-bootstrap/Col"
 import Card from "react-bootstrap/Card"
 import Container from "react-bootstrap/Container"
 import Image from "react-bootstrap/Image"
-import { gql, useMutation } from "@apollo/client"
 
 import { getOS, appStoreLink, playStoreLink } from "./downloadApp"
-import Invoice from "./invoice"
+import ReceiveAmount from "./receiveAmount"
+import ReceiveNoAmount from "./receiveNoAmount"
 
-type OperationError = {
-  message: string
-}
-
-type LnInvoiceObject = {
-  paymentRequest: string
-}
-
-const LN_NOAMOUNT_INVOICE_CREATE_ON_BEHALF_OF_RECIPIENT = gql`
-  mutation lnNoAmountInvoiceCreateOnBehalfOfRecipient($walletName: WalletName!) {
-    mutationData: lnNoAmountInvoiceCreateOnBehalfOfRecipient(
-      input: { recipient: $walletName }
-    ) {
-      errors {
-        message
-      }
-      invoice {
-        paymentRequest
-      }
-    }
-  }
-`
-
-function uiErrorMessage(errorMessage: string) {
-  switch (errorMessage) {
-    case "CouldNotFindError":
-      return "User not found"
-    default:
-      console.error(errorMessage)
-      return "Something went wrong"
-  }
-}
-
-export default function Receive({ username }: { username: string }) {
-  const [createInvoice, { loading, error, data }] = useMutation<{
-    mutationData: {
-      errors: OperationError[]
-      invoice?: LnInvoiceObject
-    }
-  }>(LN_NOAMOUNT_INVOICE_CREATE_ON_BEHALF_OF_RECIPIENT)
-
-  useEffect(() => {
-    createInvoice({
-      variables: { walletName: username },
-    })
-  }, [createInvoice, username])
-
-  if (error) {
-    console.error(error)
-  }
-
-  let errorMessage, invoice
-
-  if (data) {
-    const invoiceData = data.mutationData
-
-    if (invoiceData.errors?.length > 0) {
-      errorMessage = invoiceData.errors[0].message
-    }
-
-    invoice = invoiceData.invoice
-  }
-
+export default function Receive({
+  username,
+  amount,
+}: {
+  username: string
+  amount?: number
+}) {
   const os = getOS()
 
   return (
@@ -80,19 +23,11 @@ export default function Receive({ username }: { username: string }) {
       <Row className="justify-content-md-center">
         <Col md="auto" style={{ padding: 0 }}>
           <Card className="text-center">
-            <Card.Header>Pay {username}</Card.Header>
-
-            {errorMessage && <div className="error">{uiErrorMessage(errorMessage)}</div>}
-
-            {loading && !error && (
-              <div>
-                {" "}
-                <br />
-                Loading...
-              </div>
+            {amount ? (
+              <ReceiveAmount username={username} amount={amount} />
+            ) : (
+              <ReceiveNoAmount username={username} />
             )}
-
-            {invoice && <Invoice paymentRequest={invoice.paymentRequest} />}
 
             <Card.Body>
               {os === "android" && (
