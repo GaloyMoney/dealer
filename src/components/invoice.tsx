@@ -97,6 +97,5 @@ export default function Invoice({ paymentRequest }: { paymentRequest: string }) 
     }
   }
 
-  console.log({ data, loading, error })
   return <div className="error">Something went wrong</div>
 }
