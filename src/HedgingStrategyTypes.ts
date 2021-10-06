@@ -8,7 +8,8 @@ export enum HedgingStrategies {
 
 export type Position = {
   leverage: number
-  collateralInUsd: number
+  usedCollateralInUsd: number
+  totalCollateralInUsd: number
   exposureInUsd: number
   totalAccountValueInUsd: number
 }
@@ -20,7 +21,7 @@ export type UpdatedPosition = {
 
 export type UpdatedBalance = {
   originalLeverageRatio: number
-  liabilityInUsd: number
+  exposureInUsd: number
   collateralInUsd: number
   newLeverageRatio: number
 }
@@ -38,6 +39,7 @@ export interface HedgingStrategy {
   getBtcSpotPriceInUsd(): Promise<Result<number>>
 
   getSpotPriceInUsd(): Promise<Result<number>>
+  getMarkPriceInUsd(): Promise<Result<number>>
   getDerivativePriceInUsd(): Promise<Result<number>>
   getNextFundingRateInBtc(): Promise<Result<number>>
   getAccountAndPositionRisk(): Promise<Result<GetAccountAndPositionRiskResult>>
@@ -50,6 +52,7 @@ export interface HedgingStrategy {
   ): Promise<Result<UpdatedPosition>>
   updateLeverage(
     liabilityInUsd: number,
+    exposureInUsd: number,
     btcPriceInUsd: number,
     withdrawFromExchangeOnChainAddress,
     withdrawBookKeepingCallback: WithdrawBookKeepingCallback,

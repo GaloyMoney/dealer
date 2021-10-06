@@ -160,6 +160,8 @@ export class Dealer {
     // return additive inverse to deal with positive liability onward
     const usdLiability = -usdLiabilityResult.value
 
+    let exposureInUsd = 0
+
     const result = {} as UpdatedPositionAndLeverageResult
 
     if (usdLiability < hedgingBounds.MINIMUM_POSITIVE_LIABILITY_USD) {
@@ -177,17 +179,15 @@ export class Dealer {
         const originalPosition = updatedPositionResult.value.originalPosition
         const updatedPosition = updatedPositionResult.value.updatedPosition
 
+        if (updatedPosition) {
+          exposureInUsd = updatedPosition.exposureInUsd
+        } else {
+          exposureInUsd = originalPosition.exposureInUsd
+        }
+
         logger.info(
           { activeStrategy: this.strategy.name, originalPosition, updatedPosition },
           "The {activeStrategy} was successful at UpdatePosition()",
-        )
-        logger.debug(
-          { activeStrategy: this.strategy.name, originalPosition },
-          "Position BEFORE {activeStrategy} executed UpdatePosition()",
-        )
-        logger.debug(
-          { activeStrategy: this.strategy.name, updatedPosition },
-          "Position AFTER {activeStrategy} executed UpdatePosition()",
         )
       } else {
         logger.error(
@@ -217,6 +217,7 @@ export class Dealer {
 
       const updatedLeverageResult = await this.strategy.updateLeverage(
         usdLiability,
+        exposureInUsd,
         btcPriceInUsd,
         withdrawOnChainAddress,
         this.withdrawBookKeeping.bind(this),
@@ -255,10 +256,10 @@ export class Dealer {
       return { ok: true, value: result }
     } else {
       const errors: Error[] = []
-      if (!result.updatedPositionResult.ok) {
+      if (!result.updatePositionSkipped && !result.updatedPositionResult.ok) {
         errors.push(result.updatedPositionResult.error)
         return { ok: false, error: result.updatedPositionResult.error }
-      } else if (!result.updatedLeverageResult.ok) {
+      } else if (!result.updateLeverageSkipped && !result.updatedLeverageResult.ok) {
         errors.push(result.updatedLeverageResult.error)
         return { ok: false, error: result.updatedLeverageResult.error }
       } else {
@@ -357,6 +358,14 @@ export class Dealer {
 
   public async getSpotPriceInUsd(): Promise<number> {
     const result = await this.strategy.getSpotPriceInUsd()
+    if (!result.ok) {
+      return NaN
+    }
+    return result.value
+  }
+
+  public async getMarkPriceInUsd(): Promise<number> {
+    const result = await this.strategy.getMarkPriceInUsd()
     if (!result.ok) {
       return NaN
     }

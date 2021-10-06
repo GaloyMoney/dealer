@@ -1,3 +1,5 @@
+import { Params } from "ccxt"
+
 export enum TradeCurrency {
   BTC = "BTC",
   USD = "USD",
@@ -81,6 +83,7 @@ export interface WithdrawParameters {
   currency: TradeCurrency
   quantity: number
   address: string
+  params: Params
 }
 
 export interface WithdrawResult {
@@ -107,6 +110,7 @@ export interface CreateOrderParameters {
   type: TradeType
   side: TradeSide
   quantity: number
+  params: Params
 }
 
 export interface CreateOrderResult {
@@ -129,6 +133,7 @@ export interface PrivateGetAccountResult {
 
 export interface FetchBalanceResult {
   originalResponseAsIs
+  notionalLever: number
   btcFreeBalance: number
   btcUsedBalance: number
   btcTotalBalance: number
@@ -166,7 +171,8 @@ export interface GetAccountAndPositionRiskResult {
   originalBalance: FetchBalanceResult | undefined
   lastBtcPriceInUsd: number
   leverage: number
-  collateralInUsd: number
+  usedCollateralInUsd: number
+  totalCollateralInUsd: number
   exposureInUsd: number
   totalAccountValueInUsd: number
 }
@@ -181,6 +187,16 @@ export interface GetPublicFundingRateResult {
   originalResponseAsIs
   fundingRate: number
   nextFundingRate: number
+}
+
+export interface GetPublicMarkPriceResult {
+  originalResponseAsIs
+  markPriceInUsd: number
+}
+
+export interface GetMarketIndexTickersResult {
+  originalResponseAsIs
+  indexPriceInUsd: number
 }
 
 export interface SetAccountConfigurationResult {

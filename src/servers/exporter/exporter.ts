@@ -22,6 +22,10 @@ const btcSpotPriceInUsd_g = new client.Gauge({
   name: `${prefix}_btcSpotPriceInUsd`,
   help: "btc spot price from exchange, in usd",
 })
+const btcMarkPriceInUsd_g = new client.Gauge({
+  name: `${prefix}_btcMarkPriceInUsd`,
+  help: "btc mark price from exchange, in usd",
+})
 const btcDerivativePriceInUsd_g = new client.Gauge({
   name: `${prefix}_btcDerivativePriceInUsd`,
   help: "btc derivative instrument price from exchange, in usd",
@@ -47,6 +51,10 @@ const leverageRatio_g = new client.Gauge({
 const collateralInUsd_g = new client.Gauge({
   name: `${prefix}_collateralInUsd`,
   help: "position collateral, in usd",
+})
+const usedCollateralInUsd_g = new client.Gauge({
+  name: `${prefix}_usedCollateralInUsd`,
+  help: "used collateral, in usd",
 })
 const exposureInUsd_g = new client.Gauge({
   name: `${prefix}_exposureInUsd`,
@@ -89,6 +97,10 @@ const marginRatio_g = new client.Gauge({
   name: `${prefix}_marginRatio`,
   help: "margin ratio",
 })
+const margin_g = new client.Gauge({
+  name: `${prefix}_margin`,
+  help: "margin",
+})
 const maintenanceMarginRequirement_g = new client.Gauge({
   name: `${prefix}_maintenanceMarginRequirement`,
   help: "maintenance margin requirement",
@@ -96,6 +108,11 @@ const maintenanceMarginRequirement_g = new client.Gauge({
 const exchangeLeverage_g = new client.Gauge({
   name: `${prefix}_exchangeLeverage`,
   help: "leverage used when opening position, liquidating, etc.",
+})
+
+const notionalLever_g = new client.Gauge({
+  name: `${prefix}_notionalLever`,
+  help: "notional lever",
 })
 
 const btcFreeBalance_g = new client.Gauge({
@@ -124,16 +141,18 @@ const main = async () => {
           originalBalance,
           lastBtcPriceInUsd,
           leverage,
-          collateralInUsd,
+          usedCollateralInUsd,
+          totalCollateralInUsd,
           exposureInUsd,
           totalAccountValueInUsd,
         } = result.value
 
         lastBtcPriceInUsd_g.set(lastBtcPriceInUsd)
         leverage_g.set(leverage)
-        const leverageRatio = liabilityInUsd / collateralInUsd
+        const leverageRatio = exposureInUsd / totalCollateralInUsd
         leverageRatio_g.set(leverageRatio)
-        collateralInUsd_g.set(collateralInUsd)
+        usedCollateralInUsd_g.set(usedCollateralInUsd)
+        collateralInUsd_g.set(totalCollateralInUsd)
         exposureInUsd_g.set(exposureInUsd)
         totalAccountValueInUsd_g.set(totalAccountValueInUsd)
 
@@ -151,20 +170,40 @@ const main = async () => {
           averageOpenPrice_g.set(originalPosition.averageOpenPrice)
           unrealizedPnL_g.set(originalPosition.unrealizedPnL)
           unrealizedPnLRatio_g.set(originalPosition.unrealizedPnLRatio)
+          margin_g.set(originalPosition.margin)
           marginRatio_g.set(originalPosition.marginRatio)
           maintenanceMarginRequirement_g.set(
             originalPosition.maintenanceMarginRequirement,
           )
           exchangeLeverage_g.set(originalPosition.exchangeLeverage)
+        } else {
+          autoDeleveragingIndicator_g.set(0)
+          liquidationPrice_g.set(0)
+          positionQuantity_g.set(0)
+          positionSide_g.set(0)
+          averageOpenPrice_g.set(0)
+          unrealizedPnL_g.set(0)
+          unrealizedPnLRatio_g.set(0)
+          margin_g.set(0)
+          marginRatio_g.set(0)
+          maintenanceMarginRequirement_g.set(0)
+          exchangeLeverage_g.set(0)
         }
         if (originalBalance) {
+          notionalLever_g.set(originalBalance.notionalLever)
           btcFreeBalance_g.set(originalBalance.btcFreeBalance)
           btcUsedBalance_g.set(originalBalance.btcUsedBalance)
           btcTotalBalance_g.set(originalBalance.btcTotalBalance)
+        } else {
+          notionalLever_g.set(0)
+          btcFreeBalance_g.set(0)
+          btcUsedBalance_g.set(0)
+          btcTotalBalance_g.set(0)
         }
       }
       nextFundingRate_g.set(await dealer.getNextFundingRateInBtc())
-      btcSpotPriceInUsd_g.set(await dealer.getDerivativePriceInUsd())
+      btcSpotPriceInUsd_g.set(await dealer.getSpotPriceInUsd())
+      btcMarkPriceInUsd_g.set(await dealer.getMarkPriceInUsd())
       btcDerivativePriceInUsd_g.set(await dealer.getDerivativePriceInUsd())
       liabilityInUsd_g.set(liabilityInUsd)
     } catch (error) {
