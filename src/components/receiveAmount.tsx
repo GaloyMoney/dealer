@@ -1,5 +1,4 @@
 import { useEffect } from "react"
-import Card from "react-bootstrap/Card"
 import { gql, useMutation } from "@apollo/client"
 
 import Invoice from "./invoice"
@@ -13,12 +12,9 @@ type LnInvoiceObject = {
 }
 
 const LN_INVOICE_CREATE_ON_BEHALF_OF_RECIPIENT = gql`
-  mutation lnInvoiceCreateOnBehalfOfRecipient(
-    $walletName: WalletName!
-    $amount: SatAmount!
-  ) {
+  mutation lnInvoiceCreateOnBehalfOfRecipient($walletId: WalletId!, $amount: SatAmount!) {
     mutationData: lnInvoiceCreateOnBehalfOfRecipient(
-      input: { recipient: $walletName, amount: $amount }
+      input: { recipientWalletId: $walletId, amount: $amount }
     ) {
       errors {
         message
@@ -30,21 +26,11 @@ const LN_INVOICE_CREATE_ON_BEHALF_OF_RECIPIENT = gql`
   }
 `
 
-function uiErrorMessage(errorMessage: string) {
-  switch (errorMessage) {
-    case "CouldNotFindError":
-      return "User not found"
-    default:
-      console.error(errorMessage)
-      return "Something went wrong"
-  }
-}
-
 export default function ReceiveAmount({
-  username,
+  userWalletId,
   amount,
 }: {
-  username: string
+  userWalletId: string
   amount: number
 }) {
   const [createInvoice, { loading, error, data }] = useMutation<{
@@ -52,25 +38,25 @@ export default function ReceiveAmount({
       errors: OperationError[]
       invoice?: LnInvoiceObject
     }
-  }>(LN_INVOICE_CREATE_ON_BEHALF_OF_RECIPIENT)
+  }>(LN_INVOICE_CREATE_ON_BEHALF_OF_RECIPIENT, { onError: console.error })
 
   useEffect(() => {
     createInvoice({
-      variables: { walletName: username, amount: amount },
+      variables: { walletId: userWalletId, amount: amount },
     })
-  }, [createInvoice, username, amount])
+  }, [createInvoice, userWalletId, amount])
 
   if (error) {
-    console.error(error)
+    return <div className="error">{error.message}</div>
   }
 
-  let errorMessage, invoice
+  let invoice
 
   if (data) {
     const invoiceData = data.mutationData
 
     if (invoiceData.errors?.length > 0) {
-      errorMessage = invoiceData.errors[0].message
+      return <div className="error">{invoiceData.errors.join(", ")}</div>
     }
 
     invoice = invoiceData.invoice
@@ -78,19 +64,7 @@ export default function ReceiveAmount({
 
   return (
     <>
-      <Card.Header>
-        Pay {username} {amount} Sats
-      </Card.Header>
-
-      {errorMessage && <div className="error">{uiErrorMessage(errorMessage)}</div>}
-
-      {loading && !error && (
-        <div>
-          {" "}
-          <br />
-          Loading...
-        </div>
-      )}
+      {loading && <div className="loading">Loading...</div>}
 
       {invoice && <Invoice paymentRequest={invoice.paymentRequest} />}
     </>

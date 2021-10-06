@@ -7,6 +7,13 @@ import Image from "react-bootstrap/Image"
 import { getOS, appStoreLink, playStoreLink } from "./downloadApp"
 import ReceiveAmount from "./receiveAmount"
 import ReceiveNoAmount from "./receiveNoAmount"
+import { gql, useQuery } from "@apollo/client"
+
+const USER_WALLET_ID = gql`
+  query userWalletId($username: Username!) {
+    userWalletId(username: $username)
+  }
+`
 
 export default function Receive({
   username,
@@ -15,7 +22,27 @@ export default function Receive({
   username: string
   amount?: number
 }) {
+  const { error, loading, data } = useQuery(USER_WALLET_ID, {
+    variables: {
+      username,
+    },
+  })
+
+  if (error) {
+    return <div className="error">{error.message}</div>
+  }
+
   const os = getOS()
+
+  if (loading) {
+    return <div className="loading">Loading...</div>
+  }
+
+  if (!data) {
+    return null
+  }
+
+  const { userWalletId } = data
 
   return (
     <Container fluid>
@@ -23,10 +50,15 @@ export default function Receive({
       <Row className="justify-content-md-center">
         <Col md="auto" style={{ padding: 0 }}>
           <Card className="text-center">
+            <Card.Header>
+              Pay {username}
+              {amount ? ` ${amount} Sats` : ""}
+            </Card.Header>
+
             {amount ? (
-              <ReceiveAmount username={username} amount={amount} />
+              <ReceiveAmount userWalletId={userWalletId} amount={amount} />
             ) : (
-              <ReceiveNoAmount username={username} />
+              <ReceiveNoAmount userWalletId={userWalletId} />
             )}
 
             <Card.Body>

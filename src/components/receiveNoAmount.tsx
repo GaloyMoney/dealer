@@ -1,5 +1,4 @@
 import { useEffect } from "react"
-import Card from "react-bootstrap/Card"
 import { gql, useMutation } from "@apollo/client"
 
 import Invoice from "./invoice"
@@ -13,9 +12,9 @@ type LnInvoiceObject = {
 }
 
 const LN_NOAMOUNT_INVOICE_CREATE_ON_BEHALF_OF_RECIPIENT = gql`
-  mutation lnNoAmountInvoiceCreateOnBehalfOfRecipient($walletName: WalletName!) {
+  mutation lnNoAmountInvoiceCreateOnBehalfOfRecipient($walletId: WalletId!) {
     mutationData: lnNoAmountInvoiceCreateOnBehalfOfRecipient(
-      input: { recipient: $walletName }
+      input: { recipientWalletId: $walletId }
     ) {
       errors {
         message
@@ -27,41 +26,31 @@ const LN_NOAMOUNT_INVOICE_CREATE_ON_BEHALF_OF_RECIPIENT = gql`
   }
 `
 
-function uiErrorMessage(errorMessage: string) {
-  switch (errorMessage) {
-    case "CouldNotFindError":
-      return "User not found"
-    default:
-      console.error(errorMessage)
-      return "Something went wrong"
-  }
-}
-
-export default function ReceiveNoAmount({ username }: { username: string }) {
+export default function ReceiveNoAmount({ userWalletId }: { userWalletId: string }) {
   const [createInvoice, { loading, error, data }] = useMutation<{
     mutationData: {
       errors: OperationError[]
       invoice?: LnInvoiceObject
     }
-  }>(LN_NOAMOUNT_INVOICE_CREATE_ON_BEHALF_OF_RECIPIENT)
+  }>(LN_NOAMOUNT_INVOICE_CREATE_ON_BEHALF_OF_RECIPIENT, { onError: console.error })
 
   useEffect(() => {
     createInvoice({
-      variables: { walletName: username },
+      variables: { walletId: userWalletId },
     })
-  }, [createInvoice, username])
+  }, [createInvoice, userWalletId])
 
   if (error) {
-    console.error(error)
+    return <div className="error">{error.message}</div>
   }
 
-  let errorMessage, invoice
+  let invoice
 
   if (data) {
     const invoiceData = data.mutationData
 
     if (invoiceData.errors?.length > 0) {
-      errorMessage = invoiceData.errors[0].message
+      return <div className="error">{invoiceData.errors[0].message}</div>
     }
 
     invoice = invoiceData.invoice
@@ -69,17 +58,7 @@ export default function ReceiveNoAmount({ username }: { username: string }) {
 
   return (
     <>
-      <Card.Header>Pay {username}</Card.Header>
-
-      {errorMessage && <div className="error">{uiErrorMessage(errorMessage)}</div>}
-
-      {loading && !error && (
-        <div>
-          {" "}
-          <br />
-          Loading...
-        </div>
-      )}
+      {loading && <div className="loading">Loading...</div>}
 
       {invoice && <Invoice paymentRequest={invoice.paymentRequest} />}
     </>

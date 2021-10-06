@@ -12,5 +12,13 @@ code {
 
 .error {
   color: red;
-  margin: 10px;
+  margin: 20px auto;
+  text-align: center;
+  font-size: 1.5rem;
+}
+
+.loading {
+  margin: 20px auto;
+  text-align: center;
+  font-size: 1.5rem;
 }
