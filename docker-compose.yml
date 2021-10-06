@@ -41,6 +41,8 @@ services:
     build:
       context: .
       dockerfile: src/app/Dockerfile
+    depends_on:
+      - postgres
     volumes:
       - ./data:/var/lib/dealer
     networks:
@@ -49,8 +51,8 @@ services:
     build:
       context: .
       dockerfile: src/servers/exporter/Dockerfile      
-    volumes:
-      - ./data:/var/lib/dealer
+    depends_on:
+      - postgres
     links: 
       - graphql
     ports:
@@ -63,11 +65,23 @@ services:
     build:
       context: .
       dockerfile: src/servers/graphql/Dockerfile
-    volumes:
-      - ./data:/var/lib/dealer
+    depends_on:
+      - postgres
     ports:
       - 4000:4000
     expose:
       - 4000
     networks:
       - monitoring
+  postgres:
+    container_name: postgres
+    image: postgres:13.4
+    ports:
+      - "5432:5432"
+    volumes: 
+      - ../postgresdata:/var/lib/postgresql/data
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: galoy

@@ -12,5 +12,5 @@
     "resolveJsonModule": true
   },
   "compileOnSave": true,
-  "include": ["src/**/*", "test/**/*"]
+  "include": ["src/**/*", "migrations/**/*", "test/**/*"]
 }

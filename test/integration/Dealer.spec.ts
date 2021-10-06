@@ -3,9 +3,9 @@ import { Dealer, UpdatedPositionAndLeverageResult } from "src/Dealer"
 import { SupportedExchange } from "src/ExchangeConfiguration"
 import { OkexScenarioStepBuilder, StepInput } from "../mocks/OkexScenarioStepBuilder"
 import { ScenarioReader } from "../mocks/ScenarioReader"
-import { InFlightTransferDb } from "src/InFlightTransferDb"
 import { WalletType } from "src/DealerWalletFactory"
 import { HedgingStrategies } from "src/HedgingStrategyTypes"
+import { db as database } from "src/database"
 
 beforeAll(async () => {
   // Init non-simulation for the tests
@@ -70,8 +70,7 @@ function validateResult(
 
 async function executeScenario(scenarioFilePath: string) {
   const logger = baseLogger.child({ module: "cron" })
-  const database = new InFlightTransferDb(logger)
-  database.clear()
+  await database.inFlightTransfers.clearAll()          
   let dealer = {} as Dealer
   let initDealer = true
 
