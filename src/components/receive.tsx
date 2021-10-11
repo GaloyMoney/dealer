@@ -2,6 +2,7 @@ import Row from "react-bootstrap/Row"
 import Col from "react-bootstrap/Col"
 import Card from "react-bootstrap/Card"
 import Container from "react-bootstrap/Container"
+import { useQueryParams } from "hookrouter"
 import Image from "react-bootstrap/Image"
 
 import { getOS, appStoreLink, playStoreLink } from "./downloadApp"
@@ -15,13 +16,11 @@ const USER_WALLET_ID = gql`
   }
 `
 
-export default function Receive({
-  username,
-  amount,
-}: {
-  username: string
-  amount?: number
-}) {
+export default function Receive({ username }: { username: string }) {
+  const queryResult = useQueryParams()
+  const amount = queryResult[0]?.amount
+  const currency = queryResult[0]?.currency?.toLowerCase()
+
   const { error, loading, data } = useQuery(USER_WALLET_ID, {
     variables: {
       username,
@@ -42,6 +41,28 @@ export default function Receive({
     return null
   }
 
+  const generateTitle = () => {
+    if (!currency || !amount) return <>Pay {username}</>
+    switch (currency) {
+      case "usdcent":
+        return (
+          <>
+            Pay {username}
+            {amount ? ` $${amount / 100} USD` : ""}
+          </>
+        )
+      case "sats":
+        return (
+          <>
+            Pay {username}
+            {amount ? ` ${amount} SATS` : ""}
+          </>
+        )
+      default:
+        return <>Pay {username}</>
+    }
+  }
+
   const { userDefaultWalletId } = data
 
   return (
@@ -50,13 +71,14 @@ export default function Receive({
       <Row className="justify-content-md-center">
         <Col md="auto" style={{ padding: 0 }}>
           <Card className="text-center">
-            <Card.Header>
-              Pay {username}
-              {amount ? ` ${amount} Sats` : ""}
-            </Card.Header>
+            <Card.Header>{generateTitle()}</Card.Header>
 
-            {amount ? (
-              <ReceiveAmount userWalletId={userDefaultWalletId} amount={amount} />
+            {amount && currency ? (
+              <ReceiveAmount
+                userWalletId={userDefaultWalletId}
+                amount={amount}
+                currency={currency}
+              />
             ) : (
               <ReceiveNoAmount userWalletId={userDefaultWalletId} />
             )}

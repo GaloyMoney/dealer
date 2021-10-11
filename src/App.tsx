@@ -13,9 +13,6 @@ const routes = {
     <PrintQR username={username} />
   ),
   "/:username": ({ username }: { username: string }) => <Receive username={username} />,
-  "/:username/:amount": ({ username, amount }: { username: string; amount: number }) => (
-    <Receive username={username} amount={amount} />
-  ),
 }
 
 function App() {
