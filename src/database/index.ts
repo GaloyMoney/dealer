@@ -6,6 +6,9 @@ import {
 } from "./repositories"
 import { baseLogger } from "../services/logger"
 import humps from "humps"
+import dotenv from "dotenv"
+
+dotenv.config()
 
 const DATABASE_CONNECTION_STRING = process.env["DATABASE_URL"]
 
