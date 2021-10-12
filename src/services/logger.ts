@@ -1,2 +1,5 @@
 import pino from "pino"
-export const baseLogger = pino({ level: process.env.LOGLEVEL || "info" })
+import dotenv from "dotenv"
+
+dotenv.config()
+export const baseLogger = pino({ level: process.env.LOG_LEVEL || "info" })

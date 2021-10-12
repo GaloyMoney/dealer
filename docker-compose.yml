@@ -41,17 +41,16 @@ services:
     build:
       context: .
       dockerfile: src/app/Dockerfile
-    depends_on:
+    links:
       - postgres
-    volumes:
-      - ./data:/var/lib/dealer
+      - graphql
     networks:
       - monitoring
   exporter:
     build:
       context: .
       dockerfile: src/servers/exporter/Dockerfile      
-    depends_on:
+    links:
       - postgres
     links: 
       - graphql
@@ -65,7 +64,7 @@ services:
     build:
       context: .
       dockerfile: src/servers/graphql/Dockerfile
-    depends_on:
+    links:
       - postgres
     ports:
       - 4000:4000
@@ -78,6 +77,8 @@ services:
     image: postgres:13.4
     ports:
       - "5432:5432"
+    networks:
+      - monitoring
     volumes: 
       - ../postgresdata:/var/lib/postgresql/data
     restart: always
