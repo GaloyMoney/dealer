@@ -190,10 +190,18 @@ const main = async () => {
           exchangeLeverage_g.set(0)
         }
         if (originalBalance) {
-          notionalLever_g.set(originalBalance.notionalLever)
-          btcFreeBalance_g.set(originalBalance.btcFreeBalance)
-          btcUsedBalance_g.set(originalBalance.btcUsedBalance)
-          btcTotalBalance_g.set(originalBalance.btcTotalBalance)
+          if (originalBalance.notionalLever) {
+            notionalLever_g.set(originalBalance.notionalLever)
+          }
+          if (originalBalance.btcFreeBalance) {
+            btcFreeBalance_g.set(originalBalance.btcFreeBalance)
+          }
+          if (originalBalance.btcUsedBalance) {
+            btcUsedBalance_g.set(originalBalance.btcUsedBalance)
+          }
+          if (originalBalance.btcTotalBalance) {
+            btcTotalBalance_g.set(originalBalance.btcTotalBalance)
+          }
         } else {
           notionalLever_g.set(0)
           btcFreeBalance_g.set(0)

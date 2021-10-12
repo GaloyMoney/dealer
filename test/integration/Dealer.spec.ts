@@ -70,7 +70,7 @@ function validateResult(
 
 async function executeScenario(scenarioFilePath: string) {
   const logger = baseLogger.child({ module: "cron" })
-  await database.inFlightTransfers.clearAll()          
+  await database.inFlightTransfers.clearAll()
   let dealer = {} as Dealer
   let initDealer = true
 
