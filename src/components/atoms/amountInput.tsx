@@ -2,13 +2,13 @@ import { useState } from "react"
 import { useOneSatPrice } from "../../helpers/use-currency-conversion"
 
 export default function AmountInput({
-  callbackAmount,
+  callbackSatsAmount,
 }: {
-  callbackAmount: (text: string) => void
+  callbackSatsAmount: (amount: number) => void
 }) {
   const [satsActive, setSatsActive] = useState(false)
-  const [rawAmountText, setRawAmountText] = useState("0")
-  const [amountText, setAmountText] = useState("0.00")
+  const [textFieldPrettyValue, setTextFieldPrettyValue] = useState("0.00")
+  const [textFieldRawValue, setTextFieldRawValue] = useState("")
 
   const { oneSatToCents, error: satError } = useOneSatPrice()
 
@@ -17,7 +17,7 @@ export default function AmountInput({
     currency: "USD",
   })
 
-  const setAmount = (
+  const setAmountInTextField = (
     e: React.DetailedHTMLProps<
       React.InputHTMLAttributes<HTMLInputElement>,
       HTMLInputElement
@@ -28,28 +28,34 @@ export default function AmountInput({
 
     // If backspace key is pressed
     if (e.key === "Backspace") {
-      updatedStr = rawAmountText.substring(0, rawAmountText.length - 1)
-    } else updatedStr = rawAmountText + e.key
+      updatedStr = textFieldRawValue.substring(0, textFieldRawValue.length - 1)
+    } else {
+      updatedStr = textFieldRawValue + e.key
+    }
 
     // Only accept numbers, commas, and periods
     if (!(updatedStr === "" || re.test(updatedStr))) return
 
-    setRawAmountText(updatedStr)
+    setTextFieldRawValue(updatedStr)
     if (satsActive) {
-      setAmountText(updatedStr)
-      callbackAmount(updatedStr)
+      callbackSatsAmount(parseInt(updatedStr))
+      setTextFieldPrettyValue(updatedStr)
     } else {
+      if (updatedStr === "") {
+        setTextFieldPrettyValue("0.00")
+        callbackSatsAmount(0)
+        return
+      }
       let textFieldStr = formatter.format(parseFloat(updatedStr) / 100)
       textFieldStr = textFieldStr.replace("$", "")
-      if (textFieldStr === "NaN") textFieldStr = "0.00"
-      setAmountText(textFieldStr)
-      callbackAmount(textFieldStr)
+      setTextFieldPrettyValue(textFieldStr)
+      callbackSatsAmount(parseInt(convertUsdToSats(textFieldStr)))
     }
   }
 
   const convertSatsToUsd = (str: string) => {
     const amountFloat = parseFloat(str)
-    const usdCentValue = amountFloat / oneSatToCents
+    const usdCentValue = (amountFloat * oneSatToCents) / 100
     let amountFloatRounded = usdCentValue.toFixed(2).toString()
     if (amountFloatRounded === "NaN") amountFloatRounded = "0.00"
     return amountFloatRounded
@@ -58,22 +64,19 @@ export default function AmountInput({
   const convertUsdToSats = (str: string) => {
     const amountTextStripped = str.replace(",", "")
     const amountFloat = parseFloat(amountTextStripped)
-    const satValue = Math.floor(amountFloat * oneSatToCents)
-    return satValue
+    const satValue = Math.floor((amountFloat * 100) / oneSatToCents)
+    return satValue.toString()
   }
 
   const toggleSats = () => {
     if (satsActive) {
-      const amountFloatRounded = convertSatsToUsd(amountText)
-      setAmountText(amountFloatRounded)
-      setRawAmountText(amountFloatRounded.replace(".", ""))
-      callbackAmount(amountFloatRounded)
+      const amountFloatRounded = convertSatsToUsd(textFieldPrettyValue)
+      setTextFieldPrettyValue(amountFloatRounded)
+      setTextFieldRawValue(amountFloatRounded.replace(".", ""))
     } else {
-      const satValue = convertUsdToSats(amountText)
-      const satString = satValue.toString()
-      setAmountText(satString)
-      setRawAmountText(satString)
-      callbackAmount(satString)
+      const satValue = convertUsdToSats(textFieldPrettyValue)
+      setTextFieldPrettyValue(satValue)
+      setTextFieldRawValue(satValue)
     }
     setSatsActive(!satsActive)
   }
@@ -84,12 +87,12 @@ export default function AmountInput({
         <span>SATS</span>
         <input
           style={{ width: "80%" }}
-          value={amountText}
-          onKeyDown={setAmount}
+          value={textFieldPrettyValue}
+          onKeyDown={setAmountInTextField}
           onChange={undefined}
         />
         <span onClick={toggleSats}>&#8645;</span>
-        <p>{formatter.format(parseFloat(convertSatsToUsd(amountText)))}</p>
+        <p>{formatter.format(parseFloat(convertSatsToUsd(textFieldPrettyValue)))}</p>
       </div>
     )
 
@@ -98,12 +101,12 @@ export default function AmountInput({
       <span> $ </span>
       <input
         style={{ width: "80%" }}
-        value={amountText}
-        onKeyDown={setAmount}
+        value={textFieldPrettyValue}
+        onKeyDown={setAmountInTextField}
         onChange={undefined}
       />
       <span onClick={toggleSats}>&#8645;</span>
-      <p>SATS {convertUsdToSats(amountText)}</p>
+      <p>SATS {convertUsdToSats(textFieldPrettyValue)}</p>
     </div>
   )
 }
