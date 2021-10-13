@@ -28,19 +28,11 @@ export default function Receive({ username }: { username: string }) {
     },
   })
 
-  if (error) {
-    return <div className="error">{error.message}</div>
-  }
-
   const os = getOS()
 
-  if (loading) {
-    return <div className="loading">Loading...</div>
-  }
-
-  if (!data) {
-    return null
-  }
+  if (error) return <div className="error">{error.message}</div>
+  if (loading) return <div className="loading">Loading...</div>
+  if (!data) return null
 
   const { userDefaultWalletId } = data
 

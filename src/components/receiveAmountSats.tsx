@@ -46,27 +46,24 @@ export default function ReceiveAmountSats({
     })
   }, [createInvoice, userWalletId, amount])
 
-  if (error) {
-    return <div className="error">{error.message}</div>
-  }
-
-  let invoice
+  if (error) return <div className="error">{error.message}</div>
 
   if (data) {
     const invoiceData = data.mutationData
 
-    if (invoiceData.errors?.length > 0) {
+    if (invoiceData.errors?.length > 0)
       return <div className="error">{invoiceData.errors.join(", ")}</div>
-    }
 
-    invoice = invoiceData.invoice
+    const { invoice } = invoiceData
+
+    return (
+      <>
+        {loading && <div className="loading">Loading...</div>}
+
+        {invoice && <Invoice paymentRequest={invoice.paymentRequest} />}
+      </>
+    )
   }
 
-  return (
-    <>
-      {loading && <div className="loading">Loading...</div>}
-
-      {invoice && <Invoice paymentRequest={invoice.paymentRequest} />}
-    </>
-  )
+  return <div className="loading">Loading...</div>
 }

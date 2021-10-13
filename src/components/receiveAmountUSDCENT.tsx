@@ -51,15 +51,14 @@ export default function ReceiveAmountUSDCent({
     })
   }, [createInvoice, userWalletId, amount, usdCentValue])
 
-  if (error) <div className="error">{error.message}</div>
-  if (satError) <div className="error">{satError.message}</div>
+  if (error) return <div className="error">{error.message}</div>
+  if (satError) return <div className="error">{satError.message}</div>
 
   if (data) {
     const invoiceData = data.mutationData
 
-    if (invoiceData.errors?.length > 0) {
+    if (invoiceData.errors?.length > 0)
       return <div className="error">{invoiceData.errors.join(", ")}</div>
-    }
 
     const { invoice } = invoiceData
 
