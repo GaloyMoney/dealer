@@ -10,6 +10,8 @@ import ReceiveAmount from "./receiveAmount"
 import ReceiveNoAmount from "./receiveNoAmount"
 import { gql, useQuery } from "@apollo/client"
 import { currencyEnum } from "../enums/currency"
+import AmountInput from "./atoms/amountInput"
+import { useState } from "react"
 
 const USER_WALLET_ID = gql`
   query userDefaultWalletId($username: Username!) {
@@ -19,7 +21,8 @@ const USER_WALLET_ID = gql`
 
 export default function Receive({ username }: { username: string }) {
   const queryResult = useQueryParams()
-  const amount = queryResult[0]?.amount
+  const amountParam = queryResult[0]?.amount
+  const [amount, setAmount] = useState(amountParam)
   const currency = queryResult[0]?.currency?.toLowerCase()
 
   const { error, loading, data } = useQuery(USER_WALLET_ID, {
@@ -36,19 +39,17 @@ export default function Receive({ username }: { username: string }) {
 
   const { userDefaultWalletId } = data
 
+  const callbackAmount = (amount: string) => setAmount(amount)
+
   return (
     <Container fluid>
       {os === undefined && <br />}
       <Row className="justify-content-md-center">
         <Col md="auto" style={{ padding: 0 }}>
           <Card className="text-center">
-            <Card.Header>
-              {currency && amount
-                ? currency === currencyEnum.USDCENT
-                  ? `Pay ${username} ${amount ? ` $${amount / 100} USD` : ""}`
-                  : `Pay ${username} ${amount ? ` ${amount} SATS` : ""}`
-                : `Pay ${username}`}
-            </Card.Header>
+            <Card.Header>Pay {username}</Card.Header>
+
+            <AmountInput callbackAmount={callbackAmount} />
 
             {amount && currency ? (
               <ReceiveAmount
