@@ -9,6 +9,7 @@ import { getOS, appStoreLink, playStoreLink } from "./downloadApp"
 import ReceiveAmount from "./receiveAmount"
 import ReceiveNoAmount from "./receiveNoAmount"
 import { gql, useQuery } from "@apollo/client"
+import { currencyEnum } from "../enums/currency"
 
 const USER_WALLET_ID = gql`
   query userDefaultWalletId($username: Username!) {
@@ -41,28 +42,6 @@ export default function Receive({ username }: { username: string }) {
     return null
   }
 
-  const generateTitle = () => {
-    if (!currency || !amount) return <>Pay {username}</>
-    switch (currency) {
-      case "usdcent":
-        return (
-          <>
-            Pay {username}
-            {amount ? ` $${amount / 100} USD` : ""}
-          </>
-        )
-      case "sats":
-        return (
-          <>
-            Pay {username}
-            {amount ? ` ${amount} SATS` : ""}
-          </>
-        )
-      default:
-        return <>Pay {username}</>
-    }
-  }
-
   const { userDefaultWalletId } = data
 
   return (
@@ -71,7 +50,13 @@ export default function Receive({ username }: { username: string }) {
       <Row className="justify-content-md-center">
         <Col md="auto" style={{ padding: 0 }}>
           <Card className="text-center">
-            <Card.Header>{generateTitle()}</Card.Header>
+            <Card.Header>
+              {currency && amount
+                ? currency === currencyEnum.USDCENT
+                  ? `Pay ${username} ${amount ? ` $${amount / 100} USD` : ""}`
+                  : `Pay ${username} ${amount ? ` ${amount} SATS` : ""}`
+                : `Pay ${username}`}
+            </Card.Header>
 
             {amount && currency ? (
               <ReceiveAmount

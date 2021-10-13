@@ -1,4 +1,4 @@
-import ReceiveAmountUSDCENT from "./receiveAmountUSDCENT"
+import ReceiveAmountUSDCent from "./receiveAmountUSDCent"
 import ReceiveAmountSats from "./receiveAmountSats"
 
 export default function ReceiveAmount({
@@ -13,7 +13,7 @@ export default function ReceiveAmount({
   switch (currency) {
     case "usdcent":
       return (
-        <ReceiveAmountUSDCENT
+        <ReceiveAmountUSDCent
           userWalletId={userWalletId}
           amount={amount}
           currency={currency}

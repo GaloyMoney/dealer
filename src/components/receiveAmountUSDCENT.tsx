@@ -1,7 +1,8 @@
 import { useEffect } from "react"
-import { gql, useMutation, useSubscription } from "@apollo/client"
+import { gql, useMutation } from "@apollo/client"
 
 import Invoice from "./invoice"
+import { useOneSatPrice } from "../helpers/use-currency-conversion"
 
 type OperationError = {
   message: string
@@ -26,33 +27,7 @@ const LN_INVOICE_CREATE_ON_BEHALF_OF_RECIPIENT = gql`
   }
 `
 
-const QUERY_PRICE = gql`
-  subscription price(
-    $amount: SatAmount!
-    $amountCurrencyUnit: ExchangeCurrencyUnit!
-    $priceCurrencyUnit: ExchangeCurrencyUnit!
-  ) {
-    price(
-      input: {
-        amount: $amount
-        amountCurrencyUnit: $amountCurrencyUnit
-        priceCurrencyUnit: $priceCurrencyUnit
-      }
-    ) {
-      errors {
-        message
-      }
-      price {
-        base
-        offset
-        currencyUnit
-        formattedAmount
-      }
-    }
-  }
-`
-
-export default function ReceiveAmountUSDCENT({
+export default function ReceiveAmountUSDCent({
   userWalletId,
   amount,
 }: {
@@ -60,16 +35,8 @@ export default function ReceiveAmountUSDCENT({
   amount: number
   currency: string
 }) {
-  const { data: btcPriceData, error: btcPriceError } = useSubscription(QUERY_PRICE, {
-    variables: {
-      amount: 1,
-      amountCurrencyUnit: "BTCSAT",
-      priceCurrencyUnit: "USDCENT",
-    },
-  })
-  const oneSatToCents = parseFloat(btcPriceData?.price.price.formattedAmount)
-
-  const newVal = amount / oneSatToCents
+  const { oneSatToCents, error: satError } = useOneSatPrice()
+  const usdCentValue = amount / oneSatToCents
 
   const [createInvoice, { loading, error, data }] = useMutation<{
     mutationData: {
@@ -80,15 +47,12 @@ export default function ReceiveAmountUSDCENT({
 
   useEffect(() => {
     createInvoice({
-      variables: { walletId: userWalletId, amount: newVal },
+      variables: { walletId: userWalletId, amount: usdCentValue },
     })
-  }, [createInvoice, userWalletId, amount, newVal])
+  }, [createInvoice, userWalletId, amount, usdCentValue])
 
-  if (error) {
-    return <div className="error">{error.message}</div>
-  }
-
-  let invoice
+  if (error) <div className="error">{error.message}</div>
+  if (satError) <div className="error">{satError.message}</div>
 
   if (data) {
     const invoiceData = data.mutationData
@@ -97,14 +61,16 @@ export default function ReceiveAmountUSDCENT({
       return <div className="error">{invoiceData.errors.join(", ")}</div>
     }
 
-    invoice = invoiceData.invoice
+    const { invoice } = invoiceData
+
+    return (
+      <>
+        {loading && <div className="loading">Loading...</div>}
+
+        {invoice && <Invoice paymentRequest={invoice.paymentRequest} />}
+      </>
+    )
   }
 
-  return (
-    <>
-      {loading && <div className="loading">Loading...</div>}
-
-      {invoice && <Invoice paymentRequest={invoice.paymentRequest} />}
-    </>
-  )
+  return <div className="loading">Loading...</div>
 }
