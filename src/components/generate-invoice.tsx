@@ -1,5 +1,5 @@
-import { useEffect } from "react"
 import { gql, useMutation } from "@apollo/client"
+import * as React from "react"
 
 import Invoice from "./invoice"
 
@@ -26,12 +26,12 @@ const LN_INVOICE_CREATE_ON_BEHALF_OF_RECIPIENT = gql`
   }
 `
 
-export default function ReceiveAmountSats({
+function GenerateInvoice({
+  amountInSats,
   userWalletId,
-  amount,
 }: {
+  amountInSats: number
   userWalletId: string
-  amount: number
 }) {
   const [createInvoice, { loading, error, data }] = useMutation<{
     mutationData: {
@@ -40,30 +40,31 @@ export default function ReceiveAmountSats({
     }
   }>(LN_INVOICE_CREATE_ON_BEHALF_OF_RECIPIENT, { onError: console.error })
 
-  useEffect(() => {
+  React.useEffect(() => {
     createInvoice({
-      variables: { walletId: userWalletId, amount },
+      variables: { walletId: userWalletId, amount: amountInSats },
     })
-  }, [createInvoice, userWalletId, amount])
+  }, [amountInSats, userWalletId, createInvoice])
 
-  if (error) return <div className="error">{error.message}</div>
-
-  if (data) {
-    const invoiceData = data.mutationData
-
-    if (invoiceData.errors?.length > 0)
-      return <div className="error">{invoiceData.errors.join(", ")}</div>
-
-    const { invoice } = invoiceData
-
-    return (
-      <>
-        {loading && <div className="loading">Loading...</div>}
-
-        {invoice && <Invoice paymentRequest={invoice.paymentRequest} />}
-      </>
-    )
+  if (error) {
+    return <div className="error">{error.message}</div>
   }
 
-  return <div className="loading">Loading...</div>
+  if (!data) {
+    if (loading) {
+      return <div className="loading">Creating Invoice...</div>
+    }
+    return <div className="loading">...</div>
+  }
+
+  const invoiceData = data.mutationData
+
+  if (invoiceData.errors?.length > 0)
+    return <div className="error">{invoiceData.errors.join(", ")}</div>
+
+  const { invoice } = invoiceData
+
+  return <>{invoice && <Invoice paymentRequest={invoice.paymentRequest} />}</>
 }
+
+export default React.memo(GenerateInvoice)

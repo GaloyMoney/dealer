@@ -20,5 +20,45 @@ code {
 .loading {
   margin: 20px auto;
   text-align: center;
-  font-size: 1.5rem;
+  font-size: 1.25rem;
+}
+
+.set-invoice-button {
+  margin: 1.5rem auto 1rem auto;
+  padding: 0.25rem 2rem;
+}
+
+.tip {
+  padding: 0.5rem;
+  font-size: 0.85rem;
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+.amount-input {
+  margin-top: 0.75rem;
+  display: flex;
+  align-items: center;
+}
+
+.currency-label {
+  width: 14%;
+  text-align: right;
+  margin-right: 0.25rem;
+}
+
+.input-container {
+  width: 76%;
+}
+
+.input-container input {
+  width: 100%;
+}
+
+.toggle-currency {
+  width: 10%;
+  text-align: center;
+  cursor: pointer;
 }

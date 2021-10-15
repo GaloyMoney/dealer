@@ -26,7 +26,13 @@ const LN_NOAMOUNT_INVOICE_CREATE_ON_BEHALF_OF_RECIPIENT = gql`
   }
 `
 
-export default function ReceiveNoAmount({ userWalletId }: { userWalletId: string }) {
+export default function ReceiveNoAmount({
+  userWalletId,
+  onSetAmountClick,
+}: {
+  userWalletId: string
+  onSetAmountClick: () => void
+}) {
   const [createInvoice, { loading, error, data }] = useMutation<{
     mutationData: {
       errors: OperationError[]
@@ -60,6 +66,9 @@ export default function ReceiveNoAmount({ userWalletId }: { userWalletId: string
     <>
       {loading && <div className="loading">Loading...</div>}
 
+      <button className="set-invoice-button" onClick={onSetAmountClick}>
+        Set Invoice Amount
+      </button>
       {invoice && <Invoice paymentRequest={invoice.paymentRequest} />}
     </>
   )

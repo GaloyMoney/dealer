@@ -9,6 +9,7 @@ import { getOS, appStoreLink, playStoreLink } from "./downloadApp"
 import ReceiveAmount from "./receiveAmount"
 import ReceiveNoAmount from "./receiveNoAmount"
 import { gql, useQuery } from "@apollo/client"
+import updateHistoryState from "../helpers/update-history-state"
 
 const USER_WALLET_ID = gql`
   query userDefaultWalletId($username: Username!) {
@@ -17,9 +18,7 @@ const USER_WALLET_ID = gql`
 `
 
 export default function Receive({ username }: { username: string }) {
-  const queryResult = useQueryParams()
-  const amount = queryResult[0]?.amount
-  const currency = queryResult[0]?.currency?.toLowerCase()
+  const [queryParams, setQueryParams] = useQueryParams()
 
   const { error, loading, data } = useQuery(USER_WALLET_ID, {
     variables: {
@@ -35,6 +34,15 @@ export default function Receive({ username }: { username: string }) {
 
   const { userDefaultWalletId } = data
 
+  const isAmountInvoice = queryParams?.amount !== undefined
+
+  const onSetAmountClick = () => {
+    setQueryParams({
+      amount: 0,
+      currency: "USD",
+    })
+  }
+
   return (
     <Container fluid>
       {os === undefined && <br />}
@@ -43,14 +51,16 @@ export default function Receive({ username }: { username: string }) {
           <Card className="text-center">
             <Card.Header>Pay {username}</Card.Header>
 
-            {amount && currency ? (
+            {isAmountInvoice ? (
               <ReceiveAmount
                 userWalletId={userDefaultWalletId}
-                amount={amount}
-                currency={currency}
+                updateURLAmount={updateHistoryState}
               />
             ) : (
-              <ReceiveNoAmount userWalletId={userDefaultWalletId} />
+              <ReceiveNoAmount
+                userWalletId={userDefaultWalletId}
+                onSetAmountClick={onSetAmountClick}
+              />
             )}
 
             <Card.Body>
