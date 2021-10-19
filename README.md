@@ -1,8 +1,8 @@
-# Galoy Tips
+# Galoy Pay
 
 ## What is it for?
 
-This repo is a web application that can be used to send tips to users.
+This repo is a web application that can be used to send tips or payments to users.
 
 It's packaged as a docker image, and is automatically installed as part of the Galoy helm charts.
 
