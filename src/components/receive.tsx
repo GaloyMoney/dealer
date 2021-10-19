@@ -10,8 +10,8 @@ import ReceiveNoAmount from "./receiveNoAmount"
 import { gql, useQuery } from "@apollo/client"
 
 const USER_WALLET_ID = gql`
-  query userWalletId($username: Username!) {
-    userWalletId(username: $username)
+  query userDefaultWalletId($username: Username!) {
+    userDefaultWalletId(username: $username)
   }
 `
 
@@ -42,7 +42,7 @@ export default function Receive({
     return null
   }
 
-  const { userWalletId } = data
+  const { userDefaultWalletId } = data
 
   return (
     <Container fluid>
@@ -56,9 +56,9 @@ export default function Receive({
             </Card.Header>
 
             {amount ? (
-              <ReceiveAmount userWalletId={userWalletId} amount={amount} />
+              <ReceiveAmount userWalletId={userDefaultWalletId} amount={amount} />
             ) : (
-              <ReceiveNoAmount userWalletId={userWalletId} />
+              <ReceiveNoAmount userWalletId={userDefaultWalletId} />
             )}
 
             <Card.Body>
