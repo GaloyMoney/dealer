@@ -51,7 +51,7 @@ export default function ReceiveAmount({
       }
       return primaryCurrency === "SATS"
         ? usdFormatter.format(newValue)
-        : satsFormatter.format(newValue) + " SATS"
+        : satsFormatter.format(newValue) + " sats"
     },
     [primaryCurrency, satsToUsd, usdToSats],
   )
@@ -117,7 +117,7 @@ export default function ReceiveAmount({
   return (
     <>
       <div className="amount-input">
-        <div className="currency-label">{primaryCurrency === "SATS" ? "SATS" : "$"}</div>
+        <div className="currency-label">{primaryCurrency === "SATS" ? "sats" : "$"}</div>
         <div className="input-container">
           <FormattedInput
             key={primaryCurrency}
