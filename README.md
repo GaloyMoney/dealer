@@ -6,9 +6,9 @@ This repo is a web application that can be used to send tips or payments to user
 
 It's packaged as a docker image, and is automatically installed as part of the Galoy helm charts.
 
-With a default installation, Galoy-Pay can be access under `pay.domain.com`.
+With a default installation, Galoy-Pay can be accessed under `pay.domain.com`.
 
-Galoy-Pay usese query, mutation, and subscription operations from the Galoy's graphql API endpoints `api.domain.com` as defined in [schema.graphql](https://github.com/GaloyMoney/galoy/blob/main/src/graphql/main/schema.graphql)
+Galoy-Pay uses query, mutation, and subscription operations from the Galoy's graphql API endpoints `api.domain.com` as defined in [schema.graphql](https://github.com/GaloyMoney/galoy/blob/main/src/graphql/main/schema.graphql)
 
 ## How to run this repo locally?
 
