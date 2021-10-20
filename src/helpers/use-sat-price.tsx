@@ -27,10 +27,10 @@ const QUERY_PRICE = gql`
   }
 `
 
-const PRICE_CACHE_INTERVAL = 3 * 60 * 1000
-
 const useSatPrice = () => {
-  const { data, error } = useSubscription(QUERY_PRICE, {
+  const priceRef = React.useRef<number>(0)
+
+  const { data } = useSubscription(QUERY_PRICE, {
     variables: {
       amount: 1,
       amountCurrencyUnit: "BTCSAT",
@@ -38,39 +38,27 @@ const useSatPrice = () => {
     },
   })
 
-  // Price cache
-  const [price, setPrice] = React.useState(0)
-  const priceRef = React.useRef<number>(price)
-
-  React.useEffect(() => {
-    const priceTimerId = setInterval(() => {
-      if (priceRef.current > 0) {
-        setPrice(priceRef.current)
-      }
-    }, PRICE_CACHE_INTERVAL)
-    return () => clearInterval(priceTimerId)
-  }, [])
-
-  if (error) {
-    console.error(error) // TODO: Handle this case in the UI
-  }
+  const conversions = React.useMemo(
+    () => ({
+      satsToUsd: (sats: number) => (sats * priceRef.current) / 100,
+      usdToSats: (usd: number) => (100 * usd) / priceRef.current,
+    }),
+    [],
+  )
 
   if (data?.price?.price) {
     const { base, offset } = data.price.price
     priceRef.current = base / 10 ** offset
-    if (price === 0) {
-      setPrice(priceRef.current)
+  }
+
+  if (priceRef.current === 0) {
+    return {
+      satsToUsd: () => NaN,
+      usdToSats: () => NaN,
     }
   }
 
-  return React.useMemo(
-    () => ({
-      price,
-      satsToUsd: (sats: number) => (price > 0 ? (sats * price) / 100 : NaN),
-      usdToSats: (usd: number) => (price > 0 ? (100 * usd) / price : NaN),
-    }),
-    [price],
-  )
+  return conversions
 }
 
 export default useSatPrice

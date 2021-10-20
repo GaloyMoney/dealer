@@ -33,7 +33,19 @@ code {
   font-size: 0.85rem;
 }
 
+.warning {
+  margin: 0.75rem auto;
+  font-weight: bold;
+  border: thin dashed #801313;
+  padding: 0.5rem;
+}
+
+.expired-invoice {
+  margin: 1.5rem;
+}
+
 .clickable {
+  color: #007bff;
   cursor: pointer;
 }
 
@@ -43,32 +55,26 @@ code {
   align-items: center;
 }
 
+.amount-input input {
+  min-width: 300px;
+}
+
 .currency-label {
-  width: 14%;
+  width: 40px;
   text-align: right;
   margin-right: 0.25rem;
 }
 
-.input-container {
-  width: 76%;
-}
-
-.input-container input {
-  width: 100%;
-}
-
 .toggle-currency {
-  width: 10%;
+  width: 30px;
   text-align: center;
   cursor: pointer;
 }
 
 .qr-code-container {
-  min-width: 360px;
   margin: 0 0.5rem;
 }
 
 .invoice-container {
-  min-width: 360px;
-  max-width: 500px;
+  max-width: 390px;
 }

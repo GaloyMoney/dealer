@@ -69,8 +69,8 @@ export default function ReceiveAmount({
       debounce(({ satsForInvoice, amount, currency }) => {
         if (satsForInvoice > 0) {
           updateURLAmount({ amount, currency })
-          setSatsForInvoice(satsForInvoice)
         }
+        setSatsForInvoice(satsForInvoice)
       }, 1000),
     [updateURLAmount],
   )
@@ -98,6 +98,13 @@ export default function ReceiveAmount({
       }
     })
   }, [])
+
+  const updateSatsAmount = React.useCallback(() => {
+    setSatsForInvoice(
+      primaryCurrency === "SATS" ? primaryValue : Math.round(usdToSats(primaryValue)),
+    )
+    setConvertedValue(convertValue(primaryValue))
+  }, [convertValue, primaryCurrency, primaryValue, usdToSats])
 
   const toggleCurrency = () => {
     setPrimaryAmount((currentAmount) => {
@@ -129,10 +136,14 @@ export default function ReceiveAmount({
           &#8645;
         </div>
       </div>
-      <p>&#8776; {convertedValue}</p>
+      <div>&#8776; {convertedValue}</div>
 
       {satsForInvoice > 0 && (
-        <GenerateInvoice amountInSats={satsForInvoice} userWalletId={userWalletId} />
+        <GenerateInvoice
+          amountInSats={satsForInvoice}
+          userWalletId={userWalletId}
+          regenerateAction={updateSatsAmount}
+        />
       )}
     </>
   )
