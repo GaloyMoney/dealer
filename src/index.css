@@ -24,8 +24,8 @@ code {
 }
 
 .set-invoice-button {
-  margin: 1.5rem auto 1rem auto;
-  padding: 0.25rem 2rem;
+  margin: 1rem auto 0 auto;
+  padding: 0.2rem 2rem;
 }
 
 .tip {
@@ -61,4 +61,14 @@ code {
   width: 10%;
   text-align: center;
   cursor: pointer;
+}
+
+.qr-code-container {
+  min-width: 360px;
+  margin: 0 0.5rem;
+}
+
+.invoice-container {
+  min-width: 360px;
+  max-width: 500px;
 }

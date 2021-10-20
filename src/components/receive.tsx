@@ -44,7 +44,7 @@ export default function Receive({ username }: { username: string }) {
   }
 
   return (
-    <Container fluid>
+    <Container className="invoice-container" fluid>
       {os === undefined && <br />}
       <Row className="justify-content-md-center">
         <Col md="auto" style={{ padding: 0 }}>

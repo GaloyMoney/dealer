@@ -69,6 +69,7 @@ export default function ReceiveNoAmount({
       <button className="set-invoice-button" onClick={onSetAmountClick}>
         Set Invoice Amount
       </button>
+
       {invoice && <Invoice paymentRequest={invoice.paymentRequest} />}
     </>
   )

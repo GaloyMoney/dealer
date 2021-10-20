@@ -64,7 +64,11 @@ function GenerateInvoice({
 
   const { invoice } = invoiceData
 
-  return <>{invoice && <Invoice paymentRequest={invoice.paymentRequest} />}</>
+  if (invoice) {
+    return <Invoice paymentRequest={invoice.paymentRequest} />
+  }
+
+  return null
 }
 
 export default React.memo(GenerateInvoice)
