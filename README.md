@@ -114,3 +114,17 @@ As the liquidity of the Dealer on the derivatives market changes due to the abov
 ### Weekly/Monthly Futures
 
 ### Savings account / Money Market
+
+## References
+
+- https://www.investopedia.com/terms/d/dealer.asp
+- https://www.investopedia.com/terms/h/hedge.asp
+- https://www.investopedia.com/terms/f/futurescontract.asp
+- https://futuresbit.com/what-is-inverse-bitcoin-futures-contract/
+- https://en.wikipedia.org/wiki/Perpetual_futures
+- https://www.investopedia.com/terms/m/marktomarket.asp
+- https://www.investopedia.com/terms/c/cashandcarry.asp
+- https://www.investopedia.com/terms/b/basis.asp
+- https://www.investopedia.com/terms/b/basis-trading.asp
+- https://www.investopedia.com/terms/l/long_on_the_basis.asp
+
