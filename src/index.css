@@ -20,5 +20,61 @@ code {
 .loading {
   margin: 20px auto;
   text-align: center;
-  font-size: 1.5rem;
+  font-size: 1.25rem;
+}
+
+.set-invoice-button {
+  margin: 1rem auto 0 auto;
+  padding: 0.2rem 2rem;
+}
+
+.tip {
+  padding: 0.5rem;
+  font-size: 0.85rem;
+}
+
+.warning {
+  margin: 0.75rem auto;
+  font-weight: bold;
+  border: thin dashed #801313;
+  padding: 0.5rem;
+}
+
+.expired-invoice {
+  margin: 1.5rem;
+}
+
+.clickable {
+  color: #007bff;
+  cursor: pointer;
+}
+
+.amount-input {
+  margin-top: 0.75rem;
+  display: flex;
+  align-items: center;
+}
+
+.amount-input input {
+  min-width: 300px;
+}
+
+.currency-label {
+  width: 40px;
+  text-align: right;
+  margin-right: 0.25rem;
+}
+
+.toggle-currency {
+  width: 30px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.qr-code-container {
+  margin: 0 0.5rem;
+}
+
+.invoice-container {
+  max-width: 390px;
 }

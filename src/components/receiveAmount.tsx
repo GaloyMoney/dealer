@@ -1,72 +1,150 @@
-import { useEffect } from "react"
-import { gql, useMutation } from "@apollo/client"
+import * as React from "react"
+import debounce from "lodash.debounce"
 
-import Invoice from "./invoice"
+import GenerateInvoice from "./generate-invoice"
+import useSatPrice from "../helpers/use-sat-price"
+import FormattedInput from "./formatted-input"
 
-type OperationError = {
-  message: string
-}
+const usdFormatter = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD",
+  maximumFractionDigits: 2,
+})
 
-type LnInvoiceObject = {
-  paymentRequest: string
-}
+const satsFormatter = new Intl.NumberFormat("en-US", {
+  maximumFractionDigits: 0,
+})
 
-const LN_INVOICE_CREATE_ON_BEHALF_OF_RECIPIENT = gql`
-  mutation lnInvoiceCreateOnBehalfOfRecipient($walletId: WalletId!, $amount: SatAmount!) {
-    mutationData: lnInvoiceCreateOnBehalfOfRecipient(
-      input: { recipientWalletId: $walletId, amount: $amount }
-    ) {
-      errors {
-        message
-      }
-      invoice {
-        paymentRequest
-      }
-    }
+const parseQueryAmount = (queryObject: Record<string, string>) => {
+  return {
+    amount: Number(queryObject?.amount) || 0,
+    currency: queryObject?.currency?.toUpperCase() || "USD",
   }
-`
+}
 
 export default function ReceiveAmount({
   userWalletId,
-  amount,
+  updateURLAmount,
 }: {
   userWalletId: string
-  amount: number
+  updateURLAmount: ({ amount, currency }: { amount: number; currency: string }) => void
 }) {
-  const [createInvoice, { loading, error, data }] = useMutation<{
-    mutationData: {
-      errors: OperationError[]
-      invoice?: LnInvoiceObject
-    }
-  }>(LN_INVOICE_CREATE_ON_BEHALF_OF_RECIPIENT, { onError: console.error })
+  const { satsToUsd, usdToSats } = useSatPrice()
+  const [satsForInvoice, setSatsForInvoice] = React.useState(0)
 
-  useEffect(() => {
-    createInvoice({
-      variables: { walletId: userWalletId, amount: amount },
+  const urlSearchParams = new URLSearchParams(window.location.search)
+  const params = Object.fromEntries(urlSearchParams.entries())
+  const { amount, currency } = parseQueryAmount(params) // USD or SATs
+
+  const [primaryAmount, setPrimaryAmount] = React.useState({
+    amount,
+    currency,
+  })
+
+  const { amount: primaryValue, currency: primaryCurrency } = primaryAmount
+
+  const convertValue = React.useCallback(
+    (value: number): string => {
+      const newValue = primaryCurrency === "SATS" ? satsToUsd(value) : usdToSats(value)
+      if (Number.isNaN(newValue)) {
+        return "??" // Not parsable
+      }
+      return primaryCurrency === "SATS"
+        ? usdFormatter.format(newValue)
+        : satsFormatter.format(newValue) + " sats"
+    },
+    [primaryCurrency, satsToUsd, usdToSats],
+  )
+
+  const [convertedValue, setConvertedValue] = React.useState(() =>
+    convertValue(primaryValue),
+  )
+
+  React.useEffect(() => {
+    setConvertedValue(convertValue(primaryValue))
+  }, [convertValue, primaryValue])
+
+  const onAmountUpdateDebounced = React.useMemo(
+    () =>
+      debounce(({ satsForInvoice, amount, currency }) => {
+        if (satsForInvoice > 0) {
+          updateURLAmount({ amount, currency })
+        }
+        setSatsForInvoice(satsForInvoice)
+      }, 1000),
+    [updateURLAmount],
+  )
+
+  React.useEffect(() => {
+    onAmountUpdateDebounced({
+      satsForInvoice:
+        primaryCurrency === "SATS" ? primaryValue : Math.round(usdToSats(primaryValue)),
+      amount: primaryValue,
+      currency: primaryCurrency,
     })
-  }, [createInvoice, userWalletId, amount])
+  }, [onAmountUpdateDebounced, primaryCurrency, primaryValue, usdToSats])
 
-  if (error) {
-    return <div className="error">{error.message}</div>
-  }
+  const onFormattedInputValueChange: ({
+    numberValue,
+    formattedValue,
+  }: {
+    numberValue: number
+    formattedValue: string
+  }) => void = React.useCallback(({ numberValue }) => {
+    setPrimaryAmount((currentAmount) => {
+      return {
+        amount: numberValue,
+        currency: currentAmount.currency,
+      }
+    })
+  }, [])
 
-  let invoice
+  const updateSatsAmount = React.useCallback(() => {
+    setSatsForInvoice(
+      primaryCurrency === "SATS" ? primaryValue : Math.round(usdToSats(primaryValue)),
+    )
+    setConvertedValue(convertValue(primaryValue))
+  }, [convertValue, primaryCurrency, primaryValue, usdToSats])
 
-  if (data) {
-    const invoiceData = data.mutationData
-
-    if (invoiceData.errors?.length > 0) {
-      return <div className="error">{invoiceData.errors.join(", ")}</div>
-    }
-
-    invoice = invoiceData.invoice
+  const toggleCurrency = () => {
+    setPrimaryAmount((currentAmount) => {
+      const newPrimaryNumber: number =
+        currentAmount.currency === "SATS"
+          ? satsToUsd(currentAmount.amount)
+          : usdToSats(currentAmount.amount)
+      return {
+        amount: Number(
+          newPrimaryNumber.toFixed(currentAmount.currency === "SATS" ? 2 : 0),
+        ),
+        currency: currentAmount.currency === "SATS" ? "USD" : "SATS",
+      }
+    })
   }
 
   return (
     <>
-      {loading && <div className="loading">Loading...</div>}
+      <div className="amount-input">
+        <div className="currency-label">{primaryCurrency === "SATS" ? "sats" : "$"}</div>
+        <div className="input-container">
+          <FormattedInput
+            key={primaryCurrency}
+            value={primaryValue.toString()}
+            onValueChange={onFormattedInputValueChange}
+          />
+        </div>
+        <div className="toggle-currency" onClick={toggleCurrency}>
+          &#8645;
+        </div>
+      </div>
+      <div>&#8776; {convertedValue}</div>
 
-      {invoice && <Invoice paymentRequest={invoice.paymentRequest} />}
+      {satsForInvoice > 0 && (
+        <GenerateInvoice
+          amountInSats={satsForInvoice}
+          userWalletId={userWalletId}
+          regenerateAction={updateSatsAmount}
+        />
+      )}
     </>
   )
 }
