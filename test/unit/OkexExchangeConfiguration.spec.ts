@@ -202,14 +202,25 @@ function getValidcreateMarketOrderValidateApiResponse() {
   return { id: "validId" }
 }
 
-function getValidFetchBalanceProcessApiResponse() {
+function getValidFetchBalanceProcessApiResponse(totalEq?: string) {
+  let totalEquity = "100"
+  if (totalEq) {
+    totalEquity = totalEq
+  }
   return {
     info: {
       data: [
         {
-          totalEq: "100",
+          details: [{ notionalLever: 0 }],
+          totalEq: `${totalEquity}`,
         },
       ],
+    },
+
+    BTC: {
+      btcFreeBalance: 0,
+      btcTotalBalance: 0,
+      btcUsedBalance: 0,
     },
   }
 }
@@ -217,6 +228,10 @@ function getValidFetchBalanceProcessApiResponse() {
 function getProcessedFetchBalanceProcessApiResponse(response) {
   return {
     originalResponseAsIs: response,
+    notionalLever: Number(response?.info?.data?.[0]?.details?.[0]?.notionalLever),
+    btcFreeBalance: response?.BTC?.free,
+    btcUsedBalance: response?.BTC?.used,
+    btcTotalBalance: response?.BTC?.total,
     totalEq: Number(response.info.data[0].totalEq),
   }
 }
@@ -1203,15 +1218,7 @@ describe("OkexExchangeConfiguration", () => {
       const configuration = new OkexExchangeConfiguration()
       const validTotalEq = ["-1", "0", "1"]
       for (const totalEq of validTotalEq) {
-        const response = {
-          info: {
-            data: [
-              {
-                totalEq: totalEq,
-              },
-            ],
-          },
-        }
+        const response = getValidFetchBalanceProcessApiResponse(totalEq)
         const expected = getProcessedFetchBalanceProcessApiResponse(response)
         const result = configuration.fetchBalanceProcessApiResponse(response)
         expect(result).toEqual(expected)
