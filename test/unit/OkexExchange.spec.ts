@@ -33,14 +33,27 @@ function getValidFetchPositionResponse(args: {
   }
 }
 
-function getValidFetchBalanceResponse(args: { balance: number }) {
+function getValidFetchBalanceResponse(args: {
+  totalEq: number
+  notionalLever: number
+  btcFreeBalance: number
+  btcTotalBalance: number
+  btcUsedBalance: number
+}) {
   return {
     info: {
       data: [
         {
-          totalEq: `${args.balance}`,
+          details: [{ notionalLever: args.notionalLever }],
+          totalEq: `${args.totalEq}`,
         },
       ],
+    },
+
+    BTC: {
+      free: args.btcFreeBalance,
+      used: args.btcUsedBalance,
+      total: args.btcTotalBalance,
     },
   }
 }
@@ -178,7 +191,13 @@ describe("OkexExchange", () => {
 
       const expectedTotalEquity = 1234
       exchangeMock.fetchBalance.mockImplementationOnce(() => {
-        return getValidFetchBalanceResponse({ balance: expectedTotalEquity })
+        return getValidFetchBalanceResponse({
+          totalEq: expectedTotalEquity,
+          notionalLever: expectedLeverageRatio,
+          btcFreeBalance: 0,
+          btcUsedBalance: expectedMargin,
+          btcTotalBalance: expectedMargin,
+        })
       })
 
       const result = await exchange.getAccountAndPositionRisk(expectedLast)
