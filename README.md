@@ -4,7 +4,7 @@
 
 Dealers are people or firms who buy and sell securities **for their own account**. A dealer acts as a principal in trading for its own account, as opposed to a broker who acts as an agent who executes orders on behalf of its clients. 
 
-Further reading: [Dealer](https://www.investopedia.com/terms/d/dealer.asp), [Broker-Dealer](https://www.investopedia.com/terms/b/broker-dealer.asp).)
+Further reading: [Dealer](https://www.investopedia.com/terms/d/dealer.asp), [Broker-Dealer](https://www.investopedia.com/terms/b/broker-dealer.asp).
 
 ## Why a Dealer?
 
