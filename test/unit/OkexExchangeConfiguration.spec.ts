@@ -202,25 +202,27 @@ function getValidcreateMarketOrderValidateApiResponse() {
   return { id: "validId" }
 }
 
-function getValidFetchBalanceProcessApiResponse(totalEq?: string) {
-  let totalEquity = "100"
-  if (totalEq) {
-    totalEquity = totalEq
-  }
+function getValidFetchBalanceProcessApiResponse(args: {
+  totalEq: number
+  notionalLever: number
+  btcFreeBalance: number
+  btcTotalBalance: number
+  btcUsedBalance: number
+}) {
   return {
     info: {
       data: [
         {
-          details: [{ notionalLever: 0 }],
-          totalEq: `${totalEquity}`,
+          details: [{ notionalLever: args.notionalLever }],
+          totalEq: `${args.totalEq}`,
         },
       ],
     },
 
     BTC: {
-      btcFreeBalance: 0,
-      btcTotalBalance: 0,
-      btcUsedBalance: 0,
+      free: args.btcFreeBalance,
+      used: args.btcUsedBalance,
+      total: args.btcTotalBalance,
     },
   }
 }
@@ -1216,9 +1218,15 @@ describe("OkexExchangeConfiguration", () => {
 
     it("should return processed response when info.data[0].totalEq property is negative, positive or zero", async () => {
       const configuration = new OkexExchangeConfiguration()
-      const validTotalEq = ["-1", "0", "1"]
+      const validTotalEq = [-1, 0, 1]
       for (const totalEq of validTotalEq) {
-        const response = getValidFetchBalanceProcessApiResponse(totalEq)
+        const response = getValidFetchBalanceProcessApiResponse({
+          totalEq: totalEq,
+          notionalLever: 56,
+          btcFreeBalance: 78,
+          btcUsedBalance: 90,
+          btcTotalBalance: 12,
+        })
         const expected = getProcessedFetchBalanceProcessApiResponse(response)
         const result = configuration.fetchBalanceProcessApiResponse(response)
         expect(result).toEqual(expected)
@@ -1228,7 +1236,13 @@ describe("OkexExchangeConfiguration", () => {
 
     it("should return processed response when response is valid", async () => {
       const configuration = new OkexExchangeConfiguration()
-      const response = getValidFetchBalanceProcessApiResponse()
+      const response = getValidFetchBalanceProcessApiResponse({
+        totalEq: 1234,
+        notionalLever: 56,
+        btcFreeBalance: 78,
+        btcUsedBalance: 90,
+        btcTotalBalance: 12,
+      })
       const expected = getProcessedFetchBalanceProcessApiResponse(response)
       const result = configuration.fetchBalanceProcessApiResponse(response)
       expect(result).toEqual(expected)
