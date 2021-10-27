@@ -16,3 +16,12 @@ check-code:
 	yarn eslint-check
 	yarn prettier-check
 	yarn build
+
+start:
+	docker-compose up -d
+
+clean-deps:
+	docker-compose down
+
+migrate-db:
+	yarn migrate-ts up
