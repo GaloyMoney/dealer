@@ -1,0 +1,295 @@
+#@ load("@ytt:data", "data")
+
+#@ def pipeline_image():
+#@   return data.values.docker_registry + "/galoy-app-pipeline"
+#@ end
+
+#@ def dealer_image():
+#@   return data.values.docker_registry + "/dealer"
+#@ end
+
+#@ def fake_galoyapi_image():
+#@   return data.values.docker_registry + "/fake-galoyapi"
+#@ end
+
+#@ def task_image_config():
+type: registry-image
+source:
+  username: #@ data.values.docker_registry_user
+  password: #@ data.values.docker_registry_password
+  repository: #@ pipeline_image()
+#@ end
+
+groups:
+- name: dealer
+  jobs:
+  - install-deps
+  - test-integration
+  - test-unit
+  - check-code
+  - build-dealer-image
+  - build-fake-galoyapi-image
+  - bump-image-in-chart
+
+jobs:
+- name: install-deps
+  plan:
+  - in_parallel:
+    - {get: deps, trigger: true}
+    - {get: pipeline-tasks}
+    - {put: deps-version, params: {bump: patch}}
+  - task: install-deps
+    config:
+      platform: linux
+      image_resource: #@ task_image_config()
+      inputs:
+      - name: pipeline-tasks
+      - name: deps
+      - name: deps-version
+      outputs:
+      - name: bundled-deps
+      run:
+        path: pipeline-tasks/ci/tasks/install-deps.sh
+  - put: bundled-deps
+    params:
+      file: bundled-deps/bundled-deps-*.tgz
+
+- name: test-integration
+  serial: true
+  plan:
+  - in_parallel:
+    - { get: repo, trigger: true }
+    - { get: pipeline-tasks }
+    - { get: bundled-deps, trigger: true }
+  - task: test-integration
+    config:
+      platform: linux
+      image_resource: #@ task_image_config()
+      inputs:
+      - name: bundled-deps
+      - name: pipeline-tasks
+      - name: repo
+      params:
+        DOCKER_HOST_IP: #@ data.values.docker_host_ip
+        GOOGLE_CREDENTIALS: #@ data.values.staging_inception_creds
+        SSH_PRIVATE_KEY: #@ data.values.staging_ssh_private_key
+        SSH_PUB_KEY: #@ data.values.staging_ssh_pub_key
+        JEST_TIMEOUT: 60000
+      run:
+        path: pipeline-tasks/ci/tasks/test-integration.sh
+
+- name: test-unit
+  serial: true
+  plan:
+  - in_parallel:
+    - { get: repo, trigger: true }
+    - { get: pipeline-tasks }
+    - { get: bundled-deps, trigger: true }
+  - task: test-unit
+    config:
+      platform: linux
+      image_resource: #@ task_image_config()
+      inputs:
+      - name: bundled-deps
+      - name: pipeline-tasks
+      - name: repo
+      run:
+        path: pipeline-tasks/ci/tasks/test-unit.sh
+
+- name: check-code
+  serial: true
+  plan:
+  - in_parallel:
+    - { get: repo, trigger: true }
+    - { get: pipeline-tasks }
+    - { get: bundled-deps, trigger: true}
+  - task: check-code
+    config:
+      platform: linux
+      image_resource: #@ task_image_config()
+      inputs:
+      - name: bundled-deps
+      - name: pipeline-tasks
+      - name: repo
+      run:
+        path: pipeline-tasks/ci/tasks/check-code.sh
+
+- name: build-dealer-image
+  serial: true
+  plan:
+  - get: repo
+    trigger: true
+  - task: build
+    privileged: true
+    config:
+      platform: linux
+      image_resource:
+        type: registry-image
+        source:
+          repository: vito/oci-build-task
+      inputs:
+      - name: repo
+      outputs:
+      - name: image
+      params:
+        CONTEXT: repo
+        DOCKERFILE: "repo/src/app/Dockerfile"
+      run:
+        path: build
+  - put: dealer-image
+    params:
+      image: image/image.tar
+
+- name: build-fake-galoyapi-image
+  serial: true
+  plan:
+  - get: repo
+    trigger: true
+  - task: build
+    privileged: true
+    config:
+      platform: linux
+      image_resource:
+        type: registry-image
+        source:
+          repository: vito/oci-build-task
+      inputs:
+      - name: repo
+      outputs:
+      - name: image
+      params:
+        CONTEXT: repo
+        DOCKERFILE: "repo/src/servers/graphql/Dockerfile"
+      run:
+        path: build
+  - put: fake-galoyapi-image
+    params:
+      image: image/image.tar
+
+- name: bump-image-in-chart
+  plan:
+  - in_parallel:
+    - get: dealer-image
+      trigger: true
+      passed: [ build-dealer-image ]
+      params: { skip_download: true }
+    - get: fake-galoyapi-image
+      trigger: true
+      passed: [ build-fake-galoyapi-image ]
+      params: { skip_download: true }
+    - get: repo
+      trigger: true
+      passed:
+      - check-code
+      - test-unit
+      - test-integration
+      - build-dealer-image
+      - build-fake-galoyapi-image
+    - get: charts-repo
+      params: { skip_download: true }
+    - get: pipeline-tasks
+  - task: bump-image-digest-in-values
+    config:
+      platform: linux
+      image_resource: #@ task_image_config()
+      inputs:
+      - name: repo
+      - name: dealer-image
+      - name: fake-galoyapi-image
+      - name: charts-repo
+      outputs:
+      - name: charts-repo
+      params:
+        BRANCH: #@ data.values.git_charts_branch
+      run:
+        path: pipeline-tasks/ci/tasks/bump-image-digest.sh
+  - put: charts-repo-bot-branch
+    params:
+      repository: charts-repo
+      force: true
+  - task: open-charts-pr
+    config:
+      platform: linux
+      image_resource: #@ task_image_config()
+      inputs:
+      - name: pipeline-tasks
+      - name: dealer-image
+      - name: fake-galoyapi-image
+      - name: charts-repo
+      params:
+        GH_TOKEN: #@ data.values.github_token
+        BRANCH: #@ data.values.git_charts_branch
+        BOT_BRANCH: #@ data.values.git_charts_bot_branch
+      run:
+        path: pipeline-tasks/ci/tasks/open-charts-pr.sh
+
+resources:
+- name: repo
+  type: git
+  source:
+    ignore_paths: ["ci/*[^md]"]
+    uri: #@ data.values.git_uri
+    branch: #@ data.values.git_branch
+    private_key: #@ data.values.github_private_key
+
+- name: pipeline-tasks
+  type: git
+  source:
+    paths: [ci/tasks/*, Makefile]
+    uri: #@ data.values.git_uri
+    branch: #@ data.values.git_branch
+    private_key: #@ data.values.github_private_key
+
+- name: charts-repo-bot-branch
+  type: git
+  source:
+    uri: #@ data.values.git_charts_uri
+    branch: #@ data.values.git_charts_bot_branch
+    private_key: #@ data.values.github_private_key
+
+- name: charts-repo
+  type: git
+  source:
+    uri: #@ data.values.git_charts_uri
+    branch: #@ data.values.git_charts_branch
+    private_key: #@ data.values.github_private_key
+
+- name: deps
+  type: git
+  source:
+    paths: [yarn.lock]
+    uri: #@ data.values.git_uri
+    branch: #@ data.values.git_branch
+    private_key: #@ data.values.github_private_key
+
+- name: deps-version
+  type: semver
+  source:
+    initial_version: 0.1.0
+    driver: gcs
+    bucket: #@ data.values.artifacts_bucket_name
+    key: galoy-dealer-artifacts/versions/deps
+    json_key: #@ data.values.staging_inception_creds
+
+- name: bundled-deps
+  type: gcs-resource
+  source:
+    bucket: #@ data.values.artifacts_bucket_name
+    json_key: #@ data.values.staging_inception_creds
+    regexp: galoy-dealer-artifacts/deps/bundled-deps-v(.*)-.*.tgz
+
+- name: dealer-image
+  type: registry-image
+  source:
+    tag: dealer
+    username: #@ data.values.docker_registry_user
+    password: #@ data.values.docker_registry_password
+    repository: #@ dealer_image()
+
+- name: fake-galoyapi-image
+  type: registry-image
+  source:
+    tag: fake-galoyapi
+    username: #@ data.values.docker_registry_user
+    password: #@ data.values.docker_registry_password
+    repository: #@ fake_galoyapi_image()
