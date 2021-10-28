@@ -22,6 +22,15 @@ unit-in-ci:
 	. ./.envrc && \
 		LOG_LEVEL=warn $(BIN_DIR)/jest --config ./test/jest-unit.config.js --ci --bail
 
+integration-in-ci:
+	. ./.envrc && \
+	yarn migrate-ts up && \
+		LOGLEVEL=error $(BIN_DIR)/jest --config ./test/jest-integration.config.js --bail --runInBand --ci --reporters=default --reporters=jest-junit
+
+unit-in-ci:
+	. ./.envrc && \
+		LOGLEVEL=warn $(BIN_DIR)/jest --config ./test/jest-unit.config.js --ci --bail
+
 check-code:
 	yarn tsc-check
 	yarn eslint-check

@@ -60,8 +60,9 @@ jobs:
   - in_parallel:
     - { get: repo, trigger: true }
     - { get: pipeline-tasks }
-    - { get: bundled-deps, trigger: true }
+    - { get: bundled-deps, tags: ["staging"], trigger: true }
   - task: test-integration
+    tags: ["staging"]
     config:
       platform: linux
       image_resource: #@ task_image_config()
@@ -69,7 +70,9 @@ jobs:
       - name: bundled-deps
       - name: pipeline-tasks
       - name: repo
+        path: dealer
       params:
+        REPO_PATH: dealer
         DOCKER_HOST_IP: #@ data.values.docker_host_ip
         GOOGLE_CREDENTIALS: #@ data.values.staging_inception_creds
         SSH_PRIVATE_KEY: #@ data.values.staging_ssh_private_key
@@ -117,8 +120,20 @@ jobs:
 - name: build-dealer-image
   serial: true
   plan:
-  - get: repo
-    trigger: true
+  - in_parallel:
+    - { get: repo, trigger: true }
+    - { get: pipeline-tasks }
+  - task: prepare-docker-build
+    config:
+      platform: linux
+      image_resource: #@ task_image_config()
+      inputs:
+      - name: pipeline-tasks
+      - name: repo
+      outputs:
+      - name: repo
+      run:
+        path: pipeline-tasks/ci/tasks/prepare-docker-build.sh
   - task: build
     privileged: true
     config:
@@ -143,8 +158,20 @@ jobs:
 - name: build-fake-galoyapi-image
   serial: true
   plan:
-  - get: repo
-    trigger: true
+  - in_parallel:
+    - { get: repo, trigger: true }
+    - { get: pipeline-tasks }
+  - task: prepare-docker-build
+    config:
+      platform: linux
+      image_resource: #@ task_image_config()
+      inputs:
+      - name: pipeline-tasks
+      - name: repo
+      outputs:
+      - name: repo
+      run:
+        path: pipeline-tasks/ci/tasks/prepare-docker-build.sh
   - task: build
     privileged: true
     config:
@@ -197,6 +224,7 @@ jobs:
       - name: dealer-image
       - name: fake-galoyapi-image
       - name: charts-repo
+      - name: pipeline-tasks
       outputs:
       - name: charts-repo
       params:
@@ -293,3 +321,9 @@ resources:
     username: #@ data.values.docker_registry_user
     password: #@ data.values.docker_registry_password
     repository: #@ fake_galoyapi_image()
+
+resource_types:
+- name: gcs-resource
+  type: docker-image
+  source:
+    repository: frodenas/gcs-resource
