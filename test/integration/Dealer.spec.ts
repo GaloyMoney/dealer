@@ -114,7 +114,7 @@ async function executeScenario(scenarioFilePath: string) {
   }
 }
 
-describe.skip("Dealer", () => {
+describe("Dealer", () => {
   describe("first scenario", () => {
     it("should execute successfully scenario 01", async () => {
       await executeScenario(SCENARIO_FILE_PATH.SCENARIO_01)
