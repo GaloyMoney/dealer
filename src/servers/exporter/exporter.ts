@@ -128,7 +128,7 @@ const btcTotalBalance_g = new client.Gauge({
   help: "total BTC balance",
 })
 
-const main = async () => {
+export const exporter = async () => {
   server.get("/metrics", async (req, res) => {
     const dealer = new Dealer(logger)
 
@@ -232,4 +232,4 @@ const main = async () => {
   server.listen(port)
 }
 
-main().catch((err) => logger.error(err))
+// exporter().catch((err) => logger.error(err))

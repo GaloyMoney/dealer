@@ -44,16 +44,6 @@ services:
     links:
       - postgres
       - graphql
-    networks:
-      - monitoring
-  exporter:
-    build:
-      context: .
-      dockerfile: src/servers/exporter/Dockerfile      
-    links:
-      - postgres
-    links: 
-      - graphql
     ports:
       - 3333:3333
     expose:
