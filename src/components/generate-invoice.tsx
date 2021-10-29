@@ -79,8 +79,12 @@ function GenerateInvoice({
 
   const invoiceData = data.mutationData
 
-  if (invoiceData.errors?.length > 0)
-    return <div className="error">{invoiceData.errors.join(", ")}</div>
+  if (invoiceData.errors?.length > 0) {
+    console.error(invoiceData.errors)
+    return (
+      <div className="error">{invoiceData.errors.map((e) => e.message).join(", ")}</div>
+    )
+  }
 
   const { invoice } = invoiceData
 
