@@ -74,6 +74,9 @@ services:
       - 4000
     networks:
       - monitoring
+    environment:
+      - DATABASE_URL="postgres://postgres:postgres@postgres:5432/galoy"
+  
   postgres:
     container_name: postgres
     image: postgres:13.4
