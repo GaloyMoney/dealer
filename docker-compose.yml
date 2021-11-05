@@ -50,6 +50,18 @@ services:
       - 3333
     networks:
       - monitoring
+    environment:
+      - NETWORK=regtest
+      - LOG_LEVEL=debug
+      - ACTIVE_STRATEGY=OKEX_PERPETUAL_SWAP
+      - ACTIVE_WALLET=REMOTE_WALLET
+      - OKEX5_KEY=key
+      - OKEX5_SECRET=secret
+      - OKEX5_PASSWORD=pwd
+      - OKEX5_FUND_PASSWORD=none
+      - GRAPHQL_URI="http://graphql:4000/graphql"
+      - DATABASE_URL="postgres://postgres:postgres@postgres:5432/galoy"
+
   graphql:
     build:
       context: .
