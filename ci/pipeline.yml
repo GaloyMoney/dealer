@@ -1,7 +1,7 @@
 #@ load("@ytt:data", "data")
 
 #@ def pipeline_image():
-#@   return data.values.docker_registry + "/galoy-pay-pipeline"
+#@   return data.values.docker_registry + "/galoy-app-pipeline"
 #@ end
 
 #@ def galoy_pay_image():
@@ -21,35 +21,8 @@ groups:
     jobs:
       - build-edge-image
       - bump-image-in-chart
-  - name: image
-    jobs:
-      - build-pipeline-image
 
 jobs:
-  - name: build-pipeline-image
-    serial: true
-    plan:
-      - { get: pipeline-image-def, trigger: true }
-      - task: build
-        privileged: true
-        config:
-          platform: linux
-          image_resource:
-            type: registry-image
-            source:
-              repository: vito/oci-build-task
-          inputs:
-            - name: pipeline-image-def
-          outputs:
-            - name: image
-          params:
-            CONTEXT: pipeline-image-def/ci/image
-          run:
-            path: build
-      - put: pipeline-image
-        params:
-          image: image/image.tar
-
   - name: build-edge-image
     serial: true
     plan:
@@ -170,22 +143,6 @@ resources:
     type: git
     source:
       paths: [ci/tasks/*, Makefile]
-      uri: #@ data.values.git_uri
-      branch: #@ data.values.git_branch
-      private_key: #@ data.values.github_private_key
-
-  - name: pipeline-image
-    type: registry-image
-    source:
-      tag: latest
-      username: #@ data.values.docker_registry_user
-      password: #@ data.values.docker_registry_password
-      repository: #@ pipeline_image()
-
-  - name: pipeline-image-def
-    type: git
-    source:
-      paths: [ci/image/Dockerfile]
       uri: #@ data.values.git_uri
       branch: #@ data.values.git_branch
       private_key: #@ data.values.github_private_key
