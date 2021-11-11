@@ -50,6 +50,9 @@ services:
       - 3333
     networks:
       - monitoring
+    environment:
+      GRAPHQL_URI: http://graphql:4000/graphql
+      DATABASE_URL: postgres://postgres:postgres@postgres:5432/galoy
   graphql:
     build:
       context: .
@@ -62,6 +65,8 @@ services:
       - 4000
     networks:
       - monitoring
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@postgres:5432/galoy
   postgres:
     container_name: postgres
     image: postgres:13.4
