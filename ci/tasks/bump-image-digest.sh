@@ -8,9 +8,10 @@ export ref=$(cat ./repo/.git/short_ref)
 
 pushd charts-repo
 
-yq -i e '.image.digest = strenv(digest)' ./charts/dealer/values.yaml
-yq -i e '.fake-galoyapi.image.digest = strenv(digest)' ./charts/dealer/values.yaml
-yq -i e '.image.git_ref = strenv(ref)' ./charts/dealer/values.yaml
+yq -i e '.dealer.image.digest = strenv(digest)' ./charts/dealer/values.yaml
+yq -i e '.fakeGaloyApi.image.digest = strenv(fake_galoyapi_digest)' ./charts/dealer/values.yaml
+yq -i e '.dealer.image.git_ref = strenv(ref)' ./charts/dealer/values.yaml
+yq -i e '.fakeGaloyApi.image.git_ref = strenv(ref)' ./charts/dealer/values.yaml
 
 if [[ -z $(git config --global user.email) ]]; then
   git config --global user.email "bot@galoy.io"

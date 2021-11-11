@@ -6,9 +6,9 @@ export digest=$(cat ./dealer-image/digest)
 
 pushd charts-repo
 
-ref=$(yq e '.image.git_ref' charts/galoy/values.yaml)
+ref=$(yq e '.dealer.image.git_ref' charts/dealer/values.yaml)
 git checkout ${BRANCH}
-old_ref=$(yq e '.image.git_ref' charts/galoy/values.yaml)
+old_ref=$(yq e '.dealer.image.git_ref' charts/dealer/values.yaml)
 
 cat <<EOF >> ../body.md
 # Bump dealer image
@@ -26,4 +26,5 @@ gh pr create \
   --body-file ../body.md \
   --base ${BRANCH} \
   --head ${BOT_BRANCH} \
-  --label galoybot
+  --label galoybot \
+  --label dealer
