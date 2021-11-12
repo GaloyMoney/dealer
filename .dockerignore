@@ -1,0 +1,7 @@
+node_modules/
+ci/
+.github
+prettier.config.js
+README.md
+.eslintrc.js
+Dockerfile
