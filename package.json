@@ -24,7 +24,7 @@
     "app:dealer:pretty": "yarn build && node lib/app/dealer.js | pino-pretty -c -l",
     "app:dealer:elk": "yarn build && node lib/app/dealer.js | pino-elasticsearch",
     "migrate-js": "node-pg-migrate --create-schema true --schema dealer --migration-filename-format utc --migration-file-language js",
-    "migrate-sql": "node-pg-migrate --create-schema true --schema dealer--migration-filename-format utc --migration-file-language sql",
+    "migrate-sql": "node-pg-migrate --create-schema true --schema dealer --migration-filename-format utc --migration-file-language sql",
     "migrate-ts": "node-pg-migrate --create-schema true --schema dealer --migration-filename-format utc --migration-file-language ts --tsconfig ./tsconfig.json "
   },
   "dependencies": {
