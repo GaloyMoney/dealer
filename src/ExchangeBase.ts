@@ -23,12 +23,13 @@ import {
 } from "./ExchangeTradingType"
 import { Result } from "./Result"
 import ccxt, { ExchangeId } from "ccxt"
-import { ExchangeConfiguration } from "./ExchangeConfiguration"
+import { ExchangeConfiguration, Headers } from "./ExchangeConfiguration"
 import pino from "pino"
 
 export abstract class ExchangeBase {
   exchangeConfig: ExchangeConfiguration
   exchangeId: ExchangeId
+  headers: Headers
   fundingPassword: string
   exchange: ccxt.okex5
   logger: pino.Logger
@@ -36,6 +37,7 @@ export abstract class ExchangeBase {
   constructor(exchangeConfig: ExchangeConfiguration, logger: pino.Logger) {
     this.exchangeConfig = exchangeConfig
     this.exchangeId = exchangeConfig.exchangeId as ExchangeId
+    this.headers = exchangeConfig.headers
 
     const apiKey = process.env[`${this.exchangeId.toUpperCase()}_KEY`]
     const secret = process.env[`${this.exchangeId.toUpperCase()}_SECRET`]
@@ -49,7 +51,7 @@ export abstract class ExchangeBase {
     this.fundingPassword = fundingPassword
 
     const exchangeClass = ccxt[this.exchangeId]
-    this.exchange = new exchangeClass({ apiKey, secret, password })
+    this.exchange = new exchangeClass({ apiKey, secret, password, headers: this.headers })
 
     this.exchange.options["createMarketBuyOrderRequiresPrice"] = false
 
