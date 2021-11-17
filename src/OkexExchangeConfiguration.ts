@@ -22,6 +22,7 @@ import {
   ExchangeConfiguration,
   SupportedExchange,
   SupportedInstrument,
+  Headers,
 } from "./ExchangeConfiguration"
 import { sat2btc } from "./utils"
 import { yamlConfig } from "./config"
@@ -47,6 +48,7 @@ const hedgingBounds = yamlConfig.hedging
 export class OkexExchangeConfiguration implements ExchangeConfiguration {
   exchangeId: SupportedExchange
   instrumentId: SupportedInstrument
+  headers: Headers
   positionMode: PositionMode
   marginMode: MarginMode
   leverage: number
@@ -54,9 +56,14 @@ export class OkexExchangeConfiguration implements ExchangeConfiguration {
   constructor() {
     this.exchangeId = SupportedExchange.OKEX5
     this.instrumentId = SupportedInstrument.OKEX_PERPETUAL_SWAP
+    this.headers = {}
     this.positionMode = PositionMode.Net
     this.marginMode = MarginMode.Cross
     this.leverage = hedgingBounds.HIGH_BOUND_LEVERAGE
+
+    if (process.env["NETWORK"] === "testnet") {
+      this.headers["x-simulated-trading"] = 1
+    }
   }
 
   fetchDepositAddressValidateInput(currency: string) {
