@@ -30,9 +30,14 @@ export enum SupportedInstrumentType {
   Option = "OPTION",
 }
 
+export interface Headers {
+  [key: string]: unknown
+}
+
 export interface ExchangeConfiguration {
   exchangeId: SupportedExchange
   instrumentId: SupportedInstrument
+  headers: Headers
 
   fetchDepositAddressValidateInput(currency: string)
   fetchDepositAddressProcessApiResponse(response): FetchDepositAddressResult
