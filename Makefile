@@ -15,7 +15,6 @@ test-in-ci:
 
 integration-in-ci:
 	. ./.envrc && \
-	yarn migrate-ts up && \
 		LOG_LEVEL=error $(BIN_DIR)/jest --config ./test/jest-integration.config.js --bail --runInBand --ci --reporters=default --reporters=jest-junit
 
 unit-in-ci:
@@ -24,7 +23,6 @@ unit-in-ci:
 
 integration-in-ci:
 	. ./.envrc && \
-	yarn migrate-ts up && \
 		LOGLEVEL=error $(BIN_DIR)/jest --config ./test/jest-integration.config.js --bail --runInBand --ci --reporters=default --reporters=jest-junit
 
 unit-in-ci:
