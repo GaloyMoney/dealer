@@ -183,7 +183,7 @@
     "@types/testing-library__jest-dom": "^5.14.1",
     "@types/testing-library__user-event": "^4.2.0",
     "@types/webpack": "5.28.0",
-    "@types/webpack-dev-server": "3.11.2",
+    "@types/webpack-dev-server": "4.5.0",
     "@types/webpack-manifest-plugin": "3.0.5",
     "@types/workbox-webpack-plugin": "5.1.8",
     "prettier": "^2.4.1"
