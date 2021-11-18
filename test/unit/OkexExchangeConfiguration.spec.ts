@@ -16,6 +16,8 @@ import {
   FetchDepositsParameters,
   FundTransferStatus,
   FetchWithdrawalsParameters,
+  TransferParameters,
+  AccountType,
 } from "src/ExchangeTradingType"
 import { sat2btc } from "src/utils"
 
@@ -184,6 +186,36 @@ function getValidWithdrawResponse() {
         },
       ],
     },
+  }
+}
+
+function getValidTransferValidateInput(): TransferParameters {
+  const args: TransferParameters = {
+    currency: TradeCurrency.BTC,
+    quantity: 0.0014,
+    fromAccount: AccountType.Trading,
+    toAccount: AccountType.Funding,
+    params: {
+      instId: SupportedInstrument.OKEX_PERPETUAL_SWAP,
+    },
+  }
+  return args
+}
+
+function getValidTransferResponse() {
+  return {
+    info: {
+      amt: "0.0014",
+      ccy: "BTC",
+      from: "18",
+      to: "6",
+      transId: "431124825",
+    },
+    id: "431124825",
+    currency: TradeCurrency.BTC,
+    amount: 0.0014,
+    fromAccount: AccountType.Trading,
+    toAccount: AccountType.Funding,
   }
 }
 
@@ -752,6 +784,55 @@ describe("OkexExchangeConfiguration", () => {
       const configuration = new OkexExchangeConfiguration()
       const response = getValidWithdrawResponse()
       const result = configuration.withdrawValidateApiResponse(response)
+      expect(result).toBeUndefined()
+    })
+  })
+
+  describe("transferValidateInput", () => {
+    it(`should throw when response has no ${TradeCurrency.BTC} currency property`, async () => {
+      const configuration = new OkexExchangeConfiguration()
+      const args = getValidTransferValidateInput()
+      args.currency = TradeCurrency.USD
+      expect(() => configuration.transferValidateInput(args)).toThrowError(
+        ApiError.UNSUPPORTED_CURRENCY,
+      )
+    })
+
+    it("should throw when response has non positive quantity property", async () => {
+      const configuration = new OkexExchangeConfiguration()
+      const args = getValidTransferValidateInput()
+      const invalidQuantity = [0, -1]
+      for (const quantity of invalidQuantity) {
+        args.quantity = quantity
+        expect(() => configuration.transferValidateInput(args)).toThrowError(
+          ApiError.NON_POSITIVE_QUANTITY,
+        )
+      }
+    })
+
+    it("should do nothing when arguments are all valid", async () => {
+      const configuration = new OkexExchangeConfiguration()
+      const args = getValidTransferValidateInput()
+      const result = configuration.transferValidateInput(args)
+      expect(result).toBeUndefined()
+    })
+  })
+
+  describe("transferValidateApiResponse", () => {
+    it("should throw when response is falsy", async () => {
+      const configuration = new OkexExchangeConfiguration()
+      falsyArgs.forEach((response) => {
+        expect(() => configuration.transferValidateApiResponse(response)).toThrowError()
+      })
+    })
+
+    // TODO: add more failure test
+    // TODO: add exchange specific post-processing
+
+    it("should do nothing when response is valid", async () => {
+      const configuration = new OkexExchangeConfiguration()
+      const response = getValidTransferResponse()
+      const result = configuration.transferValidateApiResponse(response)
       expect(result).toBeUndefined()
     })
   })
