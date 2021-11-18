@@ -10,6 +10,7 @@ import {
   FetchWithdrawalsResult,
   FetchWithdrawalsParameters,
   FetchDepositsParameters,
+  TransferParameters,
   //   GetAccountAndPositionRiskResult,
   //   GetInstrumentDetailsResult,
 } from "./ExchangeTradingType"
@@ -45,6 +46,9 @@ export interface ExchangeConfiguration {
 
   withdrawValidateInput(args: WithdrawParameters)
   withdrawValidateApiResponse(response)
+
+  transferValidateInput(args: TransferParameters)
+  transferValidateApiResponse(response)
 
   fetchWithdrawalsValidateInput(args: FetchWithdrawalsParameters)
   fetchWithdrawalsProcessApiResponse(

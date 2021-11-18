@@ -16,6 +16,7 @@ import {
   FetchWithdrawalsResult,
   FetchDepositsParameters,
   FetchWithdrawalsParameters,
+  TransferParameters,
 } from "./ExchangeTradingType"
 import assert from "assert"
 import {
@@ -140,6 +141,22 @@ export class OkexExchangeConfiguration implements ExchangeConfiguration {
     )
     assert(response.info.data[0].amt > 0, ApiError.NON_POSITIVE_QUANTITY)
     assert(response.info.data[0].wdId, ApiError.MISSING_WITHDRAW_ID)
+  }
+
+  transferValidateInput(args: TransferParameters) {
+    assert(args, ApiError.MISSING_PARAMETERS)
+    assert(args.currency === TradeCurrency.BTC, ApiError.UNSUPPORTED_CURRENCY)
+    assert(args.quantity > 0, ApiError.NON_POSITIVE_QUANTITY)
+    assert(args.fromAccount, ApiError.UNSUPPORTED_ADDRESS)
+    assert(args.toAccount, ApiError.UNSUPPORTED_ADDRESS)
+  }
+  transferValidateApiResponse(response) {
+    assert(response, ApiError.UNSUPPORTED_API_RESPONSE)
+    assert(response.id, ApiError.UNSUPPORTED_API_RESPONSE)
+    assert(response.currency === TradeCurrency.BTC, ApiError.UNSUPPORTED_CURRENCY)
+    assert(response.amount > 0, ApiError.NON_POSITIVE_QUANTITY)
+    assert(response.fromAccount, ApiError.UNSUPPORTED_ADDRESS)
+    assert(response.toAccount, ApiError.UNSUPPORTED_ADDRESS)
   }
 
   fetchWithdrawalsValidateInput(args: FetchWithdrawalsParameters) {
