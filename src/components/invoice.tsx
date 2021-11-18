@@ -55,8 +55,8 @@ export default function Invoice({ paymentRequest }: { paymentRequest: string }) 
 
   if (loading) {
     return (
-      <Card.Body style={{ paddingBottom: "0", paddingTop: "5px" }}>
-        <small>Scan using a lightning enabled wallet</small>
+      <Card.Body className="qr-code-container">
+        <small>Scan using a Lightning-supported wallet</small>
 
         <OverlayTrigger
           show={showCopied}
@@ -97,6 +97,5 @@ export default function Invoice({ paymentRequest }: { paymentRequest: string }) 
     }
   }
 
-  console.log({ data, loading, error })
   return <div className="error">Something went wrong</div>
 }

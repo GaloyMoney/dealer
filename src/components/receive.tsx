@@ -1,98 +1,67 @@
-import { useEffect } from "react"
 import Row from "react-bootstrap/Row"
 import Col from "react-bootstrap/Col"
 import Card from "react-bootstrap/Card"
 import Container from "react-bootstrap/Container"
+import { useQueryParams } from "hookrouter"
 import Image from "react-bootstrap/Image"
-import { gql, useMutation } from "@apollo/client"
 
 import { getOS, appStoreLink, playStoreLink } from "./downloadApp"
-import Invoice from "./invoice"
+import ReceiveAmount from "./receiveAmount"
+import ReceiveNoAmount from "./receiveNoAmount"
+import { gql, useQuery } from "@apollo/client"
+import updateHistoryState from "../helpers/update-history-state"
 
-type OperationError = {
-  message: string
-}
-
-type LnInvoiceObject = {
-  paymentRequest: string
-}
-
-const LN_NOAMOUNT_INVOICE_CREATE_ON_BEHALF_OF_RECIPIENT = gql`
-  mutation lnNoAmountInvoiceCreateOnBehalfOfRecipient($walletName: WalletName!) {
-    mutationData: lnNoAmountInvoiceCreateOnBehalfOfRecipient(
-      input: { recipient: $walletName }
-    ) {
-      errors {
-        message
-      }
-      invoice {
-        paymentRequest
-      }
-    }
+const USER_WALLET_ID = gql`
+  query userDefaultWalletId($username: Username!) {
+    userDefaultWalletId(username: $username)
   }
 `
 
-function uiErrorMessage(errorMessage: string) {
-  switch (errorMessage) {
-    case "CouldNotFindError":
-      return "User not found"
-    default:
-      console.error(errorMessage)
-      return "Something went wrong"
-  }
-}
-
 export default function Receive({ username }: { username: string }) {
-  const [createInvoice, { loading, error, data }] = useMutation<{
-    mutationData: {
-      errors: OperationError[]
-      invoice?: LnInvoiceObject
-    }
-  }>(LN_NOAMOUNT_INVOICE_CREATE_ON_BEHALF_OF_RECIPIENT)
+  const [queryParams, setQueryParams] = useQueryParams()
 
-  useEffect(() => {
-    createInvoice({
-      variables: { walletName: username },
-    })
-  }, [createInvoice, username])
-
-  if (error) {
-    console.error(error)
-  }
-
-  let errorMessage, invoice
-
-  if (data) {
-    const invoiceData = data.mutationData
-
-    if (invoiceData.errors?.length > 0) {
-      errorMessage = invoiceData.errors[0].message
-    }
-
-    invoice = invoiceData.invoice
-  }
+  const { error, loading, data } = useQuery(USER_WALLET_ID, {
+    variables: {
+      username,
+    },
+  })
 
   const os = getOS()
 
+  if (error) return <div className="error">{error.message}</div>
+  if (loading) return <div className="loading">Loading...</div>
+  if (!data) return null
+
+  const { userDefaultWalletId } = data
+
+  const isAmountInvoice = queryParams?.amount !== undefined
+
+  const onSetAmountClick = () => {
+    setQueryParams({
+      amount: 0,
+      currency: "USD",
+    })
+  }
+
   return (
-    <Container fluid>
+    <Container className="invoice-container" fluid>
       {os === undefined && <br />}
       <Row className="justify-content-md-center">
         <Col md="auto" style={{ padding: 0 }}>
           <Card className="text-center">
             <Card.Header>Pay {username}</Card.Header>
 
-            {errorMessage && <div className="error">{uiErrorMessage(errorMessage)}</div>}
-
-            {loading && !error && (
-              <div>
-                {" "}
-                <br />
-                Loading...
-              </div>
+            {isAmountInvoice ? (
+              <ReceiveAmount
+                userWalletId={userDefaultWalletId}
+                updateURLAmount={updateHistoryState}
+              />
+            ) : (
+              <ReceiveNoAmount
+                userWalletId={userDefaultWalletId}
+                onSetAmountClick={onSetAmountClick}
+              />
             )}
-
-            {invoice && <Invoice paymentRequest={invoice.paymentRequest} />}
 
             <Card.Body>
               {os === "android" && (
