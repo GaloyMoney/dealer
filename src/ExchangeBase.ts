@@ -20,6 +20,8 @@ import {
   SetAccountConfigurationResult,
   GetPublicMarkPriceResult,
   GetMarketIndexTickersResult,
+  TransferParameters,
+  TransferResult,
 } from "./ExchangeTradingType"
 import { Result } from "./Result"
 import ccxt, { ExchangeId } from "ccxt"
@@ -161,6 +163,36 @@ export abstract class ExchangeBase {
       )
 
       this.exchangeConfig.withdrawValidateApiResponse(response)
+
+      return {
+        ok: true,
+        value: {
+          originalResponseAsIs: response,
+          id: response.id,
+        },
+      }
+    } catch (error) {
+      return { ok: false, error: error }
+    }
+  }
+
+  public async transfer(args: TransferParameters): Promise<Result<TransferResult>> {
+    try {
+      this.exchangeConfig.transferValidateInput(args)
+
+      const response = await this.exchange.transfer(
+        args.currency,
+        args.quantity,
+        args.fromAccount,
+        args.toAccount,
+        args.params,
+      )
+      this.logger.debug(
+        { args, response },
+        "exchange.transfer({args}) returned: {response}",
+      )
+
+      this.exchangeConfig.transferValidateApiResponse(response)
 
       return {
         ok: true,
