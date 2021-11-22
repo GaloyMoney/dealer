@@ -27,9 +27,11 @@ function getValidFetchPositionResponse(args: {
   margin: number
 }) {
   return {
-    last: `${args.last}`,
-    notionalUsd: `${args.notionalUsd}`,
-    margin: `${args.margin}`,
+    info: {
+      last: `${args.last}`,
+      notionalUsd: `${args.notionalUsd}`,
+      margin: `${args.margin}`,
+    },
   }
 }
 

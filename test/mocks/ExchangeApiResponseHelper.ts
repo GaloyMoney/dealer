@@ -136,9 +136,11 @@ export function getValidFetchPositionResponse(
   margin: number,
 ) {
   return {
-    last: `${last}`,
-    notionalUsd: `${notionalUsd}`,
-    margin: `${margin}`,
+    info: {
+      last: `${last}`,
+      notionalUsd: `${notionalUsd}`,
+      margin: `${margin}`,
+    },
   }
 }
 

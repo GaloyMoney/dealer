@@ -281,42 +281,50 @@ export class OkexExchangeConfiguration implements ExchangeConfiguration {
   }
   fetchPositionProcessApiResponse(response): FetchPositionResult {
     assert(response, ApiError.EMPTY_API_RESPONSE)
-    assert(response.last, ApiError.UNSUPPORTED_API_RESPONSE)
-    assert(response.notionalUsd, ApiError.UNSUPPORTED_API_RESPONSE)
-    assert(response.margin || response.imr, ApiError.UNSUPPORTED_API_RESPONSE)
+    assert(response.info, ApiError.EMPTY_API_RESPONSE)
+    assert(response.info.last, ApiError.UNSUPPORTED_API_RESPONSE)
+    assert(response.info.notionalUsd, ApiError.UNSUPPORTED_API_RESPONSE)
+    assert(response.info.margin || response.info.imr, ApiError.UNSUPPORTED_API_RESPONSE)
     const numberRegex = /-?(?=[1-9]|0(?!\d))\d+(\.\d+)?([eE][+-]?\d+)?/
-    assert(typeof response.last === "string", ApiError.UNSUPPORTED_API_RESPONSE)
-    assert.match(response.last, numberRegex, ApiError.UNSUPPORTED_API_RESPONSE)
-    assert(typeof response.notionalUsd === "string", ApiError.UNSUPPORTED_API_RESPONSE)
-    assert.match(response.notionalUsd, numberRegex, ApiError.UNSUPPORTED_API_RESPONSE)
+    assert(typeof response.info.last === "string", ApiError.UNSUPPORTED_API_RESPONSE)
+    assert.match(response.info.last, numberRegex, ApiError.UNSUPPORTED_API_RESPONSE)
+    assert(
+      typeof response.info.notionalUsd === "string",
+      ApiError.UNSUPPORTED_API_RESPONSE,
+    )
+    assert.match(
+      response.info.notionalUsd,
+      numberRegex,
+      ApiError.UNSUPPORTED_API_RESPONSE,
+    )
 
     let margin = 0
-    if (response.margin) {
-      assert(typeof response.margin === "string", ApiError.UNSUPPORTED_API_RESPONSE)
-      assert.match(response.margin, numberRegex, ApiError.UNSUPPORTED_API_RESPONSE)
-      margin = Number(response.margin)
+    if (response.info.margin) {
+      assert(typeof response.info.margin === "string", ApiError.UNSUPPORTED_API_RESPONSE)
+      assert.match(response.info.margin, numberRegex, ApiError.UNSUPPORTED_API_RESPONSE)
+      margin = Number(response.info.margin)
     } else {
-      assert(typeof response.imr === "string", ApiError.UNSUPPORTED_API_RESPONSE)
-      assert.match(response.imr, numberRegex, ApiError.UNSUPPORTED_API_RESPONSE)
-      margin = Number(response.imr)
+      assert(typeof response.info.imr === "string", ApiError.UNSUPPORTED_API_RESPONSE)
+      assert.match(response.info.imr, numberRegex, ApiError.UNSUPPORTED_API_RESPONSE)
+      margin = Number(response.info.imr)
     }
 
     return {
       originalResponseAsIs: response,
-      last: Number(response.last),
-      notionalUsd: Number(response.notionalUsd),
+      last: Number(response.info.last),
+      notionalUsd: Number(response.info.notionalUsd),
       margin: margin,
 
-      autoDeleveragingIndicator: Number(response.adl),
-      liquidationPrice: Number(response.liqPx),
-      positionQuantity: Number(response.pos),
-      positionSide: response.posSide,
-      averageOpenPrice: Number(response.avgPx),
-      unrealizedPnL: Number(response.upl),
-      unrealizedPnLRatio: Number(response.uplRatio),
-      marginRatio: Number(response.mgnRatio),
-      maintenanceMarginRequirement: Number(response.mmr),
-      exchangeLeverage: Number(response.lever),
+      autoDeleveragingIndicator: Number(response.info.adl),
+      liquidationPrice: Number(response.info.liqPx),
+      positionQuantity: Number(response.info.pos),
+      positionSide: response.info.posSide,
+      averageOpenPrice: Number(response.info.avgPx),
+      unrealizedPnL: Number(response.info.upl),
+      unrealizedPnLRatio: Number(response.info.uplRatio),
+      marginRatio: Number(response.info.mgnRatio),
+      maintenanceMarginRequirement: Number(response.info.mmr),
+      exchangeLeverage: Number(response.info.lever),
     }
   }
 
