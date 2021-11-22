@@ -9,6 +9,7 @@ import {
   FundTransferStatus,
   GetAccountAndPositionRiskResult,
   TradeCurrency,
+  AccountType,
 } from "./ExchangeTradingType"
 import {
   HedgingStrategy,
@@ -367,6 +368,29 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
           "Calculated NO rebalance transfer needed",
         )
       } else if (fundTransferSide === FundTransferSide.Withdraw) {
+        // first transfer the amount between trading and funding sub-accounts
+        const transferArgs = {
+          currency: TradeCurrency.BTC,
+          quantity: transferSizeInBtc,
+          fromAccount: AccountType.Trading,
+          toAccount: AccountType.Funding,
+          params: {
+            instId: SupportedInstrument.OKEX_BTC_USD_SPOT,
+          },
+        }
+        const transferResult = await this.exchange.transfer(transferArgs)
+        this.logger.debug(
+          { transferArgs, transferResult },
+          "transfer({transferArgs}) returned: {transferResult}",
+        )
+        if (!transferResult.ok) {
+          this.logger.warn(
+            { error: transferResult.error },
+            "transfer() failed with {error}, continuing",
+          )
+        }
+
+        // then initiate the withdrawal which by default uses the funding account
         const withdrawArgs = {
           currency: TradeCurrency.BTC,
           quantity: transferSizeInBtc,

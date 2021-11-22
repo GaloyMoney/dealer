@@ -59,6 +59,17 @@ export enum SupportedChain {
   BTC_Lightning = "BTC-Lightning",
 }
 
+export enum AccountType {
+  Spot = "spot",
+  Futures = "futures",
+  Margin = "margin",
+  Funding = "funding",
+  Swap = "swap",
+  Option = "option",
+  Trading = "trading",
+  Unified = "unified",
+}
+
 export interface FetchDepositAddressResult {
   originalResponseAsIs // the original JSON response from the exchange as is
   chain: SupportedChain
@@ -90,6 +101,19 @@ export interface WithdrawResult {
   originalResponseAsIs
   id: string
   // status: FundTransferStatus
+}
+
+export interface TransferParameters {
+  currency: TradeCurrency
+  quantity: number
+  fromAccount: AccountType
+  toAccount: AccountType
+  params: Params
+}
+
+export interface TransferResult {
+  originalResponseAsIs
+  id: string
 }
 
 export interface FetchWithdrawalsParameters {

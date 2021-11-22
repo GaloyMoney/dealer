@@ -16,6 +16,8 @@ import {
   FetchDepositsParameters,
   FundTransferStatus,
   FetchWithdrawalsParameters,
+  TransferParameters,
+  AccountType,
 } from "src/ExchangeTradingType"
 import { sat2btc } from "src/utils"
 
@@ -173,17 +175,41 @@ function getValidWithdrawResponse() {
   return {
     id: "67485",
     info: {
-      code: "0",
-      msg: "",
-      data: [
-        {
-          amt: "0.1",
-          wdId: "67485",
-          ccy: "BTC",
-          chain: "BTC-Bitcoin",
-        },
-      ],
+      amt: "0.1",
+      wdId: "67485",
+      ccy: "BTC",
+      chain: "BTC-Bitcoin",
     },
+  }
+}
+
+function getValidTransferValidateInput(): TransferParameters {
+  const args: TransferParameters = {
+    currency: TradeCurrency.BTC,
+    quantity: 0.0014,
+    fromAccount: AccountType.Trading,
+    toAccount: AccountType.Funding,
+    params: {
+      instId: SupportedInstrument.OKEX_PERPETUAL_SWAP,
+    },
+  }
+  return args
+}
+
+function getValidTransferResponse() {
+  return {
+    info: {
+      amt: "0.0014",
+      ccy: "BTC",
+      from: "18",
+      to: "6",
+      transId: "431124825",
+    },
+    id: "431124825",
+    currency: TradeCurrency.BTC,
+    amount: 0.0014,
+    fromAccount: AccountType.Trading,
+    toAccount: AccountType.Funding,
   }
 }
 
@@ -240,40 +266,42 @@ function getProcessedFetchBalanceProcessApiResponse(response) {
 
 function getValidFetchPositionProcessApiResponse() {
   return {
-    last: "44444.4",
-    notionalUsd: "99.99999999999996",
-    margin: "0.000615615271145",
+    info: {
+      last: "44444.4",
+      notionalUsd: "99.99999999999996",
+      margin: "0.000615615271145",
 
-    adl: "3",
-    liqPx: "59884.07806250006",
-    pos: "-1",
-    posSide: "net",
-    avgPx: "48123.9",
-    upl: "0.0000010467393406",
-    uplRatio: "0.0025186589675597",
-    mgnRatio: "44.533951675653064",
-    mmr: "0.0000083160652548",
-    lever: "5",
+      adl: "3",
+      liqPx: "59884.07806250006",
+      pos: "-1",
+      posSide: "net",
+      avgPx: "48123.9",
+      upl: "0.0000010467393406",
+      uplRatio: "0.0025186589675597",
+      mgnRatio: "44.533951675653064",
+      mmr: "0.0000083160652548",
+      lever: "5",
+    },
   }
 }
 
 function getProcessedFetchPositionProcessApiResponse(response) {
   return {
     originalResponseAsIs: response,
-    last: Number(response.last),
-    notionalUsd: Number(response.notionalUsd),
-    margin: Number(response.margin),
+    last: Number(response.info.last),
+    notionalUsd: Number(response.info.notionalUsd),
+    margin: Number(response.info.margin),
 
-    autoDeleveragingIndicator: Number(response.adl),
-    liquidationPrice: Number(response.liqPx),
-    positionQuantity: Number(response.pos),
-    positionSide: response.posSide,
-    averageOpenPrice: Number(response.avgPx),
-    unrealizedPnL: Number(response.upl),
-    unrealizedPnLRatio: Number(response.uplRatio),
-    marginRatio: Number(response.mgnRatio),
-    maintenanceMarginRequirement: Number(response.mmr),
-    exchangeLeverage: Number(response.lever),
+    autoDeleveragingIndicator: Number(response.info.adl),
+    liquidationPrice: Number(response.info.liqPx),
+    positionQuantity: Number(response.info.pos),
+    positionSide: response.info.posSide,
+    averageOpenPrice: Number(response.info.avgPx),
+    unrealizedPnL: Number(response.info.upl),
+    unrealizedPnLRatio: Number(response.info.uplRatio),
+    marginRatio: Number(response.info.mgnRatio),
+    maintenanceMarginRequirement: Number(response.info.mmr),
+    exchangeLeverage: Number(response.info.lever),
   }
 }
 
@@ -752,6 +780,55 @@ describe("OkexExchangeConfiguration", () => {
       const configuration = new OkexExchangeConfiguration()
       const response = getValidWithdrawResponse()
       const result = configuration.withdrawValidateApiResponse(response)
+      expect(result).toBeUndefined()
+    })
+  })
+
+  describe("transferValidateInput", () => {
+    it(`should throw when response has no ${TradeCurrency.BTC} currency property`, async () => {
+      const configuration = new OkexExchangeConfiguration()
+      const args = getValidTransferValidateInput()
+      args.currency = TradeCurrency.USD
+      expect(() => configuration.transferValidateInput(args)).toThrowError(
+        ApiError.UNSUPPORTED_CURRENCY,
+      )
+    })
+
+    it("should throw when response has non positive quantity property", async () => {
+      const configuration = new OkexExchangeConfiguration()
+      const args = getValidTransferValidateInput()
+      const invalidQuantity = [0, -1]
+      for (const quantity of invalidQuantity) {
+        args.quantity = quantity
+        expect(() => configuration.transferValidateInput(args)).toThrowError(
+          ApiError.NON_POSITIVE_QUANTITY,
+        )
+      }
+    })
+
+    it("should do nothing when arguments are all valid", async () => {
+      const configuration = new OkexExchangeConfiguration()
+      const args = getValidTransferValidateInput()
+      const result = configuration.transferValidateInput(args)
+      expect(result).toBeUndefined()
+    })
+  })
+
+  describe("transferValidateApiResponse", () => {
+    it("should throw when response is falsy", async () => {
+      const configuration = new OkexExchangeConfiguration()
+      falsyArgs.forEach((response) => {
+        expect(() => configuration.transferValidateApiResponse(response)).toThrowError()
+      })
+    })
+
+    // TODO: add more failure test
+    // TODO: add exchange specific post-processing
+
+    it("should do nothing when response is valid", async () => {
+      const configuration = new OkexExchangeConfiguration()
+      const response = getValidTransferResponse()
+      const result = configuration.transferValidateApiResponse(response)
       expect(result).toBeUndefined()
     })
   })
@@ -1279,9 +1356,11 @@ describe("OkexExchangeConfiguration", () => {
     it("should throw when response has no last property", async () => {
       const configuration = new OkexExchangeConfiguration()
       const response = {
-        // last: "44444.4",
-        notionalUsd: "99.99999999999996",
-        margin: "0.000615615271145",
+        info: {
+          // last: "44444.4",
+          notionalUsd: "99.99999999999996",
+          margin: "0.000615615271145",
+        },
       }
       expect(() => configuration.fetchPositionProcessApiResponse(response)).toThrowError(
         ApiError.UNSUPPORTED_API_RESPONSE,
@@ -1291,9 +1370,11 @@ describe("OkexExchangeConfiguration", () => {
     it("should throw when response last property is not a number", async () => {
       const configuration = new OkexExchangeConfiguration()
       const response = {
-        last: true,
-        notionalUsd: "99.99999999999996",
-        margin: "0.000615615271145",
+        info: {
+          last: true,
+          notionalUsd: "99.99999999999996",
+          margin: "0.000615615271145",
+        },
       }
       expect(() => configuration.fetchPositionProcessApiResponse(response)).toThrowError(
         ApiError.UNSUPPORTED_API_RESPONSE,
@@ -1303,9 +1384,11 @@ describe("OkexExchangeConfiguration", () => {
     it("should throw when response has no notionalUsd property", async () => {
       const configuration = new OkexExchangeConfiguration()
       const response = {
-        last: "44444.4",
-        // notionalUsd: "99.99999999999996",
-        margin: "0.000615615271145",
+        info: {
+          last: "44444.4",
+          // notionalUsd: "99.99999999999996",
+          margin: "0.000615615271145",
+        },
       }
       expect(() => configuration.fetchPositionProcessApiResponse(response)).toThrowError(
         ApiError.UNSUPPORTED_API_RESPONSE,
@@ -1315,9 +1398,11 @@ describe("OkexExchangeConfiguration", () => {
     it("should throw when response notionalUsd property is not a number", async () => {
       const configuration = new OkexExchangeConfiguration()
       const response = {
-        last: "44444.4",
-        notionalUsd: true,
-        margin: "0.000615615271145",
+        info: {
+          last: "44444.4",
+          notionalUsd: true,
+          margin: "0.000615615271145",
+        },
       }
       expect(() => configuration.fetchPositionProcessApiResponse(response)).toThrowError(
         ApiError.UNSUPPORTED_API_RESPONSE,
@@ -1327,9 +1412,11 @@ describe("OkexExchangeConfiguration", () => {
     it("should throw when response has no margin property", async () => {
       const configuration = new OkexExchangeConfiguration()
       const response = {
-        last: "44444.4",
-        notionalUsd: "99.99999999999996",
-        // margin: "0.000615615271145",
+        info: {
+          last: "44444.4",
+          notionalUsd: "99.99999999999996",
+          // margin: "0.000615615271145",
+        },
       }
       expect(() => configuration.fetchPositionProcessApiResponse(response)).toThrowError(
         ApiError.UNSUPPORTED_API_RESPONSE,
@@ -1339,9 +1426,11 @@ describe("OkexExchangeConfiguration", () => {
     it("should throw when response margin property is not a number", async () => {
       const configuration = new OkexExchangeConfiguration()
       const response = {
-        last: "44444.4",
-        notionalUsd: "99.99999999999996",
-        margin: true,
+        info: {
+          last: "44444.4",
+          notionalUsd: "99.99999999999996",
+          margin: true,
+        },
       }
       expect(() => configuration.fetchPositionProcessApiResponse(response)).toThrowError(
         ApiError.UNSUPPORTED_API_RESPONSE,

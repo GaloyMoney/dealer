@@ -57,16 +57,10 @@ export function getValidWithdrawResponse(id: string, currency, amountInBtc) {
     id: id,
     status: FundTransferStatus.Requested,
     info: {
-      code: "0",
-      msg: "",
-      data: [
-        {
-          amt: amountInBtc,
-          wdId: id,
-          ccy: currency,
-          chain: "BTC-Bitcoin",
-        },
-      ],
+      amt: amountInBtc,
+      wdId: id,
+      ccy: currency,
+      chain: "BTC-Bitcoin",
     },
   }
 }
@@ -136,9 +130,11 @@ export function getValidFetchPositionResponse(
   margin: number,
 ) {
   return {
-    last: `${last}`,
-    notionalUsd: `${notionalUsd}`,
-    margin: `${margin}`,
+    info: {
+      last: `${last}`,
+      notionalUsd: `${notionalUsd}`,
+      margin: `${margin}`,
+    },
   }
 }
 
