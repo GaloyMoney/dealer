@@ -375,11 +375,14 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
           fromAccount: AccountType.Trading,
           toAccount: AccountType.Funding,
           params: {
-            instId: this.instrumentId,
+            instId: SupportedInstrument.OKEX_BTC_USD_SPOT,
           },
         }
         const transferResult = await this.exchange.transfer(transferArgs)
-        this.logger.debug({ transferResult }, "transfer() returned: {transferResult}")
+        this.logger.debug(
+          { transferArgs, transferResult },
+          "transfer({transferArgs}) returned: {transferResult}",
+        )
         if (!transferResult.ok) {
           this.logger.warn(
             { error: transferResult.error },
