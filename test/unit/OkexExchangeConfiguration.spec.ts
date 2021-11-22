@@ -175,16 +175,10 @@ function getValidWithdrawResponse() {
   return {
     id: "67485",
     info: {
-      code: "0",
-      msg: "",
-      data: [
-        {
-          amt: "0.1",
-          wdId: "67485",
-          ccy: "BTC",
-          chain: "BTC-Bitcoin",
-        },
-      ],
+      amt: "0.1",
+      wdId: "67485",
+      ccy: "BTC",
+      chain: "BTC-Bitcoin",
     },
   }
 }

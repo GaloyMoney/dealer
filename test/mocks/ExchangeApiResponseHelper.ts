@@ -57,16 +57,10 @@ export function getValidWithdrawResponse(id: string, currency, amountInBtc) {
     id: id,
     status: FundTransferStatus.Requested,
     info: {
-      code: "0",
-      msg: "",
-      data: [
-        {
-          amt: amountInBtc,
-          wdId: id,
-          ccy: currency,
-          chain: "BTC-Bitcoin",
-        },
-      ],
+      amt: amountInBtc,
+      wdId: id,
+      ccy: currency,
+      chain: "BTC-Bitcoin",
     },
   }
 }

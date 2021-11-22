@@ -132,15 +132,15 @@ export class OkexExchangeConfiguration implements ExchangeConfiguration {
   withdrawValidateApiResponse(response) {
     assert(response, ApiError.UNSUPPORTED_API_RESPONSE)
     assert(response.id, ApiError.UNSUPPORTED_API_RESPONSE)
+    assert(response.info, ApiError.UNSUPPORTED_API_RESPONSE)
     // OKEX specific
-    assert(response.info.code === "0", ApiError.UNSUPPORTED_API_RESPONSE)
-    assert(response.info.data[0].ccy === TradeCurrency.BTC, ApiError.UNSUPPORTED_CURRENCY)
+    assert(response.info.ccy === TradeCurrency.BTC, ApiError.UNSUPPORTED_CURRENCY)
     assert(
-      response.info.data[0].chain === SupportedChain.BTC_Bitcoin,
+      response.info.chain === SupportedChain.BTC_Bitcoin,
       ApiError.UNSUPPORTED_CURRENCY,
     )
-    assert(response.info.data[0].amt > 0, ApiError.NON_POSITIVE_QUANTITY)
-    assert(response.info.data[0].wdId, ApiError.MISSING_WITHDRAW_ID)
+    assert(response.info.amt > 0, ApiError.NON_POSITIVE_QUANTITY)
+    assert(response.info.wdId, ApiError.MISSING_WITHDRAW_ID)
   }
 
   transferValidateInput(args: TransferParameters) {
