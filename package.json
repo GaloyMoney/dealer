@@ -164,7 +164,7 @@
   },
   "devDependencies": {
     "@types/babel__core": "7.1.16",
-    "@types/bootstrap": "^4.6.1",
+    "@types/bootstrap": "^5.1.6",
     "@types/case-sensitive-paths-webpack-plugin": "2.1.6",
     "@types/eslint": "^7.28.1",
     "@types/file-loader": "5.0.1",
