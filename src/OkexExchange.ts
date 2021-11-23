@@ -7,6 +7,11 @@ import {
   SetAccountConfigurationResult,
   GetPublicMarkPriceResult,
   GetMarketIndexTickersResult,
+  WithdrawOnLightningResult,
+  WithdrawOnLightningParameters,
+  DepositOnLightningResult,
+  DepositOnLightningParameters,
+  AccountType,
 } from "./ExchangeTradingType"
 import assert from "assert"
 import { ExchangeBase } from "./ExchangeBase"
@@ -18,6 +23,17 @@ import {
 import { OkexExchangeConfiguration } from "./OkexExchangeConfiguration"
 import { Result } from "./Result"
 import pino from "pino"
+
+export enum AccountTypeToId {
+  Spot = 1,
+  Futures = 3,
+  Margin = 5,
+  Funding = 6,
+  Swap = 9,
+  Option = 12,
+  Trading = 18, // unified trading account
+  Unified = 18,
+}
 
 export class OkexExchange extends ExchangeBase {
   instrumentId: SupportedInstrument
@@ -254,6 +270,65 @@ export class OkexExchange extends ExchangeBase {
       }
     } catch (error) {
       this.logger.error({ error }, "exchange.setAccountConfiguration() failed: {error}")
+      return { ok: false, error: error }
+    }
+  }
+
+  public async withdrawOnLightning(
+    args: WithdrawOnLightningParameters,
+  ): Promise<Result<WithdrawOnLightningResult>> {
+    try {
+      const params = {
+        ccy: args.currency,
+        invoice: args.invoice,
+        pwd: this.fundingPassword,
+      }
+      const response = await this.exchange.privatePostAssetWithdrawalLightning(params)
+      this.logger.debug(
+        { params, response },
+        "privatePostAssetWithdrawalLightning({params}) returned: {response}",
+      )
+      assert(response, ApiError.UNSUPPORTED_API_RESPONSE)
+      assert(response.code === "0", ApiError.UNSUPPORTED_API_RESPONSE)
+      assert(response.data[0].wdId, ApiError.UNSUPPORTED_API_RESPONSE)
+
+      return {
+        ok: true,
+        value: {
+          originalResponseAsIs: response,
+          id: response.data[0].wdId,
+        },
+      }
+    } catch (error) {
+      return { ok: false, error: error }
+    }
+  }
+
+  public async depositOnLightning(
+    args: DepositOnLightningParameters,
+  ): Promise<Result<DepositOnLightningResult>> {
+    try {
+      const params = {
+        ccy: args.currency,
+        amt: args.amountInSats,
+        to: AccountTypeToId.Trading,
+      }
+      const response = await this.exchange.privateGetAssetDepositLightning(params)
+      this.logger.debug(
+        { params, response },
+        "privateGetAssetDepositLightning({params}) returned: {response}",
+      )
+      assert(response, ApiError.UNSUPPORTED_API_RESPONSE)
+      assert(response.data[0].invoice, ApiError.UNSUPPORTED_API_RESPONSE)
+
+      return {
+        ok: true,
+        value: {
+          originalResponseAsIs: response,
+          invoice: response.data[0].invoice,
+        },
+      }
+    } catch (error) {
       return { ok: false, error: error }
     }
   }
