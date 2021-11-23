@@ -72,7 +72,10 @@ export default function Invoice({ paymentRequest }: { paymentRequest: string }) 
             />
           </div>
         </OverlayTrigger>
-        <p>Click on the QR code to copy</p>
+        <p>
+          Click on the QR code to copy <br /> or{" "}
+          <a href={`lightning:${paymentRequest}`}>Open with wallet</a>
+        </p>
         <p>Waiting for payment confirmation...</p>
       </Card.Body>
     )
