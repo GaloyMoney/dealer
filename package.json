@@ -173,7 +173,7 @@
     "@types/lodash.debounce": "^4.0.6",
     "@types/mini-css-extract-plugin": "2.4.0",
     "@types/optimize-css-assets-webpack-plugin": "5.0.4",
-    "@types/prettier": "^2.4.1",
+    "@types/prettier": "^2.4.2",
     "@types/prompts": "2.4.0",
     "@types/react-dev-utils": "^9.0.7",
     "@types/react-lottie": "^1.2.6",
