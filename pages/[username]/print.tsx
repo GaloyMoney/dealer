@@ -1,3 +1,4 @@
+import { useRouter } from "next/router"
 import { forwardRef, useRef } from "react"
 import Row from "react-bootstrap/Row"
 import Col from "react-bootstrap/Col"
@@ -38,7 +39,10 @@ const QRContainer = forwardRef((props: { username: string }, ref) => {
   )
 })
 
-const PrintQR = ({ username }: { username: string }) => {
+const PrintQR = () => {
+  const router = useRouter()
+  const { username } = router.query
+
   const componentRef = useRef()
 
   return (

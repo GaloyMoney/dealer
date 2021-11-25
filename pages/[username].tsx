@@ -1,15 +1,15 @@
+import { useRouter } from "next/router"
 import Row from "react-bootstrap/Row"
 import Col from "react-bootstrap/Col"
 import Card from "react-bootstrap/Card"
 import Container from "react-bootstrap/Container"
-import { useQueryParams } from "hookrouter"
 import Image from "react-bootstrap/Image"
-
-import { getOS, appStoreLink, playStoreLink } from "./downloadApp"
-import ReceiveAmount from "./receiveAmount"
-import ReceiveNoAmount from "./receiveNoAmount"
 import { gql, useQuery } from "@apollo/client"
-import updateHistoryState from "../helpers/update-history-state"
+
+import ReceiveAmount from "../components/receiveAmount"
+import ReceiveNoAmount from "../components/receiveNoAmount"
+
+import { getOS, playStoreLink, appStoreLink } from "../lib/download"
 
 const USER_WALLET_ID = gql`
   query userDefaultWalletId($username: Username!) {
@@ -17,8 +17,9 @@ const USER_WALLET_ID = gql`
   }
 `
 
-export default function Receive({ username }: { username: string }) {
-  const [queryParams, setQueryParams] = useQueryParams()
+export default function Receive() {
+  const router = useRouter()
+  const { username, amount } = router.query
 
   const { error, loading, data } = useQuery(USER_WALLET_ID, {
     variables: {
@@ -34,13 +35,10 @@ export default function Receive({ username }: { username: string }) {
 
   const { userDefaultWalletId } = data
 
-  const isAmountInvoice = queryParams?.amount !== undefined
+  const isAmountInvoice = amount !== undefined
 
   const onSetAmountClick = () => {
-    setQueryParams({
-      amount: 0,
-      currency: "USD",
-    })
+    router.push(`/${username}?amount=0&currency=USD`, undefined, { shallow: true })
   }
 
   return (
@@ -54,7 +52,10 @@ export default function Receive({ username }: { username: string }) {
             {isAmountInvoice ? (
               <ReceiveAmount
                 userWalletId={userDefaultWalletId}
-                updateURLAmount={updateHistoryState}
+                updateURLAmount={(params) => {
+                  const qs = new URLSearchParams(params)
+                  router.push(`/${username}?${qs.toString()}`)
+                }}
               />
             ) : (
               <ReceiveNoAmount
@@ -66,38 +67,22 @@ export default function Receive({ username }: { username: string }) {
             <Card.Body>
               {os === "android" && (
                 <a href={playStoreLink}>
-                  <Image
-                    src={process.env.PUBLIC_URL + "/google-play-badge.png"}
-                    height="40px"
-                    rounded
-                  />
+                  <Image src="/google-play-badge.png" height="40px" rounded />
                 </a>
               )}
               {os === "ios" && (
                 <a href={playStoreLink}>
-                  <Image
-                    src={process.env.PUBLIC_URL + "/apple-app-store.png"}
-                    height="40px"
-                    rounded
-                  />
+                  <Image src="/apple-app-store.png" height="40px" rounded />
                 </a>
               )}
               {os === undefined && (
                 <div>
                   <a href={appStoreLink}>
-                    <Image
-                      src={process.env.PUBLIC_URL + "/apple-app-store.png"}
-                      height="45px"
-                      rounded
-                    />
+                    <Image src="/apple-app-store.png" height="45px" rounded />
                   </a>
                   &nbsp;
                   <a href={playStoreLink}>
-                    <Image
-                      src={process.env.PUBLIC_URL + "/google-play-badge.png"}
-                      height="45px"
-                      rounded
-                    />
+                    <Image src="/google-play-badge.png" height="45px" rounded />
                   </a>
                 </div>
               )}

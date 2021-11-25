@@ -1,4 +1,3 @@
-import ReactDOM from "react-dom"
 import {
   ApolloProvider,
   ApolloClient,
@@ -8,9 +7,6 @@ import {
 } from "@apollo/client"
 import { WebSocketLink } from "@apollo/client/link/ws"
 import { getMainDefinition } from "@apollo/client/utilities"
-
-import "./index.css"
-import App from "./App"
 
 import { GRAPHQL_URI, GRAPHQL_SUBSCRIPTION_URI } from "./config"
 
@@ -36,14 +32,11 @@ const splitLink = split(
   httpLink,
 )
 
-const client = new ApolloClient({
+export const client = new ApolloClient({
   link: splitLink,
   cache: new InMemoryCache(),
 })
 
-ReactDOM.render(
-  <ApolloProvider client={client}>
-    <App />
-  </ApolloProvider>,
-  document.getElementById("root"),
+export default (props) => (
+  <ApolloProvider client={client}>{props.children}</ApolloProvider>
 )

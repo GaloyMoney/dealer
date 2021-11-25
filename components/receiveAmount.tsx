@@ -2,8 +2,8 @@ import * as React from "react"
 import debounce from "lodash.debounce"
 
 import GenerateInvoice from "./generate-invoice"
-import useSatPrice from "../helpers/use-sat-price"
 import FormattedInput from "./formatted-input"
+import useSatPrice from "../lib/use-sat-price"
 
 const usdFormatter = new Intl.NumberFormat("en-US", {
   style: "currency",

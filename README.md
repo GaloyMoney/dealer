@@ -12,13 +12,11 @@ Galoy-Pay uses query, mutation, and subscription operations from the Galoy's gra
 
 ## How to run this repo locally?
 
-In the project directory, you can run:
+In the project directory, first edit `.env.local` to point to the correct URLs, then run:
 
 ```sh
 yarn install
-export GRAPHQL_URI="https://api.domain.com/graphql"
-export GRAPHQL_SUBSCRIPTION_URI="wss://api.domain.com/graphql"
-yarn start
+yarn dev
 ```
 
 This will run the app in the development mode.
@@ -35,8 +33,6 @@ In the project directory, you can run:
 
 ```sh
 yarn install
-export GRAPHQL_URI="https://api.domain.com/graphql"
-export GRAPHQL_SUBSCRIPTION_URI="wss://api.domain.com/graphql"
 yarn build
 ```
 
