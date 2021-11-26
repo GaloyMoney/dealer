@@ -2,7 +2,6 @@ import crypto from "crypto"
 import originalUrl from "original-url"
 import { ApolloClient, gql, HttpLink, InMemoryCache } from "@apollo/client"
 
-import { client } from "../../../lib/graphql"
 import { GRAPHQL_URI } from "../../../lib/config"
 
 const client = new ApolloClient({

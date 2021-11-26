@@ -1,4 +1,5 @@
 export const getOS = () => {
+  // @ts-ignore
   const userAgent = navigator.userAgent || navigator.vendor || window.opera
 
   // Windows Phone must come first because its UA also contains "Android"
@@ -11,6 +12,7 @@ export const getOS = () => {
   }
 
   // iOS detection from: http://stackoverflow.com/a/9039885/177710
+  // @ts-ignore
   if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
     return "ios"
   }

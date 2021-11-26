@@ -1,4 +1,5 @@
 .next
+tsconfig.tsbuildinfo
 
 # dependencies
 /node_modules

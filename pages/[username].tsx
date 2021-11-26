@@ -53,7 +53,11 @@ export default function Receive() {
               <ReceiveAmount
                 userWalletId={userDefaultWalletId}
                 updateURLAmount={(params) => {
-                  const qs = new URLSearchParams(params)
+                  const qs = new URLSearchParams(
+                    Object.fromEntries(
+                      Object.entries(params).map(([k, v]) => [k, v.toString()]),
+                    ),
+                  )
                   router.push(`/${username}?${qs.toString()}`)
                 }}
               />

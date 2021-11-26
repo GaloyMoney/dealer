@@ -67,7 +67,7 @@ export default function Invoice({ paymentRequest }: { paymentRequest: string }) 
             <QRCode
               value={`${paymentRequest}`}
               size={320}
-              logoImage={process.env.PUBLIC_URL + "/BBQRLogo.png"}
+              logoImage="/BBQRLogo.png"
               logoWidth={100}
             />
           </div>
