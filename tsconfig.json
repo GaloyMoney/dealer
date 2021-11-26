@@ -18,7 +18,8 @@
     "noEmit": true,
     "jsx": "preserve",
     "allowJs": true,
-    "incremental": true
+    "incremental": true,
+    "strict": false
   },
   "include": [
     "pages",
