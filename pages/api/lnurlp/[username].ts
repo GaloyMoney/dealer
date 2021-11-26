@@ -1,0 +1,119 @@
+import crypto from "crypto"
+import originalUrl from "original-url"
+import { ApolloClient, gql, HttpLink, InMemoryCache } from "@apollo/client"
+
+import { client } from "../../../lib/graphql"
+import { GRAPHQL_URI } from "../../../lib/config"
+
+const client = new ApolloClient({
+  link: new HttpLink({
+    uri: GRAPHQL_URI,
+  }),
+  cache: new InMemoryCache(),
+})
+
+const USER_WALLET_ID = gql`
+  query userDefaultWalletId($username: Username!) {
+    userDefaultWalletId(username: $username)
+  }
+`
+
+const LNURL_INVOICE = gql`
+  mutation lnInvoiceCreateOnBehalfOfRecipient(
+    $walletId: WalletId!
+    $amount: SatAmount!
+    $h: Hex32Bytes!
+  ) {
+    mutationData: lnInvoiceCreateOnBehalfOfRecipient(
+      input: { recipientWalletId: $walletId, amount: $amount, descriptionHash: $h }
+    ) {
+      errors {
+        message
+      }
+      invoice {
+        paymentRequest
+      }
+    }
+  }
+`
+
+export default async function (req, res) {
+  const { username, amount } = req.query
+  const url = originalUrl(req)
+
+  let walletId
+
+  try {
+    const { data } = await client.query({
+      query: USER_WALLET_ID,
+      variables: { username },
+    })
+    walletId = data.userDefaultWalletId
+  } catch (err) {
+    return res.json({
+      status: "ERROR",
+      reason: `Couldn't find user '${username}'.`,
+    })
+  }
+
+  const metadata = JSON.stringify([
+    ["text/plain", `Payment to ${username}`],
+    ["text/identifier", `${username}@${url.hostname}`],
+  ])
+
+  if (amount) {
+    // second call, return invoice
+    const amountSats = Math.round(parseInt(amount, 10) / 1000)
+    if ((amountSats * 1000).toString() !== amount) {
+      return res.json({
+        status: "ERROR",
+        reason: "Millisatoshi amount is not supported, please send a value in full sats.",
+      })
+    }
+
+    try {
+      const descriptionHash = crypto.createHash("sha256").update(metadata).digest("hex")
+
+      const {
+        data: {
+          mutationData: { errors, invoice },
+        },
+      } = await client.mutate({
+        mutation: LNURL_INVOICE,
+        variables: {
+          walletId,
+          amount: amountSats,
+          h: descriptionHash,
+        },
+      })
+
+      if (errors && errors.length) {
+        console.log("error getting invoice", errors)
+        return res.json({
+          status: "ERROR",
+          reason: `Failed to get invoice: ${errors[0].message}`,
+        })
+      }
+
+      res.json({
+        pr: invoice.paymentRequest,
+        routes: [],
+      })
+    } catch (err) {
+      console.log("unexpected error getting invoice", err)
+      res.json({
+        status: "ERROR",
+        reason: err.message,
+      })
+    }
+  } else {
+    // first call
+    res.json({
+      callback: url.full,
+      minSendable: 1000,
+      maxSendable: 500000000,
+      metadata: metadata,
+      tag: "payRequest",
+    })
+  }
+}
