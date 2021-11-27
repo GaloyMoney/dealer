@@ -37,6 +37,6 @@ const client = new ApolloClient({
   cache: new InMemoryCache(),
 })
 
-export default (props) => (
+export default (props: any) => (
   <ApolloProvider client={client}>{props.children}</ApolloProvider>
 )

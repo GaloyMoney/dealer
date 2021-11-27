@@ -19,7 +19,7 @@
     "jsx": "preserve",
     "allowJs": true,
     "incremental": true,
-    "strict": false
+    "strict": true
   },
   "include": [
     "pages",

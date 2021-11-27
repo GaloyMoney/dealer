@@ -8,7 +8,13 @@ import "./index.css"
 
 const GraphQLProvider = dynamic(() => import("../lib/graphql"), { ssr: false })
 
-export default function Layout({ Component, pageProps }) {
+export default function Layout({
+  Component,
+  pageProps,
+}: {
+  Component: any
+  pageProps: any
+}) {
   return (
     <>
       <Head>

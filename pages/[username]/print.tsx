@@ -7,10 +7,17 @@ import originalUrl from "original-url"
 import ReactToPrint from "react-to-print"
 import { bech32 } from "bech32"
 import { QRCode } from "react-qrcode-logo"
-import { useRouter } from "next/router"
 import { useRef, useState } from "react"
 
-export async function getServerSideProps({ req, params: { username } }) {
+export async function getServerSideProps({
+  req,
+  params: { username },
+}: {
+  req: any
+  params: {
+    username: string
+  }
+}) {
   const url = originalUrl(req)
 
   return {
@@ -31,9 +38,16 @@ export async function getServerSideProps({ req, params: { username } }) {
   }
 }
 
-export default function ({ lightningAddress, lnurl, webURL }) {
-  const router = useRouter()
-  const componentRef = useRef()
+export default function ({
+  lightningAddress,
+  lnurl,
+  webURL,
+}: {
+  lightningAddress: string
+  lnurl: string
+  webURL: string
+}) {
+  const componentRef: any = useRef()
   const [qrType, setQR] = useState("lnurl")
 
   return (

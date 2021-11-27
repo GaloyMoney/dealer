@@ -36,7 +36,7 @@ const LNURL_INVOICE = gql`
   }
 `
 
-export default async function (req, res) {
+export default async function (req: any, res: any) {
   const { username, amount } = req.query
   const url = originalUrl(req)
 
@@ -98,7 +98,7 @@ export default async function (req, res) {
         pr: invoice.paymentRequest,
         routes: [],
       })
-    } catch (err) {
+    } catch (err: any) {
       console.log("unexpected error getting invoice", err)
       res.json({
         status: "ERROR",
