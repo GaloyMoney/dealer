@@ -32,3 +32,8 @@ COPY --from=builder /app/package.json ./package.json
 USER nextjs
 
 EXPOSE 3000
+
+ARG BUILDTIME
+ARG COMMITHASH
+ENV BUILDTIME ${BUILDTIME}
+ENV COMMITHASH ${COMMITHASH}
