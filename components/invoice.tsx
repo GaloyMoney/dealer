@@ -7,7 +7,7 @@ import { QRCode } from "react-qrcode-logo"
 import copy from "copy-to-clipboard"
 import Lottie from "react-lottie"
 
-import animationData from "./successAnimation.json"
+import animationData from "./success-animation.json"
 
 type OperationError = {
   message: string

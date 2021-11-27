@@ -6,8 +6,8 @@ import Container from "react-bootstrap/Container"
 import Image from "react-bootstrap/Image"
 import { gql, useQuery } from "@apollo/client"
 
-import ReceiveAmount from "../components/receiveAmount"
-import ReceiveNoAmount from "../components/receiveNoAmount"
+import ReceiveAmount from "../components/receive-amount"
+import ReceiveNoAmount from "../components/receive-no-amount"
 
 import { getOS, playStoreLink, appStoreLink } from "../lib/download"
 
