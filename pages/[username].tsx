@@ -18,6 +18,8 @@ const USER_WALLET_ID = gql`
 `
 
 export default function Receive() {
+  console.log("rendering user page")
+
   const router = useRouter()
   const { username, amount } = router.query
 
@@ -50,17 +52,7 @@ export default function Receive() {
             <Card.Header>Pay {username}</Card.Header>
 
             {isAmountInvoice ? (
-              <ReceiveAmount
-                userWalletId={userDefaultWalletId}
-                updateURLAmount={(params) => {
-                  const qs = new URLSearchParams(
-                    Object.fromEntries(
-                      Object.entries(params).map(([k, v]) => [k, v.toString()]),
-                    ),
-                  )
-                  router.push(`/${username}?${qs.toString()}`)
-                }}
-              />
+              <ReceiveAmount userWalletId={userDefaultWalletId} />
             ) : (
               <ReceiveNoAmount
                 userWalletId={userDefaultWalletId}

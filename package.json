@@ -46,7 +46,8 @@
     "react-to-print": "^2.12.6",
     "subscriptions-transport-ws": "^0.11.0",
     "ts-pnp": "1.2.0",
-    "typescript": "^4.4.4"
+    "typescript": "^4.4.4",
+    "use-debounce": "^7.0.1"
   },
   "eslintConfig": {
     "extends": [
