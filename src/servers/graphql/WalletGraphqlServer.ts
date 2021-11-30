@@ -16,6 +16,7 @@ import { v4 as uuidv4 } from "uuid"
 import { db as database } from "../../database"
 
 import { baseLogger } from "../../services/logger"
+import { AddressInfo } from "net"
 
 const graphqlLogger = baseLogger.child({ module: "graphql" })
 
@@ -211,9 +212,16 @@ export async function startApolloServer() {
 
   server.applyMiddleware({ app })
 
-  const httpServer = await app.listen({ port: 4000 })
-
-  console.log(`🚀 Server ready at http://localhost:4000${server.graphqlPath}`)
+  const httpServer = await app.listen({ port: 4000, host: "0.0.0.0" })
+  if (httpServer) {
+    const addressInfo = httpServer.address() as AddressInfo
+    const address = addressInfo ? addressInfo.address : "unknown"
+    const port = addressInfo ? addressInfo.port : "4000"
+    console.log(`🚀 Server ready at http://${address}:${port}${server.graphqlPath}`)
+  } else {
+    graphqlLogger.error({ httpServer }, "app.listen() returned invalid {httpServer}")
+    console.log(`🚀 Server may have a problem binding`)
+  }
   return { server, app, httpServer }
 }
 
