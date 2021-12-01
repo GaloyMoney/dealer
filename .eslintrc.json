@@ -30,6 +30,8 @@
     "import/no-deprecated": "error",
     "import/no-extraneous-dependencies": "error",
 
+    "react-hooks/exhaustive-deps": "off",
+
     "no-undef": "error",
     "no-undef-init": "error",
     "no-duplicate-imports": "error",

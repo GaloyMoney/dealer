@@ -51,14 +51,14 @@ export default function ReceiveAmount({ userWalletId }: { userWalletId: string }
   const { satsToUsd, usdToSats } = useSatPrice()
   const { amount, currency } = parseQueryAmount(router.query) // USD or SATs
 
-  const [regenerateCounter, setRegenerateCounter] = useState(1)
   const [invoiceStatus, setInvoiceStatus] = useState<
     "loading" | "new" | "need-update" | "expired"
   >("loading")
 
   function toggleCurrency() {
     const newCurrency = currency === "SATS" ? "USD" : "SATS"
-    const newAmount = newCurrency === "SATS" ? usdToSats(amount) : satsToUsd(amount)
+    const newAmount =
+      newCurrency === "SATS" ? Math.round(usdToSats(amount)) : satsToUsd(amount)
 
     router.push(getUpdatedURL(router.query, { currency: newCurrency, amount: newAmount }))
   }
@@ -67,11 +67,16 @@ export default function ReceiveAmount({ userWalletId }: { userWalletId: string }
     router.push(getUpdatedURL(router.query, { amount: numberValue }))
   }, 1000)
 
-  const satsForInvoice = currency === "SATS" ? amount : Math.round(usdToSats(amount))
+  function getSatsForInvoice() {
+    return Math.round(currency === "SATS" ? amount : Math.round(usdToSats(amount)))
+  }
+
+  const [satsForInvoice, setSatsForInvoice] = useState(getSatsForInvoice())
+
   const convertedValue =
     currency === "SATS"
       ? usdFormatter.format(satsToUsd(amount))
-      : satsFormatter.format(usdToSats(amount)) + " sats"
+      : satsFormatter.format(Math.round(usdToSats(amount))) + " sats"
 
   const [createInvoice, { loading, error, data }] = useMutation<{
     mutationData: {
@@ -114,7 +119,12 @@ export default function ReceiveAmount({ userWalletId }: { userWalletId: string }
       clearTimeout(invoiceNeedUpdateTimer)
       clearTimeout(invoiceExpiredTimer)
     }
-  }, [userWalletId, satsForInvoice, createInvoice, regenerateCounter])
+  }, [userWalletId, satsForInvoice])
+
+  useEffect(() => {
+    const newSats = getSatsForInvoice()
+    if (newSats !== satsForInvoice) setSatsForInvoice(newSats)
+  }, [amount, currency])
 
   return (
     <>
@@ -145,7 +155,7 @@ export default function ReceiveAmount({ userWalletId }: { userWalletId: string }
                 Stale Price...{" "}
                 <span
                   className="clickable"
-                  onClick={() => setRegenerateCounter(regenerateCounter + 1)}
+                  onClick={() => setSatsForInvoice(satsForInvoice)}
                 >
                   Regenerate Invoice
                 </span>
@@ -156,7 +166,7 @@ export default function ReceiveAmount({ userWalletId }: { userWalletId: string }
                 Invoice Expired...{" "}
                 <span
                   className="clickable"
-                  onClick={() => setRegenerateCounter(regenerateCounter + 1)}
+                  onClick={() => setSatsForInvoice(satsForInvoice)}
                 >
                   Generate New Invoice
                 </span>
