@@ -18,8 +18,6 @@ const USER_WALLET_ID = gql`
 `
 
 export default function Receive() {
-  console.log("rendering user page")
-
   const router = useRouter()
   const { username, amount } = router.query
 

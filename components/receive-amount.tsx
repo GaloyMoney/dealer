@@ -1,20 +1,11 @@
 import React, { useState, useEffect } from "react"
-import { gql, useMutation } from "@apollo/client"
 import { useDebouncedCallback } from "use-debounce"
 import { useRouter } from "next/router"
 import { ParsedUrlQuery } from "querystring"
 
 import FormattedInput from "./formatted-input"
 import useSatPrice from "../lib/use-sat-price"
-import Invoice from "./invoice"
-
-type OperationError = {
-  message: string
-}
-
-type LnInvoiceObject = {
-  paymentRequest: string
-}
+import GenerateInvoice from "./generate-invoice"
 
 const usdFormatter = new Intl.NumberFormat("en-US", {
   style: "currency",
@@ -26,34 +17,10 @@ const satsFormatter = new Intl.NumberFormat("en-US", {
   maximumFractionDigits: 0,
 })
 
-const LN_INVOICE_CREATE_ON_BEHALF_OF_RECIPIENT = gql`
-  mutation lnInvoiceCreateOnBehalfOfRecipient($walletId: WalletId!, $amount: SatAmount!) {
-    mutationData: lnInvoiceCreateOnBehalfOfRecipient(
-      input: { recipientWalletId: $walletId, amount: $amount }
-    ) {
-      errors {
-        message
-      }
-      invoice {
-        paymentRequest
-      }
-    }
-  }
-`
-
-const INVOICE_STALE_CHECK_INTERVAL = 5 * 60 * 1000
-const INVOICE_EXPIRE_INTERVAL = 60 * 60 * 1000
-
 export default function ReceiveAmount({ userWalletId }: { userWalletId: string }) {
-  console.log("rendering receive-amount component")
-
   const router = useRouter()
   const { satsToUsd, usdToSats } = useSatPrice()
   const { amount, currency } = parseQueryAmount(router.query) // USD or SATs
-
-  const [invoiceStatus, setInvoiceStatus] = useState<
-    "loading" | "new" | "need-update" | "expired"
-  >("loading")
 
   function toggleCurrency() {
     const newCurrency = currency === "SATS" ? "USD" : "SATS"
@@ -71,6 +38,13 @@ export default function ReceiveAmount({ userWalletId }: { userWalletId: string }
     return Math.round(currency === "SATS" ? amount : Math.round(usdToSats(amount)))
   }
 
+  function triggerRegenerateInvoice() {
+    setSatsForInvoice(0)
+    setTimeout(() => {
+      setSatsForInvoice(getSatsForInvoice())
+    })
+  }
+
   const [satsForInvoice, setSatsForInvoice] = useState(getSatsForInvoice())
 
   const convertedValue =
@@ -78,53 +52,10 @@ export default function ReceiveAmount({ userWalletId }: { userWalletId: string }
       ? usdFormatter.format(satsToUsd(amount))
       : satsFormatter.format(Math.round(usdToSats(amount))) + " sats"
 
-  const [createInvoice, { loading, error, data }] = useMutation<{
-    mutationData: {
-      errors: OperationError[]
-      invoice?: LnInvoiceObject
-    }
-  }>(LN_INVOICE_CREATE_ON_BEHALF_OF_RECIPIENT, {
-    onError: console.error,
-    onCompleted: () => setInvoiceStatus("new"),
-  })
-
-  let errorString: string | null = error?.message || null
-  let invoice
-  if (data) {
-    const invoiceData = data.mutationData
-    if (invoiceData.errors?.length > 0) {
-      errorString = invoiceData.errors.map((e) => e.message).join(", ")
-    } else {
-      invoice = invoiceData.invoice
-    }
-  }
-
-  useEffect(() => {
-    if (!satsForInvoice) return
-
-    console.log("generating invoice", satsForInvoice)
-
-    createInvoice({
-      variables: { walletId: userWalletId, amount: satsForInvoice },
-    })
-    const invoiceNeedUpdateTimer = setTimeout(
-      () => setInvoiceStatus("need-update"),
-      INVOICE_STALE_CHECK_INTERVAL,
-    )
-    const invoiceExpiredTimer = setTimeout(
-      () => setInvoiceStatus("expired"),
-      INVOICE_EXPIRE_INTERVAL,
-    )
-    return () => {
-      clearTimeout(invoiceNeedUpdateTimer)
-      clearTimeout(invoiceExpiredTimer)
-    }
-  }, [userWalletId, satsForInvoice])
-
   useEffect(() => {
     const newSats = getSatsForInvoice()
     if (newSats !== satsForInvoice) setSatsForInvoice(newSats)
-  }, [amount, currency])
+  }, [amount, currency, usdToSats])
 
   return (
     <>
@@ -143,39 +74,14 @@ export default function ReceiveAmount({ userWalletId }: { userWalletId: string }
       </div>
       <div>&#8776; {convertedValue}</div>
 
-      {satsForInvoice > 0 &&
-        (errorString ? (
-          <div className="error">{errorString}</div>
-        ) : loading ? (
-          <div className="loading">{loading && "Creating Invoice"}...</div>
-        ) : !data ? null : (
-          <>
-            {invoiceStatus === "need-update" && (
-              <div className="warning">
-                Stale Price...{" "}
-                <span
-                  className="clickable"
-                  onClick={() => setSatsForInvoice(satsForInvoice)}
-                >
-                  Regenerate Invoice
-                </span>
-              </div>
-            )}
-            {invoiceStatus === "expired" ? (
-              <div className="warning expired-invoice">
-                Invoice Expired...{" "}
-                <span
-                  className="clickable"
-                  onClick={() => setSatsForInvoice(satsForInvoice)}
-                >
-                  Generate New Invoice
-                </span>
-              </div>
-            ) : invoiceStatus === "new" && invoice ? (
-              <Invoice paymentRequest={invoice.paymentRequest} />
-            ) : null}
-          </>
-        ))}
+      {satsForInvoice > 0 && (
+        <GenerateInvoice
+          userWalletId={userWalletId}
+          satsForInvoice={satsForInvoice}
+          regenerate={triggerRegenerateInvoice}
+          currency={currency}
+        />
+      )}
     </>
   )
 }
