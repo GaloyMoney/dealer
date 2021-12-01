@@ -1,7 +1,7 @@
 import { Pool } from "pg"
 import pgPromise from "pg-promise"
-import dotenv from "dotenv"
 
+import dotenv from "dotenv"
 dotenv.config()
 
 const DATABASE_CONNECTION_STRING = process.env["DATABASE_URL"]
