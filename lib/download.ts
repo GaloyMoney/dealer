@@ -1,5 +1,5 @@
 export const getOS = () => {
-  // @ts-ignore
+  // @ts-expect-error: opera browser property is not a standard thing
   const userAgent = navigator.userAgent || navigator.vendor || window.opera
 
   // Windows Phone must come first because its UA also contains "Android"
@@ -12,7 +12,7 @@ export const getOS = () => {
   }
 
   // iOS detection from: http://stackoverflow.com/a/9039885/177710
-  // @ts-ignore
+  // @ts-expect-error: MSStream browser property is not a standard thing
   if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
     return "ios"
   }

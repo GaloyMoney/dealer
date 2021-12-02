@@ -1,6 +1,7 @@
 import crypto from "crypto"
 import originalUrl from "original-url"
 import { ApolloClient, gql, HttpLink, InMemoryCache } from "@apollo/client"
+import type { NextApiRequest, NextApiResponse } from "next"
 
 import { GRAPHQL_URI } from "../../../lib/config"
 
@@ -36,7 +37,7 @@ const LNURL_INVOICE = gql`
   }
 `
 
-export default async function (req: any, res: any) {
+export default async function (req: NextApiRequest, res: NextApiResponse) {
   const { username, amount } = req.query
   const url = originalUrl(req)
 
@@ -61,6 +62,9 @@ export default async function (req: any, res: any) {
   ])
 
   if (amount) {
+    if (Array.isArray(amount)) {
+      throw new Error("Invalid request")
+    }
     // second call, return invoice
     const amountSats = Math.round(parseInt(amount, 10) / 1000)
     if ((amountSats * 1000).toString() !== amount) {
@@ -98,11 +102,11 @@ export default async function (req: any, res: any) {
         pr: invoice.paymentRequest,
         routes: [],
       })
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.log("unexpected error getting invoice", err)
       res.json({
         status: "ERROR",
-        reason: err.message,
+        reason: err instanceof Error ? err.message : "unexpected error",
       })
     }
   } else {

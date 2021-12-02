@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useRef } from "react"
 import { gql, useMutation } from "@apollo/client"
 
 import Invoice from "./invoice"
@@ -29,20 +29,22 @@ const LN_INVOICE_CREATE_ON_BEHALF_OF_RECIPIENT = gql`
 const INVOICE_STALE_CHECK_INTERVAL = 5 * 60 * 1000
 const INVOICE_EXPIRE_INTERVAL = 60 * 60 * 1000
 
-export default function ({
-  userWalletId,
-  satsForInvoice,
+function GenerateInvoice({
+  recipientWalletId,
+  amountInSats,
   regenerate,
   currency,
 }: {
-  userWalletId: string
-  satsForInvoice: number
+  recipientWalletId: string
+  amountInSats: number
   regenerate: () => void
   currency: string
 }) {
   const [invoiceStatus, setInvoiceStatus] = useState<
     "loading" | "new" | "need-update" | "expired"
   >("loading")
+
+  const timerIds = useRef<number[]>([])
 
   const [createInvoice, { loading, error, data }] = useMutation<{
     mutationData: {
@@ -54,27 +56,31 @@ export default function ({
     onCompleted: () => setInvoiceStatus("new"),
   })
 
+  const clearAllTimers = () => {
+    timerIds.current.forEach((timerId) => clearTimeout(timerId))
+  }
+
   useEffect(() => {
     createInvoice({
-      variables: { walletId: userWalletId, amount: satsForInvoice },
+      variables: { walletId: recipientWalletId, amount: amountInSats },
     })
-    const invoiceNeedUpdateTimer = setTimeout(() => {
-      if (currency !== "SATS") {
-        setInvoiceStatus("need-update")
-      }
-    }, INVOICE_STALE_CHECK_INTERVAL)
-    const invoiceExpiredTimer = setTimeout(
-      () => setInvoiceStatus("expired"),
-      INVOICE_EXPIRE_INTERVAL,
-    )
-    return () => {
-      clearTimeout(invoiceNeedUpdateTimer)
-      clearTimeout(invoiceExpiredTimer)
+    if (currency !== "SATS") {
+      timerIds.current.push(
+        window.setTimeout(
+          () => setInvoiceStatus("need-update"),
+          INVOICE_STALE_CHECK_INTERVAL,
+        ),
+      )
     }
-  }, [userWalletId, satsForInvoice])
+    timerIds.current.push(
+      window.setTimeout(() => setInvoiceStatus("expired"), INVOICE_EXPIRE_INTERVAL),
+    )
+    return clearAllTimers
+  }, [recipientWalletId, amountInSats, currency, createInvoice])
 
   let errorString: string | null = error?.message || null
   let invoice
+
   if (data) {
     const invoiceData = data.mutationData
     if (invoiceData.errors?.length > 0) {
@@ -84,21 +90,17 @@ export default function ({
     }
   }
 
-  if (errorString) return <div className="error">{errorString}</div>
+  if (errorString) {
+    return <div className="error">{errorString}</div>
+  }
 
-  if (loading) return <div className="loading">{loading && "Creating Invoice"}...</div>
+  if (loading) {
+    return <div className="loading">Creating Invoice...</div>
+  }
 
-  if (invoiceStatus === "need-update")
-    return (
-      <div className="warning">
-        Stale Price...{" "}
-        <span className="clickable" onClick={regenerate}>
-          Regenerate Invoice
-        </span>
-      </div>
-    )
+  if (!invoice) return null
 
-  if (invoiceStatus === "expired")
+  if (invoiceStatus === "expired") {
     return (
       <div className="warning expired-invoice">
         Invoice Expired...{" "}
@@ -107,8 +109,24 @@ export default function ({
         </span>
       </div>
     )
+  }
 
-  if (!invoice) return null
-
-  return <Invoice paymentRequest={invoice.paymentRequest} />
+  return (
+    <>
+      {invoiceStatus === "need-update" && (
+        <div className="warning">
+          Stale Price...{" "}
+          <span className="clickable" onClick={regenerate}>
+            Regenerate Invoice
+          </span>
+        </div>
+      )}
+      <Invoice
+        paymentRequest={invoice.paymentRequest}
+        onPaymentSuccess={clearAllTimers}
+      />
+    </>
+  )
 }
+
+export default GenerateInvoice

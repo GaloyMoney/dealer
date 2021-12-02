@@ -11,9 +11,9 @@ import ReceiveNoAmount from "../components/receive-no-amount"
 
 import { getOS, playStoreLink, appStoreLink } from "../lib/download"
 
-const USER_WALLET_ID = gql`
+const RECIPIENT_WALLET_ID = gql`
   query userDefaultWalletId($username: Username!) {
-    userDefaultWalletId(username: $username)
+    recipientWalletId: userDefaultWalletId(username: $username)
   }
 `
 
@@ -21,7 +21,7 @@ export default function Receive() {
   const router = useRouter()
   const { username, amount } = router.query
 
-  const { error, loading, data } = useQuery(USER_WALLET_ID, {
+  const { error, loading, data } = useQuery(RECIPIENT_WALLET_ID, {
     variables: {
       username,
     },
@@ -33,7 +33,7 @@ export default function Receive() {
   if (loading) return <div className="loading">Loading...</div>
   if (!data) return null
 
-  const { userDefaultWalletId } = data
+  const { recipientWalletId } = data
 
   const isAmountInvoice = amount !== undefined
 
@@ -50,10 +50,10 @@ export default function Receive() {
             <Card.Header>Pay {username}</Card.Header>
 
             {isAmountInvoice ? (
-              <ReceiveAmount userWalletId={userDefaultWalletId} />
+              <ReceiveAmount recipientWalletId={recipientWalletId} />
             ) : (
               <ReceiveNoAmount
-                userWalletId={userDefaultWalletId}
+                recipientWalletId={recipientWalletId}
                 onSetAmountClick={onSetAmountClick}
               />
             )}

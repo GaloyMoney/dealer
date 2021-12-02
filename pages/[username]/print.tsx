@@ -13,10 +13,8 @@ export async function getServerSideProps({
   req,
   params: { username },
 }: {
-  req: any
-  params: {
-    username: string
-  }
+  req: unknown
+  params: { username: string }
 }) {
   const url = originalUrl(req)
 
@@ -47,7 +45,7 @@ export default function ({
   lnurl: string
   webURL: string
 }) {
-  const componentRef: any = useRef()
+  const componentRef = useRef<HTMLDivElement | null>(null)
   const [qrType, setQR] = useState("lnurl")
 
   return (

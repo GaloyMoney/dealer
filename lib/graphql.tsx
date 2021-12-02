@@ -1,3 +1,4 @@
+import * as React from "react"
 import {
   ApolloProvider,
   ApolloClient,
@@ -37,6 +38,6 @@ const client = new ApolloClient({
   cache: new InMemoryCache(),
 })
 
-export default (props: any) => (
-  <ApolloProvider client={client}>{props.children}</ApolloProvider>
+export default ({ children }: { children: React.ReactNode }) => (
+  <ApolloProvider client={client}>{children}</ApolloProvider>
 )

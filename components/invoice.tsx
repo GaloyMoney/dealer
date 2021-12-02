@@ -15,7 +15,7 @@ type OperationError = {
 
 const LN_INVOICE_PAYMENT_STATUS = gql`
   subscription lnInvoicePaymentStatus($input: LnInvoicePaymentStatusInput!) {
-    mutationData: lnInvoicePaymentStatus(input: $input) {
+    lnInvoicePaymentStatus(input: $input) {
       errors {
         message
       }
@@ -24,11 +24,17 @@ const LN_INVOICE_PAYMENT_STATUS = gql`
   }
 `
 
-export default function Invoice({ paymentRequest }: { paymentRequest: string }) {
+export default function Invoice({
+  paymentRequest,
+  onPaymentSuccess,
+}: {
+  paymentRequest: string
+  onPaymentSuccess?: () => void
+}) {
   const [showCopied, setShowCopied] = useState(false)
 
   const { loading, error, data } = useSubscription<{
-    mutationData: {
+    lnInvoicePaymentStatus: {
       errors: OperationError[]
       status?: string
     }
@@ -37,6 +43,11 @@ export default function Invoice({ paymentRequest }: { paymentRequest: string }) 
       input: {
         paymentRequest,
       },
+    },
+    onSubscriptionData: ({ subscriptionData }) => {
+      if (subscriptionData?.data?.lnInvoicePaymentStatus?.status === "PAID") {
+        onPaymentSuccess && onPaymentSuccess()
+      }
     },
   })
 
@@ -82,7 +93,7 @@ export default function Invoice({ paymentRequest }: { paymentRequest: string }) 
   }
 
   if (data) {
-    const { errors, status } = data.mutationData
+    const { errors, status } = data.lnInvoicePaymentStatus
     if (errors.length > 0) {
       console.error(errors)
       return <div className="error">{errors[0].message}</div>

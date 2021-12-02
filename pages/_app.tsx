@@ -1,10 +1,11 @@
-import Head from "next/head"
-import dynamic from "next/dynamic"
-
-import Header from "../components/header"
-
 import "bootstrap/dist/css/bootstrap.min.css"
 import "./index.css"
+
+import Head from "next/head"
+import dynamic from "next/dynamic"
+import { NextPage } from "next"
+
+import Header from "../components/header"
 
 const GraphQLProvider = dynamic(() => import("../lib/graphql"), { ssr: false })
 
@@ -12,8 +13,8 @@ export default function Layout({
   Component,
   pageProps,
 }: {
-  Component: any
-  pageProps: any
+  Component: NextPage
+  pageProps: Record<string, unknown>
 }) {
   return (
     <>

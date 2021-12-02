@@ -17,7 +17,11 @@ const satsFormatter = new Intl.NumberFormat("en-US", {
   maximumFractionDigits: 0,
 })
 
-export default function ReceiveAmount({ userWalletId }: { userWalletId: string }) {
+export default function ReceiveAmount({
+  recipientWalletId,
+}: {
+  recipientWalletId: string
+}) {
   const router = useRouter()
   const { satsToUsd, usdToSats } = useSatPrice()
   const { amount, currency } = parseQueryAmount(router.query) // USD or SATs
@@ -34,28 +38,26 @@ export default function ReceiveAmount({ userWalletId }: { userWalletId: string }
     router.push(getUpdatedURL(router.query, { amount: numberValue }))
   }, 1000)
 
-  function getSatsForInvoice() {
+  const getSatsForInvoice = React.useCallback(() => {
     return Math.round(currency === "SATS" ? amount : Math.round(usdToSats(amount)))
-  }
+  }, [amount, currency, usdToSats])
 
   function triggerRegenerateInvoice() {
     setSatsForInvoice(0)
-    setTimeout(() => {
-      setSatsForInvoice(getSatsForInvoice())
-    })
+    setTimeout(() => setSatsForInvoice(getSatsForInvoice()))
   }
 
-  const [satsForInvoice, setSatsForInvoice] = useState(getSatsForInvoice())
+  const [satsForInvoice, setSatsForInvoice] = useState(() => getSatsForInvoice())
 
   const convertedValue =
     currency === "SATS"
       ? usdFormatter.format(satsToUsd(amount))
-      : satsFormatter.format(Math.round(usdToSats(amount))) + " sats"
+      : satsFormatter.format(satsForInvoice) + " sats"
 
   useEffect(() => {
     const newSats = getSatsForInvoice()
     if (newSats !== satsForInvoice) setSatsForInvoice(newSats)
-  }, [amount, currency, usdToSats])
+  }, [amount, currency, getSatsForInvoice, satsForInvoice, usdToSats])
 
   return (
     <>
@@ -76,8 +78,8 @@ export default function ReceiveAmount({ userWalletId }: { userWalletId: string }
 
       {satsForInvoice > 0 && (
         <GenerateInvoice
-          userWalletId={userWalletId}
-          satsForInvoice={satsForInvoice}
+          recipientWalletId={recipientWalletId}
+          amountInSats={satsForInvoice}
           regenerate={triggerRegenerateInvoice}
           currency={currency}
         />
@@ -95,7 +97,10 @@ function parseQueryAmount(query: ParsedUrlQuery) {
   }
 }
 
-function getUpdatedURL(query: ParsedUrlQuery, update: Record<string, any>): string {
+function getUpdatedURL(
+  query: ParsedUrlQuery,
+  update: Record<string, string | number>,
+): string {
   const { username, ...params } = query
 
   const newEntries = Object.entries(params)
@@ -103,7 +108,7 @@ function getUpdatedURL(query: ParsedUrlQuery, update: Record<string, any>): stri
   const qs = new URLSearchParams(Object.fromEntries(stringEntries))
 
   Object.entries(update).forEach(([k, v]) => {
-    qs.set(k, v)
+    qs.set(k, v.toString())
   })
 
   return `/${username}?${qs.toString()}`
