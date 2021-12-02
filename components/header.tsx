@@ -7,7 +7,7 @@ function Header() {
     <Navbar bg="dark">
       <Container>
         <Navbar.Brand href="https://bitcoinbeach.com">
-          <Image src={process.env.PUBLIC_URL + "/BBLogo.png"} rounded />{" "}
+          <Image src="/BBLogo.png" rounded />
         </Navbar.Brand>
       </Container>
     </Navbar>

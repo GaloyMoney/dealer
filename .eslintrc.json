@@ -1,10 +1,11 @@
 {
+  "root": true,
   "env": {
     "browser": true,
     "es6": true,
     "node": true
   },
-  "ignorePatterns": ["/*.js", "lib", "coverage"],
+  "ignorePatterns": ["/*.js", "coverage", ".next/**"],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "project": "tsconfig.json",
@@ -20,14 +21,15 @@
     "plugin:react-hooks/recommended"
   ],
   "rules": {
-    // Customized rules
-    "@typescript-eslint/no-extra-semi": "off", // Prettier work
+    "@typescript-eslint/no-extra-semi": "off",
     "@typescript-eslint/prefer-for-of": "error",
     "@typescript-eslint/unified-signatures": "error",
 
     "import/no-deprecated": "error",
     "import/no-extraneous-dependencies": "error",
 
+    "no-undef": "error",
+    "no-undef-init": "error",
     "no-duplicate-imports": "error",
     "no-empty-function": "error",
     "no-empty": ["error", { "allowEmptyCatch": true }],
@@ -41,7 +43,6 @@
     "react/prop-types": "off",
     "react/react-in-jsx-scope": "off",
 
-    // Temporarily disabled recommended rules
     "@typescript-eslint/explicit-module-boundary-types": "off",
     "no-async-promise-executor": "off"
   },

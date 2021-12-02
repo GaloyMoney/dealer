@@ -27,10 +27,10 @@ const LN_NOAMOUNT_INVOICE_CREATE_ON_BEHALF_OF_RECIPIENT = gql`
 `
 
 export default function ReceiveNoAmount({
-  userWalletId,
+  recipientWalletId,
   onSetAmountClick,
 }: {
-  userWalletId: string
+  recipientWalletId: string
   onSetAmountClick: () => void
 }) {
   const [createInvoice, { loading, error, data }] = useMutation<{
@@ -42,9 +42,9 @@ export default function ReceiveNoAmount({
 
   useEffect(() => {
     createInvoice({
-      variables: { walletId: userWalletId },
+      variables: { walletId: recipientWalletId },
     })
-  }, [createInvoice, userWalletId])
+  }, [createInvoice, recipientWalletId])
 
   if (error) {
     return <div className="error">{error.message}</div>

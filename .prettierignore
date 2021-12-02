@@ -1,3 +1,4 @@
-build/
-public/
-successAnimation.json
+.next/
+success-animation.json
+tsconfig.json
+assetlinks.json

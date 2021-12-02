@@ -1,4 +1,4 @@
-import ReactDOM from "react-dom"
+import * as React from "react"
 import {
   ApolloProvider,
   ApolloClient,
@@ -8,9 +8,6 @@ import {
 } from "@apollo/client"
 import { WebSocketLink } from "@apollo/client/link/ws"
 import { getMainDefinition } from "@apollo/client/utilities"
-
-import "./index.css"
-import App from "./App"
 
 import { GRAPHQL_URI, GRAPHQL_SUBSCRIPTION_URI } from "./config"
 
@@ -41,9 +38,6 @@ const client = new ApolloClient({
   cache: new InMemoryCache(),
 })
 
-ReactDOM.render(
-  <ApolloProvider client={client}>
-    <App />
-  </ApolloProvider>,
-  document.getElementById("root"),
+export default ({ children }: { children: React.ReactNode }) => (
+  <ApolloProvider client={client}>{children}</ApolloProvider>
 )

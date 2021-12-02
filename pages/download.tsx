@@ -5,31 +5,9 @@ import Row from "react-bootstrap/Row"
 import Col from "react-bootstrap/Col"
 import Button from "react-bootstrap/Button"
 
-export const getOS = () => {
-  const userAgent = navigator.userAgent || navigator.vendor || window.opera
+import { getOS, playStoreLink, appStoreLink, apkLink } from "../lib/download"
 
-  // Windows Phone must come first because its UA also contains "Android"
-  if (/windows phone/i.test(userAgent)) {
-    return undefined
-  }
-
-  if (/android/i.test(userAgent)) {
-    return "android"
-  }
-
-  // iOS detection from: http://stackoverflow.com/a/9039885/177710
-  if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
-    return "ios"
-  }
-
-  return undefined
-}
-
-export const playStoreLink = "https://play.google.com/store/apps/details?id=com.galoyapp"
-export const appStoreLink = "https://apps.apple.com/app/bitcoin-beach-wallet/id1531383905"
-export const apkLink = "https://storage.googleapis.com/bitcoin-beach-wallet/latest.apk"
-
-const DownloadApp = () => {
+function DownloadApp() {
   const os = getOS()
 
   if (os === "android") {
@@ -48,14 +26,14 @@ const DownloadApp = () => {
       <Row>
         <Col>
           <a href={appStoreLink}>
-            <Image src={process.env.PUBLIC_URL + "/apple-app-store.png"} rounded />
+            <Image src="/apple-app-store.png" rounded />
           </a>
           <br />
           <br />
         </Col>
         <Col>
           <a href={playStoreLink}>
-            <Image src={process.env.PUBLIC_URL + "/google-play-badge.png"} rounded />
+            <Image src="/google-play-badge.png" rounded />
           </a>
         </Col>
         <Col>

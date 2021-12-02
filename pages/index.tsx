@@ -6,7 +6,7 @@ import ListGroup from "react-bootstrap/ListGroup"
 import Jumbotron from "react-bootstrap/Jumbotron"
 import { gql, useQuery } from "@apollo/client"
 
-import { GRAPHQL_URI } from "../config"
+import { GRAPHQL_URI } from "../lib/config"
 
 const GET_NODE_STATS = gql`
   query nodeIds {
