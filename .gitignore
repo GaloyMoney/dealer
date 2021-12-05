@@ -1,0 +1,10 @@
+node_modules/
+public/bundles/
+build/
+src/dist/
+coverage/
+.gvars.json
+yarn-error.log
+.env
+.vscode/
+.DS_Store
