@@ -1,9 +1,58 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Root renders ansd increments counter 2`] = `
+exports[`Root renders and matches snapshot 1`] = `
 <DocumentFragment>
-  <div>
-    Welcome
+  <div
+    class="home"
+  >
+    <div
+      class="header"
+    >
+      <div
+        class="balance"
+      >
+        <div
+          class="title"
+        >
+          Current Balance
+        </div>
+        <div
+          class="value"
+        >
+          <div
+            class="primary"
+          >
+            $0
+          </div>
+          <div
+            class="secondary"
+          >
+            (0 sats)
+          </div>
+        </div>
+      </div>
+      <div
+        class="login"
+      >
+        Login
+      </div>
+    </div>
+  </div>
+  <div
+    class="footer"
+  >
+    <div
+      class="powered-by"
+    >
+      Powerd By 
+      <a
+        href="https://galoy.io/"
+        rel="noreferrer"
+        target="_blank"
+      >
+        Galoy
+      </a>
+    </div>
   </div>
 </DocumentFragment>
 `;

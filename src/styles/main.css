@@ -1,13 +1,63 @@
-:root {
-  --color-main: theme('colors.main');
-}
-
 *,
 *:before,
 *:after {
   box-sizing: border-box;
 }
 
+html,
 body {
-  color: var(--color-main);
+  height: 100%;
+}
+
+body {
+  color: theme(colors.primary);
+
+  a,
+  .link {
+    color: theme(colors.links);
+  }
+}
+
+#root {
+  height: 100%;
+  width: 90%;
+  margin: 1.5rem auto;
+  max-width: 1024px;
+
+  display: flex;
+  flex-direction: column;
+
+  .home {
+    flex: 92;
+    .header {
+      display: flex;
+      justify-content: space-between;
+      .balance {
+        .value {
+          display: flex;
+          justify-content: center;
+          .primary {
+            font-size: 1.25rem;
+            font-weight: bold;
+          }
+          .secondary {
+            color: theme(colors.secondary);
+            align-self: center;
+            margin: 0 0.3rem;
+          }
+        }
+      }
+    }
+  }
+
+  .footer {
+    width: 100%;
+    flex: 8;
+    justify-self: flex-end;
+    .powered-by {
+      font-size: 0.85rem;
+      color: theme(colors.secondary);
+      text-align: center;
+    }
+  }
 }
