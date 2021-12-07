@@ -1,5 +1,7 @@
 const path = require('path');
 const fs = require('fs');
+const webpack = require('webpack');
+
 const isDev = process.env.NODE_ENV !== 'production';
 
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
@@ -7,7 +9,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const config = {
   resolve: {
     modules: [path.resolve('./src'), path.resolve('./node_modules')],
-    extensions: ['.ts', '.tsx', '.json'],
+    extensions: ['.ts', '.tsx', '.js', '.json'],
   },
   entry: {
     main: ['./src/renderers/dom.tsx'],
@@ -29,7 +31,18 @@ const config = {
       {
         test: /\.css$/,
         exclude: /node_modules/,
-        use: [MiniCssExtractPlugin.loader, 'css-loader'],
+        use: [
+          MiniCssExtractPlugin.loader,
+          {
+            loader: 'css-loader?url=false',
+            options: {
+              importLoaders: 1,
+            },
+          },
+          {
+            loader: 'postcss-loader',
+          },
+        ],
       },
     ],
   },
@@ -45,7 +58,6 @@ const config = {
     },
   },
   plugins: [
-    new webpack.EnvironmentPlugin(['NODE_ENV']),
     new MiniCssExtractPlugin({
       filename: isDev ? '[name].css' : '[name].[hash].css',
       chunkFilename: isDev ? '[id].css' : '[id].[hash].css',

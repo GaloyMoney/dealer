@@ -1,0 +1,13 @@
+:root {
+  --color-main: theme('colors.main');
+}
+
+*,
+*:before,
+*:after {
+  box-sizing: border-box;
+}
+
+body {
+  color: var(--color-main);
+}

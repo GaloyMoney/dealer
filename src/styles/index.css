@@ -1,13 +1,7 @@
-:root {
-  --color-main: #000;
-}
+/*! purgecss start ignore */
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import './main';
+/*! purgecss end ignore */
 
-*,
-*:before,
-*:after {
-  box-sizing: border-box;
-}
-
-body {
-  color: var(--color-main);
-}
+@import 'tailwindcss/utilities';
