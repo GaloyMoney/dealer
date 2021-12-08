@@ -4,4 +4,10 @@ import Root from 'components/root';
 
 import '../styles/index.css';
 
-ReactDOM.hydrate(<Root />, document.getElementById('root'));
+const container = document.getElementById('root');
+
+if (!container) {
+  throw new Error('HTML root element is missing');
+}
+
+ReactDOM.hydrateRoot(container, <Root />);
