@@ -90,6 +90,26 @@ export interface FetchDepositsResult {
   status: FundTransferStatus
 }
 
+export interface DepositOnLightningParameters {
+  currency: TradeCurrency
+  amountInSats: number
+}
+
+export interface DepositOnLightningResult {
+  originalResponseAsIs
+  invoice: string
+}
+
+export interface WithdrawOnLightningParameters {
+  currency: TradeCurrency
+  invoice: string
+}
+
+export interface WithdrawOnLightningResult {
+  originalResponseAsIs
+  id: string
+}
+
 export interface WithdrawParameters {
   currency: TradeCurrency
   quantity: number

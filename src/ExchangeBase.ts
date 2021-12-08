@@ -22,6 +22,10 @@ import {
   GetMarketIndexTickersResult,
   TransferParameters,
   TransferResult,
+  WithdrawOnLightningResult,
+  WithdrawOnLightningParameters,
+  DepositOnLightningResult,
+  DepositOnLightningParameters,
 } from "./ExchangeTradingType"
 import { Result } from "./Result"
 import ccxt, { ExchangeId } from "ccxt"
@@ -428,4 +432,11 @@ export abstract class ExchangeBase {
   abstract getMarketIndexTickers(): Promise<Result<GetMarketIndexTickersResult>>
 
   abstract setAccountConfiguration(): Promise<Result<SetAccountConfigurationResult>>
+
+  abstract withdrawOnLightning(
+    args: WithdrawOnLightningParameters,
+  ): Promise<Result<WithdrawOnLightningResult>>
+  abstract depositOnLightning(
+    args: DepositOnLightningParameters,
+  ): Promise<Result<DepositOnLightningResult>>
 }
