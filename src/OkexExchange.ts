@@ -11,7 +11,6 @@ import {
   WithdrawOnLightningParameters,
   DepositOnLightningResult,
   DepositOnLightningParameters,
-  AccountType,
 } from "./ExchangeTradingType"
 import assert from "assert"
 import { ExchangeBase } from "./ExchangeBase"

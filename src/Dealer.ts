@@ -160,8 +160,6 @@ export class Dealer {
     // return additive inverse to deal with positive liability onward
     const usdLiability = -usdLiabilityResult.value
 
-    let exposureInUsd = 0
-
     const result = {} as UpdatedPositionAndLeverageResult
 
     if (usdLiability < hedgingBounds.MINIMUM_POSITIVE_LIABILITY_USD) {
@@ -179,20 +177,25 @@ export class Dealer {
         const originalPosition = updatedPositionResult.value.originalPosition
         const updatedPosition = updatedPositionResult.value.updatedPosition
 
-        if (updatedPosition) {
-          exposureInUsd = updatedPosition.exposureInUsd
-        } else {
-          exposureInUsd = originalPosition.exposureInUsd
-        }
-
         logger.info(
-          { activeStrategy: this.strategy.name, originalPosition, updatedPosition },
-          "The {activeStrategy} was successful at UpdatePosition()",
+          {
+            usdLiability,
+            btcPriceInUsd,
+            activeStrategy: this.strategy.name,
+            originalPosition,
+            updatedPosition,
+          },
+          "The {activeStrategy} was successful at UpdatePosition({usdLiability}, {btcPriceInUsd})",
         )
       } else {
         logger.error(
-          { activeStrategy: this.strategy.name, updatedPosition: updatedPositionResult },
-          "The {activeStrategy} failed during the UpdatePosition() execution",
+          {
+            usdLiability,
+            btcPriceInUsd,
+            activeStrategy: this.strategy.name,
+            updatedPosition: updatedPositionResult,
+          },
+          "The {activeStrategy} failed during the UpdatePosition({usdLiability}, {btcPriceInUsd}) execution",
         )
       }
     }
@@ -217,7 +220,6 @@ export class Dealer {
 
       const updatedLeverageResult = await this.strategy.updateLeverage(
         usdLiability,
-        exposureInUsd,
         btcPriceInUsd,
         withdrawOnChainAddress,
         this.withdrawBookKeeping.bind(this),
@@ -227,13 +229,25 @@ export class Dealer {
       if (updatedLeverageResult.ok) {
         const updatedLeverage = updatedLeverageResult.value
         logger.info(
-          { activeStrategy: this.strategy.name, updatedLeverage },
-          "The active {activeStrategy} was successful at UpdateLeverage()",
+          {
+            usdLiability,
+            btcPriceInUsd,
+            withdrawOnChainAddress,
+            activeStrategy: this.strategy.name,
+            updatedLeverage,
+          },
+          "The active {activeStrategy} was successful at UpdateLeverage({usdLiability}, {exposureInUsd}, {btcPriceInUsd}, {withdrawOnChainAddress})",
         )
       } else {
         logger.error(
-          { activeStrategy: this.strategy.name, updatedLeverageResult },
-          "The active {activeStrategy} failed during the UpdateLeverage() execution",
+          {
+            usdLiability,
+            btcPriceInUsd,
+            withdrawOnChainAddress,
+            activeStrategy: this.strategy.name,
+            updatedLeverageResult,
+          },
+          "The active {activeStrategy} failed during the UpdateLeverage({usdLiability}, {exposureInUsd}, {btcPriceInUsd}, {withdrawOnChainAddress}) execution",
         )
       }
     } else {

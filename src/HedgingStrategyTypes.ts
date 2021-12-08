@@ -52,7 +52,6 @@ export interface HedgingStrategy {
   ): Promise<Result<UpdatedPosition>>
   updateLeverage(
     liabilityInUsd: number,
-    exposureInUsd: number,
     btcPriceInUsd: number,
     withdrawFromExchangeOnChainAddress,
     withdrawBookKeepingCallback: WithdrawBookKeepingCallback,
