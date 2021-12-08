@@ -9,7 +9,7 @@ integration:
 	yarn test:integration
 
 test-in-ci:
-	docker-compose up -d
+	docker compose up -d
 	. ./.envrc && \
 		LOG_LEVEL=error node_modules/.bin/jest --bail --runInBand --ci --reporters=default --reporters=jest-junit
 
