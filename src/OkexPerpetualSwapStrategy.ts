@@ -305,7 +305,6 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
 
   public async updateLeverage(
     liabilityInUsd: number,
-    exposureInUsd: number,
     btcPriceInUsd: number,
     withdrawOnChainAddress: string,
     withdrawBookKeepingCallback: WithdrawBookKeepingCallback,
@@ -322,6 +321,7 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
         return { ok: false, error: riskResult.error }
       }
       const risk = riskResult.value
+      const exposureInUsd = risk.exposureInUsd
       const usedCollateralInUsd = risk.usedCollateralInUsd
       const totalCollateralInUsd = risk.totalCollateralInUsd
       const lastBtcPriceInUsd = risk.lastBtcPriceInUsd
@@ -435,33 +435,57 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
           )
         }
       } else if (fundTransferSide === FundTransferSide.Deposit) {
-        const memo = `deposit of ${transferSizeInBtc} btc to ${this.exchange.exchangeId}`
-
-        const fetchResult = await this.exchange.fetchDepositAddress(TradeCurrency.BTC)
-        this.logger.debug(
-          { fetchResult },
-          "fetchDepositAddress() returned: {fetchResult}",
-        )
-        if (!fetchResult.ok) {
-          return { ok: false, error: fetchResult.error }
+        // try a transfer from funding first
+        const transferArgs = {
+          currency: TradeCurrency.BTC,
+          quantity: transferSizeInBtc,
+          fromAccount: AccountType.Funding,
+          toAccount: AccountType.Trading,
+          params: {
+            instId: SupportedInstrument.OKEX_BTC_USD_SPOT,
+          },
         }
-        const exchangeDepositOnChainAddress = fetchResult.value.address
-
-        const depositResult = await depositOnExchangeCallback(
-          exchangeDepositOnChainAddress,
-          transferSizeInBtc,
-        )
+        const transferResult = await this.exchange.transfer(transferArgs)
         this.logger.debug(
-          { exchangeDepositOnChainAddress, transferSizeInBtc, depositResult },
-          "depositOnExchangeCallback() returned: {depositResult}",
+          { transferArgs, transferResult },
+          "transfer({transferArgs}) returned: {transferResult}",
         )
-        if (!depositResult.ok) {
-          return { ok: false, error: depositResult.error }
+        if (!transferResult.ok) {
+          this.logger.warn(
+            { error: transferResult.error },
+            "transfer() failed with {error}, continuing",
+          )
+
+          // if it succeeds, we are done,
+          // but if it fails we should initiate a remote deposit
+          const memo = `deposit of ${transferSizeInBtc} btc to ${this.exchange.exchangeId}`
+
+          const fetchResult = await this.exchange.fetchDepositAddress(TradeCurrency.BTC)
+          this.logger.debug(
+            { fetchResult },
+            "fetchDepositAddress() returned: {fetchResult}",
+          )
+          if (!fetchResult.ok) {
+            return { ok: false, error: fetchResult.error }
+          }
+          const exchangeDepositOnChainAddress = fetchResult.value.address
+
+          const depositResult = await depositOnExchangeCallback(
+            exchangeDepositOnChainAddress,
+            transferSizeInBtc,
+          )
+          this.logger.debug(
+            { exchangeDepositOnChainAddress, transferSizeInBtc, depositResult },
+            "depositOnExchangeCallback() returned: {depositResult}",
+          )
+          if (!depositResult.ok) {
+            return { ok: false, error: depositResult.error }
+          }
+          this.logger.info(
+            { memo, exchangeDepositOnChainAddress },
+            "deposit rebalancing successful",
+          )
         }
-        this.logger.info(
-          { memo, exchangeDepositOnChainAddress },
-          "deposit rebalancing successful",
-        )
       }
 
       return {
@@ -760,6 +784,23 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
         const transferSizeInUsd = totalCollateralInUsd - newCollateralInUsd
         result.out.transferSizeInUsd = transferSizeInUsd
         result.out.fundTransferSide = FundTransferSide.Withdraw
+        result.out.newLiabilityRatio = liabilityInUsd / newCollateralInUsd
+        result.out.newLeverageRatio = exposureInUsd / newCollateralInUsd
+        result.out.newMarginRatio =
+          (totalCollateralInUsd + transferSizeInUsd) / usedCollateralInUsd
+        result.out.transferSizeInBtc = roundBtc(
+          result.out.transferSizeInUsd / btcPriceInUsd,
+        )
+      } else if (
+        liabilityInUsd >
+        totalCollateralInUsd * hedgingBounds.HIGH_BOUND_LEVERAGE
+      ) {
+        // Liability is greater than our trading is allowed,
+        // deposit funds to the level of the liability
+        const newCollateralInUsd = liabilityInUsd / hedgingBounds.HIGH_SAFEBOUND_LEVERAGE
+        const transferSizeInUsd = newCollateralInUsd - totalCollateralInUsd
+        result.out.transferSizeInUsd = transferSizeInUsd
+        result.out.fundTransferSide = FundTransferSide.Deposit
         result.out.newLiabilityRatio = liabilityInUsd / newCollateralInUsd
         result.out.newLeverageRatio = exposureInUsd / newCollateralInUsd
         result.out.newMarginRatio =
