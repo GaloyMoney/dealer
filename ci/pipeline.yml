@@ -60,9 +60,9 @@ jobs:
   - in_parallel:
     - { get: repo, trigger: true }
     - { get: pipeline-tasks }
-    - { get: bundled-deps, tags: ["staging"], trigger: true }
+    - { get: bundled-deps, tags: ["galoy-staging"], trigger: true }
   - task: test-integration
-    tags: ["staging"]
+    tags: ["galoy-staging"]
     config:
       platform: linux
       image_resource: #@ task_image_config()
