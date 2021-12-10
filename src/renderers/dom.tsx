@@ -1,13 +1,13 @@
-import * as ReactDOM from 'react-dom';
+import * as ReactDOM from "react-dom"
 
-import Root from 'components/root';
+import Root from "components/root"
 
-import '../styles/index.css';
+import "../styles/index.css"
 
-const container = document.getElementById('root');
+const container = document.getElementById("root")
 
 if (!container) {
-  throw new Error('HTML root element is missing');
+  throw new Error("HTML root element is missing")
 }
 
-ReactDOM.hydrateRoot(container, <Root />);
+ReactDOM.hydrateRoot(container, <Root />)

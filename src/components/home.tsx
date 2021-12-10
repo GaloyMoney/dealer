@@ -1,11 +1,11 @@
-import Header from './header';
+import Header from "./header"
 
 const Home = () => {
   return (
     <div className="home">
       <Header />
     </div>
-  );
-};
+  )
+}
 
-export default Home;
+export default Home

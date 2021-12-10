@@ -7,7 +7,7 @@ const Balance = () => {
         <div className="secondary">(0 sats)</div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Balance;
+export default Balance

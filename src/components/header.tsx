@@ -1,4 +1,4 @@
-import Balance from './balance';
+import Balance from "./balance"
 
 const Header = () => {
   return (
@@ -6,7 +6,7 @@ const Header = () => {
       <Balance />
       <div className="login">Login</div>
     </div>
-  );
-};
+  )
+}
 
-export default Header;
+export default Header

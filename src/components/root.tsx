@@ -1,4 +1,4 @@
-import Home from './home';
+import Home from "./home"
 
 const Root = () => {
   return (
@@ -6,14 +6,14 @@ const Root = () => {
       <Home />
       <div className="footer">
         <div className="powered-by">
-          Powerd By{' '}
+          Powerd By{" "}
           <a href="https://galoy.io/" target="_blank" rel="noreferrer">
             Galoy
           </a>
         </div>
       </div>
     </>
-  );
-};
+  )
+}
 
-export default Root;
+export default Root

@@ -1,22 +1,22 @@
-const path = require('path');
-const fs = require('fs');
-const webpack = require('webpack');
+const path = require("path")
+const fs = require("fs")
+const webpack = require("webpack")
 
-const isDev = process.env.NODE_ENV !== 'production';
+const isDev = process.env.NODE_ENV !== "production"
 
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const MiniCssExtractPlugin = require("mini-css-extract-plugin")
 
 const config = {
   resolve: {
-    modules: [path.resolve('./src'), path.resolve('./node_modules')],
-    extensions: ['.ts', '.tsx', '.js', '.json'],
+    modules: [path.resolve("./src"), path.resolve("./node_modules")],
+    extensions: [".ts", ".tsx", ".js", ".json"],
   },
   entry: {
-    main: ['./src/renderers/dom.tsx'],
+    main: ["./src/renderers/dom.tsx"],
   },
   output: {
-    path: path.resolve('public', 'bundles'),
-    filename: isDev ? '[name].js' : '[name].[chunkhash].js',
+    path: path.resolve("public", "bundles"),
+    filename: isDev ? "[name].js" : "[name].[chunkhash].js",
   },
   module: {
     rules: [
@@ -24,8 +24,8 @@ const config = {
         test: /\.tsx?$/,
         exclude: /node_modules/,
         use: {
-          loader: 'ts-loader',
-          options: { configFile: 'tsconfig.fe.json' },
+          loader: "ts-loader",
+          options: { configFile: "tsconfig.fe.json" },
         },
       },
       {
@@ -34,13 +34,13 @@ const config = {
         use: [
           MiniCssExtractPlugin.loader,
           {
-            loader: 'css-loader?url=false',
+            loader: "css-loader?url=false",
             options: {
               importLoaders: 1,
             },
           },
           {
-            loader: 'postcss-loader',
+            loader: "postcss-loader",
           },
         ],
       },
@@ -51,36 +51,36 @@ const config = {
       cacheGroups: {
         commons: {
           test: /[\\/]node_modules[\\/]/,
-          name: 'vendor',
-          chunks: 'all',
+          name: "vendor",
+          chunks: "all",
         },
       },
     },
   },
   plugins: [
     new MiniCssExtractPlugin({
-      filename: isDev ? '[name].css' : '[name].[hash].css',
-      chunkFilename: isDev ? '[id].css' : '[id].[hash].css',
+      filename: isDev ? "[name].css" : "[name].[hash].css",
+      chunkFilename: isDev ? "[id].css" : "[id].[hash].css",
     }),
     function (compiler) {
-      compiler.hooks.done.tap('gvars', (stats) => {
-        let gVars = {};
+      compiler.hooks.done.tap("gvars", (stats) => {
+        let gVars = {}
         try {
-          gVars = require('./.gvars.json');
+          gVars = require("./.gvars.json")
         } catch (err) {
           // do nothing
         }
         fs.writeFileSync(
-          path.resolve('.gvars.json'),
+          path.resolve(".gvars.json"),
           JSON.stringify(
-            Object.assign({}, gVars, stats.toJson()['assetsByChunkName']),
+            Object.assign({}, gVars, stats.toJson()["assetsByChunkName"]),
             null,
             2,
           ),
-        );
-      });
+        )
+      })
     },
   ],
-};
+}
 
-module.exports = config;
+module.exports = config
