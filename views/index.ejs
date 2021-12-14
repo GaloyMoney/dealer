@@ -6,19 +6,16 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title><%- pageData.title %></title>
     <link rel="stylesheet" href="/bundles/<%- gVars['main'][0] -%>" />
+    <link rel="icon" href="/images/favicon-150x150.png" sizes="32x32" />
+    <link rel="icon" href="/images/favicon-300x300.png" sizes="192x192" />
+    <link rel="apple-touch-icon" href="/images/favicon-300x300.png" />
     <script type="text/javascript">
       window.__G_DATA = <%- serialize({ initialData }, { isJSON: true }); %>
     </script>
   </head>
   <body>
     <div id="root"><%- initialMarkup -%></div>
-    <script
-      src="/bundles/<%- gVars['vendor'] -%>"
-      type="text/javascript"
-    ></script>
-    <script
-      src="/bundles/<%- gVars['main'][1] -%>"
-      type="text/javascript"
-    ></script>
+    <script src="/bundles/<%- gVars['vendor'] -%>" type="text/javascript"></script>
+    <script src="/bundles/<%- gVars['main'][1] -%>" type="text/javascript"></script>
   </body>
 </html>

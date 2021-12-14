@@ -21,7 +21,9 @@ const Root = () => {
   const Component = appRoutes[checkedRoutePath].component
   return (
     <>
-      <Component />
+      <div className="main-container">
+        <Component />
+      </div>
       <div className="footer">
         <div className="powered-by">
           Powerd By{" "}

@@ -1,7 +1,5 @@
 /*! purgecss start ignore */
-@import "tailwindcss/base";
-@import "tailwindcss/components";
+@import "normalize.css";
 @import "./main";
+@import "./intl-tel-input";
 /*! purgecss end ignore */
-
-@import "tailwindcss/utilities";
