@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Root renders and matches snapshot 1`] = `
+exports[`Root renders Home and matches snapshot 1`] = `
 <DocumentFragment>
   <div
     class="home"
@@ -31,13 +31,39 @@ exports[`Root renders and matches snapshot 1`] = `
           </div>
         </div>
       </div>
-      <div
-        class="login"
+      <a
+        href="/login"
       >
         Login
-      </div>
+      </a>
     </div>
   </div>
+  <div
+    class="footer"
+  >
+    <div
+      class="powered-by"
+    >
+      Powerd By 
+      <a
+        href="https://galoy.io/"
+        rel="noreferrer"
+        target="_blank"
+      >
+        Galoy
+      </a>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Root renders Login and matches snapshot 1`] = `
+<DocumentFragment>
+  <form>
+    <input
+      type="tel"
+    />
+  </form>
   <div
     class="footer"
   >

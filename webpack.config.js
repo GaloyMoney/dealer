@@ -58,6 +58,9 @@ const config = {
     },
   },
   plugins: [
+    new webpack.DefinePlugin({
+      "process.env": JSON.stringify(process.env),
+    }),
     new MiniCssExtractPlugin({
       filename: isDev ? "[name].css" : "[name].[hash].css",
       chunkFilename: isDev ? "[id].css" : "[id].[hash].css",

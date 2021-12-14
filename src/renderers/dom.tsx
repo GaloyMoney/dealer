@@ -10,4 +10,4 @@ if (!container) {
   throw new Error("HTML root element is missing")
 }
 
-ReactDOM.hydrateRoot(container, <Root />)
+ReactDOM.hydrateRoot(container, <Root initialData={window.__G_DATA.initialData} />)

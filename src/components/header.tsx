@@ -1,10 +1,11 @@
 import Balance from "./balance"
+import Link from "./link"
 
 const Header = () => {
   return (
     <div className="header">
       <Balance />
-      <div className="login">Login</div>
+      <Link to="/login">Login</Link>
     </div>
   )
 }
