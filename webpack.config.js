@@ -7,6 +7,7 @@ const isDev = process.env.NODE_ENV !== "production"
 const MiniCssExtractPlugin = require("mini-css-extract-plugin")
 
 const config = {
+  devtool: isDev ? "inline-source-map" : false,
   resolve: {
     modules: [path.resolve("./src"), path.resolve("./node_modules")],
     extensions: [".ts", ".tsx", ".js", ".json"],
