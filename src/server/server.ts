@@ -1,4 +1,5 @@
 import bodyParser from "body-parser"
+import cookieSession from "cookie-session"
 import express from "express"
 import morgan from "morgan"
 import serialize from "serialize-javascript"
@@ -10,10 +11,18 @@ import { SupportedRoutes } from "./routes"
 const app = express()
 app.enable("trust proxy")
 app.use(morgan("common"))
-
 app.use(express.static("public"))
-
 app.set("view engine", "ejs")
+
+app.use(
+  cookieSession({
+    name: "session",
+    keys: ["temp"],
+    secure: !config.isDev,
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+  }),
+)
+
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 
@@ -32,6 +41,24 @@ if (config.isDev) {
   }
 }
 
+app.post("/api/login", async (req, res) => {
+  try {
+    const authToken = req.headers.authorization?.slice(7)
+    req.session = req.session || {}
+    req.session.authToken = authToken
+    return res.send({ authToken })
+  } catch (err) {
+    console.error(err)
+    return res.status(500).send("Server error")
+  }
+})
+
+app.post("/api/logout", async (req, res) => {
+  req.session = req.session || {}
+  req.session.authToken = null
+  return res.send({ authToken: null })
+})
+
 app.get("/*", async (req, res) => {
   try {
     const routePath = req.path
@@ -41,7 +68,10 @@ app.get("/*", async (req, res) => {
     if (!checkedRoutePath) {
       return res.status(404)
     }
-    const vars = await serverRenderer(checkedRoutePath)
+    const vars = await serverRenderer({
+      path: checkedRoutePath,
+      authToken: req.session?.authToken,
+    })
     return res.render("index", vars)
   } catch (err) {
     console.error(err)

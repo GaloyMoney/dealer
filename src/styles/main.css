@@ -23,6 +23,11 @@ input[type="tel"] {
   border: thin solid var(--color-primary);
 }
 
+.error {
+  color: red;
+  margin: 1rem;
+}
+
 #root {
   height: 100%;
   width: 90%;

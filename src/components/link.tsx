@@ -1,7 +1,4 @@
 import history from "store/history"
-import { useContext } from "react"
-
-import GwwContext from "../store"
 
 type Props = {
   to: RoutePath
@@ -9,13 +6,11 @@ type Props = {
 }
 
 const Link = ({ to, children }: Props) => {
-  const { dispatch } = useContext<GwwContextType>(GwwContext)
   const navigate: React.MouseEventHandler<HTMLAnchorElement> = (event) => {
     if (!event.ctrlKey && !event.metaKey) {
       event.preventDefault()
     }
-    dispatch({ type: "navigateTo", path: to })
-    history.push(to, { rootComponentPath: to })
+    history.push(to)
   }
   return (
     <a href={to} onClick={navigate}>

@@ -3,15 +3,21 @@ import * as ReactDOMServer from "react-dom/server"
 import appRoutes from "server/routes"
 import Root from "components/root"
 
-export const serverRenderer = async (path: RoutePath) => {
-  const initialData = {
-    appRoutes,
+export const serverRenderer = async ({
+  path,
+  authToken,
+}: {
+  path: RoutePath
+  authToken: string
+}) => {
+  const initialState = {
     path,
+    authToken,
   }
 
   return Promise.resolve({
-    initialData,
-    initialMarkup: ReactDOMServer.renderToString(<Root initialData={initialData} />),
+    initialState,
+    initialMarkup: ReactDOMServer.renderToString(<Root initialState={initialState} />),
     pageData: appRoutes[path],
   })
 }
