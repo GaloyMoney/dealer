@@ -1,6 +1,7 @@
 import bodyParser from "body-parser"
 import cookieSession from "cookie-session"
 import express from "express"
+import helmet from "helmet"
 import morgan from "morgan"
 import serialize from "serialize-javascript"
 
@@ -13,6 +14,19 @@ app.enable("trust proxy")
 app.use(morgan("common"))
 app.use(express.static("public"))
 app.set("view engine", "ejs")
+
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      useDefaults: true,
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "'unsafe-inline'", "https:"],
+        connectSrc: ["'self'", "*"],
+      },
+    },
+  }),
+)
 
 app.use(
   cookieSession({
