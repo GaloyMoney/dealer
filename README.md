@@ -8,15 +8,16 @@ Web Wallet is packaged as a docker image, and is automatically installed as part
 
 With a default installation, this web application can be accessed with `wallet.domain.com`. It fetches data from a graphql API endpoint `graphql.domain.com` defined in [graphql-main-server](https://github.com/GaloyMoney/galoy/blob/main/src/servers/graphql-main-server.ts)
 
+## Config
+
+The project depends on a few environment variables to be set. The `.env.local` root file has a list of them. Copy that file to a `.env` root file and modify that copy as needed.
+
 ## How to run this repo locally?
 
-In the project directory, you can run:
+In the project directory, modify the `.env` file as needed, then you can run:
 
 ```sh
 yarn install
-
-export GRAPHQL_URI=`https://graphql.domain.com`
-export GRAPHQL_SUBSCRIPTION_URI=`wss://graphql.domain.com`
 
 # In a terminal
 yarn dev:bundler
@@ -29,7 +30,7 @@ Open [http://localhost:1234](http://localhost:1234) to view it in the browser.
 
 ## How to run this repo for production?
 
-In the project directory, you can run:
+In the project directory, modify the `.env` file as needed, then you can run:
 
 ```sh
 yarn install

@@ -83,7 +83,7 @@ const AuthCode = ({ phoneNumber }: { phoneNumber: string }) => {
 
     if (error || data?.userLogin?.errors?.length > 0 || !data?.userLogin?.authToken) {
       setErrorMessage(
-        error ||
+        error?.message ||
           data?.userLogin?.errors?.[0].message ||
           "Something went wrong. Please try again later.",
       )

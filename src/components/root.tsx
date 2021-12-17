@@ -4,6 +4,7 @@ import { useContext, useEffect, useReducer } from "react"
 import GwwContext from "../store"
 import history from "store/history"
 import appRoutes, { SupportedRoutes } from "server/routes"
+import config from "server/config"
 
 const Root = () => {
   const { state } = useContext<GwwContextType>(GwwContext)
@@ -61,7 +62,7 @@ const RootProvider = ({ initialState }: { initialState: InitialState }) => {
   }, [])
 
   const client = createClient({
-    url: "http://localhost:4002/graphql",
+    url: config.graphqlUri,
     fetchOptions: () => {
       const token = state.authToken
       return {

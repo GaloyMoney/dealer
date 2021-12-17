@@ -17,7 +17,7 @@ app.set("view engine", "ejs")
 app.use(
   cookieSession({
     name: "session",
-    keys: ["temp"],
+    keys: [config.sessionKeys],
     secure: !config.isDev,
     maxAge: 7 * 24 * 60 * 60 * 1000,
   }),

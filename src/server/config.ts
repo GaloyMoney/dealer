@@ -1,6 +1,28 @@
+const requiredEnvVars = [
+  "NODE_ENV",
+  "NODE_PATH",
+  "SESSION_KEYS",
+  "HOST",
+  "PORT",
+  "GRAPHQL_URI",
+  "GRAPHQL_SUBSCRIPTION_URI",
+]
+
+requiredEnvVars.forEach((envVar) => {
+  if (!process.env[envVar]) {
+    throw new Error(`Missing env var: ${envVar}`)
+  }
+})
+
 export default {
-  host: process.env.HOST || "localhost",
-  isBrowser: typeof window !== "undefined",
   isDev: process.env.NODE_ENV !== "production",
-  port: Number(process.env.PORT || 1234),
+  isBrowser: typeof window !== "undefined",
+
+  sessionKeys: process.env.SESSION_KEYS as string,
+
+  host: process.env.HOST as string,
+  port: Number(process.env.PORT),
+
+  graphqlUri: process.env.GRAPHQL_URI as string,
+  graphqlSubscriptionUri: process.env.GRAPHQL_SUBSCRIPTION_URI as string,
 }
