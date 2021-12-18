@@ -22,10 +22,14 @@ const LNURL_INVOICE = gql`
   mutation lnInvoiceCreateOnBehalfOfRecipient(
     $walletId: WalletId!
     $amount: SatAmount!
-    $h: Hex32Bytes!
+    $descriptionHash: Hex32Bytes!
   ) {
     mutationData: lnInvoiceCreateOnBehalfOfRecipient(
-      input: { recipientWalletId: $walletId, amount: $amount, descriptionHash: $h }
+      input: {
+        recipientWalletId: $walletId
+        amount: $amount
+        descriptionHash: $descriptionHash
+      }
     ) {
       errors {
         message
@@ -86,7 +90,7 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
         variables: {
           walletId,
           amount: amountSats,
-          h: descriptionHash,
+          descriptionHash,
         },
       })
 
