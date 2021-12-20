@@ -1,6 +1,6 @@
-import { useContext } from "react"
-import GwwContext from "store"
 import { gql, useQuery } from "urql"
+
+import { useAppState } from "store"
 import Header from "./header"
 
 const QUERY_ME = gql`
@@ -18,8 +18,9 @@ const QUERY_ME = gql`
     }
   }
 `
+
 const Home = () => {
-  const { state } = useContext<GwwContextType>(GwwContext)
+  const { state } = useAppState()
 
   const [result] = useQuery({
     query: QUERY_ME,

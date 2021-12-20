@@ -1,18 +1,11 @@
-import fetch from "cross-fetch"
-import { useContext } from "react"
-import GwwContext from "store"
+import { useAppState } from "store"
 
 const Logout = () => {
-  const { dispatch } = useContext<GwwContextType>(GwwContext)
+  const { dispatch, request } = useAppState()
 
-  const handleLogout: React.MouseEventHandler<HTMLAnchorElement> = (event) => {
+  const handleLogout: React.MouseEventHandler<HTMLAnchorElement> = async (event) => {
     event.preventDefault()
-    fetch("/api/logout", {
-      method: "post",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
+    await request.post("/api/logout")
     dispatch({ type: "logout" })
   }
 

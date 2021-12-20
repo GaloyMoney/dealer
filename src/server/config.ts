@@ -6,6 +6,7 @@ const requiredEnvVars = [
   "PORT",
   "GRAPHQL_URI",
   "GRAPHQL_SUBSCRIPTION_URI",
+  "AUTH_ENDPOINT",
 ]
 
 requiredEnvVars.forEach((envVar) => {
@@ -25,4 +26,6 @@ export default {
 
   graphqlUri: process.env.GRAPHQL_URI as string,
   graphqlSubscriptionUri: process.env.GRAPHQL_SUBSCRIPTION_URI as string,
+
+  authEndpoint: process.env.AUTH_ENDPOINT as string,
 }

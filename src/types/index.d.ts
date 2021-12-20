@@ -20,7 +20,7 @@ type ServerRendererFunction = (path: RoutePath) => Promise<{
 }>
 
 type GwwState = {
-  path?: string
+  path: string
   authToken?: string
 }
 

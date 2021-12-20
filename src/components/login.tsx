@@ -1,19 +1,8 @@
-import fetch from "cross-fetch"
 import intlTelInput from "intl-tel-input"
-import { gql, useMutation } from "urql"
 import React, { useCallback, useRef, useState } from "react"
-import history from "store/history"
+import config from "server/config"
+import { history, useAppState } from "store"
 
-const MUTATION_USER_LOGIN = gql`
-  mutation userLogin($input: UserLoginInput!) {
-    userLogin(input: $input) {
-      errors {
-        message
-      }
-      authToken
-    }
-  }
-`
 const PhoneNumber = ({ onSuccess }: { onSuccess: (arg: string) => void }) => {
   const iti = useRef<intlTelInput.Plugin | null>(null)
 
@@ -65,7 +54,7 @@ const PhoneNumber = ({ onSuccess }: { onSuccess: (arg: string) => void }) => {
 }
 
 const AuthCode = ({ phoneNumber }: { phoneNumber: string }) => {
-  const [{ fetching }, sendLoginMutation] = useMutation(MUTATION_USER_LOGIN)
+  const { request } = useAppState()
   const [errorMessage, setErrorMessage] = useState("")
 
   const handleAuthCodeSubmit: React.FormEventHandler<HTMLFormElement> = async (event) => {
@@ -74,33 +63,17 @@ const AuthCode = ({ phoneNumber }: { phoneNumber: string }) => {
 
     const authCode = event.currentTarget.authCode.value
 
-    const { error, data } = await sendLoginMutation({
-      input: {
-        phone: phoneNumber,
-        code: authCode,
-      },
+    const data = await request.post(config.authEndpoint, {
+      phoneNumber,
+      authCode,
     })
 
-    if (error || data?.userLogin?.errors?.length > 0 || !data?.userLogin?.authToken) {
-      setErrorMessage(
-        error?.message ||
-          data?.userLogin?.errors?.[0].message ||
-          "Something went wrong. Please try again later.",
-      )
+    if (data instanceof Error) {
+      setErrorMessage(data.message)
       return
     }
 
-    const authToken = data?.userLogin?.authToken
-
-    fetch("/api/login", {
-      method: "post",
-      headers: {
-        "Content-Type": "application/json",
-        "authorization": `Bearer ${authToken}`,
-      },
-    })
-
-    history.push("/", { authToken })
+    history.push("/", { authToken: data?.authToken })
   }
 
   return (
@@ -118,7 +91,6 @@ const AuthCode = ({ phoneNumber }: { phoneNumber: string }) => {
           onChange={() => setErrorMessage("")}
         />
       </form>
-      {fetching && <div className="loading">...</div>}
       {errorMessage && <div className="error">{errorMessage}</div>}
     </div>
   )

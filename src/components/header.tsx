@@ -1,11 +1,10 @@
-import { useContext } from "react"
-import GwwContext from "store"
+import { useAppState } from "store"
 import Balance from "./balance"
 import Link from "./link"
 import Logout from "./logout"
 
 const Header = ({ balance }: { balance: number }) => {
-  const { state } = useContext<GwwContextType>(GwwContext)
+  const { state } = useAppState()
 
   return (
     <div className="header">

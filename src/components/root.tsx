@@ -1,13 +1,12 @@
 import { createClient, Provider } from "urql"
-import { useContext, useEffect, useReducer } from "react"
+import { useEffect, useReducer } from "react"
 
-import GwwContext from "../store"
-import history from "store/history"
+import { GwwContext, history, useAppState } from "store"
 import appRoutes, { SupportedRoutes } from "server/routes"
 import config from "server/config"
 
 const Root = () => {
-  const { state } = useContext<GwwContextType>(GwwContext)
+  const { state } = useAppState()
   if (!state.path) {
     return null
   }
@@ -17,7 +16,7 @@ const Root = () => {
   )
 
   if (!checkedRoutePath) {
-    throw new Error("Invaild Route")
+    throw new Error("INVALID_ROUTE")
   }
 
   const Component = appRoutes[checkedRoutePath].component
@@ -47,7 +46,7 @@ const wwReducer = (state: GwwState, action: GwwAction): GwwState => {
     case "logout":
       return { ...state, authToken: undefined }
     default:
-      throw new Error()
+      throw new Error("UNSUPPORTED_ACTION")
   }
 }
 
