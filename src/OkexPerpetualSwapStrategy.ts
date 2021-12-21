@@ -414,6 +414,7 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
         } else {
           if (transferResult.value.id) {
             intTransferRecord.transferId = transferResult.value.id
+            intTransferRecord.success = true
           }
         }
         await database.internalTransfers.insert(intTransferRecord)
@@ -550,6 +551,7 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
         } else {
           if (transferResult.value.id) {
             intTransferRecord.transferId = transferResult.value.id
+            intTransferRecord.success = true
           }
           await database.internalTransfers.insert(intTransferRecord)
         }
@@ -771,6 +773,7 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
 
       if (placedOrder.id) {
         orderRecord.orderId = placedOrder.id
+        orderRecord.success = true
       }
       if (response?.info?.sCode) {
         orderRecord.statusCode = response?.info?.sCode
