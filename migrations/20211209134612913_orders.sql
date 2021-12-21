@@ -6,6 +6,7 @@ CREATE TABLE "dealer"."orders" (
   "side" varchar(4) NOT NULL CHECK ("side" in ('buy', 'sell')),
   "quantity" decimal NOT NULL,
   "trade_mode" varchar(8) NOT NULL CHECK ("trade_mode" in ('cross', 'isolated')),
+  "position_side" varchar(5) NOT NULL CHECK ("position_side" in ('net', 'long', 'short')),
   "status_code" varchar(64) NULL,
   "status_message" varchar(64) NULL,
   "order_id" varchar(64) NULL,
