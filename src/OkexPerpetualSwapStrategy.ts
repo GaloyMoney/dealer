@@ -500,8 +500,8 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
         const intTransferRecord: InternalTransfer = {
           currency: transferArgs.currency,
           quantity: transferArgs.quantity,
-          fromAccountId: Number(AccountTypeToId.Trading),
-          toAccountId: Number(AccountTypeToId.Funding),
+          fromAccountId: Number(AccountTypeToId.Funding),
+          toAccountId: Number(AccountTypeToId.Trading),
           instrumentId: transferArgs.params.instId,
           // transferId: null,
           success: false,
