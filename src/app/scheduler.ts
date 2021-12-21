@@ -8,6 +8,7 @@ import { RunnerOption } from "node-pg-migrate/dist/types"
 const logger = baseLogger.child({ module: "cron" })
 
 const options = {
+  migrationsTable: "pgmigrations",
   dir: "migrations",
   createSchema: true,
   schema: "dealer",
