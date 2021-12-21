@@ -25,6 +25,40 @@ export const graphql = {
   set_on_chain_pay: sql("graphql/set_on_chain_pay.sql"),
 }
 
+export const transactionsQueries = {
+  insert: sql("transactions/insert.sql"),
+
+  get_count: sql("transactions/get_count.sql"),
+  get_type_count: sql("transactions/get_type_count.sql"),
+
+  clear: sql("transactions/clear.sql"),
+}
+
+export const ordersQueries = {
+  insert: sql("orders/insert.sql"),
+
+  get_count: sql("orders/get_count.sql"),
+  get_side_count: sql("orders/get_side_count.sql"),
+
+  clear: sql("orders/clear.sql"),
+}
+
+export const internalTransfersQueries = {
+  insert: sql("internal_transfers/insert.sql"),
+
+  get_count: sql("internal_transfers/get_count.sql"),
+
+  clear: sql("internal_transfers/clear.sql"),
+}
+
+export const externalTransfersQueries = {
+  insert: sql("external_transfers/insert.sql"),
+
+  get_count: sql("external_transfers/get_count.sql"),
+
+  clear: sql("external_transfers/clear.sql"),
+}
+
 function sql(file: string): QueryFile {
   const fullPath: string = joinPath(__dirname, file)
 
