@@ -111,7 +111,7 @@ export interface ExternalTransfer {
   quantity: number
   destinationAddressTypeId: number
   toAddress: string
-  fundPasswordMd5: string
+  fundPassword: string
   fee: number
   chain?: string
   transferId?: string
