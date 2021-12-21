@@ -1,0 +1,1 @@
+TRUNCATE TABLE dealer.orders CASCADE
