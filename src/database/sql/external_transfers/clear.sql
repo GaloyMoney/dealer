@@ -1,0 +1,1 @@
+TRUNCATE TABLE dealer.external_transfers CASCADE
