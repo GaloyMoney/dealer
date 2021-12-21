@@ -8,11 +8,6 @@ import {
   UpdatedBalance,
   UpdatedPosition,
 } from "./HedgingStrategyTypes"
-// import {
-//   InFlightTransfer,
-//   InFlightTransferDb,
-//   InFlightTransferDirection,
-// } from "./InFlightTransferDb"
 import { InFlightTransfer } from "./database/models"
 import { db as database } from "./database"
 
@@ -33,7 +28,6 @@ export type UpdatedPositionAndLeverageResult = {
 export class Dealer {
   private wallet: GaloyWallet
   private strategy: HedgingStrategy
-  // private database: InFlightTransferDb
   private logger: pino.Logger
 
   constructor(logger: pino.Logger) {
@@ -48,7 +42,6 @@ export class Dealer {
 
     this.wallet = createDealerWallet(walletType as WalletType, logger)
     this.strategy = createHedgingStrategy(activeStrategy as HedgingStrategies, logger)
-    // this.database = new InFlightTransferDb(logger)
 
     this.logger = logger.child({ topic: "dealer" })
   }

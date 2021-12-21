@@ -10,6 +10,9 @@ import {
   GetAccountAndPositionRiskResult,
   TradeCurrency,
   AccountType,
+  SupportedChain,
+  CreateOrderParameters,
+  PositionSide,
 } from "./ExchangeTradingType"
 import {
   HedgingStrategy,
@@ -24,8 +27,16 @@ import {
   OkexExchangeConfiguration,
   DestinationAddressType,
 } from "./OkexExchangeConfiguration"
-import { OkexExchange } from "./OkexExchange"
+import { AccountTypeToId, OkexExchange } from "./OkexExchange"
 import pino from "pino"
+
+import {
+  InFlightTransfer,
+  ExternalTransfer,
+  Order,
+  InternalTransfer,
+} from "./database/models"
+import { db as database } from "./database"
 
 const hedgingBounds = yamlConfig.hedging
 
@@ -378,6 +389,18 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
             instId: SupportedInstrument.OKEX_BTC_USD_SPOT,
           },
         }
+
+        // keep record of the attempt
+        const intTransferRecord: InternalTransfer = {
+          currency: transferArgs.currency,
+          quantity: transferArgs.quantity,
+          fromAccountId: Number(AccountTypeToId.Trading),
+          toAccountId: Number(AccountTypeToId.Funding),
+          instrumentId: transferArgs.params.instId,
+          // transferId: null,
+          success: false,
+        }
+
         const transferResult = await this.exchange.transfer(transferArgs)
         this.logger.debug(
           { transferArgs, transferResult },
@@ -388,7 +411,13 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
             { error: transferResult.error },
             "transfer() failed with {error}, continuing",
           )
+        } else {
+          if (transferResult.value.id) {
+            intTransferRecord.transferId = transferResult.value.id
+            intTransferRecord.success = true
+          }
         }
+        await database.internalTransfers.insert(intTransferRecord)
 
         // then initiate the withdrawal which by default uses the funding account
         const withdrawArgs = {
@@ -406,12 +435,32 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
           { withdrawArgs, withdrawalResult },
           "withdraw() returned: {withdrawalResult}",
         )
+
+        // keep record of the attempt
+        const extTransferRecord: ExternalTransfer = {
+          isDepositNotWithdrawal: false,
+          currency: withdrawArgs.currency,
+          quantity: withdrawArgs.quantity,
+          destinationAddressTypeId: withdrawArgs.params.dest,
+          toAddress: withdrawArgs.address,
+          fundPassword: withdrawArgs.params.pwd,
+          fee: Number(withdrawArgs.params.fee),
+          chain: SupportedChain.BTC_Bitcoin,
+          // transferId: null,
+          success: false,
+        }
+
         if (!withdrawalResult.ok) {
+          await database.externalTransfers.insert(extTransferRecord)
           return { ok: false, error: withdrawalResult.error }
         }
         const withdrawalResponse = withdrawalResult.value
 
         if (withdrawalResponse.id) {
+          extTransferRecord.transferId = withdrawalResponse.id
+          extTransferRecord.success = true
+          await database.externalTransfers.insert(extTransferRecord)
+
           const bookingResult = await withdrawBookKeepingCallback(
             withdrawOnChainAddress,
             transferSizeInBtc,
@@ -429,6 +478,7 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
             "rebalancing withdrawal was successful",
           )
         } else {
+          await database.externalTransfers.insert(extTransferRecord)
           this.logger.error(
             { withdrawalResponse },
             "rebalancing withdrawal was NOT successful",
@@ -445,6 +495,18 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
             instId: SupportedInstrument.OKEX_BTC_USD_SPOT,
           },
         }
+
+        // keep record of the attempt
+        const intTransferRecord: InternalTransfer = {
+          currency: transferArgs.currency,
+          quantity: transferArgs.quantity,
+          fromAccountId: Number(AccountTypeToId.Funding),
+          toAccountId: Number(AccountTypeToId.Trading),
+          instrumentId: transferArgs.params.instId,
+          // transferId: null,
+          success: false,
+        }
+
         const transferResult = await this.exchange.transfer(transferArgs)
         this.logger.debug(
           { transferArgs, transferResult },
@@ -455,6 +517,7 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
             { error: transferResult.error },
             "transfer() failed with {error}, continuing",
           )
+          await database.internalTransfers.insert(intTransferRecord)
 
           // if it succeeds, we are done,
           // but if it fails we should initiate a remote deposit
@@ -485,6 +548,12 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
             { memo, exchangeDepositOnChainAddress },
             "deposit rebalancing successful",
           )
+        } else {
+          if (transferResult.value.id) {
+            intTransferRecord.transferId = transferResult.value.id
+            intTransferRecord.success = true
+          }
+          await database.internalTransfers.insert(intTransferRecord)
         }
       }
 
@@ -668,21 +737,54 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
       }
 
       const config = this.exchangeConfig as OkexExchangeConfiguration
-      const orderResult = await this.exchange.createMarketOrder({
+      const orderArgs: CreateOrderParameters = {
         instrumentId: this.instrumentId,
         type: TradeType.Market,
         side: tradeSide,
         quantity: orderSizeInContract,
         params: { tdMode: config.marginMode },
-      })
+      }
+
+      const orderRecord: Order = {
+        instrumentId: orderArgs.instrumentId,
+        orderType: orderArgs.type,
+        side: orderArgs.side,
+        quantity: orderArgs.quantity,
+        tradeMode: String(orderArgs.params.tdMode),
+        positionSide: PositionSide.Net,
+        // statusCode: null,
+        // statusMessage: null,
+        // orderId: null,
+        // clientOrderId: null,
+        success: false,
+      }
+
+      const orderResult = await this.exchange.createMarketOrder(orderArgs)
       logger.debug(
         { instrumentId: this.instrumentId, tradeSide, orderSizeInContract, orderResult },
         "this.exchange.createMarketOrder({instrumentId}, {tradeSide}, {orderSizeInContract}) returned: {orderResult}",
       )
       if (!orderResult.ok) {
+        await database.orders.insert(orderRecord)
         return { ok: false, error: orderResult.error }
       }
       const placedOrder = orderResult.value
+      const response = placedOrder.originalResponseAsIs
+
+      if (placedOrder.id) {
+        orderRecord.orderId = placedOrder.id
+        orderRecord.success = true
+      }
+      if (response?.info?.sCode) {
+        orderRecord.statusCode = response?.info?.sCode
+      }
+      if (response?.info?.sMsg) {
+        orderRecord.statusMessage = response?.info?.sMsg
+      }
+      if (response?.clientOrderId) {
+        orderRecord.clientOrderId = response?.clientOrderId
+      }
+      await database.orders.insert(orderRecord)
 
       const waitTimeInMs = 1000
       const maxWaitCycleCount = 30

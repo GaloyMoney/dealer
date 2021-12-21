@@ -265,18 +265,20 @@ export class OkexExchangeConfiguration implements ExchangeConfiguration {
       ApiError.MISSING_ACCOUNT_VALUE,
     )
 
-    let notionalLever = 0
-    if (response?.info?.data?.[0]?.details?.[0]?.notionalLever) {
-      notionalLever = Number(response?.info?.data?.[0]?.details?.[0]?.notionalLever)
-    }
+    const notionalLever =
+      Number(response?.info?.data?.[0]?.details?.[0]?.notionalLever) || 0
+    const btcFreeBalance = Number(response?.BTC?.free) || 0
+    const btcUsedBalance = Number(response?.BTC?.used) || 0
+    const btcTotalBalance = Number(response?.BTC?.total) || 0
+    const totalEq = Number(response.info.data[0].totalEq) || 0
 
     return {
       originalResponseAsIs: response,
       notionalLever: notionalLever,
-      btcFreeBalance: response?.BTC?.free,
-      btcUsedBalance: response?.BTC?.used,
-      btcTotalBalance: response?.BTC?.total,
-      totalEq: Number(response.info.data[0].totalEq),
+      btcFreeBalance: btcFreeBalance,
+      btcUsedBalance: btcUsedBalance,
+      btcTotalBalance: btcTotalBalance,
+      totalEq: totalEq,
     }
   }
 

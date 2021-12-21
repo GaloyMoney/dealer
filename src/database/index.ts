@@ -3,6 +3,10 @@ import {
   Extensions,
   InFlightTransfersRepository,
   GraphqlRepository,
+  TransactionsRepository,
+  OrdersRepository,
+  InternalTransfersRepository,
+  ExternalTransfersRepository,
 } from "./repositories"
 import { baseLogger } from "../services/logger"
 import humps from "humps"
@@ -22,6 +26,10 @@ const initOptions: IInitOptions<Extensions> = {
 
     obj.inFlightTransfers = new InFlightTransfersRepository(baseLogger, obj, pgp)
     obj.graphql = new GraphqlRepository(baseLogger, obj, pgp)
+    obj.transactions = new TransactionsRepository(baseLogger, obj, pgp)
+    obj.orders = new OrdersRepository(baseLogger, obj, pgp)
+    obj.internalTransfers = new InternalTransfersRepository(baseLogger, obj, pgp)
+    obj.externalTransfers = new ExternalTransfersRepository(baseLogger, obj, pgp)
   },
   /* eslint-disable */
   receive: function (data, result, e) {
