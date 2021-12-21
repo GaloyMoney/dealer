@@ -149,11 +149,6 @@ function getValidOrderFromApiData(apiData): Order[] {
         clientOrderId: rawOrder.clOrdId,
         success: rawOrder.sCode === "0",
       }
-
-      if (!order.statusMessage) {
-        delete order.statusMessage
-      }
-
       orders.push(order)
     }
   }
@@ -258,7 +253,7 @@ describe("OrdersRepository", () => {
     })
   })
   describe("getSideCount", () => {
-    it("should count all rows from the database table", async () => {
+    it("should count all rows per side from the database table", async () => {
       // clear db
       const clearResult = await database.orders.clearAll()
       expect(clearResult).toBeTruthy()

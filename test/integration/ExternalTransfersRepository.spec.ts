@@ -10,7 +10,6 @@ function getValidExternalTransferApiData() {
         ccy: "BTC",
         amt: "0.20551491",
         destinationAddressTypeId: "4",
-        fundPasswordMd5: "77c3d7bc293583d280ce8ae8ff4fe056",
         fee: "0",
         to: "bc1q.01.",
         chain: "BTC-Bitcoin",
@@ -21,7 +20,6 @@ function getValidExternalTransferApiData() {
         ccy: "BTC",
         amt: "0.0016511",
         destinationAddressTypeId: "4",
-        fundPasswordMd5: "77c3d7bc293583d280ce8ae8ff4fe056",
         fee: "0",
         to: "bc1q.02.",
         chain: "",
@@ -43,20 +41,12 @@ function getValidExternalTransferFromApiData(apiData): ExternalTransfer[] {
         quantity: Number(rawTransfer.amt),
         destinationAddressTypeId: Number(rawTransfer.destinationAddressTypeId),
         toAddress: rawTransfer.to,
-        fundPasswordMd5: rawTransfer.fundPasswordMd5,
+        fundPassword: "secret",
         fee: Number(rawTransfer.fee),
         chain: rawTransfer.chain,
         transferId: rawTransfer.transferId,
         success: Boolean(rawTransfer.transId),
       }
-
-      if (!transfer.chain) {
-        delete transfer.chain
-      }
-      if (!transfer.transferId) {
-        delete transfer.transferId
-      }
-
       transfers.push(transfer)
     }
   }
@@ -91,7 +81,6 @@ describe("ExternalTransfersRepository", () => {
         aTransfer.destinationAddressTypeId,
       )
       expect(result.value.toAddress).toBe(aTransfer.toAddress)
-      expect(result.value.fundPasswordMd5).toBe(aTransfer.fundPasswordMd5)
       expect(result.value.fee).toBe(String(aTransfer.fee))
 
       // validate created data

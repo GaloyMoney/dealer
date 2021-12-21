@@ -13,6 +13,14 @@ export class InternalTransfersRepository {
 
   public async insert(transfer: InternalTransfer): Promise<Result<InternalTransfer>> {
     try {
+      // Clear nullables
+      if (!transfer.instrumentId) {
+        delete transfer.instrumentId
+      }
+      if (!transfer.transferId) {
+        delete transfer.transferId
+      }
+
       const result = await this.db.one(
         sql.insert,
         {

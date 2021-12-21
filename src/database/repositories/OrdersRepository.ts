@@ -18,6 +18,11 @@ export class OrdersRepository {
 
   public async insert(order: Order): Promise<Result<Order>> {
     try {
+      // Clear nullables
+      if (!order.statusMessage) {
+        delete order.statusMessage
+      }
+
       const result = await this.db.one(
         sql.insert,
         {

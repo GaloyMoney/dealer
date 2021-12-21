@@ -3,6 +3,7 @@ import { IDatabase, IMain } from "pg-promise"
 import { ExternalTransfer } from "../models"
 import { externalTransfersQueries as sql } from "../sql"
 import { Result } from "../../Result"
+import { Md5 } from "ts-md5/dist/md5"
 
 export class ExternalTransfersRepository {
   private logger: pino.Logger
@@ -13,6 +14,14 @@ export class ExternalTransfersRepository {
 
   public async insert(transfer: ExternalTransfer): Promise<Result<ExternalTransfer>> {
     try {
+      // Clear nullables
+      if (!transfer.chain) {
+        delete transfer.chain
+      }
+      if (!transfer.transferId) {
+        delete transfer.transferId
+      }
+
       const result = await this.db.one(
         sql.insert,
         {
@@ -21,7 +30,7 @@ export class ExternalTransfersRepository {
           quantity: transfer.quantity,
           destinationAddressTypeId: transfer.destinationAddressTypeId,
           toAddress: transfer.toAddress,
-          fundPasswordMd5: transfer.fundPasswordMd5,
+          fundPasswordMd5: Md5.hashStr(transfer.fundPassword),
           fee: transfer.fee,
           chain: transfer.chain,
           transferId: transfer.transferId,

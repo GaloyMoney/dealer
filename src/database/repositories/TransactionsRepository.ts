@@ -29,6 +29,17 @@ export class TransactionsRepository {
 
   public async insert(transaction: Transaction): Promise<Result<Transaction>> {
     try {
+      // Clear nullables
+      if (!transaction.executionType) {
+        delete transaction.executionType
+      }
+      if (!transaction.instrumentType) {
+        delete transaction.instrumentType
+      }
+      if (!transaction.marginMode) {
+        delete transaction.marginMode
+      }
+
       const result = await this.db.one(
         sql.insert,
         {

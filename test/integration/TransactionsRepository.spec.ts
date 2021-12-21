@@ -939,17 +939,6 @@ function getValidTransactionFromApiResponse(apiResponse): Transaction[] {
         timestamp: rawTransaction.ts,
         billTypeId: Number(rawTransaction.type),
       }
-
-      if (!transaction.executionType) {
-        delete transaction.executionType
-      }
-      if (!transaction.instrumentType) {
-        delete transaction.instrumentType
-      }
-      if (!transaction.marginMode) {
-        delete transaction.marginMode
-      }
-
       transactions.push(transaction)
     }
   }
@@ -1055,7 +1044,7 @@ describe("TransactionsRepository", () => {
     })
   })
   describe("getTypeCount", () => {
-    it("should count all rows from the database table", async () => {
+    it("should count all rows per type from the database table", async () => {
       // clear db
       const clearResult = await database.transactions.clearAll()
       expect(clearResult).toBeTruthy()

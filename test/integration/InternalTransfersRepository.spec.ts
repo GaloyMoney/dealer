@@ -40,14 +40,6 @@ function getValidInternalTransferFromApiData(apiData): InternalTransfer[] {
         transferId: rawTransfer.transId,
         success: Boolean(rawTransfer.transId),
       }
-
-      if (!transfer.instrumentId) {
-        delete transfer.instrumentId
-      }
-      if (!transfer.transferId) {
-        delete transfer.transferId
-      }
-
       transfers.push(transfer)
     }
   }
