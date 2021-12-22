@@ -16,3 +16,6 @@ staging_inception_creds: ((staging-gcp-creds.creds_json))
 staging_ssh_private_key: ((staging-ssh.ssh_private_key))
 staging_ssh_pub_key: ((staging-ssh.ssh_public_key))
 
+slack_channel: galoy-dealer-github
+slack_username: concourse
+slack_webhook_url: ((addons-slack.api_url))
