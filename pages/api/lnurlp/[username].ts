@@ -13,12 +13,11 @@ import type { NextApiRequest, NextApiResponse } from "next"
 import { GRAPHQL_URI } from "../../../lib/config"
 
 const ipForwardingMiddleware = new ApolloLink((operation, forward) => {
-  const ip = operation.getContext().ip
-
   operation.setContext(({ headers = {} }) => ({
     headers: {
       ...headers,
-      "x-real-ip": ip,
+      "x-real-ip": operation.getContext()["x-real-ip"],
+      "x-forwarded-for": operation.getContext()["x-forwarded-for"],
     },
   }))
 
@@ -77,7 +76,8 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
       query: USER_WALLET_ID,
       variables: { username },
       context: {
-        ip: req.headers["x-real-ip"],
+        "x-real-ip": req.headers["x-real-ip"],
+        "x-forwarded-for": req.headers["x-forwarded-for"],
       },
     })
 
