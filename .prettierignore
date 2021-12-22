@@ -1,3 +1,4 @@
+src/types/graphql.d.ts
 node_modules/
 public/bundles/
 build/

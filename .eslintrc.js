@@ -5,7 +5,7 @@ module.exports = {
     jest: true,
     node: true,
   },
-  ignorePatterns: ["/*.js", "lib", "coverage"],
+  ignorePatterns: ["/*.js", "lib", "coverage", "src/types/graphql.d.ts"],
   parser: "@typescript-eslint/parser",
   parserOptions: {
     project: "tsconfig.json",

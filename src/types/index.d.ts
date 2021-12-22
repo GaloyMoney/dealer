@@ -2,6 +2,10 @@ type RoutePath = typeof import("../server/routes").SupportedRoutes[number]
 type RouteInfo = Record<string, string | (() => JSX.Element)>
 type AppRoutes = Record<RoutePath, RouteInfo>
 
+type InitialData = {
+  QUERY_ME?: GraphQL.MeQuery
+}
+
 type InitialState = {
   path: RoutePath
   authToken?: string

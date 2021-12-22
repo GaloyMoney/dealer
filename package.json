@@ -20,7 +20,8 @@
     "prod:stop": "pm2 stop web-walletProd",
     "test:verify": "jest --coverage",
     "test": "cross-env-file -p .env.local jest",
-    "tsc:check": "tsc --pretty --noEmit"
+    "tsc:check": "tsc --pretty --noEmit",
+    "dev:codegen": "graphql-codegen --config codegen.yml"
   },
   "dependencies": {
     "@urql/core": "^2.3.6",
@@ -58,6 +59,10 @@
     "webpack-cli": "^4.9.1"
   },
   "devDependencies": {
+    "@graphql-codegen/add": "^3.1.0",
+    "@graphql-codegen/cli": "2.3.0",
+    "@graphql-codegen/typescript": "2.4.1",
+    "@graphql-codegen/typescript-operations": "^2.2.1",
     "@testing-library/jest-dom": "^5.16.0",
     "@testing-library/react": "^12.1.2",
     "@testing-library/user-event": "^13.5.0",
