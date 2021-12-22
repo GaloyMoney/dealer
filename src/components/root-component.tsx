@@ -1,3 +1,4 @@
+import { Suspense } from "react"
 import appRoutes, { SupportedRoutes } from "server/routes"
 
 const RootComponent = ({ path }: { path: RoutePath }) => {
@@ -15,7 +16,7 @@ const RootComponent = ({ path }: { path: RoutePath }) => {
 
   const Component = appRoutes[checkedRoutePath].component
   return (
-    <>
+    <Suspense fallback={<div>Loading...</div>}>
       <div className="main-container">
         <Component />
       </div>
@@ -27,7 +28,7 @@ const RootComponent = ({ path }: { path: RoutePath }) => {
           </a>
         </div>
       </div>
-    </>
+    </Suspense>
   )
 }
 

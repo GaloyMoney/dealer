@@ -1,5 +1,7 @@
 import fetch from "cross-fetch"
 import { createContext, useContext } from "react"
+import config from "server/config"
+import { ssrExchange } from "urql"
 
 export const GwwContext = createContext<GwwContextType>({
   state: { path: "/" },
@@ -9,6 +11,11 @@ export const GwwContext = createContext<GwwContextType>({
 })
 
 export * from "./history"
+
+export const ssr = ssrExchange({
+  isClient: config.isBrowser,
+  initialState: config.isBrowser ? window.__G_DATA.ssrData : undefined,
+})
 
 export const useAppState = () => {
   const { state } = useContext<GwwContextType>(GwwContext)

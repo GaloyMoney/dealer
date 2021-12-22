@@ -1,7 +1,7 @@
 import { createClient, Provider, dedupExchange, cacheExchange, fetchExchange } from "urql"
 
 import config from "server/config"
-import { useAppState } from "store"
+import { ssr, useAppState } from "store"
 
 import RootComponent from "./root-component"
 import { useMemo } from "react"
@@ -11,7 +11,8 @@ const RootProvider = () => {
   const client = useMemo(() => {
     return createClient({
       url: config.graphqlUri,
-      exchanges: [dedupExchange, cacheExchange, fetchExchange],
+      suspense: !config.isBrowser,
+      exchanges: [dedupExchange, cacheExchange, ssr, fetchExchange],
       fetchOptions: () => {
         return {
           headers: { authorization: authToken ? `Bearer ${authToken}` : "" },
