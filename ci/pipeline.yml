@@ -20,6 +20,16 @@ source:
   repository: #@ pipeline_image()
 #@ end
 
+#@ def slack_failure_notification():
+#@ fail_url = "<$ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME| :face_with_symbols_on_mouth: $BUILD_JOB_NAME> failed!"
+put: slack
+params:
+  channel:  #@ data.values.slack_channel
+  username: #@ data.values.slack_username
+  icon_url: https://cl.ly/2F421Y300u07/concourse-logo-blue-transparent.png
+  text:    #@ fail_url
+#@ end
+
 groups:
 - name: dealer
   jobs:
@@ -53,6 +63,7 @@ jobs:
   - put: bundled-deps
     params:
       file: bundled-deps/bundled-deps-*.tgz
+  on_failure: #@ slack_failure_notification()
 
 - name: test-integration
   serial: true
@@ -80,6 +91,7 @@ jobs:
         JEST_TIMEOUT: 60000
       run:
         path: pipeline-tasks/ci/tasks/test-integration.sh
+  on_failure: #@ slack_failure_notification()
 
 - name: test-unit
   serial: true
@@ -98,6 +110,7 @@ jobs:
       - name: repo
       run:
         path: pipeline-tasks/ci/tasks/test-unit.sh
+  on_failure: #@ slack_failure_notification()
 
 - name: check-code
   serial: true
@@ -116,6 +129,7 @@ jobs:
       - name: repo
       run:
         path: pipeline-tasks/ci/tasks/check-code.sh
+  on_failure: #@ slack_failure_notification()
 
 - name: build-dealer-image
   serial: true
@@ -154,6 +168,7 @@ jobs:
   - put: dealer-image
     params:
       image: image/image.tar
+  on_failure: #@ slack_failure_notification()
 
 - name: build-fake-galoyapi-image
   serial: true
@@ -192,6 +207,7 @@ jobs:
   - put: fake-galoyapi-image
     params:
       image: image/image.tar
+  on_failure: #@ slack_failure_notification()
 
 - name: bump-image-in-chart
   plan:
@@ -322,8 +338,18 @@ resources:
     password: #@ data.values.docker_registry_password
     repository: #@ fake_galoyapi_image()
 
+- name: slack
+  type: slack-notification
+  source:
+    url: #@ data.values.slack_webhook_url
+
 resource_types:
 - name: gcs-resource
   type: docker-image
   source:
     repository: frodenas/gcs-resource
+
+- name: slack-notification
+  type: docker-image
+  source:
+    repository: cfcommunity/slack-notification-resource
