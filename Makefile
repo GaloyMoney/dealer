@@ -11,7 +11,6 @@ integration:
 test-in-ci:
 	docker compose up -d
 	. ./.envrc && \
-	yarn migrate-ts up && \
 		LOG_LEVEL=error node_modules/.bin/jest --bail --runInBand --ci --reporters=default --reporters=jest-junit
 
 integration-in-ci:
@@ -21,7 +20,6 @@ integration-in-ci:
 
 unit-in-ci:
 	. ./.envrc && \
-	yarn migrate-ts up && \
 		LOG_LEVEL=warn $(BIN_DIR)/jest --config ./test/jest-unit.config.js --ci --bail
 
 check-code:
