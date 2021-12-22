@@ -1,14 +1,37 @@
 import crypto from "crypto"
 import originalUrl from "original-url"
-import { ApolloClient, gql, HttpLink, InMemoryCache } from "@apollo/client"
+import {
+  ApolloClient,
+  ApolloLink,
+  concat,
+  gql,
+  HttpLink,
+  InMemoryCache,
+} from "@apollo/client"
 import type { NextApiRequest, NextApiResponse } from "next"
 
 import { GRAPHQL_URI } from "../../../lib/config"
 
+const ipForwardingMiddleware = new ApolloLink((operation, forward) => {
+  const ip = operation.getContext().ip
+
+  operation.setContext(({ headers = {} }) => ({
+    headers: {
+      ...headers,
+      "x-real-ip": ip,
+    },
+  }))
+
+  return forward(operation)
+})
+
 const client = new ApolloClient({
-  link: new HttpLink({
-    uri: GRAPHQL_URI,
-  }),
+  link: concat(
+    ipForwardingMiddleware,
+    new HttpLink({
+      uri: GRAPHQL_URI,
+    }),
+  ),
   cache: new InMemoryCache(),
 })
 
@@ -45,13 +68,19 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
   const { username, amount } = req.query
   const url = originalUrl(req)
 
+  console.log({ headers: req.headers }, "request to NextApiRequest")
+
   let walletId
 
   try {
     const { data } = await client.query({
       query: USER_WALLET_ID,
       variables: { username },
+      context: {
+        ip: req.headers["x-real-ip"],
+      },
     })
+
     walletId = data.userDefaultWalletId
   } catch (err) {
     return res.json({
