@@ -13,6 +13,7 @@ test-in-ci:
 	. ./.envrc && \
 		LOG_LEVEL=error node_modules/.bin/jest --bail --runInBand --ci --reporters=default --reporters=jest-junit
 
+
 integration-in-ci:
 	. ./.envrc && \
 	yarn migrate-ts up && \
