@@ -1,7 +1,8 @@
-import { useAppState } from "store"
+import { useAppDispatcher, useRequest } from "store"
 
 const Logout = () => {
-  const { dispatch, request } = useAppState()
+  const request = useRequest()
+  const dispatch = useAppDispatcher()
 
   const handleLogout: React.MouseEventHandler<HTMLAnchorElement> = async (event) => {
     event.preventDefault()

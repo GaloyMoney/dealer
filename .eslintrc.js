@@ -149,7 +149,6 @@ module.exports = {
     "no-warning-comments": "error",
     "object-shorthand": "error",
     "prefer-const": "error",
-    "prefer-destructuring": "error",
     "prefer-exponentiation-operator": "error",
     "prefer-named-capture-group": "error",
     "prefer-numeric-literals": "error",

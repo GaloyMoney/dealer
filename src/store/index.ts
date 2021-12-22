@@ -11,7 +11,17 @@ export const GwwContext = createContext<GwwContextType>({
 export * from "./history"
 
 export const useAppState = () => {
-  const { state, dispatch } = useContext<GwwContextType>(GwwContext)
+  const { state } = useContext<GwwContextType>(GwwContext)
+  return state
+}
+
+export const useAppDispatcher = () => {
+  const { dispatch } = useContext<GwwContextType>(GwwContext)
+  return dispatch
+}
+
+export const useRequest = () => {
+  const { authToken } = useAppState()
 
   const request = {
     post: async (
@@ -24,7 +34,7 @@ export const useAppState = () => {
           body: JSON.stringify(variables),
           headers: {
             "Content-Type": "application/json",
-            "authorization": state.authToken ? `Bearer ${state.authToken}` : "",
+            "authorization": authToken ? `Bearer ${authToken}` : "",
           },
         })
 
@@ -37,5 +47,5 @@ export const useAppState = () => {
     },
   }
 
-  return { state, dispatch, request }
+  return request
 }

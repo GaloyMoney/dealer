@@ -1,7 +1,8 @@
 import intlTelInput from "intl-tel-input"
 import React, { useCallback, useRef, useState } from "react"
+
 import config from "server/config"
-import { history, useAppState } from "store"
+import { history, useRequest } from "store"
 
 const PhoneNumber = ({ onSuccess }: { onSuccess: (arg: string) => void }) => {
   const iti = useRef<intlTelInput.Plugin | null>(null)
@@ -54,7 +55,7 @@ const PhoneNumber = ({ onSuccess }: { onSuccess: (arg: string) => void }) => {
 }
 
 const AuthCode = ({ phoneNumber }: { phoneNumber: string }) => {
-  const { request } = useAppState()
+  const request = useRequest()
   const [errorMessage, setErrorMessage] = useState("")
 
   const handleAuthCodeSubmit: React.FormEventHandler<HTMLFormElement> = async (event) => {

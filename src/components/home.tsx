@@ -1,33 +1,20 @@
-import { gql, useQuery } from "urql"
+import { useQuery } from "urql"
 
 import { useAppState } from "store"
+import QUERY_ME from "store/graphql/query.me"
+
 import Header from "./header"
 
-const QUERY_ME = gql`
-  query me($hasToken: Boolean!) {
-    me @include(if: $hasToken) {
-      id
-      username
-      defaultAccount {
-        id
-        wallets {
-          id
-          balance
-        }
-      }
-    }
-  }
-`
-
 const Home = () => {
-  const { state } = useAppState()
+  const { authToken } = useAppState()
 
   const [result] = useQuery({
     query: QUERY_ME,
-    variables: { hasToken: Boolean(state.authToken) },
+    variables: { hasToken: Boolean(authToken) },
   })
 
-  const balance = result?.data?.me?.defaultAccount?.wallets?.[0]?.balance ?? 0
+  const me = result?.data?.me
+  const balance = me?.defaultAccount?.wallets?.[0]?.balance ?? 0
 
   return (
     <div className="home">

@@ -14,9 +14,8 @@ ssrRouter.get("/*", async (req, res) => {
     if (!checkedRoutePath) {
       return res.status(404)
     }
-    const vars = await serverRenderer({
+    const vars = await serverRenderer(req)({
       path: checkedRoutePath,
-      authToken: req.session?.authToken,
     })
     return res.render("index", vars)
   } catch (err) {

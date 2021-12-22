@@ -1,32 +1,9 @@
 import "cross-fetch/polyfill" // The URQL client depends on fetch
 import express from "express"
-import { gql, createClient } from "@urql/core"
-
-import config from "./config"
+import MUTATION_USER_LOGIN from "store/graphql/mutation.user-login"
+import client from "./graphql"
 
 const apiRouter = express.Router({ caseSensitive: true })
-
-const client = (req: Express.Request) =>
-  createClient({
-    url: config.graphqlUri,
-    fetchOptions: () => {
-      const token = req.session?.authToken
-      return {
-        headers: { authorization: token ? `Bearer ${token}` : "" },
-      }
-    },
-  })
-
-const MUTATION_USER_LOGIN = gql`
-  mutation userLogin($input: UserLoginInput!) {
-    userLogin(input: $input) {
-      errors {
-        message
-      }
-      authToken
-    }
-  }
-`
 
 apiRouter.post("/login", async (req, res) => {
   try {
