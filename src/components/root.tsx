@@ -10,7 +10,11 @@ const Root = ({ initialState }: { initialState: InitialState }) => {
 
   useEffect(() => {
     const unlisten = history.listen(({ location }) => {
-      dispatch({ type: "state", path: location.pathname, ...location.state })
+      dispatch({
+        type: "state",
+        path: location.pathname,
+        ...(location.state as Record<string, unknown> | null),
+      })
     })
     return () => unlisten()
   }, [])
