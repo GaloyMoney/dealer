@@ -1,8 +1,9 @@
+import React, { useCallback, useRef, useState } from "react"
 import { useApolloClient } from "@apollo/client"
 import intlTelInput from "intl-tel-input"
-import React, { useCallback, useRef, useState } from "react"
 
 import config from "server/config"
+import { translate } from "translate"
 import { history, useRequest } from "store"
 import { setCachedAuthToken } from "store/use-auth-token"
 
@@ -29,7 +30,7 @@ const PhoneNumber = ({ onSuccess }: { onSuccess: (arg: string) => void }) => {
     event.preventDefault()
     setErrorMessage("")
     if (!iti.current || !iti.current.isValidNumber()) {
-      setErrorMessage("Invalid phone number")
+      setErrorMessage(translate("Invalid phone number"))
       return
     }
 
@@ -83,7 +84,10 @@ const AuthCode = ({ phoneNumber }: { phoneNumber: string }) => {
   return (
     <div className="login">
       <div className="intro">
-        To confirm your phone number, enter the code we just sent you on {phoneNumber}
+        {translate(
+          "To confirm your phone number, enter the code we just sent you on %{phoneNumber}",
+          { phoneNumber },
+        )}
       </div>
       <form onSubmit={handleAuthCodeSubmit}>
         <input

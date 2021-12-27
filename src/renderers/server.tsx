@@ -19,6 +19,7 @@ export const serverRenderer =
     const initialState: InitialState = {
       path,
       authToken,
+      defaultLanguage: req.acceptsLanguages()?.[0],
     }
 
     const cache = new InMemoryCache()

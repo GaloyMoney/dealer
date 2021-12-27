@@ -7,6 +7,7 @@ type AppRoutes = Record<RoutePath, RouteInfo>
 type InitialState = {
   path: RoutePath
   authToken?: string
+  defaultLanguage?: string
 }
 
 declare interface Window {
@@ -25,6 +26,7 @@ type ServerRendererFunction = (path: RoutePath) => Promise<{
 type GwwState = {
   path: RoutePath
   authToken?: string
+  defaultLanguage?: string
 }
 
 type GwwAction = {

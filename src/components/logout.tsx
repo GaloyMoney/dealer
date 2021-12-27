@@ -1,5 +1,6 @@
 import { useApolloClient } from "@apollo/client"
 import { useAppDispatcher, useRequest } from "store"
+import { translate } from "translate"
 
 const Logout = () => {
   const client = useApolloClient()
@@ -15,7 +16,7 @@ const Logout = () => {
 
   return (
     <a href="/logout" onClick={handleLogout}>
-      Logout
+      {translate("Logout")}
     </a>
   )
 }

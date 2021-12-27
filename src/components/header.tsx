@@ -1,4 +1,6 @@
+import { translate } from "translate"
 import useAuthToken from "store/use-auth-token"
+
 import Balance from "./balance"
 import Link from "./link"
 import Logout from "./logout"
@@ -9,7 +11,7 @@ const Header = ({ balance }: { balance: number }) => {
   return (
     <div className="header">
       <Balance balance={balance} />
-      {hasToken ? <Logout /> : <Link to="/login">Login</Link>}
+      {hasToken ? <Logout /> : <Link to="/login">{translate("Login")}</Link>}
     </div>
   )
 }

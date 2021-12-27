@@ -1,5 +1,6 @@
 import { Suspense } from "react"
 import appRoutes, { SupportedRoutes } from "server/routes"
+import { translate } from "translate"
 
 const RootComponent = ({ path }: { path: RoutePath }) => {
   const checkedRoutePath = SupportedRoutes.find(
@@ -17,7 +18,7 @@ const RootComponent = ({ path }: { path: RoutePath }) => {
       </div>
       <div className="footer">
         <div className="powered-by">
-          Powerd By{" "}
+          {translate("Powered By")}{" "}
           <a href="https://galoy.io/" target="_blank" rel="noreferrer">
             Galoy
           </a>
