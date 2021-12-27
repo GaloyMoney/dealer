@@ -1,15 +1,12 @@
-import {
-  ApolloClient,
-  InMemoryCache,
-  ApolloProvider,
-  createHttpLink,
-} from "@apollo/client"
-import { Request } from "express"
+import { createHttpLink, ApolloClient, InMemoryCache } from "@apollo/client"
 
 import config from "server/config"
+
+import { Request } from "express"
+
 import appRoutes from "server/routes"
-import Root from "components/root"
 import { renderToStringWithData } from "@apollo/client/react/ssr"
+import { SSRRoot } from "components/root"
 
 export const serverRenderer =
   (req: Request) =>
@@ -22,7 +19,6 @@ export const serverRenderer =
       defaultLanguage: req.acceptsLanguages()?.[0],
     }
 
-    const cache = new InMemoryCache()
     const client = new ApolloClient({
       ssrMode: true,
       link: createHttpLink({
@@ -31,14 +27,10 @@ export const serverRenderer =
           authorization: authToken ? `Bearer ${authToken}` : "",
         },
       }),
-      cache,
+      cache: new InMemoryCache(),
     })
 
-    const App = (
-      <ApolloProvider client={client}>
-        <Root initialState={initialState} />
-      </ApolloProvider>
-    )
+    const App = <SSRRoot client={client} initialState={initialState} />
 
     const initialMarkup = await renderToStringWithData(App)
     const ssrData = client.extract()

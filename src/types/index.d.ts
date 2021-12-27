@@ -30,7 +30,7 @@ type GwwState = {
 }
 
 type GwwAction = {
-  type: "navigate" | "logout"
+  type: "navigate"
   [payloadKey: string]: string | undefined
 }
 
@@ -62,4 +62,50 @@ type GeetestCaptchaReturn = {
 type UseAuthTokenFunction = () => {
   authToken: string | undefined
   hasToken: boolean
+}
+
+type OnFormattedValueChangeFunction = (arg: {
+  numberValue: number
+  formattedValue: string
+}) => void
+
+type CachedData = {
+  authToken: string
+  satPriceInCents: number
+}
+
+type IntraLedgerUpdate = {
+  txNotificationType: string
+  amount: number
+  usdPerSat: number
+}
+
+type LnUpdate = {
+  paymentHash: string
+  status: string
+}
+
+type OnChainUpdate = {
+  txNotificationType: string
+  txHash: string
+  amount: number
+  usdPerSat: number
+}
+
+type UseMyUpdates = {
+  satsToUsd: ((sats: number) => number) | null
+  usdToSats: ((usd: number) => number) | null
+  currentBalance: number | null
+  intraLedgerUpdate: IntraLedgerUpdate | null
+  lnUpdate: LnUpdate | null
+  onChainUpdate: OnChainUpdate | null
+}
+
+type SpinnerSize = "small" | "big"
+
+type PriceData = {
+  formattedAmount: string
+  base: number
+  offset: number
+  currencyUnit: string
 }

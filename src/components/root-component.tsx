@@ -1,8 +1,11 @@
 import { Suspense } from "react"
 import appRoutes, { SupportedRoutes } from "server/routes"
 import { translate } from "translate"
+import Spinner from "./spinner"
 
-const RootComponent = ({ path }: { path: RoutePath }) => {
+type Props = { path: RoutePath }
+
+const RootComponent = ({ path }: Props) => {
   const checkedRoutePath = SupportedRoutes.find(
     (supportedRoute) => supportedRoute === path,
   )
@@ -12,7 +15,7 @@ const RootComponent = ({ path }: { path: RoutePath }) => {
 
   const Component = appRoutes[checkedRoutePath].component
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={<Spinner size="big" />}>
       <div className="main-container">
         <Component />
       </div>

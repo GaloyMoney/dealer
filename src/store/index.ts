@@ -1,6 +1,17 @@
 import fetch from "cross-fetch"
+import {
+  ApolloClient,
+  InMemoryCache,
+  ApolloLink,
+  from,
+  HttpLink,
+  split,
+} from "@apollo/client"
+import { WebSocketLink } from "@apollo/client/link/ws"
+import { getMainDefinition } from "@apollo/client/utilities"
 import { createContext, useContext } from "react"
 
+import config from "server/config"
 import useAuthToken from "./use-auth-token"
 
 export const GwwContext = createContext<GwwContextType>({
@@ -50,4 +61,49 @@ export const useRequest = () => {
   }
 
   return request
+}
+
+export const createApolloClient = (authToken: string | undefined) => {
+  const cache = new InMemoryCache().restore(window.__G_DATA.ssrData)
+
+  const authLink = new ApolloLink((operation, forward) => {
+    operation.setContext(({ headers }: { headers: Record<string, string> }) => ({
+      headers: {
+        authorization: authToken ? `Bearer ${authToken}` : "",
+        ...headers,
+      },
+    }))
+    return forward(operation)
+  })
+
+  const httpLink = new HttpLink({ uri: config.graphqlUri })
+
+  const wsLink = new WebSocketLink({
+    uri: config.graphqlSubscriptionUri,
+    options: {
+      reconnect: true,
+      connectionParams: async () => {
+        return {
+          authorization: authToken ? `Bearer ${authToken}` : "",
+        }
+      },
+    },
+  })
+
+  const splitLink = split(
+    ({ query }) => {
+      const definition = getMainDefinition(query)
+      return (
+        definition.kind === "OperationDefinition" &&
+        definition.operation === "subscription"
+      )
+    },
+    wsLink,
+    from([authLink, httpLink]),
+  )
+
+  return new ApolloClient({
+    cache,
+    link: splitLink,
+  })
 }

@@ -14,4 +14,8 @@ export const translate = (
   return translation
 }
 
-export default i18n
+export const setLocale = (langauge: string | undefined): void => {
+  if (langauge && langauge !== "DEFAULT" && i18n.locale !== langauge) {
+    i18n.locale = langauge
+  }
+}

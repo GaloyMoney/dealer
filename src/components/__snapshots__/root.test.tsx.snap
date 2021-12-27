@@ -25,12 +25,11 @@ exports[`Root renders Home and matches snapshot 1`] = `
             <div
               class="primary"
             >
-              $0
-            </div>
-            <div
-              class="secondary"
-            >
-              (0 sats)
+              <i
+                aria-hidden="true"
+                class="fak fa-satoshisymbol-solidtilt sat-symbol"
+              />
+              0
             </div>
           </div>
         </div>
@@ -40,6 +39,24 @@ exports[`Root renders Home and matches snapshot 1`] = `
           Login
         </a>
       </div>
+      <div
+        class="links"
+      >
+        <div>
+          <a
+            href="/send"
+          >
+            Send
+          </a>
+        </div>
+        <div>
+          <a
+            href="/receive"
+          >
+            Receive
+          </a>
+        </div>
+      </div>
     </div>
   </div>
   <div
@@ -48,7 +65,7 @@ exports[`Root renders Home and matches snapshot 1`] = `
     <div
       class="powered-by"
     >
-      Powerd By 
+      Powered By 
       <a
         href="https://galoy.io/"
         rel="noreferrer"
@@ -6769,7 +6786,7 @@ exports[`Root renders Login and matches snapshot 1`] = `
     <div
       class="powered-by"
     >
-      Powerd By 
+      Powered By 
       <a
         href="https://galoy.io/"
         rel="noreferrer"

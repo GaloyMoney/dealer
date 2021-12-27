@@ -16,6 +16,7 @@ body {
   a,
   .link {
     color: var(--color-links);
+    text-decoration: none;
   }
 }
 
@@ -26,6 +27,32 @@ input[type="tel"] {
 .error {
   color: red;
   margin: 1rem;
+}
+
+.sat-symbol {
+  margin-right: 4px;
+}
+
+.page-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-align: center;
+  margin: 2rem auto;
+}
+
+.links {
+  margin: 4rem auto;
+  display: flex;
+  font-size: 1.5rem;
+  justify-content: space-around;
+}
+
+.amount-input {
+  display: flex;
+  justify-content: center;
+  input {
+    min-width: 250px;
+  }
 }
 
 #root {
@@ -58,17 +85,22 @@ input[type="tel"] {
   display: flex;
   justify-content: space-between;
   .balance {
+    cursor: pointer;
+    .title {
+      text-align: center;
+      margin-bottom: 0.5rem;
+    }
+
     .value {
-      display: flex;
-      justify-content: center;
+      color: var(--color-secondary);
+      text-align: center;
       .primary {
-        font-size: 1.25rem;
-        font-weight: bold;
+        font-size: 1.2rem;
+        text-align: center;
       }
       .secondary {
-        color: var(--color-secondary);
-        align-self: center;
-        margin: 0 0.3rem;
+        margin-top: 0.2rem;
+        text-align: center;
       }
     }
   }

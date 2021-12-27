@@ -1,8 +1,8 @@
 import { gql } from "@apollo/client"
 
-export const CACHED_DATA = gql`
-  query localAppState {
-    authToken @client
+const CACHED_DATA = gql`
+  query cachedData {
+    satPriceInCents @client
   }
 `
 

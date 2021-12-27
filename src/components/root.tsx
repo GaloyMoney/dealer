@@ -1,17 +1,24 @@
-import { useEffect, useReducer } from "react"
+import { useEffect, useMemo, useReducer } from "react"
+import { ApolloClient, ApolloProvider } from "@apollo/client"
 
-import { GwwContext, history } from "store"
+import { createApolloClient, GwwContext, history } from "store"
 import mainReducer from "store/reducer"
-import i18n from "translate"
-import RootComponent from "./root-component"
+import { setLocale } from "translate"
 
-const Root = ({ initialState }: { initialState: InitialState }) => {
+import RootComponent from "../components/root-component"
+
+type RootProps = { initialState: InitialState }
+
+const Root = ({ initialState }: RootProps) => {
   const [state, dispatch] = useReducer(mainReducer, initialState, (initState) => {
-    if (initState.defaultLanguage) {
-      i18n.locale = initState.defaultLanguage
-    }
+    setLocale(initState.defaultLanguage)
     return initState
   })
+
+  const apolloClient = useMemo(
+    () => createApolloClient(state?.authToken),
+    [state?.authToken],
+  )
 
   useEffect(() => {
     const unlisten = history.listen(({ location }) => {
@@ -22,12 +29,34 @@ const Root = ({ initialState }: { initialState: InitialState }) => {
       })
     })
     return () => unlisten()
-  }, [])
+  }, [state?.authToken])
 
   return (
-    <GwwContext.Provider value={{ state, dispatch }}>
-      <RootComponent path={state.path} />
-    </GwwContext.Provider>
+    <ApolloProvider client={apolloClient}>
+      <GwwContext.Provider value={{ state, dispatch }}>
+        <RootComponent path={state.path} />
+      </GwwContext.Provider>
+    </ApolloProvider>
+  )
+}
+
+type SSRootProps = {
+  client: ApolloClient<unknown>
+  initialState: InitialState
+}
+
+export const SSRRoot = ({ client, initialState }: SSRootProps) => {
+  const [state, dispatch] = useReducer(mainReducer, initialState, (initState) => {
+    setLocale(initState.defaultLanguage)
+    return initState
+  })
+
+  return (
+    <ApolloProvider client={client}>
+      <GwwContext.Provider value={{ state, dispatch }}>
+        <RootComponent path={state.path} />
+      </GwwContext.Provider>
+    </ApolloProvider>
   )
 }
 

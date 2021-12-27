@@ -3,13 +3,13 @@ import "@testing-library/jest-dom/extend-expect"
 import { render } from "@testing-library/react"
 import { MockedProvider } from "@apollo/client/testing"
 
-import Root from "./root"
+import RootComponent from "./root-component"
 
 describe("Root", () => {
   it("renders Home and matches snapshot", () => {
     const { asFragment } = render(
       <MockedProvider>
-        <Root initialState={{ path: "/" }} />
+        <RootComponent path="/" />
       </MockedProvider>,
     )
     expect(asFragment()).toMatchSnapshot()
@@ -17,7 +17,7 @@ describe("Root", () => {
   it("renders Login and matches snapshot", () => {
     const { asFragment } = render(
       <MockedProvider>
-        <Root initialState={{ path: "/login" }} />
+        <RootComponent path="/login" />
       </MockedProvider>,
     )
     expect(asFragment()).toMatchSnapshot()
