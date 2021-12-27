@@ -1,10 +1,15 @@
-import * as ReactDOMServer from "react-dom/server"
+import {
+  ApolloClient,
+  InMemoryCache,
+  ApolloProvider,
+  createHttpLink,
+} from "@apollo/client"
 import { Request } from "express"
-import prepass from "react-ssr-prepass"
 
+import config from "server/config"
 import appRoutes from "server/routes"
 import Root from "components/root"
-import { ssr } from "store"
+import { renderToStringWithData } from "@apollo/client/react/ssr"
 
 export const serverRenderer =
   (req: Request) =>
@@ -16,18 +21,31 @@ export const serverRenderer =
       authToken,
     }
 
-    const element = <Root initialState={initialState} />
+    const cache = new InMemoryCache()
+    const client = new ApolloClient({
+      ssrMode: true,
+      link: createHttpLink({
+        uri: config.graphqlUri,
+        headers: {
+          authorization: authToken ? `Bearer ${authToken}` : "",
+        },
+      }),
+      cache,
+    })
 
-    await prepass(element)
+    const App = (
+      <ApolloProvider client={client}>
+        <Root initialState={initialState} />
+      </ApolloProvider>
+    )
 
-    const initialMarkup = ReactDOMServer.renderToString(element)
-
-    const ssrData = ssr.extractData()
+    const initialMarkup = await renderToStringWithData(App)
+    const ssrData = client.extract()
 
     return Promise.resolve({
       initialState,
-      ssrData,
       initialMarkup,
+      ssrData,
       pageData: appRoutes[path],
     })
   }

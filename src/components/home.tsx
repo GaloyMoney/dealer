@@ -1,19 +1,18 @@
-import { useQuery } from "urql"
+import { useQuery } from "@apollo/client"
 
-import { useAppState } from "store"
 import QUERY_ME from "store/graphql/query.me"
+import useAuthToken from "store/use-auth-token"
 
 import Header from "./header"
 
 const Home = () => {
-  const { authToken } = useAppState()
+  const { hasToken } = useAuthToken()
 
-  const [result] = useQuery({
-    query: QUERY_ME,
-    variables: { hasToken: Boolean(authToken) },
+  const { data } = useQuery(QUERY_ME, {
+    variables: { hasToken },
   })
 
-  const me = result?.data?.me
+  const me = data?.me
   const balance = me?.defaultAccount?.wallets?.[0]?.balance ?? 0
 
   return (

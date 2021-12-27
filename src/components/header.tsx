@@ -1,16 +1,15 @@
-import { useAppState } from "store"
-
+import useAuthToken from "store/use-auth-token"
 import Balance from "./balance"
 import Link from "./link"
 import Logout from "./logout"
 
 const Header = ({ balance }: { balance: number }) => {
-  const { authToken } = useAppState()
+  const { hasToken } = useAuthToken()
 
   return (
     <div className="header">
       <Balance balance={balance} />
-      {authToken ? <Logout /> : <Link to="/login">Login</Link>}
+      {hasToken ? <Logout /> : <Link to="/login">Login</Link>}
     </div>
   )
 }

@@ -1,7 +1,7 @@
 import fetch from "cross-fetch"
 import { createContext, useContext } from "react"
-import config from "server/config"
-import { ssrExchange } from "urql"
+
+import useAuthToken from "./use-auth-token"
 
 export const GwwContext = createContext<GwwContextType>({
   state: { path: "/" },
@@ -11,11 +11,6 @@ export const GwwContext = createContext<GwwContextType>({
 })
 
 export * from "./history"
-
-export const ssr = ssrExchange({
-  isClient: config.isBrowser,
-  initialState: config.isBrowser ? window.__G_DATA.ssrData : undefined,
-})
 
 export const useAppState = () => {
   const { state } = useContext<GwwContextType>(GwwContext)
@@ -28,7 +23,7 @@ export const useAppDispatcher = () => {
 }
 
 export const useRequest = () => {
-  const { authToken } = useAppState()
+  const { authToken } = useAuthToken()
 
   const request = {
     post: async (

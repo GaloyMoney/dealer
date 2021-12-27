@@ -1,4 +1,4 @@
-type SSRData = import("@urql/core/dist/types/exchanges/ssr").SSRData
+type NormalizedCacheObject = import("@apollo/client").NormalizedCacheObject
 
 type RoutePath = typeof import("../server/routes").SupportedRoutes[number]
 type RouteInfo = Record<string, string | (() => JSX.Element)>
@@ -12,7 +12,7 @@ type InitialState = {
 declare interface Window {
   __G_DATA: {
     initialState: InitialState
-    ssrData: SSRData
+    ssrData: NormalizedCacheObject
   }
 }
 
@@ -28,8 +28,8 @@ type GwwState = {
 }
 
 type GwwAction = {
-  type: "state" | "logout"
-  [payloadKey: string]: string
+  type: "navigate" | "logout"
+  [payloadKey: string]: string | undefined
 }
 
 type GwwContextType = {
@@ -55,4 +55,9 @@ type GeetestCaptchaReturn = {
   registerCaptcha: () => void
   resetError: () => void
   resetValidationData: () => void
+}
+
+type UseAuthTokenFunction = () => {
+  authToken: string | undefined
+  hasToken: boolean
 }

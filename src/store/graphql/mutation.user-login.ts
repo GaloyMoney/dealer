@@ -1,4 +1,4 @@
-import { gql } from "urql"
+import { gql } from "@apollo/client"
 
 const MUTATION_USER_LOGIN = gql`
   mutation userLogin($input: UserLoginInput!) {

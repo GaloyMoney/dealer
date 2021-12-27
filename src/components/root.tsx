@@ -2,8 +2,7 @@ import { useEffect, useReducer } from "react"
 
 import { GwwContext, history } from "store"
 import mainReducer from "store/reducer"
-
-import RootProvider from "./root-provider"
+import RootComponent from "./root-component"
 
 const Root = ({ initialState }: { initialState: InitialState }) => {
   const [state, dispatch] = useReducer(mainReducer, initialState)
@@ -11,7 +10,7 @@ const Root = ({ initialState }: { initialState: InitialState }) => {
   useEffect(() => {
     const unlisten = history.listen(({ location }) => {
       dispatch({
-        type: "state",
+        type: "navigate",
         path: location.pathname,
         ...(location.state as Record<string, unknown> | null),
       })
@@ -21,7 +20,7 @@ const Root = ({ initialState }: { initialState: InitialState }) => {
 
   return (
     <GwwContext.Provider value={{ state, dispatch }}>
-      <RootProvider />
+      <RootComponent path={state.path} />
     </GwwContext.Provider>
   )
 }

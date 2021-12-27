@@ -2,7 +2,7 @@ const mainReducer = (state: GwwState, action: GwwAction): GwwState => {
   const { type, ...newState } = action
 
   switch (type) {
-    case "state":
+    case "navigate":
       return { ...state, ...newState }
     case "logout":
       return { ...state, authToken: undefined }

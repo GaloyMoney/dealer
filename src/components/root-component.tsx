@@ -2,14 +2,9 @@ import { Suspense } from "react"
 import appRoutes, { SupportedRoutes } from "server/routes"
 
 const RootComponent = ({ path }: { path: RoutePath }) => {
-  if (!path) {
-    throw new Error("MISSING_ROOT_PATH")
-  }
-
   const checkedRoutePath = SupportedRoutes.find(
     (supportedRoute) => supportedRoute === path,
   )
-
   if (!checkedRoutePath) {
     throw new Error("INVALID_ROOT_PATH")
   }

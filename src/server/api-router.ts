@@ -1,4 +1,4 @@
-import "cross-fetch/polyfill" // The URQL client depends on fetch
+import "cross-fetch/polyfill" // The Apollo client depends on fetch
 import express from "express"
 import MUTATION_USER_LOGIN from "store/graphql/mutation.user-login"
 import client from "./graphql"
@@ -13,13 +13,12 @@ apiRouter.post("/login", async (req, res) => {
       throw new Error("INVALID_LOGIN_REQUEST")
     }
 
-    const { error, data } = await client(req)
-      .mutation(MUTATION_USER_LOGIN, {
-        input: { phone: phoneNumber, code: authCode },
-      })
-      .toPromise()
+    const { data } = await client(req).mutate({
+      mutation: MUTATION_USER_LOGIN,
+      variables: { input: { phone: phoneNumber, code: authCode } },
+    })
 
-    if (error || data?.userLogin?.errors?.length > 0 || !data?.userLogin?.authToken) {
+    if (data?.userLogin?.errors?.length > 0 || !data?.userLogin?.authToken) {
       throw new Error(data?.userLogin?.errors?.[0].message || "SOMETHING_WENT_WRONG")
     }
 

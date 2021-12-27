@@ -1,8 +1,10 @@
+import { useApolloClient } from "@apollo/client"
 import intlTelInput from "intl-tel-input"
 import React, { useCallback, useRef, useState } from "react"
 
 import config from "server/config"
 import { history, useRequest } from "store"
+import { setCachedAuthToken } from "store/use-auth-token"
 
 const PhoneNumber = ({ onSuccess }: { onSuccess: (arg: string) => void }) => {
   const iti = useRef<intlTelInput.Plugin | null>(null)
@@ -55,6 +57,7 @@ const PhoneNumber = ({ onSuccess }: { onSuccess: (arg: string) => void }) => {
 }
 
 const AuthCode = ({ phoneNumber }: { phoneNumber: string }) => {
+  const client = useApolloClient()
   const request = useRequest()
   const [errorMessage, setErrorMessage] = useState("")
 
@@ -73,7 +76,7 @@ const AuthCode = ({ phoneNumber }: { phoneNumber: string }) => {
       setErrorMessage(data.message)
       return
     }
-
+    setCachedAuthToken(client)(data?.authToken)
     history.push("/", { authToken: data?.authToken })
   }
 
