@@ -3,7 +3,7 @@ const faSize = (size: SpinnerSize): string => {
     case "small":
       return "fa-lg"
     case "big":
-      return "fa-10x"
+      return "fa-5x"
     default:
       return ""
   }

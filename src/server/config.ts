@@ -4,6 +4,7 @@ const requiredEnvVars = [
   "SESSION_KEYS",
   "HOST",
   "PORT",
+  "SUPPORT_EMAIL",
   "GRAPHQL_URI",
   "GRAPHQL_SUBSCRIPTION_URI",
   "AUTH_ENDPOINT",
@@ -23,6 +24,8 @@ export default {
 
   host: process.env.HOST as string,
   port: Number(process.env.PORT),
+
+  supportEmail: process.env.SUPPORT_EMAIL as string,
 
   graphqlUri: process.env.GRAPHQL_URI as string,
   graphqlSubscriptionUri: process.env.GRAPHQL_SUBSCRIPTION_URI as string,

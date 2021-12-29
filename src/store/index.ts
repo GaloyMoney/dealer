@@ -7,6 +7,8 @@ import {
   HttpLink,
   split,
 } from "@apollo/client"
+import { ErrorLink, onError } from "@apollo/client/link/error"
+
 import { WebSocketLink } from "@apollo/client/link/ws"
 import { getMainDefinition } from "@apollo/client/utilities"
 import { createContext, useContext } from "react"
@@ -33,38 +35,42 @@ export const useAppDispatcher = () => {
   return dispatch
 }
 
+export const postRequest =
+  (authToken: string | undefined) =>
+  async (path: string, variables: Record<string, string | number | boolean> = {}) => {
+    try {
+      const response = await fetch(path, {
+        method: "post",
+        body: JSON.stringify(variables),
+        headers: {
+          "Content-Type": "application/json",
+          "authorization": authToken ? `Bearer ${authToken}` : "",
+        },
+      })
+
+      const data = await response.json()
+
+      return data.error ? new Error(data.error) : data
+    } catch (err) {
+      return err
+    }
+  }
+
 export const useRequest = () => {
   const { authToken } = useAuthToken()
 
-  const request = {
-    post: async (
-      path: string,
-      variables: Record<string, string | number | boolean> = {},
-    ) => {
-      try {
-        const response = await fetch(path, {
-          method: "post",
-          body: JSON.stringify(variables),
-          headers: {
-            "Content-Type": "application/json",
-            "authorization": authToken ? `Bearer ${authToken}` : "",
-          },
-        })
-
-        const data = await response.json()
-
-        return data.error ? new Error(data.error) : data
-      } catch (err) {
-        return err
-      }
-    },
+  return {
+    post: postRequest(authToken),
   }
-
-  return request
 }
 
-export const createApolloClient = (authToken: string | undefined) => {
+export const createApolloClient = (
+  authToken: string | undefined,
+  { onError: onErrorCallback }: { onError: ErrorLink.ErrorHandler },
+) => {
   const cache = new InMemoryCache().restore(window.__G_DATA.ssrData)
+
+  const errorLink = onError(onErrorCallback)
 
   const authLink = new ApolloLink((operation, forward) => {
     operation.setContext(({ headers }: { headers: Record<string, string> }) => ({
@@ -82,6 +88,8 @@ export const createApolloClient = (authToken: string | undefined) => {
     uri: config.graphqlSubscriptionUri,
     options: {
       reconnect: true,
+      reconnectionAttempts: 3,
+      lazy: true,
       connectionParams: async () => {
         return {
           authorization: authToken ? `Bearer ${authToken}` : "",
@@ -99,7 +107,7 @@ export const createApolloClient = (authToken: string | undefined) => {
       )
     },
     wsLink,
-    from([authLink, httpLink]),
+    from([errorLink, authLink, httpLink]),
   )
 
   return new ApolloClient({

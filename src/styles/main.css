@@ -55,24 +55,34 @@ input[type="tel"] {
   }
 }
 
+.suspense-fallback,
+.error-fallback {
+  display: block;
+  margin: 20% auto;
+  text-align: center;
+}
+
+.separator {
+  margin: 0 0.5rem;
+}
+
 #root {
+  height: 100%;
+}
+
+#main-container {
   height: 100%;
   width: 90%;
   margin: 1.5rem auto;
   max-width: 1024px;
-
   display: flex;
   flex-direction: column;
+}
 
-  .main-container {
-    flex: 92;
-  }
-
-  .footer {
-    width: 100%;
-    flex: 8;
-    justify-self: flex-end;
-  }
+#footer {
+  width: 100%;
+  flex: 8;
+  justify-self: flex-end;
 }
 
 .powered-by {

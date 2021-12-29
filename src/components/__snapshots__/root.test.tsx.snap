@@ -3,7 +3,7 @@
 exports[`Root renders Home and matches snapshot 1`] = `
 <DocumentFragment>
   <div
-    class="main-container"
+    id="main-container"
   >
     <div
       class="home"
@@ -30,6 +30,11 @@ exports[`Root renders Home and matches snapshot 1`] = `
                 class="fak fa-satoshisymbol-solidtilt sat-symbol"
               />
               0
+            </div>
+            <div
+              class="secondary"
+            >
+              $0.00
             </div>
           </div>
         </div>
@@ -60,7 +65,7 @@ exports[`Root renders Home and matches snapshot 1`] = `
     </div>
   </div>
   <div
-    class="footer"
+    id="footer"
   >
     <div
       class="powered-by"
@@ -81,7 +86,7 @@ exports[`Root renders Home and matches snapshot 1`] = `
 exports[`Root renders Login and matches snapshot 1`] = `
 <DocumentFragment>
   <div
-    class="main-container"
+    id="main-container"
   >
     <div
       class="login"
@@ -6781,7 +6786,7 @@ exports[`Root renders Login and matches snapshot 1`] = `
     </div>
   </div>
   <div
-    class="footer"
+    id="footer"
   >
     <div
       class="powered-by"

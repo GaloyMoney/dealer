@@ -1,4 +1,4 @@
-import { history } from "store"
+import { history, useAppState } from "store"
 import { useMyUpdates } from "store/use-my-updates"
 import { translate } from "translate"
 import Spinner from "./spinner"
@@ -26,7 +26,7 @@ type Props = {
   initialPrice: PriceData
 }
 
-const Balance = ({ balance, initialPrice }: Props) => {
+const MyBalance = ({ balance, initialPrice }: Props) => {
   const { satsToUsd } = useMyUpdates(initialPrice)
 
   return (
@@ -49,6 +49,26 @@ const Balance = ({ balance, initialPrice }: Props) => {
       </div>
     </div>
   )
+}
+
+const Balance = ({ balance, initialPrice }: Props) => {
+  const { authToken } = useAppState()
+
+  if (!authToken) {
+    return (
+      <div className="balance" onClick={navigateToHome}>
+        <div className="title">{translate("CurrentBalance")}</div>
+        <div className="value">
+          <div className="primary">
+            <SatSymbol />0
+          </div>
+          <div className="secondary">{usdFormatter.format(0)}</div>
+        </div>
+      </div>
+    )
+  }
+
+  return <MyBalance balance={balance} initialPrice={initialPrice} />
 }
 
 export default Balance
