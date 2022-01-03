@@ -2,12 +2,12 @@ import { useState } from "react"
 
 import { translate } from "translate"
 
-import FormattedInput from "./formatted-input"
+import FormattedNumberInput, { OnNumberValueChange } from "./formatted-number-input"
 import Header from "./header"
 
 const Send = () => {
   const [amount, setAmount] = useState<number | "">("")
-  const handleAmountUpdate: OnFormattedValueChangeFunction = ({ numberValue }) => {
+  const handleAmountUpdate: OnNumberValueChange = (numberValue) => {
     setAmount(numberValue)
   }
   return (
@@ -16,10 +16,10 @@ const Send = () => {
       <div className="page-title">{translate("Send Bitcoin")}</div>
 
       <div className="amount-input">
-        <FormattedInput
+        <FormattedNumberInput
           key={"wip"}
           value={amount.toString()}
-          onValueChange={handleAmountUpdate}
+          onChange={handleAmountUpdate}
         />
       </div>
     </div>

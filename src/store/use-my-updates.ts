@@ -3,6 +3,7 @@ import { useMemo, useRef } from "react"
 
 import CACHED_DATA from "store/graphql/query.cached-data"
 import SUBSCRIPTION_MY_UPDATES from "./graphql/subscription.my-updates"
+import useMainQuery from "./use-main-query"
 
 const PriceCacheStore = (client: ApolloClient<unknown>) => ({
   read: () => {
@@ -13,7 +14,7 @@ const PriceCacheStore = (client: ApolloClient<unknown>) => ({
     client.writeQuery({ query: CACHED_DATA, data: { satPriceInCents: newPrice } }),
 })
 
-const satPriceInCents = (update: PriceData) => {
+const satPriceInCents = (update: PriceData | undefined) => {
   if (!update) {
     return NaN
   }
@@ -21,16 +22,16 @@ const satPriceInCents = (update: PriceData) => {
   return base / 10 ** offset
 }
 
-export const useMyUpdates = (initialPrice: PriceData): UseMyUpdates => {
+export const useMyUpdates = (): UseMyUpdates => {
   const intraLedgerUpdate = useRef<IntraLedgerUpdate | null>(null)
   const lnUpdate = useRef<LnUpdate | null>(null)
   const onChainUpdate = useRef<OnChainUpdate | null>(null)
 
   const client = useApolloClient()
   const priceCacheStore = PriceCacheStore(client)
-  const cachedPrice = useRef(
-    satPriceInCents(initialPrice) ?? priceCacheStore.read() ?? NaN,
-  )
+  const { btcPrice } = useMainQuery()
+
+  const cachedPrice = useRef(priceCacheStore.read() ?? NaN)
 
   const updatePriceCache = (newPrice: number): void => {
     if (cachedPrice.current !== newPrice) {
@@ -40,6 +41,10 @@ export const useMyUpdates = (initialPrice: PriceData): UseMyUpdates => {
   }
 
   const { data } = useSubscription(SUBSCRIPTION_MY_UPDATES)
+
+  if (Number.isNaN(cachedPrice.current) && btcPrice) {
+    updatePriceCache(satPriceInCents(btcPrice))
+  }
 
   if (data?.myUpdates?.update) {
     const { type } = data.myUpdates.update

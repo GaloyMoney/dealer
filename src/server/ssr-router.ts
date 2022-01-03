@@ -12,7 +12,7 @@ ssrRouter.get("/*", async (req, res) => {
       (supportedRoute) => supportedRoute === routePath,
     )
     if (!checkedRoutePath) {
-      return res.status(404)
+      return res.status(404).send("Resource not found")
     }
     const vars = await serverRenderer(req)({
       path: checkedRoutePath,

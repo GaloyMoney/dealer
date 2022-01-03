@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client"
 
-const QUERY_ME = gql`
+const QUERY_MAIN = gql`
   query me($hasToken: Boolean!) {
     btcPrice {
       base
@@ -23,4 +23,4 @@ const QUERY_ME = gql`
   }
 `
 
-export default QUERY_ME
+export default QUERY_MAIN

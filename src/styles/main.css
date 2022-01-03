@@ -8,16 +8,24 @@
 html,
 body {
   height: 100%;
+  min-width: 375px;
 }
 
 body {
   color: var(--color-primary);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu",
+    "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
 
   a,
   .link {
     color: var(--color-links);
     text-decoration: none;
+    cursor: pointer;
   }
+}
+
+::placeholder {
+  color: var(--color-gray);
 }
 
 input[type="tel"] {
@@ -27,6 +35,10 @@ input[type="tel"] {
 .error {
   color: red;
   margin: 1rem;
+}
+
+.small {
+  font-size: 0.8rem;
 }
 
 .sat-symbol {
@@ -49,9 +61,55 @@ input[type="tel"] {
 
 .amount-input {
   display: flex;
-  justify-content: center;
+  max-width: 375px;
+  margin: 0 auto;
+  .currency-label {
+    margin-right: 0.5rem;
+    font-size: 1.5rem;
+  }
   input {
-    min-width: 250px;
+    width: 100%;
+  }
+  .toggle-currency {
+    cursor: pointer;
+    margin-left: 0.5rem;
+    font-size: 1.5rem;
+  }
+}
+
+.note-input {
+  display: flex;
+  max-width: 375px;
+  margin: 1rem auto;
+  textarea {
+    border: thin solid var(--color-gray);
+    width: 100%;
+    font-size: 0.85rem;
+  }
+}
+
+.invoice-container {
+  text-align: center;
+  width: 375px;
+  margin: 0 auto;
+  i {
+    margin-top: 2rem;
+  }
+}
+
+.invoice-paid {
+  margin: 3rem;
+}
+
+.amount-converted {
+  margin: 1rem auto 0 auto;
+  text-align: center;
+  width: 375px;
+  .converted-sats {
+    margin-bottom: 0.3rem;
+  }
+  .converted-usd {
+    color: var(--color-secondary);
   }
 }
 
@@ -102,13 +160,13 @@ input[type="tel"] {
     }
 
     .value {
-      color: var(--color-secondary);
       text-align: center;
       .primary {
         font-size: 1.2rem;
         text-align: center;
       }
       .secondary {
+        color: var(--color-secondary);
         margin-top: 0.2rem;
         text-align: center;
       }
@@ -127,4 +185,31 @@ input[type="tel"] {
   * input {
     width: 100%;
   }
+}
+
+.invoice-message {
+  margin: 0.75rem auto;
+  font-weight: bold;
+  padding: 0.5rem;
+  div.link {
+    margin-top: 0.5rem;
+  }
+}
+
+.invoice-payment-request {
+  color: var(--color-gray);
+  font-size: 0.75rem;
+}
+
+.click-or-scan {
+  font-size: 0.8rem;
+  margin-top: 1rem;
+}
+
+.invoice-copied {
+  margin-top: 2rem;
+  padding: 0.25rem;
+  display: inline-block;
+  background-color: var(--color-highlight-bg);
+  color: var(--color-highlight-fg);
 }

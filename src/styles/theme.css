@@ -1,5 +1,8 @@
 :root {
   --color-primary: #111111;
-  --color-secondary: #5f5f5f;
+  --color-secondary: #666666;
+  --color-gray: #aaaaaa;
   --color-links: #2979ff;
+  --color-highlight-bg: #999999;
+  --color-highlight-fg: #eeeeee;
 }

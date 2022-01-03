@@ -1,21 +1,8 @@
-import { history, useAppState } from "store"
+import { history, useAppState, satsFormatter, usdFormatter } from "store"
 import { useMyUpdates } from "store/use-my-updates"
 import { translate } from "translate"
+import SatSymbol from "./sat-symbol"
 import Spinner from "./spinner"
-
-const SatSymbol = () => (
-  <i aria-hidden className="fak fa-satoshisymbol-solidtilt sat-symbol" />
-)
-
-const usdFormatter = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-  maximumFractionDigits: 2,
-})
-
-const satsFormatter = new Intl.NumberFormat("en-US", {
-  maximumFractionDigits: 0,
-})
 
 const navigateToHome = () => {
   history.push("/")
@@ -23,11 +10,10 @@ const navigateToHome = () => {
 
 type Props = {
   balance: number
-  initialPrice: PriceData
 }
 
-const MyBalance = ({ balance, initialPrice }: Props) => {
-  const { satsToUsd } = useMyUpdates(initialPrice)
+const MyBalance = ({ balance }: Props) => {
+  const { satsToUsd } = useMyUpdates()
 
   return (
     <div className="balance" onClick={navigateToHome}>
@@ -51,7 +37,7 @@ const MyBalance = ({ balance, initialPrice }: Props) => {
   )
 }
 
-const Balance = ({ balance, initialPrice }: Props) => {
+const Balance = ({ balance }: Props) => {
   const { authToken } = useAppState()
 
   if (!authToken) {
@@ -68,7 +54,7 @@ const Balance = ({ balance, initialPrice }: Props) => {
     )
   }
 
-  return <MyBalance balance={balance} initialPrice={initialPrice} />
+  return <MyBalance balance={balance} />
 }
 
 export default Balance
