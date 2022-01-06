@@ -112,6 +112,22 @@ export class TransactionsRepository {
     }
   }
 
+  public async getLastBillId(): Promise<Result<string | null>> {
+    try {
+      const billId = await this.db.oneOrNone(
+        sql.get_last_bill_id,
+        [],
+        (a: { billId: string }) => a && a.billId,
+      )
+      this.logger.info({ billId }, "getLastBillId() returned: {billId}.")
+
+      return { ok: true, value: billId }
+    } catch (error) {
+      this.logger.error({ error }, "Error: getLastBillId() failed.")
+      return { ok: false, error: error }
+    }
+  }
+
   public async clearAll(): Promise<Result<void>> {
     try {
       await this.db.none(sql.clear)
