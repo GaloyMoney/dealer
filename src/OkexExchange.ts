@@ -11,6 +11,8 @@ import {
   WithdrawOnLightningParameters,
   DepositOnLightningResult,
   DepositOnLightningParameters,
+  GetTransactionHistoryParameters,
+  GetTransactionHistoryResult,
 } from "./ExchangeTradingType"
 import assert from "assert"
 import { ExchangeBase } from "./ExchangeBase"
@@ -22,6 +24,8 @@ import {
 import { OkexExchangeConfiguration } from "./OkexExchangeConfiguration"
 import { Result } from "./Result"
 import pino from "pino"
+import { Transaction } from "./database/models"
+import { sleep } from "./utils"
 
 export enum AccountTypeToId {
   Spot = 1,
@@ -329,6 +333,162 @@ export class OkexExchange extends ExchangeBase {
       }
     } catch (error) {
       return { ok: false, error: error }
+    }
+  }
+
+  private extractValidTransactionFromApiResponse(apiResponse): Transaction[] {
+    const transactions: Transaction[] = []
+
+    try {
+      if (apiResponse?.data) {
+        for (const rawTransaction of apiResponse?.data) {
+          const transaction: Transaction = {
+            balance: Number(rawTransaction.bal),
+            balanceChange: Number(rawTransaction.balChg),
+            billId: rawTransaction.billId,
+            currency: rawTransaction.ccy,
+            executionType: rawTransaction.execType,
+            fee: Number(rawTransaction.fee),
+            fromAccountId: Number(rawTransaction.from),
+            instrumentId: rawTransaction.instId,
+            instrumentType: rawTransaction.instType,
+            marginMode: rawTransaction.mgnMode,
+            notes: rawTransaction.notes,
+            orderId: rawTransaction.ordId,
+            pnl: Number(rawTransaction.pnl),
+            positionBalance: Number(rawTransaction.posBal),
+            positionBalanceChange: Number(rawTransaction.posBalChg),
+            billSubtypeId: Number(rawTransaction.subType),
+            quantity: Number(rawTransaction.sz),
+            toAccountId: Number(rawTransaction.to),
+            timestamp: rawTransaction.ts,
+            billTypeId: Number(rawTransaction.type),
+          }
+          transactions.push(transaction)
+        }
+      }
+    } catch (error) {
+      this.logger.error(
+        { apiResponse, error },
+        "getValidTransactionFromApiResponse({apiResponse}) failed: {error}",
+      )
+      throw error
+    }
+
+    return transactions
+  }
+
+  public async fetchTransactionHistory(
+    args: GetTransactionHistoryParameters,
+  ): Promise<Result<GetTransactionHistoryResult>> {
+    try {
+      const params = {
+        after: args.afterTransactionId,
+        before: args.beforeTransactionId,
+        limit: args.limit,
+      }
+      let response: any
+      if (args.afterTransactionId) {
+        response = await this.fetchTransactionHistoryAllPagesAfter(params)
+      } else if (args.beforeTransactionId) {
+        response = await this.fetchTransactionHistoryAllPagesBefore(params)
+      } else {
+        response = await this.fetchTransactionHistoryAllPagesAfter(params)
+      }
+      this.logger.debug(
+        { params, response },
+        "privateGetAccountBillsArchive({params}) returned: {response}",
+      )
+      assert(response, ApiError.UNSUPPORTED_API_RESPONSE)
+      assert(response.code === "0", ApiError.UNSUPPORTED_API_RESPONSE)
+
+      const transactions = this.extractValidTransactionFromApiResponse(response)
+
+      return {
+        ok: true,
+        value: {
+          originalResponseAsIs: response,
+          transactions: transactions,
+        },
+      }
+    } catch (error) {
+      return { ok: false, error: error }
+    }
+  }
+
+  private async fetchTransactionHistoryAllPagesBefore(
+    args: GetTransactionHistoryParameters,
+  ): Promise<Transaction[]> {
+    try {
+      let before = args.beforeTransactionId
+      let allTransactions: Transaction[] = []
+      const one = true
+      while (one) {
+        const params = {
+          after: args.afterTransactionId,
+          before: before,
+          limit: args.limit,
+        }
+        const response = await this.exchange.privateGetAccountBillsArchive(params)
+        await sleep(this.exchange.rateLimit)
+        console.debug(
+          { params, transactions: response },
+          "exchange.fetchDeposits({params}) returned: {response}",
+        )
+        if (response?.data?.length) {
+          console.log(JSON.stringify(this.exchange.last_json_response))
+          before = response.data[0].billId
+          const transactions = this.extractValidTransactionFromApiResponse(response)
+          allTransactions = transactions.concat(allTransactions)
+          if (!before) {
+            break
+          }
+        } else {
+          break
+        }
+      }
+      return allTransactions
+    } catch (error) {
+      console.error({ error }, "Error in fetchDepositsAllPages()")
+      throw error
+    }
+  }
+
+  private async fetchTransactionHistoryAllPagesAfter(
+    args: GetTransactionHistoryParameters,
+  ): Promise<Transaction[]> {
+    try {
+      let after = args.afterTransactionId
+      let allTransactions: Transaction[] = []
+      const one = true
+      while (one) {
+        const params = {
+          after: after,
+          before: args.beforeTransactionId,
+          limit: args.limit,
+        }
+        const response = await this.exchange.privateGetAccountBillsArchive(params)
+        await sleep(this.exchange.rateLimit)
+        console.debug(
+          { params, transactions: response },
+          "exchange.fetchDeposits({params}) returned: {response}",
+        )
+        if (response?.data?.length) {
+          console.log(JSON.stringify(this.exchange.last_json_response))
+          after = response.data[response.data.length - 1].billId
+          const transactions = this.extractValidTransactionFromApiResponse(response)
+          allTransactions = allTransactions.concat(transactions)
+          if (!after) {
+            break
+          }
+        } else {
+          break
+        }
+      }
+      return allTransactions
+    } catch (error) {
+      console.error({ error }, "Error in fetchDepositsAllPages()")
+      throw error
     }
   }
 }

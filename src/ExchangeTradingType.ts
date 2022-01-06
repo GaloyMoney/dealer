@@ -1,4 +1,5 @@
 import { Params } from "ccxt"
+import { Transaction } from "./database/models";
 
 export enum TradeCurrency {
   BTC = "BTC",
@@ -88,6 +89,17 @@ export interface FetchDepositsResult {
   address: string
   amount: number
   status: FundTransferStatus
+}
+
+export interface GetTransactionHistoryParameters {
+  afterTransactionId?: string
+  beforeTransactionId?: string
+  limit?: number
+}
+
+export interface GetTransactionHistoryResult {
+  originalResponseAsIs
+  transactions: Transaction[]
 }
 
 export interface DepositOnLightningParameters {
