@@ -309,6 +309,61 @@ describe("TransactionsRepository", () => {
       }
     })
   })
+  describe("getLastBillId", () => {
+    it("should get null bill_id when no transactions in the database table", async () => {
+      // clear db
+      const clearResult = await database.transactions.clearAll()
+      expect(clearResult).toBeTruthy()
+      expect(clearResult.ok).toBeTruthy()
+
+      // test functionality
+      const countResult = await database.transactions.getLastBillId()
+      expect(countResult).toBeTruthy()
+      expect(countResult.ok).toBeTruthy()
+      if (!countResult.ok) {
+        return
+      }
+
+      // validate
+      const billId = countResult.value
+      expect(billId).toBeFalsy()
+    })
+    it("should get most recent bill_id from the database table", async () => {
+      // clear db
+      const clearResult = await database.transactions.clearAll()
+      expect(clearResult).toBeTruthy()
+      expect(clearResult.ok).toBeTruthy()
+
+      // insert all data
+      const apiResponse = getValidTransactionApiResponse()
+      const transactions = getValidTransactionFromApiResponse(apiResponse)
+      let expectedBillId = ""
+      let maxTimestamp = 0
+      for (const transaction of transactions) {
+        const insertResult = await database.transactions.insert(transaction)
+        expect(insertResult).toBeTruthy()
+        expect(insertResult.ok).toBeTruthy()
+        const ts = Number(transaction.timestamp)
+        if (ts > maxTimestamp) {
+          maxTimestamp = ts
+          expectedBillId = `${transaction.billId}`
+        }
+      }
+
+      // test functionality
+      const countResult = await database.transactions.getLastBillId()
+      expect(countResult).toBeTruthy()
+      expect(countResult.ok).toBeTruthy()
+      if (!countResult.ok) {
+        return
+      }
+
+      // validate
+      const billId = countResult.value
+      expect(billId).toBeTruthy()
+      expect(billId).toBe(expectedBillId)
+    })
+  })
   describe("fillTransactions", () => {
     it("should truncate all rows from the database table", async () => {
       // clear db

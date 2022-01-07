@@ -30,6 +30,7 @@ export const transactionsQueries = {
 
   get_count: sql("transactions/get_count.sql"),
   get_type_count: sql("transactions/get_type_count.sql"),
+  get_last_bill_id: sql("transactions/get_last_bill_id.sql"),
 
   clear: sql("transactions/clear.sql"),
 }
