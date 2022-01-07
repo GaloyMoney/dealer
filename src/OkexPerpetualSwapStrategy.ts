@@ -13,6 +13,7 @@ import {
   SupportedChain,
   CreateOrderParameters,
   PositionSide,
+  GetTransactionHistoryParameters,
 } from "./ExchangeTradingType"
 import {
   HedgingStrategy,
@@ -30,12 +31,7 @@ import {
 import { AccountTypeToId, OkexExchange } from "./OkexExchange"
 import pino from "pino"
 
-import {
-  InFlightTransfer,
-  ExternalTransfer,
-  Order,
-  InternalTransfer,
-} from "./database/models"
+import { ExternalTransfer, Order, InternalTransfer, Transaction } from "./database/models"
 import { db as database } from "./database"
 
 const hedgingBounds = yamlConfig.hedging
@@ -131,6 +127,17 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
     )
     if (result.ok) {
       return { ok: true, value: result.value.lastBtcPriceInUsd }
+    } else {
+      return { ok: false, error: result.error }
+    }
+  }
+
+  public async fetchTransactionHistory(
+    args: GetTransactionHistoryParameters,
+  ): Promise<Result<Transaction[]>> {
+    const result = await this.exchange.fetchTransactionHistory(args)
+    if (result.ok) {
+      return { ok: true, value: result.value.transactions }
     } else {
       return { ok: false, error: result.error }
     }

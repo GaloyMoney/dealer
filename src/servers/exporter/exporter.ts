@@ -214,6 +214,9 @@ export const exporter = async () => {
       btcMarkPriceInUsd_g.set(await dealer.getMarkPriceInUsd())
       btcDerivativePriceInUsd_g.set(await dealer.getDerivativePriceInUsd())
       liabilityInUsd_g.set(liabilityInUsd)
+
+      // load transaction to be up-to-date
+      await dealer.fetchAndLoadTransactions()
     } catch (error) {
       console.log(error)
       logger.error("Couldn't set dealer wallet metrics")

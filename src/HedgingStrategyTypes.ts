@@ -1,4 +1,8 @@
-import { GetAccountAndPositionRiskResult } from "./ExchangeTradingType"
+import { Transaction } from "./database/models"
+import {
+  GetAccountAndPositionRiskResult,
+  GetTransactionHistoryParameters,
+} from "./ExchangeTradingType"
 import { Result } from "./Result"
 
 export enum HedgingStrategies {
@@ -43,6 +47,10 @@ export interface HedgingStrategy {
   getDerivativePriceInUsd(): Promise<Result<number>>
   getNextFundingRateInBtc(): Promise<Result<number>>
   getAccountAndPositionRisk(): Promise<Result<GetAccountAndPositionRiskResult>>
+
+  fetchTransactionHistory(
+    args: GetTransactionHistoryParameters,
+  ): Promise<Result<Transaction[]>>
 
   isDepositCompleted(address: string, amountInSats: number): Promise<Result<boolean>>
   isWithdrawalCompleted(address: string, amountInSats: number): Promise<Result<boolean>>
