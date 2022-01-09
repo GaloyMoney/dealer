@@ -56,6 +56,7 @@ export async function startApolloServer() {
     type Balance {
       currency: Currency!
       amount: Int!
+      quantityInBtc: Float!
     }
 
     # ?: Account? Multiple wallets

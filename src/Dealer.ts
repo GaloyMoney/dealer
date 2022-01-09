@@ -412,6 +412,14 @@ export class Dealer {
     return result.value
   }
 
+  public async getLiabilityInBtc(): Promise<number> {
+    const result = await this.wallet.getWalletBtcBalance()
+    if (!result.ok) {
+      return NaN
+    }
+    return result.value
+  }
+
   private async fetchTransactionHistory(
     args: GetTransactionHistoryParameters,
   ): Promise<Transaction[]> {

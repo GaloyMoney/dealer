@@ -41,6 +41,7 @@ const WALLET = gql`
       balance {
         currency
         amount
+        quantityInBtc
       }
     }
   }
@@ -84,6 +85,24 @@ export class DealerRemoteWallet implements GaloyWallet {
         "{WALLET} query to galoy graphql api successful with {result}",
       )
       return { ok: true, value: result.data.wallet[0].balance.amount }
+    } catch (error) {
+      logger.error(
+        { WALLET, error },
+        "{WALLET} query to galoy graphql api failed with {error}",
+      )
+      return { ok: false, error }
+    }
+  }
+
+  public async getWalletBtcBalance(): Promise<Result<number>> {
+    const logger = this.logger.child({ method: "getWalletBtcBalance()" })
+    try {
+      const result = await this.client.query({ query: WALLET })
+      logger.debug(
+        { WALLET, result },
+        "{WALLET} query to galoy graphql api successful with {result}",
+      )
+      return { ok: true, value: result.data.wallet[0].balance.quantityInBtc }
     } catch (error) {
       logger.error(
         { WALLET, error },
