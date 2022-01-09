@@ -36,6 +36,52 @@ const liabilityInUsd_g = new client.Gauge({
   help: "liability being hedged, in usd",
 })
 
+const liabilityInBtc_g = new client.Gauge({
+  name: `${prefix}_liabilityInBtc`,
+  help: "liability being hedged, in btc",
+})
+
+const spotUPnlInUsd_g = new client.Gauge({
+  name: `${prefix}_spotUPnlInUsd`,
+  help: "spot unrealized profit and loss in USD",
+})
+const swapUPnlInUsd_g = new client.Gauge({
+  name: `${prefix}_swapUPnlInUsd`,
+  help: "swap unrealized profit and loss in USD",
+})
+const strategyUPnlInUsd_g = new client.Gauge({
+  name: `${prefix}_strategyUPnlInUsd`,
+  help: "strategy unrealized profit and loss in USD",
+})
+const strategyRPnlInUsd_g = new client.Gauge({
+  name: `${prefix}_strategyRPnlInUsd`,
+  help: "strategy realized profit and loss in USD",
+})
+const tradingFeesInSats_g = new client.Gauge({
+  name: `${prefix}_tradingFeesInSats`,
+  help: "trading fees in sats",
+})
+const fundingFeesTotalInSats_g = new client.Gauge({
+  name: `${prefix}_fundingFeesTotalInSats`,
+  help: "total funding fees in sats",
+})
+const fundingFeesExpenseInSats_g = new client.Gauge({
+  name: `${prefix}_fundingFeesExpenseInSats`,
+  help: "expense funding fees in sats",
+})
+const fundingFeesExpenseCount_g = new client.Gauge({
+  name: `${prefix}_fundingFeesExpenseCount`,
+  help: "# expense funding fees",
+})
+const fundingFeesIncomeInSats_g = new client.Gauge({
+  name: `${prefix}_fundingFeesIncomeInSats`,
+  help: "income funding fees in sats",
+})
+const fundingFeesIncomeCount_g = new client.Gauge({
+  name: `${prefix}_fundingFeesIncomeCount`,
+  help: "# income funding fees",
+})
+
 const lastBtcPriceInUsd_g = new client.Gauge({
   name: `${prefix}_lastBtcPriceInUsd`,
   help: "btc price used to calculate last risk figures, in usd",
@@ -133,7 +179,10 @@ export const exporter = async () => {
     const dealer = new Dealer(logger)
 
     try {
+      let averageOpenPrice = 0
+      let swapPositionInContracts = 0
       const liabilityInUsd = await dealer.getLiabilityInUsd()
+      const liabilityInBtc = await dealer.getLiabilityInBtc()
       const result = await dealer.getAccountAndPositionRisk()
       if (result.ok) {
         const {
@@ -159,7 +208,8 @@ export const exporter = async () => {
         if (originalPosition) {
           autoDeleveragingIndicator_g.set(originalPosition.autoDeleveragingIndicator)
           liquidationPrice_g.set(originalPosition.liquidationPrice)
-          positionQuantity_g.set(originalPosition.positionQuantity)
+          swapPositionInContracts = originalPosition.positionQuantity
+          positionQuantity_g.set(swapPositionInContracts)
           if (originalPosition.positionSide == PositionSide.Long) {
             positionSide_g.set(1)
           } else if (originalPosition.positionSide == PositionSide.Short) {
@@ -167,7 +217,8 @@ export const exporter = async () => {
           } else {
             positionSide_g.set(0)
           }
-          averageOpenPrice_g.set(originalPosition.averageOpenPrice)
+          averageOpenPrice = originalPosition.averageOpenPrice
+          averageOpenPrice_g.set(averageOpenPrice)
           unrealizedPnL_g.set(originalPosition.unrealizedPnL)
           unrealizedPnLRatio_g.set(originalPosition.unrealizedPnLRatio)
           margin_g.set(originalPosition.margin)
@@ -210,10 +261,54 @@ export const exporter = async () => {
         }
       }
       nextFundingRate_g.set(await dealer.getNextFundingRateInBtc())
-      btcSpotPriceInUsd_g.set(await dealer.getSpotPriceInUsd())
+      const spotPrice = await dealer.getSpotPriceInUsd()
+      btcSpotPriceInUsd_g.set(spotPrice)
       btcMarkPriceInUsd_g.set(await dealer.getMarkPriceInUsd())
-      btcDerivativePriceInUsd_g.set(await dealer.getDerivativePriceInUsd())
+      const swapPrice = await dealer.getDerivativePriceInUsd()
+      btcDerivativePriceInUsd_g.set(swapPrice)
       liabilityInUsd_g.set(liabilityInUsd)
+      liabilityInBtc_g.set(liabilityInBtc)
+
+      // Spot uPnl
+      const openSpotQuantityInBtc = liabilityInBtc
+      const spotOpenPrice = liabilityInUsd / liabilityInBtc
+      const spotUPnlInUsd = (spotPrice - spotOpenPrice) * openSpotQuantityInBtc
+      spotUPnlInUsd_g.set(spotUPnlInUsd)
+
+      // Swap uPnl
+      const swapOpenPrice = averageOpenPrice
+      // TODO use contract face value
+      const swapUPnlInUsd =
+        100.0 * swapPositionInContracts * (swapPrice / swapOpenPrice - 1.0)
+      swapUPnlInUsd_g.set(swapUPnlInUsd)
+
+      // Strategy uPnl
+      const strategyUPnl = spotUPnlInUsd - swapUPnlInUsd
+      strategyUPnlInUsd_g.set(strategyUPnl)
+
+      // Trading Fees (actual): -26,730 sats
+      const tradingFeesInSats = 0
+      tradingFeesInSats_g.set(tradingFeesInSats)
+
+      // # of Funding fee expense: 18x, total of -29,775 sats
+      const fundingFeesExpenseInSats = 0
+      fundingFeesExpenseInSats_g.set(fundingFeesExpenseInSats)
+      const fundingFeesExpenseCount = 0
+      fundingFeesExpenseCount_g.set(fundingFeesExpenseCount)
+
+      // # of Funding fee income: 15x, total of 20,411 sats
+      const fundingFeesIncomeInSats = 0
+      fundingFeesIncomeInSats_g.set(fundingFeesIncomeInSats)
+      const fundingFeesIncomeCount = 0
+      fundingFeesIncomeCount_g.set(fundingFeesIncomeCount)
+
+      // Funding Fees: -9,364 sats @ 48,821 USD/BTC => -4.57 USD
+      const fundingFeesTotalInSats = 0
+      fundingFeesTotalInSats_g.set(fundingFeesTotalInSats)
+
+      // Realised Profit And Loss (-6.55 USD)
+      const strategyRPnl = tradingFeesInSats + fundingFeesTotalInSats
+      strategyRPnlInUsd_g.set(strategyRPnl)
 
       // load transaction to be up-to-date
       await dealer.fetchAndLoadTransactions()
