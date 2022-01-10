@@ -16,6 +16,7 @@ test-in-ci:
 
 integration-in-ci:
 	. ./.envrc && \
+	echo -e "^]\nclose" | telnet ${DOCKER_HOST_IP} 5432  && \
 	yarn migrate-ts up && \
 		LOG_LEVEL=error $(BIN_DIR)/jest --config ./test/jest-integration.config.js --bail --runInBand --ci --reporters=default --reporters=jest-junit
 
