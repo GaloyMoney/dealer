@@ -16,6 +16,7 @@ test-in-ci:
 
 integration-in-ci:
 	. ./.envrc && \
+	echo "${DOCKER_HOST}"  && \
 	echo "${DOCKER_HOST_IP}"  && \
 	echo "${DATABASE_URL}"  && \
 	yarn migrate-ts up && \
