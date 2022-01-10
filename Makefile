@@ -15,10 +15,8 @@ test-in-ci:
 
 
 integration-in-ci:
+	docker compose up -d
 	. ./.envrc && \
-	echo "${DOCKER_HOST}"  && \
-	echo "${DOCKER_HOST_IP}"  && \
-	echo "${DATABASE_URL}"  && \
 	yarn migrate-ts up && \
 		LOG_LEVEL=error $(BIN_DIR)/jest --config ./test/jest-integration.config.js --bail --runInBand --ci --reporters=default --reporters=jest-junit
 
