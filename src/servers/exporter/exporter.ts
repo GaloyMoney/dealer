@@ -53,13 +53,29 @@ const strategyUPnlInUsd_g = new client.Gauge({
   name: `${prefix}_strategyUPnlInUsd`,
   help: "strategy unrealized profit and loss in USD",
 })
-const strategyRPnlInUsd_g = new client.Gauge({
-  name: `${prefix}_strategyRPnlInUsd`,
-  help: "strategy realized profit and loss in USD",
+const strategyRPnlInSats_g = new client.Gauge({
+  name: `${prefix}_strategyRPnlInSats`,
+  help: "strategy realized profit and loss in sats",
 })
-const tradingFeesInSats_g = new client.Gauge({
-  name: `${prefix}_tradingFeesInSats`,
-  help: "trading fees in sats",
+const tradingFeesTotalInSats_g = new client.Gauge({
+  name: `${prefix}_tradingFeesTotalInSats`,
+  help: "trading fees total in sats",
+})
+const tradingFeesBuyInSats_g = new client.Gauge({
+  name: `${prefix}_tradingFeesBuyInSats`,
+  help: "trading fees buy in sats",
+})
+const tradingFeesBuyCount_g = new client.Gauge({
+  name: `${prefix}_tradingFeesBuyCount`,
+  help: "trading fees buy count",
+})
+const tradingFeesSellInSats_g = new client.Gauge({
+  name: `${prefix}_tradingFeesSellInSats`,
+  help: "trading fees sell in sats",
+})
+const tradingFeesSellCount_g = new client.Gauge({
+  name: `${prefix}_tradingFeesSellCount`,
+  help: "trading fees sell count",
 })
 const fundingFeesTotalInSats_g = new client.Gauge({
   name: `${prefix}_fundingFeesTotalInSats`,
@@ -179,6 +195,9 @@ export const exporter = async () => {
     const dealer = new Dealer(logger)
 
     try {
+      // load transaction to be up-to-date
+      await dealer.fetchAndLoadTransactions()
+
       let averageOpenPrice = 0
       let swapPositionInContracts = 0
       const liabilityInUsd = await dealer.getLiabilityInUsd()
@@ -283,35 +302,30 @@ export const exporter = async () => {
       swapUPnlInUsd_g.set(swapUPnlInUsd)
 
       // Strategy uPnl
-      const strategyUPnl = spotUPnlInUsd - swapUPnlInUsd
-      strategyUPnlInUsd_g.set(strategyUPnl)
+      const strategyUPnlInUsd = spotUPnlInUsd - swapUPnlInUsd
+      strategyUPnlInUsd_g.set(strategyUPnlInUsd)
 
-      // Trading Fees (actual): -26,730 sats
-      const tradingFeesInSats = 0
-      tradingFeesInSats_g.set(tradingFeesInSats)
+      // Trading Fees
+      const tradingFeesMetrics = await dealer.getTradingFeesMetrics()
+      tradingFeesTotalInSats_g.set(tradingFeesMetrics.tradingFeesTotalInSats)
+      tradingFeesBuyInSats_g.set(tradingFeesMetrics.tradingFeesBuyInSats)
+      tradingFeesBuyCount_g.set(tradingFeesMetrics.tradingFeesBuyCount)
+      tradingFeesSellInSats_g.set(tradingFeesMetrics.tradingFeesSellInSats)
+      tradingFeesSellCount_g.set(tradingFeesMetrics.tradingFeesSellCount)
 
-      // # of Funding fee expense: 18x, total of -29,775 sats
-      const fundingFeesExpenseInSats = 0
-      fundingFeesExpenseInSats_g.set(fundingFeesExpenseInSats)
-      const fundingFeesExpenseCount = 0
-      fundingFeesExpenseCount_g.set(fundingFeesExpenseCount)
+      // Funding Fees
+      const fundingFeesMetrics = await dealer.getFundingFeesMetrics()
+      fundingFeesTotalInSats_g.set(fundingFeesMetrics.fundingFeesTotalInSats)
+      fundingFeesExpenseInSats_g.set(fundingFeesMetrics.fundingFeesExpenseInSats)
+      fundingFeesExpenseCount_g.set(fundingFeesMetrics.fundingFeesExpenseCount)
+      fundingFeesIncomeInSats_g.set(fundingFeesMetrics.fundingFeesIncomeInSats)
+      fundingFeesIncomeCount_g.set(fundingFeesMetrics.fundingFeesIncomeCount)
 
-      // # of Funding fee income: 15x, total of 20,411 sats
-      const fundingFeesIncomeInSats = 0
-      fundingFeesIncomeInSats_g.set(fundingFeesIncomeInSats)
-      const fundingFeesIncomeCount = 0
-      fundingFeesIncomeCount_g.set(fundingFeesIncomeCount)
-
-      // Funding Fees: -9,364 sats @ 48,821 USD/BTC => -4.57 USD
-      const fundingFeesTotalInSats = 0
-      fundingFeesTotalInSats_g.set(fundingFeesTotalInSats)
-
-      // Realised Profit And Loss (-6.55 USD)
-      const strategyRPnl = tradingFeesInSats + fundingFeesTotalInSats
-      strategyRPnlInUsd_g.set(strategyRPnl)
-
-      // load transaction to be up-to-date
-      await dealer.fetchAndLoadTransactions()
+      // Realized Profit And Loss
+      const strategyRPnlInSats =
+        tradingFeesMetrics.tradingFeesTotalInSats +
+        fundingFeesMetrics.fundingFeesTotalInSats
+      strategyRPnlInSats_g.set(strategyRPnlInSats)
     } catch (error) {
       console.log(error)
       logger.error("Couldn't set dealer wallet metrics")

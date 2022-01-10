@@ -8,7 +8,12 @@ import {
   UpdatedBalance,
   UpdatedPosition,
 } from "./HedgingStrategyTypes"
-import { InFlightTransfer, Transaction } from "./database/models"
+import {
+  FundingFeesMetrics,
+  InFlightTransfer,
+  TradingFeesMetrics,
+  Transaction,
+} from "./database/models"
 import { db as database } from "./database"
 
 import { GaloyWallet } from "./GaloyWalletTypes"
@@ -416,6 +421,22 @@ export class Dealer {
     const result = await this.wallet.getWalletBtcBalance()
     if (!result.ok) {
       return NaN
+    }
+    return result.value
+  }
+
+  public async getTradingFeesMetrics(): Promise<TradingFeesMetrics> {
+    const result = await database.transactions.getTradingFeesMetrics()
+    if (!result.ok) {
+      return {} as TradingFeesMetrics
+    }
+    return result.value
+  }
+
+  public async getFundingFeesMetrics(): Promise<FundingFeesMetrics> {
+    const result = await database.transactions.getFundingFeesMetrics()
+    if (!result.ok) {
+      return {} as FundingFeesMetrics
     }
     return result.value
   }

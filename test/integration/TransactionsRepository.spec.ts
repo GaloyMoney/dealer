@@ -1,6 +1,15 @@
-import { Transaction } from "src/database/models"
+import {
+  FundingFeesMetrics,
+  TradingFeesMetrics,
+  Transaction,
+  TransactionBillSubtypeToId,
+  TransactionBillTypeToId,
+} from "src/database/models"
 import { db as database } from "src/database"
 
+function btc2sats(btc: number | undefined) {
+  return Math.round((btc || 0) * 100000000)
+}
 function getValidTransactionApiResponse() {
   return {
     code: "0",
@@ -136,6 +145,28 @@ function getValidTransactionApiResponse() {
         sz: "16",
         to: "",
         ts: "1639149004283",
+        type: "2",
+      },
+      {
+        bal: "0.2053918647325102",
+        balChg: "-0.0000506172839506",
+        billId: "389493057057615891",
+        ccy: "BTC",
+        execType: "M",
+        fee: "-0.0000506172839506",
+        from: "",
+        instId: "BTC-USD-SWAP",
+        instType: "SWAP",
+        mgnMode: "cross",
+        notes: "",
+        ordId: "389485542672592896",
+        pnl: "0",
+        posBal: "0",
+        posBalChg: "0",
+        subType: "2",
+        sz: "123",
+        to: "",
+        ts: "1639134381233",
         type: "2",
       },
     ],
@@ -307,6 +338,170 @@ describe("TransactionsRepository", () => {
         // validate
         expect(countResult.value).toBe(expectedCounts[transactionType])
       }
+    })
+  })
+  describe("getTradingFeesMetrics", () => {
+    it("should return 0s when no transactions in the database table", async () => {
+      // clear db
+      const clearResult = await database.transactions.clearAll()
+      expect(clearResult).toBeTruthy()
+      expect(clearResult.ok).toBeTruthy()
+
+      // test functionality
+      const countResult = await database.transactions.getTradingFeesMetrics()
+      expect(countResult).toBeTruthy()
+      expect(countResult.ok).toBeTruthy()
+      if (!countResult.ok) {
+        return
+      }
+
+      // validate
+      const metrics = countResult.value
+      expect(metrics.tradingFeesBuyInSats).toBe(0)
+      expect(metrics.tradingFeesBuyCount).toBe(0)
+      expect(metrics.tradingFeesSellInSats).toBe(0)
+      expect(metrics.tradingFeesSellCount).toBe(0)
+      expect(metrics.tradingFeesTotalInSats).toBe(0)
+    })
+    it("should get exact metrics from the database table", async () => {
+      // clear db
+      const clearResult = await database.transactions.clearAll()
+      expect(clearResult).toBeTruthy()
+      expect(clearResult.ok).toBeTruthy()
+
+      // insert all data
+      const apiResponse = getValidTransactionApiResponse()
+      const transactions = getValidTransactionFromApiResponse(apiResponse)
+      const expectedMetrics: TradingFeesMetrics = {
+        tradingFeesTotalInSats: 0,
+        tradingFeesBuyInSats: 0,
+        tradingFeesBuyCount: 0,
+        tradingFeesSellInSats: 0,
+        tradingFeesSellCount: 0,
+      }
+      for (const transaction of transactions) {
+        const insertResult = await database.transactions.insert(transaction)
+        expect(insertResult).toBeTruthy()
+        expect(insertResult.ok).toBeTruthy()
+        if (transaction.billTypeId == TransactionBillTypeToId.Trade) {
+          if (transaction.billSubtypeId == TransactionBillSubtypeToId.Buy) {
+            ++expectedMetrics.tradingFeesBuyCount
+            expectedMetrics.tradingFeesBuyInSats += transaction.fee || 0
+            expectedMetrics.tradingFeesTotalInSats += transaction.fee || 0
+          } else if (transaction.billSubtypeId == TransactionBillSubtypeToId.Sell) {
+            ++expectedMetrics.tradingFeesSellCount
+            expectedMetrics.tradingFeesSellInSats += transaction.fee || 0
+            expectedMetrics.tradingFeesTotalInSats += transaction.fee || 0
+          }
+        }
+      }
+
+      // test functionality
+      const countResult = await database.transactions.getTradingFeesMetrics()
+      expect(countResult).toBeTruthy()
+      expect(countResult.ok).toBeTruthy()
+      if (!countResult.ok) {
+        return
+      }
+
+      // validate
+      const metrics = countResult.value
+      expect(metrics).toBeTruthy()
+      expect(metrics.tradingFeesTotalInSats).toBe(
+        btc2sats(expectedMetrics.tradingFeesTotalInSats),
+      )
+      expect(metrics.tradingFeesBuyInSats).toBe(
+        btc2sats(expectedMetrics.tradingFeesBuyInSats),
+      )
+      expect(metrics.tradingFeesBuyCount).toBe(expectedMetrics.tradingFeesBuyCount)
+      expect(metrics.tradingFeesSellInSats).toBe(
+        btc2sats(expectedMetrics.tradingFeesSellInSats),
+      )
+      expect(metrics.tradingFeesSellCount).toBe(expectedMetrics.tradingFeesSellCount)
+    })
+  })
+  describe("getFundingFeesMetrics", () => {
+    it("should return 0s when no transactions in the database table", async () => {
+      // clear db
+      const clearResult = await database.transactions.clearAll()
+      expect(clearResult).toBeTruthy()
+      expect(clearResult.ok).toBeTruthy()
+
+      // test functionality
+      const countResult = await database.transactions.getFundingFeesMetrics()
+      expect(countResult).toBeTruthy()
+      expect(countResult.ok).toBeTruthy()
+      if (!countResult.ok) {
+        return
+      }
+
+      // validate
+      const metrics = countResult.value
+      expect(metrics.fundingFeesTotalInSats).toBe(0)
+      expect(metrics.fundingFeesExpenseInSats).toBe(0)
+      expect(metrics.fundingFeesExpenseCount).toBe(0)
+      expect(metrics.fundingFeesIncomeInSats).toBe(0)
+      expect(metrics.fundingFeesIncomeCount).toBe(0)
+    })
+    it("should get exact metrics from the database table", async () => {
+      // clear db
+      const clearResult = await database.transactions.clearAll()
+      expect(clearResult).toBeTruthy()
+      expect(clearResult.ok).toBeTruthy()
+
+      // insert all data
+      const apiResponse = getValidTransactionApiResponse()
+      const transactions = getValidTransactionFromApiResponse(apiResponse)
+      const expectedMetrics: FundingFeesMetrics = {
+        fundingFeesTotalInSats: 0,
+        fundingFeesExpenseInSats: 0,
+        fundingFeesExpenseCount: 0,
+        fundingFeesIncomeInSats: 0,
+        fundingFeesIncomeCount: 0,
+      }
+      for (const transaction of transactions) {
+        const insertResult = await database.transactions.insert(transaction)
+        expect(insertResult).toBeTruthy()
+        expect(insertResult.ok).toBeTruthy()
+        if (transaction.billTypeId == TransactionBillTypeToId.FundingFee) {
+          if (transaction.billSubtypeId == TransactionBillSubtypeToId.FundingFeeExpense) {
+            ++expectedMetrics.fundingFeesExpenseCount
+            expectedMetrics.fundingFeesExpenseInSats += transaction.pnl || 0
+            expectedMetrics.fundingFeesTotalInSats += transaction.pnl || 0
+          } else if (
+            transaction.billSubtypeId == TransactionBillSubtypeToId.FundingFeeIncome
+          ) {
+            ++expectedMetrics.fundingFeesIncomeCount
+            expectedMetrics.fundingFeesIncomeInSats += transaction.pnl || 0
+            expectedMetrics.fundingFeesTotalInSats += transaction.pnl || 0
+          }
+        }
+      }
+
+      // test functionality
+      const countResult = await database.transactions.getFundingFeesMetrics()
+      expect(countResult).toBeTruthy()
+      expect(countResult.ok).toBeTruthy()
+      if (!countResult.ok) {
+        return
+      }
+
+      // validate
+      const metrics = countResult.value
+      expect(metrics).toBeTruthy()
+      expect(metrics.fundingFeesTotalInSats).toBe(
+        btc2sats(expectedMetrics.fundingFeesTotalInSats),
+      )
+      expect(metrics.fundingFeesExpenseInSats).toBe(
+        btc2sats(expectedMetrics.fundingFeesExpenseInSats),
+      )
+      expect(metrics.fundingFeesExpenseCount).toBe(
+        expectedMetrics.fundingFeesExpenseCount,
+      )
+      expect(metrics.fundingFeesIncomeInSats).toBe(
+        btc2sats(expectedMetrics.fundingFeesIncomeInSats),
+      )
+      expect(metrics.fundingFeesIncomeCount).toBe(expectedMetrics.fundingFeesIncomeCount)
     })
   })
   describe("getLastBillId", () => {

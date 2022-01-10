@@ -74,6 +74,36 @@ export interface Transaction {
   createdTimestamp?: string
 }
 
+export enum TransactionBillTypeToId {
+  Transfer = 1,
+  Trade = 2,
+  Liquidation = 5,
+  FundingFee = 8,
+}
+
+export enum TransactionBillSubtypeToId {
+  Buy = 1,
+  Sell = 2,
+  FundingFeeExpense = 173,
+  FundingFeeIncome = 174,
+}
+
+export type TradingFeesMetrics = {
+  tradingFeesTotalInSats: number
+  tradingFeesBuyInSats: number
+  tradingFeesBuyCount: number
+  tradingFeesSellInSats: number
+  tradingFeesSellCount: number
+}
+
+export type FundingFeesMetrics = {
+  fundingFeesTotalInSats: number
+  fundingFeesExpenseInSats: number
+  fundingFeesExpenseCount: number
+  fundingFeesIncomeInSats: number
+  fundingFeesIncomeCount: number
+}
+
 export interface Order {
   id?: number
   instrumentId: string
