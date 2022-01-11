@@ -8,13 +8,21 @@ import {
   UpdatedBalance,
   UpdatedPosition,
 } from "./HedgingStrategyTypes"
-import { InFlightTransfer } from "./database/models"
+import {
+  FundingFeesMetrics,
+  InFlightTransfer,
+  TradingFeesMetrics,
+  Transaction,
+} from "./database/models"
 import { db as database } from "./database"
 
 import { GaloyWallet } from "./GaloyWalletTypes"
 import { createDealerWallet, WalletType } from "./DealerWalletFactory"
 import { createHedgingStrategy } from "./HedgingStrategyFactory"
-import { GetAccountAndPositionRiskResult } from "./ExchangeTradingType"
+import {
+  GetAccountAndPositionRiskResult,
+  GetTransactionHistoryParameters,
+} from "./ExchangeTradingType"
 
 const hedgingBounds = yamlConfig.hedging
 
@@ -407,5 +415,61 @@ export class Dealer {
       return NaN
     }
     return result.value
+  }
+
+  public async getLiabilityInBtc(): Promise<number> {
+    const result = await this.wallet.getWalletBtcBalance()
+    if (!result.ok) {
+      return NaN
+    }
+    return result.value
+  }
+
+  public async getTradingFeesMetrics(): Promise<TradingFeesMetrics> {
+    const result = await database.transactions.getTradingFeesMetrics()
+    if (!result.ok) {
+      return {} as TradingFeesMetrics
+    }
+    return result.value
+  }
+
+  public async getFundingFeesMetrics(): Promise<FundingFeesMetrics> {
+    const result = await database.transactions.getFundingFeesMetrics()
+    if (!result.ok) {
+      return {} as FundingFeesMetrics
+    }
+    return result.value
+  }
+
+  private async fetchTransactionHistory(
+    args: GetTransactionHistoryParameters,
+  ): Promise<Transaction[]> {
+    const result = await this.strategy.fetchTransactionHistory(args)
+    if (!result.ok) {
+      return []
+    }
+    return result.value
+  }
+
+  public async fetchAndLoadTransactions() {
+    // get latest id we saved in db
+    let lastBillId = ""
+    const result = await database.transactions.getLastBillId()
+    if (!result.ok) {
+      this.logger.error(
+        "Couldn't get last transaction id from database, continuing with blank id...",
+      )
+    } else if (result.value) {
+      lastBillId = result.value
+    }
+
+    // fetch and insert transactions since last
+    const args: GetTransactionHistoryParameters = {
+      beforeTransactionId: lastBillId,
+    }
+    const transactions = await this.fetchTransactionHistory(args)
+    for (const transaction of transactions) {
+      await database.transactions.insert(transaction)
+    }
   }
 }

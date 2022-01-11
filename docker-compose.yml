@@ -41,6 +41,9 @@ services:
     build:
       context: .
       dockerfile: src/app/Dockerfile
+    depends_on:
+      postgres:
+        condition: service_healthy      
     links:
       - postgres
       - graphql
@@ -81,3 +84,8 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: galoy
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5

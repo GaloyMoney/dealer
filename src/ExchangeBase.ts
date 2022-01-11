@@ -26,6 +26,8 @@ import {
   WithdrawOnLightningParameters,
   DepositOnLightningResult,
   DepositOnLightningParameters,
+  GetTransactionHistoryParameters,
+  GetTransactionHistoryResult,
 } from "./ExchangeTradingType"
 import { Result } from "./Result"
 import ccxt, { ExchangeId } from "ccxt"
@@ -439,4 +441,8 @@ export abstract class ExchangeBase {
   abstract depositOnLightning(
     args: DepositOnLightningParameters,
   ): Promise<Result<DepositOnLightningResult>>
+
+  abstract fetchTransactionHistory(
+    args: GetTransactionHistoryParameters,
+  ): Promise<Result<GetTransactionHistoryResult>>
 }
