@@ -17,6 +17,7 @@ test-in-ci:
 integration-in-ci:
 	docker compose up -d
 	. ./.envrc && \
+	sleep 10 && \
 	yarn migrate-ts up && \
 		LOG_LEVEL=error $(BIN_DIR)/jest --config ./test/jest-integration.config.js --bail --runInBand --ci --reporters=default --reporters=jest-junit
 
