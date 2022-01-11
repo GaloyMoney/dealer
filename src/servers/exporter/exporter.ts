@@ -289,7 +289,7 @@ export const exporter = async () => {
       liabilityInBtc_g.set(liabilityInBtc)
 
       // Spot uPnl
-      const openSpotQuantityInBtc = liabilityInBtc
+      const openSpotQuantityInBtc = Math.abs(liabilityInBtc)
       const spotOpenPrice = liabilityInUsd / liabilityInBtc
       const spotUPnlInUsd = (spotPrice - spotOpenPrice) * openSpotQuantityInBtc
       spotUPnlInUsd_g.set(spotUPnlInUsd)
@@ -302,7 +302,7 @@ export const exporter = async () => {
       swapUPnlInUsd_g.set(swapUPnlInUsd)
 
       // Strategy uPnl
-      const strategyUPnlInUsd = spotUPnlInUsd - swapUPnlInUsd
+      const strategyUPnlInUsd = spotUPnlInUsd + swapUPnlInUsd
       strategyUPnlInUsd_g.set(strategyUPnlInUsd)
 
       // Trading Fees

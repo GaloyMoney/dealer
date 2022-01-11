@@ -50,8 +50,7 @@
             "lineWidth": 1,
             "pointSize": 5,
             "scaleDistribution": {
-              "log": 10,
-              "type": "log"
+              "type": "linear"
             },
             "showPoints": "auto",
             "spanNulls": false,
@@ -78,21 +77,6 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "SwapUPnlInUsd"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "green",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
               "options": "SpotUPnlInUsd"
             },
             "properties": [
@@ -102,6 +86,10 @@
                   "fixedColor": "red",
                   "mode": "fixed"
                 }
+              },
+              {
+                "id": "custom.axisPlacement",
+                "value": "left"
               }
             ]
           },
@@ -144,6 +132,30 @@
                   "fixedColor": "dark-green",
                   "mode": "fixed"
                 }
+              },
+              {
+                "id": "custom.axisPlacement",
+                "value": "right"
+              },
+              {
+                "id": "unit",
+                "value": "USD"
+              },
+              {
+                "id": "custom.axisSoftMin",
+                "value": -100
+              },
+              {
+                "id": "custom.axisSoftMax",
+                "value": 100
+              },
+              {
+                "id": "custom.drawStyle",
+                "value": "bars"
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 100
               }
             ]
           }
@@ -158,7 +170,9 @@
       "id": 54,
       "options": {
         "legend": {
-          "calcs": ["last"],
+          "calcs": [
+            "last"
+          ],
           "displayMode": "list",
           "placement": "bottom"
         },
@@ -191,7 +205,7 @@
           "refId": "C"
         }
       ],
-      "title": "Unrealized Profit and Loss",
+      "title": "Strategy Unrealized PnL",
       "type": "timeseries"
     },
     {
@@ -318,6 +332,30 @@
                   "fixedColor": "dark-green",
                   "mode": "fixed"
                 }
+              },
+              {
+                "id": "custom.axisPlacement",
+                "value": "right"
+              },
+              {
+                "id": "unit",
+                "value": "USD"
+              },
+              {
+                "id": "custom.axisSoftMin",
+                "value": -100
+              },
+              {
+                "id": "custom.axisSoftMax",
+                "value": 100
+              },
+              {
+                "id": "custom.drawStyle",
+                "value": "bars"
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 100
               }
             ]
           }
@@ -332,7 +370,9 @@
       "id": 56,
       "options": {
         "legend": {
-          "calcs": ["last"],
+          "calcs": [
+            "last"
+          ],
           "displayMode": "list",
           "placement": "bottom"
         },
@@ -536,7 +576,9 @@
       "id": 60,
       "options": {
         "legend": {
-          "calcs": ["last"],
+          "calcs": [
+            "last"
+          ],
           "displayMode": "list",
           "placement": "bottom"
         },
@@ -722,7 +764,9 @@
       "id": 58,
       "options": {
         "legend": {
-          "calcs": ["last"],
+          "calcs": [
+            "last"
+          ],
           "displayMode": "list",
           "placement": "bottom"
         },
@@ -843,7 +887,9 @@
       "id": 12,
       "options": {
         "legend": {
-          "calcs": ["last"],
+          "calcs": [
+            "last"
+          ],
           "displayMode": "list",
           "placement": "bottom"
         },
@@ -941,7 +987,9 @@
       "id": 32,
       "options": {
         "legend": {
-          "calcs": ["last"],
+          "calcs": [
+            "last"
+          ],
           "displayMode": "list",
           "placement": "bottom"
         },
@@ -1038,7 +1086,9 @@
       "id": 34,
       "options": {
         "legend": {
-          "calcs": ["last"],
+          "calcs": [
+            "last"
+          ],
           "displayMode": "list",
           "placement": "bottom"
         },
@@ -1165,7 +1215,9 @@
       "id": 44,
       "options": {
         "legend": {
-          "calcs": ["last"],
+          "calcs": [
+            "last"
+          ],
           "displayMode": "list",
           "placement": "bottom"
         },
@@ -1308,7 +1360,9 @@
       "id": 50,
       "options": {
         "legend": {
-          "calcs": ["last"],
+          "calcs": [
+            "last"
+          ],
           "displayMode": "list",
           "placement": "bottom"
         },
@@ -1435,7 +1489,9 @@
       "id": 52,
       "options": {
         "legend": {
-          "calcs": ["last"],
+          "calcs": [
+            "last"
+          ],
           "displayMode": "list",
           "placement": "bottom"
         },
@@ -1562,7 +1618,9 @@
       "id": 51,
       "options": {
         "legend": {
-          "calcs": ["last"],
+          "calcs": [
+            "last"
+          ],
           "displayMode": "list",
           "placement": "bottom"
         },
@@ -1673,7 +1731,9 @@
       "id": 28,
       "options": {
         "legend": {
-          "calcs": ["last"],
+          "calcs": [
+            "last"
+          ],
           "displayMode": "list",
           "placement": "bottom"
         },
@@ -1770,7 +1830,9 @@
       "id": 42,
       "options": {
         "legend": {
-          "calcs": ["last"],
+          "calcs": [
+            "last"
+          ],
           "displayMode": "list",
           "placement": "bottom"
         },
@@ -1868,7 +1930,9 @@
       "id": 48,
       "options": {
         "legend": {
-          "calcs": ["last"],
+          "calcs": [
+            "last"
+          ],
           "displayMode": "list",
           "placement": "bottom"
         },
@@ -1965,7 +2029,9 @@
       "id": 16,
       "options": {
         "legend": {
-          "calcs": ["last"],
+          "calcs": [
+            "last"
+          ],
           "displayMode": "list",
           "placement": "bottom"
         },
@@ -2107,7 +2173,9 @@
       "id": 30,
       "options": {
         "legend": {
-          "calcs": ["last"],
+          "calcs": [
+            "last"
+          ],
           "displayMode": "list",
           "placement": "bottom"
         },
@@ -2212,7 +2280,9 @@
       "id": 40,
       "options": {
         "legend": {
-          "calcs": ["last"],
+          "calcs": [
+            "last"
+          ],
           "displayMode": "list",
           "placement": "bottom"
         },
@@ -2321,7 +2391,9 @@
       "id": 18,
       "options": {
         "legend": {
-          "calcs": ["last"],
+          "calcs": [
+            "last"
+          ],
           "displayMode": "list",
           "placement": "bottom"
         },
@@ -2418,7 +2490,9 @@
       "id": 24,
       "options": {
         "legend": {
-          "calcs": ["last"],
+          "calcs": [
+            "last"
+          ],
           "displayMode": "list",
           "placement": "bottom"
         },
@@ -2515,7 +2589,9 @@
       "id": 20,
       "options": {
         "legend": {
-          "calcs": ["last"],
+          "calcs": [
+            "last"
+          ],
           "displayMode": "list",
           "placement": "bottom"
         },
@@ -2612,7 +2688,9 @@
       "id": 38,
       "options": {
         "legend": {
-          "calcs": ["last"],
+          "calcs": [
+            "last"
+          ],
           "displayMode": "list",
           "placement": "bottom"
         },
@@ -2709,7 +2787,9 @@
       "id": 14,
       "options": {
         "legend": {
-          "calcs": ["last"],
+          "calcs": [
+            "last"
+          ],
           "displayMode": "list",
           "placement": "bottom"
         },
@@ -2806,7 +2886,9 @@
       "id": 10,
       "options": {
         "legend": {
-          "calcs": ["last"],
+          "calcs": [
+            "last"
+          ],
           "displayMode": "list",
           "placement": "bottom"
         },
@@ -2903,7 +2985,9 @@
       "id": 6,
       "options": {
         "legend": {
-          "calcs": ["last"],
+          "calcs": [
+            "last"
+          ],
           "displayMode": "list",
           "placement": "bottom"
         },
@@ -3000,7 +3084,9 @@
       "id": 36,
       "options": {
         "legend": {
-          "calcs": ["last"],
+          "calcs": [
+            "last"
+          ],
           "displayMode": "list",
           "placement": "bottom"
         },
@@ -3127,7 +3213,9 @@
       "id": 8,
       "options": {
         "legend": {
-          "calcs": ["last"],
+          "calcs": [
+            "last"
+          ],
           "displayMode": "list",
           "placement": "bottom"
         },
@@ -3240,7 +3328,9 @@
       "id": 26,
       "options": {
         "legend": {
-          "calcs": ["last"],
+          "calcs": [
+            "last"
+          ],
           "displayMode": "list",
           "placement": "bottom"
         },
@@ -3353,7 +3443,9 @@
       "id": 46,
       "options": {
         "legend": {
-          "calcs": ["last"],
+          "calcs": [
+            "last"
+          ],
           "displayMode": "list",
           "placement": "bottom"
         },
@@ -3450,7 +3542,9 @@
       "id": 22,
       "options": {
         "legend": {
-          "calcs": ["last"],
+          "calcs": [
+            "last"
+          ],
           "displayMode": "list",
           "placement": "bottom"
         },
@@ -3479,12 +3573,12 @@
     "list": []
   },
   "time": {
-    "from": "now-1h",
+    "from": "now-15m",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "",
   "title": "Galoy Dealer",
   "uid": "pTEP9n47k",
-  "version": 6
+  "version": 12
 }
