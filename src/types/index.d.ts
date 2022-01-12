@@ -11,33 +11,15 @@ type PriceData = {
   currencyUnit: string
 }
 
-type InitialState = {
-  path: RoutePath
-  authToken?: string
-  defaultLanguage?: string
-}
-
-declare interface Window {
-  __G_DATA: {
-    initialState: InitialState
-    ssrData: NormalizedCacheObject
-  }
-}
-
-type ServerRendererFunction = (path: RoutePath) => Promise<{
-  initialState: InitialState
-  initialMarkup: string
-  pageData: RouteInfo
-}>
-
 type GwwState = {
   path: RoutePath
+  key: number
   authToken?: string
   defaultLanguage?: string
 }
 
 type GwwAction = {
-  type: "navigate"
+  type: "navigate" | "reset-current-screen"
   [payloadKey: string]: string | undefined
 }
 
@@ -45,6 +27,19 @@ type GwwContextType = {
   state: GwwState
   dispatch: React.Dispatch<GwwAction>
 }
+
+declare interface Window {
+  __G_DATA: {
+    GwwState: GwwState
+    ssrData: NormalizedCacheObject
+  }
+}
+
+type ServerRendererFunction = (path: RoutePath) => Promise<{
+  GwwState: GwwState
+  initialMarkup: string
+  pageData: RouteInfo
+}>
 
 type GeetestValidationData = {
   geetestChallenge: string
@@ -104,3 +99,21 @@ type UseMyUpdates = {
 }
 
 type SpinnerSize = "small" | "big"
+
+type InvoiceInput = {
+  currency: "USD" | "SATS"
+
+  // undefined in input is used to indicate their changing state
+  amount?: number | ""
+  destination?: string
+  memo?: string
+
+  satAmount?: number // from price conversion
+
+  valid?: boolean // from parsing
+  paymentType?: "lightning" | "onchain" | "intraledger" | "lnurl"
+
+  fixedAmount?: boolean // if the invoice has amount
+  paymentRequset?: string // if payment is lightning
+  reciepientWalletId?: string // if payment is intraledger
+}

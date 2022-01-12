@@ -22,6 +22,7 @@ const useMainQuery = () => {
 
   return {
     btcPrice: data?.btcPrice,
+    pubKey: data?.globals?.nodesIds?.[0] ?? "",
     btcWalletId: btcWallet?.id,
     btcWalletBalance,
   }

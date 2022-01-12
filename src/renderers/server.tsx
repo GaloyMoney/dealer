@@ -1,11 +1,9 @@
-import { createHttpLink, ApolloClient, InMemoryCache } from "@apollo/client"
-
-import config from "server/config"
-
 import { Request } from "express"
-
-import appRoutes from "server/routes"
+import { createHttpLink, ApolloClient, InMemoryCache } from "@apollo/client"
 import { renderToStringWithData } from "@apollo/client/react/ssr"
+
+import config from "store/config"
+import appRoutes from "server/routes"
 import { SSRRoot } from "components/root"
 
 export const serverRenderer =
@@ -13,8 +11,9 @@ export const serverRenderer =
   async ({ path }: { path: RoutePath }) => {
     const authToken = req.session?.authToken
 
-    const initialState: InitialState = {
+    const GwwState: GwwState = {
       path,
+      key: 0,
       authToken,
       defaultLanguage: req.acceptsLanguages()?.[0],
     }
@@ -30,13 +29,13 @@ export const serverRenderer =
       cache: new InMemoryCache(),
     })
 
-    const App = <SSRRoot client={client} initialState={initialState} />
+    const App = <SSRRoot client={client} GwwState={GwwState} />
 
     const initialMarkup = await renderToStringWithData(App)
     const ssrData = client.extract()
 
     return Promise.resolve({
-      initialState,
+      GwwState,
       initialMarkup,
       ssrData,
       pageData: appRoutes[path],

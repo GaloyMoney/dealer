@@ -1,11 +1,11 @@
 import { ChangeEvent, useState, memo, useEffect } from "react"
 import { useDebouncedCallback } from "use-debounce"
 
-export type OnTextValueChange = (value: string) => void
+export type OnInputValueChange = (value: string) => void
 
 type Props = {
-  onChange?: OnTextValueChange
-  onDebouncedChange?: OnTextValueChange
+  onChange?: OnInputValueChange
+  onDebouncedChange?: OnInputValueChange
   [prop: string]: unknown
 }
 
@@ -15,7 +15,7 @@ type InputObject = {
   typing: boolean
 }
 
-const DebouncedTextarea = ({ onChange, onDebouncedChange, ...textAreaProps }: Props) => {
+const DebouncedInput = ({ onChange, onDebouncedChange, ...inputProps }: Props) => {
   const [input, setInput] = useState<InputObject>({ value: "", typing: false })
 
   const setDebouncedInputValue = useDebouncedCallback((debouncedValue) => {
@@ -35,7 +35,7 @@ const DebouncedTextarea = ({ onChange, onDebouncedChange, ...textAreaProps }: Pr
     }
   }, [onDebouncedChange, input.debouncedValue])
 
-  const handleOnChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
+  const handleOnChange = (event: ChangeEvent<HTMLInputElement>) => {
     const newValue = event.target.value
     if (onChange) {
       onChange(newValue)
@@ -43,7 +43,7 @@ const DebouncedTextarea = ({ onChange, onDebouncedChange, ...textAreaProps }: Pr
     setInput({ value: newValue, typing: true })
   }
 
-  return <textarea value={input.value} onChange={handleOnChange} {...textAreaProps} />
+  return <input value={input.value} onChange={handleOnChange} {...inputProps} />
 }
 
-export default memo(DebouncedTextarea)
+export default memo(DebouncedInput)

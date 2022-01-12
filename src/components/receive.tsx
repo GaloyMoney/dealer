@@ -158,7 +158,7 @@ const Receive = () => {
     <div className="receive">
       <Header />
       <div className="page-title">{translate("Receive Bitcoin")}</div>{" "}
-      <div className="amount-input">
+      <div className="amount-input center-display">
         <div className="currency-label">
           {input.currency === "SATS" ? <SatSymbol /> : "$"}
         </div>
@@ -175,7 +175,7 @@ const Receive = () => {
           &#8645;
         </div>
       </div>
-      <div className="note-input">
+      <div className="note-input center-display">
         <DebouncedTextarea
           onDebouncedChange={handleDebouncedMemoUpdate}
           name="memo"
@@ -188,7 +188,7 @@ const Receive = () => {
           <div className="amount-converted">{conversionDisplay}</div>
         </div>
       )}
-      <div className="invoice-container">
+      <div className="action-container center-display">
         {showInvoiceSpinner && <Spinner size="big" />}
         {showInvoice && (
           <InvoiceGenerator

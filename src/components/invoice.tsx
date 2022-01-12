@@ -5,6 +5,7 @@ import copy from "copy-to-clipboard"
 import { useMyUpdates } from "store/use-my-updates"
 import { translate } from "translate"
 import SuccessCheckmark from "./sucess-checkmark"
+import { useAppDispatcher } from "store"
 
 type Props = {
   invoice: GraphQL.LnInvoice | GraphQL.LnNoAmountInvoice
@@ -12,6 +13,7 @@ type Props = {
 }
 
 const Invoice = ({ invoice, onPaymentSuccess }: Props) => {
+  const dispatch = useAppDispatcher()
   const { lnUpdate } = useMyUpdates()
   const [showCopied, setShowCopied] = useState(false)
 
@@ -19,6 +21,10 @@ const Invoice = ({ invoice, onPaymentSuccess }: Props) => {
     copy(invoice.paymentRequest)
     setShowCopied(true)
     setTimeout(() => setShowCopied(false), 3000)
+  }
+
+  const resetReceiveScreen = () => {
+    dispatch({ type: "reset-current-screen" })
   }
 
   const invoicePaid =
@@ -32,6 +38,7 @@ const Invoice = ({ invoice, onPaymentSuccess }: Props) => {
     return (
       <div className="invoice-paid">
         <SuccessCheckmark />
+        <button onClick={resetReceiveScreen}>Receive another payment</button>
       </div>
     )
   }

@@ -2,6 +2,9 @@ import { gql } from "@apollo/client"
 
 const QUERY_MAIN = gql`
   query me($hasToken: Boolean!) {
+    globals {
+      nodesIds
+    }
     btcPrice {
       base
       offset

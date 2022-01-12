@@ -1,7 +1,7 @@
 import React, { useCallback, useRef, useState } from "react"
 import intlTelInput from "intl-tel-input"
 
-import config from "server/config"
+import config from "store/config"
 import { translate } from "translate"
 import { history, useRequest } from "store"
 

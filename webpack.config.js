@@ -9,8 +9,16 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin")
 const config = {
   devtool: isDev ? "inline-source-map" : false,
   resolve: {
-    modules: [path.resolve("./src"), path.resolve("./node_modules")],
+    modules: [
+      path.resolve("./src"),
+      path.resolve("./node_modules"),
+      path.resolve("./src/galoy-client/node_modules"),
+    ],
     extensions: [".ts", ".tsx", ".js", ".json"],
+    fallback: {
+      stream: require.resolve("stream-browserify"),
+      url: require.resolve("url"),
+    },
   },
   entry: {
     main: ["./src/renderers/dom.tsx"],
@@ -59,6 +67,9 @@ const config = {
     },
   },
   plugins: [
+    new webpack.ProvidePlugin({
+      Buffer: ["buffer", "Buffer"],
+    }),
     new webpack.DefinePlugin({
       "process.env": JSON.stringify(process.env),
     }),

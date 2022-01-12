@@ -59,10 +59,18 @@ input[type="tel"] {
   justify-content: space-around;
 }
 
-.amount-input {
+.center-display {
   display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   max-width: 375px;
   margin: 0 auto;
+  text-align: center;
+}
+
+.amount-input {
+  flex-direction: row;
   .currency-label {
     margin-right: 0.5rem;
     font-size: 1.5rem;
@@ -77,10 +85,16 @@ input[type="tel"] {
   }
 }
 
+.destination-input {
+  margin-top: 1rem;
+  input {
+    border: thin solid var(--color-gray);
+    width: 100%;
+  }
+}
+
 .note-input {
-  display: flex;
-  max-width: 375px;
-  margin: 1rem auto;
+  margin-top: 1rem;
   textarea {
     border: thin solid var(--color-gray);
     width: 100%;
@@ -88,27 +102,23 @@ input[type="tel"] {
   }
 }
 
-.invoice-container {
-  text-align: center;
-  width: 375px;
-  margin: 0 auto;
-  i {
-    margin-top: 2rem;
-  }
+.action-container {
+  padding-top: 1rem;
 }
 
 .invoice-paid {
-  margin: 3rem;
+  margin: 1.5rem;
 }
 
 .amount-converted {
-  margin: 1rem auto 0 auto;
+  max-width: 375px;
+  margin: 0 auto;
+  margin-top: 1rem;
   text-align: center;
-  width: 375px;
   .converted-sats {
-    margin-bottom: 0.3rem;
   }
   .converted-usd {
+    margin-top: 0.3rem;
     color: var(--color-secondary);
   }
 }

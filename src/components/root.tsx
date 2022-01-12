@@ -8,11 +8,11 @@ import { setLocale } from "translate"
 import RootComponent from "../components/root-component"
 import { useErrorHandler } from "react-error-boundary"
 
-type RootProps = { initialState: InitialState }
+type RootProps = { GwwState: GwwState }
 
-const Root = ({ initialState }: RootProps) => {
+const Root = ({ GwwState }: RootProps) => {
   const handleError = useErrorHandler()
-  const [state, dispatch] = useReducer(mainReducer, initialState, (initState) => {
+  const [state, dispatch] = useReducer(mainReducer, GwwState, (initState) => {
     setLocale(initState.defaultLanguage)
     return initState
   })
@@ -58,7 +58,7 @@ const Root = ({ initialState }: RootProps) => {
   return (
     <ApolloProvider client={apolloClient}>
       <GwwContext.Provider value={{ state, dispatch }}>
-        <RootComponent path={state.path} />
+        <RootComponent path={state.path} key={state.key} />
       </GwwContext.Provider>
     </ApolloProvider>
   )
@@ -66,11 +66,11 @@ const Root = ({ initialState }: RootProps) => {
 
 type SSRootProps = {
   client: ApolloClient<unknown>
-  initialState: InitialState
+  GwwState: GwwState
 }
 
-export const SSRRoot = ({ client, initialState }: SSRootProps) => {
-  const [state, dispatch] = useReducer(mainReducer, initialState, (initState) => {
+export const SSRRoot = ({ client, GwwState }: SSRootProps) => {
+  const [state, dispatch] = useReducer(mainReducer, GwwState, (initState) => {
     setLocale(initState.defaultLanguage)
     return initState
   })

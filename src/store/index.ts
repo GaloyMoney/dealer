@@ -13,11 +13,11 @@ import { WebSocketLink } from "@apollo/client/link/ws"
 import { getMainDefinition } from "@apollo/client/utilities"
 import { createContext, useContext } from "react"
 
-import config from "server/config"
+import config from "./config"
 import useAuthToken from "./use-auth-token"
 
 export const GwwContext = createContext<GwwContextType>({
-  state: { path: "/" },
+  state: { path: "/", key: 0 },
   dispatch: (_action: GwwAction) => {
     // Do nothing
   },

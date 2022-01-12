@@ -3,12 +3,12 @@ import { useDebouncedCallback } from "use-debounce"
 
 const formatter = new Intl.NumberFormat("en-US", { maximumFractionDigits: 2 })
 
-export type ParsieInputValueFunction = (inputValue: string) => {
+export type ParseInputValueFunction = (inputValue: string) => {
   numberValue: number | ""
   formattedValue: string
 }
 
-const parseInputValue: ParsieInputValueFunction = (inputValue) => {
+const parseInputValue: ParseInputValueFunction = (inputValue) => {
   if (inputValue === "") {
     return { numberValue: "", formattedValue: "" }
   }

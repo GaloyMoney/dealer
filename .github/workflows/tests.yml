@@ -13,5 +13,6 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
       - run: yarn install
+      - run: (cd src/galoy-client && yarn install)
       - name: Run all tests
         run: yarn test

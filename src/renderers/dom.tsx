@@ -15,6 +15,6 @@ if (!container) {
 ReactDOM.hydrateRoot(
   container,
   <ErrorBoundary FallbackComponent={ErrorFallback}>
-    <Root initialState={window.__G_DATA.initialState} />
+    <Root GwwState={window.__G_DATA.GwwState} />
   </ErrorBoundary>,
 )
