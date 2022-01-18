@@ -7,12 +7,14 @@ import Spinner from "./spinner"
 import { usdFormatter } from "store"
 import { translate } from "translate"
 
-import Invoice from "./invoice"
+import { LightningInvoice, OnChainInvoice } from "./invoice"
 
 const INVOICE_EXPIRE_INTERVAL = 60 * 60 * 1000
 
 type InvoiceProps = {
+  layer: "lightning" | "onchain"
   btcWalletId: string
+  btcAddress: GraphQL.Scalars["OnChainAddress"]
   regenerate: () => void
   amount: number | ""
   currency: string
@@ -51,9 +53,10 @@ const AmountInvoiceGenerator = ({
 
   const timerIds = useRef<number[]>([])
 
-  const [createInvoice, { loading, error, data }] = useMutation<{
-    lnInvoiceCreate: GraphQL.LnInvoicePayload
-  }>(MUTATION_LN_INVOICE_CREATE, {
+  const [createInvoice, { loading, error, data }] = useMutation<
+    { lnInvoiceCreate: GraphQL.LnInvoicePayload },
+    { input: GraphQL.LnInvoiceCreateInput }
+  >(MUTATION_LN_INVOICE_CREATE, {
     onError: console.error,
     onCompleted: () => setInvoiceStatus("new"),
   })
@@ -118,7 +121,7 @@ const AmountInvoiceGenerator = ({
           </div>
         </div>
       )}
-      <Invoice invoice={invoice} onPaymentSuccess={clearTimers} />
+      <LightningInvoice invoice={invoice} onPaymentSuccess={clearTimers} />
     </>
   )
 }
@@ -134,9 +137,10 @@ const NoAmountInvoiceGenerator = ({ btcWalletId, regenerate, memo }: NoInvoicePr
 
   const timerIds = useRef<number[]>([])
 
-  const [createInvoice, { loading, error, data }] = useMutation<{
-    lnNoAmountInvoiceCreate: GraphQL.LnNoAmountInvoicePayload
-  }>(MUTATION_LN_NO_AMOUNT_INVOICE_CREATE, {
+  const [createInvoice, { loading, error, data }] = useMutation<
+    { lnNoAmountInvoiceCreate: GraphQL.LnNoAmountInvoicePayload },
+    { input: GraphQL.LnNoAmountInvoiceCreateInput }
+  >(MUTATION_LN_NO_AMOUNT_INVOICE_CREATE, {
     onError: console.error,
     onCompleted: () => setInvoiceStatus("new"),
   })
@@ -184,10 +188,20 @@ const NoAmountInvoiceGenerator = ({ btcWalletId, regenerate, memo }: NoInvoicePr
     return <ExpiredMessage onClick={regenerate} />
   }
 
-  return <Invoice invoice={invoice} onPaymentSuccess={clearTimers} />
+  return <LightningInvoice invoice={invoice} onPaymentSuccess={clearTimers} />
 }
 
 const InvoiceGenerator = (props: InvoiceProps) => {
+  if (props.layer === "onchain" && props.btcAddress) {
+    return (
+      <OnChainInvoice
+        btcAddress={props.btcAddress}
+        satAmount={props.satAmount}
+        memo={props.memo}
+      />
+    )
+  }
+
   if (props.satAmount === 0) {
     return (
       <NoAmountInvoiceGenerator

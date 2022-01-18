@@ -11,8 +11,11 @@ import Header from "./header"
 import SatSymbol from "./sat-symbol"
 import Spinner from "./spinner"
 import DebouncedTextarea, { OnTextValueChange } from "./debounced-textarea"
+import { useMutation } from "@apollo/client"
+import ON_CHAIN_AODDRESS_CURRENT from "store/graphql/query.on-chain-address-current"
 
 type InvoiceInputState = {
+  layer: "lightning" | "onchain"
   currency: "USD" | "SATS"
   amount: number | ""
   debouncedAmount?: number | ""
@@ -26,9 +29,17 @@ const Receive = () => {
   const { satsToUsd, usdToSats } = useMyUpdates()
 
   const [input, setInput] = useState<InvoiceInputState>({
+    layer: "lightning",
     currency: "USD",
     amount: "",
     memo: "",
+  })
+
+  const [generateBtcAddress, { loading, error, data }] = useMutation<
+    { onChainAddressCurrent: GraphQL.OnChainAddressPayload },
+    { input: GraphQL.OnChainAddressCreateInput }
+  >(ON_CHAIN_AODDRESS_CURRENT, {
+    onError: console.error,
   })
 
   const shouldUpdateSatsForInvoice =
@@ -53,6 +64,27 @@ const Receive = () => {
       }))
     }
   }, [input.currency, input.debouncedAmount, shouldUpdateSatsForInvoice])
+
+  useEffect(() => {
+    if (input.layer === "onchain") {
+      // Layer switched to onchain, generate a btc address
+      generateBtcAddress({
+        variables: {
+          input: {
+            walletId: btcWalletId,
+          },
+        },
+      })
+    }
+  }, [btcWalletId, generateBtcAddress, input.layer])
+
+  const onChainAddressErrrors = data?.onChainAddressCurrent?.errors
+
+  if (error || (onChainAddressErrrors && onChainAddressErrrors?.length > 0)) {
+    console.error(error || onChainAddressErrrors)
+  }
+
+  const btcAddress = data?.onChainAddressCurrent?.address
 
   const handleAmountUpdate: OnNumberValueChange = useCallback((numberValue) => {
     setInput((currInput) => ({
@@ -104,6 +136,13 @@ const Receive = () => {
     setInput((currInput) => ({ ...currInput, satsForInvoice: NaN }))
   }, [])
 
+  const toggleLayer = useCallback(() => {
+    setInput((currInput) => ({
+      ...currInput,
+      layer: currInput.layer === "lightning" ? "onchain" : "lightning",
+    }))
+  }, [])
+
   const convertedValues = useMemo(() => {
     if (!usdToSats || !satsToUsd || !input.amount) {
       return null
@@ -150,57 +189,77 @@ const Receive = () => {
   }, [convertedValues])
 
   const inputValue = Number.isNaN(input.amount) ? "" : input.amount.toString()
-  const showInvoiceSpinner = Number.isNaN(input.debouncedAmount)
+  const showInvoiceSpinner = Number.isNaN(input.debouncedAmount) || loading
   const showInvoice =
     input.satsForInvoice !== undefined && !Number.isNaN(input.satsForInvoice)
 
   return (
     <div className="receive">
       <Header />
-      <div className="page-title">{translate("Receive Bitcoin")}</div>{" "}
-      <div className="amount-input center-display">
-        <div className="currency-label">
-          {input.currency === "SATS" ? <SatSymbol /> : "$"}
+      <div className="page-title">{translate("Receive Bitcoin")}</div>
+
+      <div className="tabs">
+        <div
+          className={`tab ${input.layer === "lightning" ? "active" : "link"}`}
+          onClick={toggleLayer}
+        >
+          {translate("Lightning")}
         </div>
-        <FormattedNumberInput
-          key={input.currency}
-          value={inputValue}
-          onChange={handleAmountUpdate}
-          onDebouncedChange={handleDebouncedAmountUpdate}
-          placeholder={translate("Set invoice value in %{currency}", {
-            currency: input.currency,
-          })}
-        />
-        <div className="toggle-currency link" onClick={toggleCurrency}>
-          &#8645;
+        <div
+          className={`tab ${input.layer === "onchain" ? "active" : "link"}`}
+          onClick={toggleLayer}
+        >
+          {translate("OnChain")}
         </div>
       </div>
-      <div className="note-input center-display">
-        <DebouncedTextarea
-          onDebouncedChange={handleDebouncedMemoUpdate}
-          name="memo"
-          rows={3}
-          placeholder={translate("Set a note for the sender here (optional)")}
-        />
-      </div>
-      {conversionDisplay && (
-        <div className="amount-converted">
-          <div className="amount-converted">{conversionDisplay}</div>
-        </div>
-      )}
-      <div className="action-container center-display">
-        {showInvoiceSpinner && <Spinner size="big" />}
-        {showInvoice && (
-          <InvoiceGenerator
-            btcWalletId={btcWalletId}
-            regenerate={regenerateInvoice}
-            amount={input.amount}
-            currency={input.currency}
-            memo={input.memo}
-            satAmount={input.satsForInvoice as number}
-            convertedUsdAmount={convertedValues?.usd || NaN}
+
+      <div className="tab-content">
+        <div className="amount-input center-display">
+          <div className="currency-label">
+            {input.currency === "SATS" ? <SatSymbol /> : "$"}
+          </div>
+          <FormattedNumberInput
+            key={input.currency}
+            value={inputValue}
+            onChange={handleAmountUpdate}
+            onDebouncedChange={handleDebouncedAmountUpdate}
+            placeholder={translate("Set invoice value in %{currency}", {
+              currency: input.currency,
+            })}
           />
+          <div className="toggle-currency link" onClick={toggleCurrency}>
+            &#8645;
+          </div>
+        </div>
+        <div className="note-input center-display">
+          <DebouncedTextarea
+            onDebouncedChange={handleDebouncedMemoUpdate}
+            name="memo"
+            rows={3}
+            placeholder={translate("Set a note for the sender here (optional)")}
+          />
+        </div>
+        {conversionDisplay && (
+          <div className="amount-converted">
+            <div className="amount-converted">{conversionDisplay}</div>
+          </div>
         )}
+        <div className="action-container center-display">
+          {showInvoiceSpinner && <Spinner size="big" />}
+          {showInvoice && (
+            <InvoiceGenerator
+              layer={input.layer}
+              btcWalletId={btcWalletId}
+              btcAddress={btcAddress}
+              regenerate={regenerateInvoice}
+              amount={input.amount}
+              currency={input.currency}
+              memo={input.memo}
+              satAmount={input.satsForInvoice as number}
+              convertedUsdAmount={convertedValues?.usd || NaN}
+            />
+          )}
+        </div>
       </div>
     </div>
   )

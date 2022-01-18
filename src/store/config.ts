@@ -16,10 +16,11 @@ requiredEnvVars.forEach((envVar) => {
   }
 })
 
-const networkMap = (graphqlUri: string): "bitcoin" | "testnet" | "regtest" => {
+const networkMap = (graphqlUri: string): "mainnet" | "testnet" | "regtest" => {
   if (graphqlUri.match("mainnet")) {
-    return "bitcoin"
+    return "mainnet"
   }
+
   if (graphqlUri.match("testnet")) {
     return "testnet"
   }

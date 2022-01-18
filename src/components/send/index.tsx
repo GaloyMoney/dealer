@@ -5,12 +5,12 @@ import { satsFormatter, usdFormatter, useAppDispatcher } from "store"
 import { useMyUpdates } from "store/use-my-updates"
 import { translate } from "translate"
 
-import FormattedNumberInput, { OnNumberValueChange } from "./formatted-number-input"
-import Header from "./header"
-import SatSymbol from "./sat-symbol"
-import Spinner from "./spinner"
-import DebouncedTextarea, { OnTextValueChange } from "./debounced-textarea"
-import DebouncedInput from "./debounced-input"
+import FormattedNumberInput, { OnNumberValueChange } from "../formatted-number-input"
+import Header from "../header"
+import SatSymbol from "../sat-symbol"
+import Spinner from "../spinner"
+import DebouncedTextarea, { OnTextValueChange } from "../debounced-textarea"
+import DebouncedInput from "../debounced-input"
 import { parsePaymentDestination } from "galoy-client/src"
 import useMainQuery from "store/use-main-query"
 import SendAction from "./send-action"
@@ -19,7 +19,7 @@ import useDelayedQuery from "store/use-delayed-query"
 
 const Send = () => {
   const dispatch = useAppDispatcher()
-  const { pubKey } = useMainQuery()
+  const { pubKey, btcWalletId } = useMainQuery()
   const { satsToUsd, usdToSats } = useMyUpdates()
 
   const [input, setInput] = useState<InvoiceInput>({
@@ -61,18 +61,22 @@ const Send = () => {
 
         const newInputState: Partial<InvoiceInput> = {
           valid: parsedDestination.valid,
+          errorMessage: parsedDestination.errorMessage,
           paymentType: parsedDestination.paymentType,
+          sameNode: parsedDestination.sameNode,
           fixedAmount: parsedDestination.amount !== undefined,
           paymentRequset: parsedDestination.paymentRequest,
+          address: parsedDestination.address,
         }
 
         if (parsedDestination.paymentType === "intraledger") {
-          // Validate username (and get their default wallet id)
+          // Validate account handle (and get the default wallet id for account)
           const { data, error } = await userDefaultWalletIdQuery({
-            username: parsedDestination.username,
+            username: parsedDestination.handle,
           })
+
           if (error) {
-            // TODO: show error in UI
+            newInputState.errorMessage = error?.message || "Invaild username"
             console.error(error)
           } else {
             newInputState.reciepientWalletId = data?.userDefaultWalletId
@@ -249,7 +253,7 @@ const Send = () => {
         {showSpinner ? (
           <Spinner size="big" />
         ) : (
-          <SendAction {...input} reset={resetSendScreen} />
+          <SendAction {...input} btcWalletId={btcWalletId} reset={resetSendScreen} />
         )}
       </div>
     </div>

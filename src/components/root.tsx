@@ -23,11 +23,11 @@ const Root = ({ GwwState }: RootProps) => {
         onError: ({ graphQLErrors, networkError }) => {
           if (graphQLErrors) {
             graphQLErrors.forEach((error) => {
-              console.info(`[GraphQL error]: ${JSON.stringify(error)}`)
+              console.error(`[GraphQL error]: ${JSON.stringify(error)}`)
             })
           }
           if (networkError) {
-            console.info(`[Network error]: ${networkError}`)
+            console.error(`[Network error]: ${networkError}`)
             if (
               "result" in networkError &&
               networkError.result.errors?.[0]?.code === "INVALID_AUTHENTICATION"

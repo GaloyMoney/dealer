@@ -127,7 +127,11 @@ input[type="tel"] {
 .error-fallback {
   display: block;
   margin: 20% auto;
+  padding: 5%;
   text-align: center;
+  pre {
+    white-space: pre-wrap;
+  }
 }
 
 .separator {
@@ -136,6 +140,24 @@ input[type="tel"] {
 
 #root {
   height: 100%;
+}
+
+.tabs {
+  max-width: 400px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+  .tab {
+    border: thin solid var(--color-gray);
+    padding: 0.5rem;
+    width: 50%;
+    text-align: center;
+  }
+  .active {
+    background-color: var(--color-active-bg);
+    font-weight: bold;
+  }
 }
 
 #main-container {
@@ -206,12 +228,12 @@ input[type="tel"] {
   }
 }
 
-.invoice-payment-request {
+.payment-destination-code {
   color: var(--color-gray);
   font-size: 0.75rem;
 }
 
-.click-or-scan {
+.copy-message {
   font-size: 0.8rem;
   margin-top: 1rem;
 }
@@ -222,4 +244,20 @@ input[type="tel"] {
   display: inline-block;
   background-color: var(--color-highlight-bg);
   color: var(--color-highlight-fg);
+}
+
+.fee-amount {
+  padding: 0.75rem;
+  border: thin dashed var(--color-gray);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 0.75rem;
+  .label {
+    margin-right: 0.75rem;
+    font-weight: bold;
+  }
+  .fee-usd-amount {
+    text-align: left;
+  }
 }

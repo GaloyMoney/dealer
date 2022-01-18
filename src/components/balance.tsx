@@ -22,15 +22,17 @@ const MyBalance = ({ balance }: Props) => {
         {Number.isNaN(balance) ? (
           <Spinner />
         ) : (
-          <div className="primary">
-            <SatSymbol />
-            {satsFormatter.format(balance)}
-          </div>
-        )}
-        {satsToUsd && (
-          <div className="secondary">
-            &#8776; {usdFormatter.format(satsToUsd(balance))}
-          </div>
+          <>
+            <div className="primary">
+              <SatSymbol />
+              {satsFormatter.format(balance)}
+            </div>
+            {satsToUsd && (
+              <div className="secondary">
+                &#8776; {usdFormatter.format(satsToUsd(balance))}
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>
