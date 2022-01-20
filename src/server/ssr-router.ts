@@ -5,6 +5,12 @@ import { SupportedRoutes } from "./routes"
 
 const ssrRouter = express.Router({ caseSensitive: true })
 
+ssrRouter.get("/logout", async (req, res) => {
+  req.session = req.session || {}
+  req.session.authToken = null
+  return res.redirect("/")
+})
+
 ssrRouter.get("/*", async (req, res) => {
   try {
     const routePath = req.path

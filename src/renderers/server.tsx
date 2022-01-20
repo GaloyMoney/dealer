@@ -1,9 +1,9 @@
 import { Request } from "express"
-import { createHttpLink, ApolloClient, InMemoryCache } from "@apollo/client"
 import { renderToStringWithData } from "@apollo/client/react/ssr"
 
-import config from "store/config"
+import client from "../server/graphql"
 import appRoutes from "server/routes"
+
 import { SSRRoot } from "components/root"
 
 export const serverRenderer =
@@ -18,21 +18,11 @@ export const serverRenderer =
       defaultLanguage: req.acceptsLanguages()?.[0],
     }
 
-    const client = new ApolloClient({
-      ssrMode: true,
-      link: createHttpLink({
-        uri: config.graphqlUri,
-        headers: {
-          authorization: authToken ? `Bearer ${authToken}` : "",
-        },
-      }),
-      cache: new InMemoryCache(),
-    })
-
-    const App = <SSRRoot client={client} GwwState={GwwState} />
+    const apolloClient = client(req)
+    const App = <SSRRoot client={apolloClient} GwwState={GwwState} />
 
     const initialMarkup = await renderToStringWithData(App)
-    const ssrData = client.extract()
+    const ssrData = apolloClient.extract()
 
     return Promise.resolve({
       GwwState,

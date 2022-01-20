@@ -1,9 +1,14 @@
-import React, { useCallback, useRef, useState } from "react"
+import React, { useCallback, useEffect, useRef, useState } from "react"
+import { useMutation } from "@apollo/client"
 import intlTelInput from "intl-tel-input"
 
 import config from "store/config"
 import { translate } from "translate"
 import { history, useRequest } from "store"
+import MUTATION_CAPTCHA_CREATE_CHALLENGE from "store/graphql/mutation.captcha-create-challenge"
+import MUTATION_CAPTCHA_REQUEST_AUTH_CODE from "store/graphql/mutation.captcha-request-auth-code"
+
+import Spinner from "./spinner"
 
 type PhoneNumberProps = { onSuccess: (arg: string) => void }
 
@@ -104,17 +109,116 @@ const AuthCode = ({ phoneNumber }: AuthCodeProps) => {
   )
 }
 
+type CaptchaChallenge = { phoneNumber: string }
+
+const CaptchaChallenge = ({ phoneNumber }: AuthCodeProps) => {
+  const [captchaState, setCaptchaState] = useState<{
+    status: "loading" | "ready" | "success" | "error"
+    errorMessage?: string
+  }>({ status: "loading" })
+
+  const [createCaptchaChallenge, { loading: createLoading }] = useMutation<{
+    captchaCreateChallenge: GraphQL.CaptchaCreateChallengePayload
+  }>(MUTATION_CAPTCHA_CREATE_CHALLENGE)
+
+  const [requestCaptchaAuthCode, { loading: requestLoading }] = useMutation<
+    { captchaRequestAuthCode: GraphQL.SuccessPayload },
+    { input: GraphQL.CaptchaRequestAuthCodeInput }
+  >(MUTATION_CAPTCHA_REQUEST_AUTH_CODE)
+
+  const captchaHandler = useCallback(
+    (captchaObj) => {
+      const onSuccess = async () => {
+        const result = captchaObj.getValidate()
+        const { data } = await requestCaptchaAuthCode({
+          variables: {
+            input: {
+              phone: phoneNumber,
+
+              challengeCode: result.geetest_challenge,
+              validationCode: result.geetest_validate,
+              secCode: result.geetest_seccode,
+            },
+          },
+        })
+        const errorMessage = data?.captchaRequestAuthCode?.errors
+          ?.map((err) => err.message)
+          .join(", ")
+
+        setCaptchaState({ status: errorMessage ? "error" : "success", errorMessage })
+      }
+      captchaObj.appendTo("#captcha")
+      captchaObj
+        .onReady(() => {
+          setCaptchaState({ status: "ready" })
+          captchaObj.verify()
+        })
+        .onSuccess(onSuccess)
+        .onError((err: unknown) => {
+          console.error(err)
+          setCaptchaState({
+            status: "error",
+            errorMessage: translate("Invaild verification. Please try again"),
+          })
+        })
+    },
+    [phoneNumber, requestCaptchaAuthCode],
+  )
+
+  useEffect(() => {
+    const initCaptcha = async () => {
+      const { data, errors } = await createCaptchaChallenge()
+
+      const result = data?.captchaCreateChallenge?.result
+      if (!errors && data?.captchaCreateChallenge?.errors?.length === 0 && result) {
+        const { id, challengeCode, newCaptcha, failbackMode } = result
+        window.initGeetest(
+          {
+            gt: id,
+            challenge: challengeCode,
+            offline: failbackMode,
+            // eslint-disable-next-line camelcase
+            new_captcha: newCaptcha,
+
+            lang: "en",
+            product: "bind",
+          },
+          captchaHandler,
+        )
+      }
+    }
+    initCaptcha()
+  }, [captchaHandler, createCaptchaChallenge])
+
+  if (captchaState.status === "success") {
+    return <AuthCode phoneNumber={phoneNumber} />
+  }
+
+  const isLoading = captchaState.status === "loading" || createLoading || requestLoading
+  const hasError = !isLoading && captchaState.status === "error"
+
+  return (
+    <div className="captcha-challenge">
+      <div className="intro">{translate("Verify you are human")}</div>
+      <div id="captcha">
+        {isLoading && (
+          <div className="loading">
+            <Spinner size="big" />
+          </div>
+        )}
+      </div>
+      {hasError && <div className="error">{captchaState.errorMessage}</div>}
+    </div>
+  )
+}
+
 const Login = () => {
   const [phoneNumber, setPhoneNumber] = useState<string>("")
 
-  const showAuthCodeScreen = (phoneNumberInputValue: string): void => {
-    setPhoneNumber(phoneNumberInputValue)
-  }
-
   return phoneNumber ? (
-    <AuthCode phoneNumber={phoneNumber} />
+    <CaptchaChallenge phoneNumber={phoneNumber} />
   ) : (
-    <PhoneNumber onSuccess={showAuthCodeScreen} />
+    <PhoneNumber onSuccess={setPhoneNumber} />
   )
 }
 

@@ -33,6 +33,8 @@ declare interface Window {
     GwwState: GwwState
     ssrData: NormalizedCacheObject
   }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  initGeetest: (...args: any[]) => void
 }
 
 type ServerRendererFunction = (path: RoutePath) => Promise<{

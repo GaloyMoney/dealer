@@ -23,6 +23,7 @@ app.use(
         defaultSrc: ["'self'"],
         scriptSrc: ["'self'", "'unsafe-inline'", "https:"],
         connectSrc: ["'self'", "*"],
+        imgSrc: ["'self'", "data:", "https:"],
       },
     },
   }),

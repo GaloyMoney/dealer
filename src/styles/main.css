@@ -34,7 +34,9 @@ input[type="tel"] {
 
 .error {
   color: red;
-  margin: 1rem;
+  margin: 1rem auto;
+  max-width: 350px;
+  text-align: center;
 }
 
 .small {
@@ -161,12 +163,13 @@ input[type="tel"] {
 }
 
 #main-container {
-  height: 100%;
+  height: 95%;
   width: 90%;
-  margin: 1.5rem auto;
+  margin: 0 auto;
   max-width: 1024px;
   display: flex;
   flex-direction: column;
+  padding-top: 1.5rem;
 }
 
 #footer {
@@ -219,6 +222,16 @@ input[type="tel"] {
   }
 }
 
+.captcha-challenge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 25%;
+  .loading {
+    margin-top: 1rem;
+  }
+}
+
 .invoice-message {
   margin: 0.75rem auto;
   font-weight: bold;
@@ -260,4 +273,8 @@ input[type="tel"] {
   .fee-usd-amount {
     text-align: left;
   }
+}
+
+.geetest_wind.geetest_panel .geetest_panel_box {
+  top: 25% !important;
 }
