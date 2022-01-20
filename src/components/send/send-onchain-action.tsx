@@ -1,16 +1,14 @@
 import { useMutation, useQuery } from "@apollo/client"
+import { GaloyGQL, mutations, queries } from "@galoymoney/client"
 import { MouseEvent } from "react"
-
-import MUTATION_ONCHAIN_PAYMENT_SEND from "store/graphql/mutation.onchain-payment-send"
-import QUERY_ONCHAIN_TX_FEE from "store/graphql/query.onchain-tx-fee"
 
 import SendActionDisplay from "./send-action-display"
 
-const SendOnChainAction = (props: SendActionProps) => {
+const SendOnChainAction = (props: SendOnChainActionProps) => {
   const [sendPayment, { loading, error, data }] = useMutation<
-    { onChainPaymentSend: GraphQL.PaymentSendPayload },
-    { input: GraphQL.OnChainPaymentSendInput }
-  >(MUTATION_ONCHAIN_PAYMENT_SEND, {
+    { onChainPaymentSend: GaloyGQL.PaymentSendPayload },
+    { input: GaloyGQL.OnChainPaymentSendInput }
+  >(mutations.onChainPaymentSend, {
     onError: console.error,
   })
 
@@ -18,8 +16,8 @@ const SendOnChainAction = (props: SendActionProps) => {
     loading: feeLoading,
     error: feeError,
     data: feeData,
-  } = useQuery<{ onChainTxFee: GraphQL.OnChainTxFee }, GraphQL.QueryOnChainTxFeeArgs>(
-    QUERY_ONCHAIN_TX_FEE,
+  } = useQuery<{ onChainTxFee: GaloyGQL.OnChainTxFee }, GaloyGQL.QueryOnChainTxFeeArgs>(
+    queries.onChainTxFee,
     {
       variables: {
         walletId: props.btcWalletId,

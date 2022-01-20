@@ -9,11 +9,7 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin")
 const config = {
   devtool: isDev ? "inline-source-map" : false,
   resolve: {
-    modules: [
-      path.resolve("./src"),
-      path.resolve("./node_modules"),
-      path.resolve("./src/galoy-client/node_modules"),
-    ],
+    modules: [path.resolve("./src"), path.resolve("./node_modules")],
     extensions: [".ts", ".tsx", ".js", ".json"],
     fallback: {
       stream: require.resolve("stream-browserify"),
@@ -74,8 +70,8 @@ const config = {
       "process.env": JSON.stringify(process.env),
     }),
     new MiniCssExtractPlugin({
-      filename: isDev ? "[name].css" : "[name].[hash].css",
-      chunkFilename: isDev ? "[id].css" : "[id].[hash].css",
+      filename: isDev ? "[name].css" : "[name].[fullhash].css",
+      chunkFilename: isDev ? "[id].css" : "[id].[fullhash].css",
     }),
     function (compiler) {
       compiler.hooks.done.tap("gvars", (stats) => {

@@ -5,10 +5,9 @@ import intlTelInput from "intl-tel-input"
 import config from "store/config"
 import { translate } from "translate"
 import { history, useRequest } from "store"
-import MUTATION_CAPTCHA_CREATE_CHALLENGE from "store/graphql/mutation.captcha-create-challenge"
-import MUTATION_CAPTCHA_REQUEST_AUTH_CODE from "store/graphql/mutation.captcha-request-auth-code"
 
 import Spinner from "./spinner"
+import { GaloyGQL, mutations } from "@galoymoney/client"
 
 type PhoneNumberProps = { onSuccess: (arg: string) => void }
 
@@ -118,13 +117,13 @@ const CaptchaChallenge = ({ phoneNumber }: AuthCodeProps) => {
   }>({ status: "loading" })
 
   const [createCaptchaChallenge, { loading: createLoading }] = useMutation<{
-    captchaCreateChallenge: GraphQL.CaptchaCreateChallengePayload
-  }>(MUTATION_CAPTCHA_CREATE_CHALLENGE)
+    captchaCreateChallenge: GaloyGQL.CaptchaCreateChallengePayload
+  }>(mutations.captchaCreateChallenge)
 
   const [requestCaptchaAuthCode, { loading: requestLoading }] = useMutation<
-    { captchaRequestAuthCode: GraphQL.SuccessPayload },
-    { input: GraphQL.CaptchaRequestAuthCodeInput }
-  >(MUTATION_CAPTCHA_REQUEST_AUTH_CODE)
+    { captchaRequestAuthCode: GaloyGQL.SuccessPayload },
+    { input: GaloyGQL.CaptchaRequestAuthCodeInput }
+  >(mutations.captchaRequestAuthCode)
 
   const captchaHandler = useCallback(
     (captchaObj) => {

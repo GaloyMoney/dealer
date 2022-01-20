@@ -1,9 +1,14 @@
-import { useSubscription, useApolloClient, ApolloClient } from "@apollo/client"
+import { useSubscription, useApolloClient, ApolloClient, gql } from "@apollo/client"
+import { GaloyGQL, subscriptions } from "@galoymoney/client"
 import { useMemo, useRef } from "react"
 
-import CACHED_DATA from "store/graphql/query.cached-data"
-import SUBSCRIPTION_MY_UPDATES from "./graphql/subscription.my-updates"
 import useMainQuery from "./use-main-query"
+
+const CACHED_DATA = gql`
+  query cachedData {
+    satPriceInCents @client
+  }
+`
 
 const PriceCacheStore = (client: ApolloClient<unknown>) => ({
   read: () => {
@@ -23,9 +28,9 @@ const satPriceInCents = (update: PriceData | undefined) => {
 }
 
 export const useMyUpdates = (): UseMyUpdates => {
-  const intraLedgerUpdate = useRef<IntraLedgerUpdate | null>(null)
-  const lnUpdate = useRef<LnUpdate | null>(null)
-  const onChainUpdate = useRef<OnChainUpdate | null>(null)
+  const intraLedgerUpdate = useRef<GaloyGQL.IntraLedgerUpdate | null>(null)
+  const lnUpdate = useRef<GaloyGQL.LnUpdate | null>(null)
+  const onChainUpdate = useRef<GaloyGQL.OnChainUpdate | null>(null)
 
   const client = useApolloClient()
   const priceCacheStore = PriceCacheStore(client)
@@ -40,7 +45,7 @@ export const useMyUpdates = (): UseMyUpdates => {
     }
   }
 
-  const { data } = useSubscription(SUBSCRIPTION_MY_UPDATES)
+  const { data } = useSubscription(subscriptions.myUpdates)
 
   if (Number.isNaN(cachedPrice.current) && btcPrice) {
     updatePriceCache(satPriceInCents(btcPrice))

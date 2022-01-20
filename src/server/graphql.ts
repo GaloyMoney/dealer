@@ -10,7 +10,9 @@ const client = (req: Request) => {
     link: createHttpLink({
       uri: config.graphqlUri,
       headers: {
-        authorization: authToken ? `Bearer ${authToken}` : "",
+        "authorization": authToken ? `Bearer ${authToken}` : "",
+        "x-real-ip": req.headers["x-real-ip"],
+        "x-forwarded-for": req.headers["x-forwarded-for"],
       },
     }),
     cache: new InMemoryCache(),

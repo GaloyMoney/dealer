@@ -1,13 +1,13 @@
 import { useQuery } from "@apollo/client"
 
 import { setLocale } from "translate"
-import QUERY_ME from "store/graphql/query.main"
 import useAuthToken from "store/use-auth-token"
+import { GaloyGQL, queries } from "@galoymoney/client"
 
 const useMainQuery = () => {
   const { hasToken } = useAuthToken()
 
-  const { data } = useQuery(QUERY_ME, {
+  const { data } = useQuery(queries.main, {
     variables: { hasToken },
     onCompleted: (completed) => {
       setLocale(completed?.me?.language)
@@ -16,7 +16,7 @@ const useMainQuery = () => {
 
   const me = data?.me
   const btcWallet = me?.defaultAccount?.wallets?.find(
-    (wallet: GraphQL.BtcWallet) => wallet?.__typename === "BTCWallet",
+    (wallet: GaloyGQL.BtcWallet) => wallet?.__typename === "BTCWallet",
   )
   const btcWalletBalance = hasToken ? btcWallet?.balance ?? NaN : 0
 

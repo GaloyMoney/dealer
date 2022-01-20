@@ -6,9 +6,10 @@ import { useMyUpdates } from "store/use-my-updates"
 import { translate } from "translate"
 import SuccessCheckmark from "./sucess-checkmark"
 import { satsToBTC, useAppDispatcher } from "store"
+import { GaloyGQL } from "@galoymoney/client"
 
 type LightningInvoiceProps = {
-  invoice: GraphQL.LnInvoice | GraphQL.LnNoAmountInvoice
+  invoice: GaloyGQL.LnInvoice | GaloyGQL.LnNoAmountInvoice
   onPaymentSuccess?: () => void
 }
 
@@ -75,7 +76,7 @@ const LightningInvoice = ({ invoice, onPaymentSuccess }: LightningInvoiceProps) 
 }
 
 type OnChainInvoiceProps = {
-  btcAddress?: GraphQL.Scalars["OnChainAddress"]
+  btcAddress?: GaloyGQL.Scalars["OnChainAddress"]
   satAmount?: number
   memo?: string
   onPaymentSuccess?: () => void

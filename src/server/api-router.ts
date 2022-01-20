@@ -1,6 +1,6 @@
+import { mutations } from "@galoymoney/client"
 import "cross-fetch/polyfill" // The Apollo client depends on fetch
 import express from "express"
-import MUTATION_USER_LOGIN from "store/graphql/mutation.user-login"
 import client from "./graphql"
 
 const apiRouter = express.Router({ caseSensitive: true })
@@ -14,7 +14,7 @@ apiRouter.post("/login", async (req, res) => {
     }
 
     const { data } = await client(req).mutate({
-      mutation: MUTATION_USER_LOGIN,
+      mutation: mutations.userLogin,
       variables: { input: { phone: phoneNumber, code: authCode } },
     })
 

@@ -6,6 +6,7 @@ import SuccessCheckmark from "../sucess-checkmark"
 import SatSymbol from "../sat-symbol"
 import { satsFormatter, usdFormatter } from "store"
 import { useMyUpdates } from "store/use-my-updates"
+import { GaloyGQL } from "@galoymoney/client"
 
 const FeeDisplay = ({ satAmount }: { satAmount: number | undefined }) => {
   const { satsToUsd } = useMyUpdates()
@@ -31,7 +32,7 @@ const FeeDisplay = ({ satAmount }: { satAmount: number | undefined }) => {
 type SendActionDisplayProps = {
   loading: boolean
   error: ApolloError | undefined
-  data: GraphQL.PaymentSendPayload | undefined
+  data: GaloyGQL.PaymentSendPayload | undefined
   feeSatAmount: number | undefined
   reset: () => void
   handleSend: (event: MouseEvent<HTMLButtonElement>) => void
@@ -58,7 +59,7 @@ const SendActionDisplay = ({
         </div>
       ) : (
         <>
-          <FeeDisplay satAmount={feeSatAmount} />
+          {feeSatAmount !== undefined && <FeeDisplay satAmount={feeSatAmount} />}
           <button onClick={handleSend} disabled={loading}>
             Send {loading && <Spinner size="small" />}
           </button>

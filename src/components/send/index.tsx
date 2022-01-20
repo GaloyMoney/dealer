@@ -11,11 +11,10 @@ import SatSymbol from "../sat-symbol"
 import Spinner from "../spinner"
 import DebouncedTextarea, { OnTextValueChange } from "../debounced-textarea"
 import DebouncedInput from "../debounced-input"
-import { parsePaymentDestination } from "galoy-client/src"
 import useMainQuery from "store/use-main-query"
 import SendAction from "./send-action"
-import QUERY_USER_DEFAULT_WALLET_ID from "store/graphql/query.user-default-wallet-id"
 import useDelayedQuery from "store/use-delayed-query"
+import { GaloyGQL, parsePaymentDestination, queries } from "@galoymoney/client"
 
 const Send = () => {
   const dispatch = useAppDispatcher()
@@ -30,7 +29,7 @@ const Send = () => {
   })
 
   const [userDefaultWalletIdQuery, { loading: userDefaultWalletIdLoading }] =
-    useDelayedQuery(QUERY_USER_DEFAULT_WALLET_ID)
+    useDelayedQuery<GaloyGQL.UserDefaultWalletIdQuery>(queries.userDefaultWalletId)
 
   useEffect(() => {
     if (usdToSats && input.currency === "USD" && typeof input.amount === "number") {

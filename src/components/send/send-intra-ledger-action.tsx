@@ -1,14 +1,13 @@
 import { useMutation } from "@apollo/client"
+import { GaloyGQL, mutations } from "@galoymoney/client"
 import { MouseEvent } from "react"
-
-import MUTATION_INTRA_LEDGER_PAYMENT_SEND from "store/graphql/mutation.intra-ledger-paymest-send"
 
 import SendActionDisplay from "./send-action-display"
 
 const SendIntraLedgerAction = (props: SendActionProps) => {
   const [sendPayment, { loading, error, data }] = useMutation<{
-    intraLedgerPaymentSend: GraphQL.PaymentSendPayload
-  }>(MUTATION_INTRA_LEDGER_PAYMENT_SEND, {
+    intraLedgerPaymentSend: GaloyGQL.PaymentSendPayload
+  }>(mutations.intraLedgerPaymentSend, {
     onError: console.error,
   })
 

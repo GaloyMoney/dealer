@@ -1,26 +1,22 @@
 import { useMutation } from "@apollo/client"
 import { MouseEvent, useEffect } from "react"
 
-import MUTATION_LN_INVOICE_PAYMENT_SEND from "store/graphql/mutation.ln-invoice-payment-send"
-import MUTATION_LN_NOAMOUNT_INVOICE_PAYMENT_SEND from "store/graphql/mutation.ln-noamount-invoice-payment-send"
-import MUTATION_LN_INVOICE_FEE_PROPE from "store/graphql/mutation.ln-invoice-fee-prope"
-import MUTATION_LN_NO_AMOUNT_INVOICE_FEE_PROPE from "store/graphql/mutation.ln-no-amount-invoice-fee-probe"
-
 import SendActionDisplay from "./send-action-display"
+import { GaloyGQL, mutations } from "@galoymoney/client"
 
-export const SendLnInvoiceAction = (props: SendActionProps) => {
+export const SendLnInvoiceAction = (props: SendLnActionProps) => {
   const [sendPayment, { loading, error, data }] = useMutation<
-    { lnInvoicePaymentSend: GraphQL.PaymentSendPayload },
-    { input: GraphQL.LnInvoicePaymentInput }
-  >(MUTATION_LN_INVOICE_PAYMENT_SEND, {
+    { lnInvoicePaymentSend: GaloyGQL.PaymentSendPayload },
+    { input: GaloyGQL.LnInvoicePaymentInput }
+  >(mutations.lnInvoicePaymentSend, {
     onError: console.error,
   })
 
   const [propeForFee, { loading: feeLoading, error: feeError, data: feeData }] =
     useMutation<
-      { lnInvoiceFeeProbe: GraphQL.SatAmountPayload },
-      { input: GraphQL.LnInvoiceFeeProbeInput }
-    >(MUTATION_LN_INVOICE_FEE_PROPE, {
+      { lnInvoiceFeeProbe: GaloyGQL.SatAmountPayload },
+      { input: GaloyGQL.LnInvoiceFeeProbeInput }
+    >(mutations.lnInvoiceFeePrope, {
       onError: console.error,
     })
 
@@ -32,7 +28,7 @@ export const SendLnInvoiceAction = (props: SendActionProps) => {
     })
   }, [propeForFee, props.btcWalletId, props.paymentRequset, props.sameNode])
 
-  const feeSatAmount = feeData?.lnInvoiceFeeProbe?.amount
+  const feeSatAmount = feeData?.lnInvoiceFeeProbe?.amount ?? undefined
 
   const handleSend = (event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault()
@@ -59,19 +55,19 @@ export const SendLnInvoiceAction = (props: SendActionProps) => {
   )
 }
 
-export const SendLnNoAmountInvoiceAction = (props: SendActionProps) => {
+export const SendLnNoAmountInvoiceAction = (props: SendLnNoAmountActionProps) => {
   const [sendPayment, { loading, error, data }] = useMutation<
-    { lnNoAmountInvoicePaymentSend: GraphQL.PaymentSendPayload },
-    { input: GraphQL.LnNoAmountInvoicePaymentInput }
-  >(MUTATION_LN_NOAMOUNT_INVOICE_PAYMENT_SEND, {
+    { lnNoAmountInvoicePaymentSend: GaloyGQL.PaymentSendPayload },
+    { input: GaloyGQL.LnNoAmountInvoicePaymentInput }
+  >(mutations.lnNoAmountInvoicePaymentSend, {
     onError: console.error,
   })
 
   const [propeForFee, { loading: feeLoading, error: feeError, data: feeData }] =
     useMutation<
-      { lnNoAmountInvoiceFeeProbe: GraphQL.SatAmountPayload },
-      { input: GraphQL.LnNoAmountInvoiceFeeProbeInput }
-    >(MUTATION_LN_NO_AMOUNT_INVOICE_FEE_PROPE, {
+      { lnNoAmountInvoiceFeeProbe: GaloyGQL.SatAmountPayload },
+      { input: GaloyGQL.LnNoAmountInvoiceFeeProbeInput }
+    >(mutations.lnNoAmountInvoiceFeePrope, {
       onError: console.error,
     })
 
@@ -95,7 +91,9 @@ export const SendLnNoAmountInvoiceAction = (props: SendActionProps) => {
     props.satAmount,
   ])
 
-  const feeSatAmount = props.sameNode ? 0 : feeData?.lnNoAmountInvoiceFeeProbe?.amount
+  const feeSatAmount = props.sameNode
+    ? 0
+    : feeData?.lnNoAmountInvoiceFeeProbe?.amount ?? undefined
 
   const handleSend = (event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault()

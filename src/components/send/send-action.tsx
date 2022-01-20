@@ -19,14 +19,14 @@ const SendAction = (props: SendActionProps) => {
 
   if (props.paymentType === "lightning") {
     return props.fixedAmount ? (
-      <SendLnInvoiceAction {...props} />
+      <SendLnInvoiceAction {...(props as SendLnActionProps)} />
     ) : (
-      <SendLnNoAmountInvoiceAction {...props} />
+      <SendLnNoAmountInvoiceAction {...(props as SendLnNoAmountActionProps)} />
     )
   }
 
   if (props.paymentType === "onchain") {
-    return <SendOnChainAction {...props} />
+    return <SendOnChainAction {...(props as SendOnChainActionProps)} />
   }
 
   if (props.paymentType === "intraledger") {

@@ -1,20 +1,19 @@
 import { useState, useEffect, useRef } from "react"
 import { useMutation } from "@apollo/client"
 
-import MUTATION_LN_INVOICE_CREATE from "store/graphql/mutation.ln-invoice-create"
-import MUTATION_LN_NO_AMOUNT_INVOICE_CREATE from "store/graphql/mutation.ln-no-amount-invoice-create"
 import Spinner from "./spinner"
 import { usdFormatter } from "store"
 import { translate } from "translate"
 
 import { LightningInvoice, OnChainInvoice } from "./invoice"
+import { GaloyGQL, mutations } from "@galoymoney/client"
 
 const INVOICE_EXPIRE_INTERVAL = 60 * 60 * 1000
 
 type InvoiceProps = {
   layer: "lightning" | "onchain"
   btcWalletId: string
-  btcAddress: GraphQL.Scalars["OnChainAddress"]
+  btcAddress: GaloyGQL.Scalars["OnChainAddress"] | undefined
   regenerate: () => void
   amount: number | ""
   currency: string
@@ -54,9 +53,9 @@ const AmountInvoiceGenerator = ({
   const timerIds = useRef<number[]>([])
 
   const [createInvoice, { loading, error, data }] = useMutation<
-    { lnInvoiceCreate: GraphQL.LnInvoicePayload },
-    { input: GraphQL.LnInvoiceCreateInput }
-  >(MUTATION_LN_INVOICE_CREATE, {
+    { lnInvoiceCreate: GaloyGQL.LnInvoicePayload },
+    { input: GaloyGQL.LnInvoiceCreateInput }
+  >(mutations.lnInvoiceCreate, {
     onError: console.error,
     onCompleted: () => setInvoiceStatus("new"),
   })
@@ -76,7 +75,7 @@ const AmountInvoiceGenerator = ({
   }, [satAmount, btcWalletId, createInvoice, currency, memo])
 
   let errorString: string | null = error?.message || null
-  let invoice: GraphQL.Maybe<GraphQL.LnInvoice> | undefined = undefined
+  let invoice: GaloyGQL.Maybe<GaloyGQL.LnInvoice> | undefined = undefined
 
   if (data) {
     const invoiceData = data.lnInvoiceCreate
@@ -138,9 +137,9 @@ const NoAmountInvoiceGenerator = ({ btcWalletId, regenerate, memo }: NoInvoicePr
   const timerIds = useRef<number[]>([])
 
   const [createInvoice, { loading, error, data }] = useMutation<
-    { lnNoAmountInvoiceCreate: GraphQL.LnNoAmountInvoicePayload },
-    { input: GraphQL.LnNoAmountInvoiceCreateInput }
-  >(MUTATION_LN_NO_AMOUNT_INVOICE_CREATE, {
+    { lnNoAmountInvoiceCreate: GaloyGQL.LnNoAmountInvoicePayload },
+    { input: GaloyGQL.LnNoAmountInvoiceCreateInput }
+  >(mutations.lnNoAmountInvoiceCreate, {
     onError: console.error,
     onCompleted: () => setInvoiceStatus("new"),
   })
@@ -160,7 +159,7 @@ const NoAmountInvoiceGenerator = ({ btcWalletId, regenerate, memo }: NoInvoicePr
   }, [btcWalletId, createInvoice, memo])
 
   let errorString: string | null = error?.message || null
-  let invoice: GraphQL.Maybe<GraphQL.LnNoAmountInvoice> | undefined = undefined
+  let invoice: GaloyGQL.Maybe<GaloyGQL.LnNoAmountInvoice> | undefined = undefined
 
   if (data) {
     const invoiceData = data.lnNoAmountInvoiceCreate

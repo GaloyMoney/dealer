@@ -73,31 +73,13 @@ type CachedData = {
   satPriceInCents: number
 }
 
-type IntraLedgerUpdate = {
-  txNotificationType: string
-  amount: number
-  usdPerSat: number
-}
-
-type LnUpdate = {
-  paymentHash: string
-  status: string
-}
-
-type OnChainUpdate = {
-  txNotificationType: string
-  txHash: string
-  amount: number
-  usdPerSat: number
-}
-
 type UseMyUpdates = {
   satsToUsd: ((sats: number) => number) | null
   usdToSats: ((usd: number) => number) | null
   currentBalance: number | null
-  intraLedgerUpdate: IntraLedgerUpdate | null
-  lnUpdate: LnUpdate | null
-  onChainUpdate: OnChainUpdate | null
+  intraLedgerUpdate: import("@galoymoney/client").GaloyGQL.IntraLedgerUpdate | null
+  lnUpdate: import("@galoymoney/client").GaloyGQL.LnUpdate | null
+  onChainUpdate: import("@galoymoney/client").GaloyGQL.OnChainUpdate | null
 }
 
 type SpinnerSize = "small" | "big"
@@ -126,4 +108,17 @@ type InvoiceInput = {
 type SendActionProps = InvoiceInput & {
   btcWalletId: string
   reset: () => void
+}
+
+type SendOnChainActionProps = SendActionProps & {
+  address: string
+  satAmount: number
+}
+
+type SendLnActionProps = SendActionProps & {
+  paymentRequset: string
+}
+
+type SendLnNoAmountActionProps = SendLnActionProps & {
+  satAmount: number
 }

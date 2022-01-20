@@ -12,7 +12,7 @@ import SatSymbol from "./sat-symbol"
 import Spinner from "./spinner"
 import DebouncedTextarea, { OnTextValueChange } from "./debounced-textarea"
 import { useMutation } from "@apollo/client"
-import ON_CHAIN_AODDRESS_CURRENT from "store/graphql/query.on-chain-address-current"
+import { GaloyGQL, mutations } from "@galoymoney/client"
 
 type InvoiceInputState = {
   layer: "lightning" | "onchain"
@@ -36,9 +36,9 @@ const Receive = () => {
   })
 
   const [generateBtcAddress, { loading, error, data }] = useMutation<
-    { onChainAddressCurrent: GraphQL.OnChainAddressPayload },
-    { input: GraphQL.OnChainAddressCreateInput }
-  >(ON_CHAIN_AODDRESS_CURRENT, {
+    { onChainAddressCurrent: GaloyGQL.OnChainAddressPayload },
+    { input: GaloyGQL.OnChainAddressCreateInput }
+  >(mutations.onChainAddressCurrent, {
     onError: console.error,
   })
 
@@ -84,7 +84,7 @@ const Receive = () => {
     console.error(error || onChainAddressErrrors)
   }
 
-  const btcAddress = data?.onChainAddressCurrent?.address
+  const btcAddress = data?.onChainAddressCurrent?.address ?? undefined
 
   const handleAmountUpdate: OnNumberValueChange = useCallback((numberValue) => {
     setInput((currInput) => ({

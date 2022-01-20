@@ -3,7 +3,7 @@ import { DocumentNode } from "graphql"
 import { ApolloQueryResult, OperationVariables, useApolloClient } from "@apollo/client"
 import { useCallback, useState } from "react"
 
-const useDelayedQuery = <T = any>(
+const useDelayedQuery = <T = unknown>(
   query: DocumentNode,
 ): [
   (variables: OperationVariables) => Promise<ApolloQueryResult<T | undefined>>,
