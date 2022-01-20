@@ -1,3 +1,7 @@
 Object.defineProperty(window, "__G_DATA", {
-  value: {},
+  value: {
+    GwwConfig: {
+      graphqlUri: "http://testnet.galoy.io/graphql",
+    },
+  },
 })

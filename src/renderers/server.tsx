@@ -1,6 +1,7 @@
 import { Request } from "express"
 import { renderToStringWithData } from "@apollo/client/react/ssr"
 
+import config from "../store/config"
 import client from "../server/graphql"
 import appRoutes from "server/routes"
 
@@ -24,8 +25,11 @@ export const serverRenderer =
     const initialMarkup = await renderToStringWithData(App)
     const ssrData = apolloClient.extract()
 
+    const { supportEmail, graphqlUri, graphqlSubscriptionUri, authEndpoint } = config
+
     return Promise.resolve({
       GwwState,
+      GwwConfig: { supportEmail, graphqlUri, graphqlSubscriptionUri, authEndpoint },
       initialMarkup,
       ssrData,
       pageData: appRoutes[path],

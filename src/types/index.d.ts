@@ -32,6 +32,12 @@ declare interface Window {
   __G_DATA: {
     GwwState: GwwState
     ssrData: NormalizedCacheObject
+    GwwConfig: {
+      supportEmail: string
+      graphqlUri: string
+      graphqlSubscriptionUri: string
+      authEndpoint: string
+    }
   }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initGeetest: (...args: any[]) => void

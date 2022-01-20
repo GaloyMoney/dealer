@@ -9,7 +9,7 @@
     "strict": true,
     "forceConsistentCasingInFileNames": true,
     "alwaysStrict": true,
-    "allowJs": true,
+    "allowJs": false,
     "sourceMap": true,
     "moduleResolution": "node",
     "esModuleInterop": true,

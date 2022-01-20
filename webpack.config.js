@@ -2,14 +2,10 @@ const path = require("path")
 const fs = require("fs")
 const webpack = require("webpack")
 
-require("./src/store/env-check")
-
-const isDev = process.env.NODE_ENV !== "production"
-
 const MiniCssExtractPlugin = require("mini-css-extract-plugin")
 
-const config = {
-  devtool: isDev ? "inline-source-map" : false,
+const config = (env) => ({
+  devtool: env.dev ? "inline-source-map" : false,
   resolve: {
     modules: [path.resolve("./src"), path.resolve("./node_modules")],
     extensions: [".ts", ".tsx", ".js", ".json"],
@@ -23,7 +19,7 @@ const config = {
   },
   output: {
     path: path.resolve("public", "bundles"),
-    filename: isDev ? "[name].js" : "[name].[chunkhash].js",
+    filename: env.dev ? "[name].js" : "[name].[chunkhash].js",
   },
   module: {
     rules: [
@@ -65,15 +61,14 @@ const config = {
     },
   },
   plugins: [
-    new webpack.ProvidePlugin({
-      Buffer: ["buffer", "Buffer"],
-    }),
+    new webpack.ProvidePlugin({ Buffer: ["buffer", "Buffer"] }),
     new webpack.DefinePlugin({
-      "process.env": JSON.stringify(process.env),
+      "process.env.NODE_ENV": JSON.stringify(env.dev ? "development" : "production"),
     }),
+
     new MiniCssExtractPlugin({
-      filename: isDev ? "[name].css" : "[name].[fullhash].css",
-      chunkFilename: isDev ? "[id].css" : "[id].[fullhash].css",
+      filename: env.dev ? "[name].css" : "[name].[fullhash].css",
+      chunkFilename: env.dev ? "[id].css" : "[id].[fullhash].css",
     }),
     function (compiler) {
       compiler.hooks.done.tap("gvars", (stats) => {
@@ -94,6 +89,6 @@ const config = {
       })
     },
   ],
-}
+})
 
 module.exports = config
