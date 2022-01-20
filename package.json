@@ -21,7 +21,7 @@
   },
   "dependencies": {
     "@apollo/client": "^3.5.7",
-    "@galoymoney/client": "^0.0.8",
+    "@galoymoney/client": "^0.0.9",
     "@testing-library/jest-dom": "^5.16.0",
     "@testing-library/react": "^12.1.2",
     "@testing-library/user-event": "^13.5.0",
