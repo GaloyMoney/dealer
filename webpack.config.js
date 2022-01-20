@@ -2,6 +2,8 @@ const path = require("path")
 const fs = require("fs")
 const webpack = require("webpack")
 
+require("./src/store/env-check")
+
 const isDev = process.env.NODE_ENV !== "production"
 
 const MiniCssExtractPlugin = require("mini-css-extract-plugin")
