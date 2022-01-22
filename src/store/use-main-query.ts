@@ -7,7 +7,7 @@ import { GaloyGQL, queries } from "@galoymoney/client"
 const useMainQuery = () => {
   const { hasToken } = useAuthToken()
 
-  const { data } = useQuery(queries.main, {
+  const { data } = useQuery<GaloyGQL.MeQuery>(queries.main, {
     variables: { hasToken },
     onCompleted: (completed) => {
       setLocale(completed?.me?.language)
@@ -16,7 +16,7 @@ const useMainQuery = () => {
 
   const me = data?.me
   const btcWallet = me?.defaultAccount?.wallets?.find(
-    (wallet: GaloyGQL.BtcWallet) => wallet?.__typename === "BTCWallet",
+    (wallet) => wallet?.__typename === "BTCWallet",
   )
   const btcWalletBalance = hasToken ? btcWallet?.balance ?? NaN : 0
 

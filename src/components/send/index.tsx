@@ -14,7 +14,13 @@ import DebouncedInput from "../debounced-input"
 import useMainQuery from "store/use-main-query"
 import SendAction from "./send-action"
 import useDelayedQuery from "store/use-delayed-query"
-import { GaloyGQL, parsePaymentDestination, queries } from "@galoymoney/client"
+import {
+  GaloyGQL,
+  parsePaymentDestination,
+  queries,
+  ValidPaymentReponse,
+} from "@galoymoney/client"
+import Scan from "./scan"
 
 const Send = () => {
   const dispatch = useAppDispatcher()
@@ -49,6 +55,52 @@ const Send = () => {
     }
   }, [input.amount, input.currency])
 
+  const setInputFromParsedDestination = useCallback(
+    async (parsedDestination: ValidPaymentReponse) => {
+      const newInputState: Partial<InvoiceInput> = {
+        valid: parsedDestination.valid,
+        errorMessage: parsedDestination.errorMessage,
+        paymentType: parsedDestination.paymentType,
+        sameNode: parsedDestination.sameNode,
+        fixedAmount: parsedDestination.amount !== undefined,
+        paymentRequset: parsedDestination.paymentRequest,
+        address: parsedDestination.address,
+      }
+
+      if (parsedDestination.paymentType === "intraledger") {
+        // Validate account handle (and get the default wallet id for account)
+        const { data, error } = await userDefaultWalletIdQuery({
+          username: parsedDestination.handle,
+        })
+
+        if (error) {
+          newInputState.errorMessage = error?.message || "Invaild username"
+          console.error(error)
+        } else {
+          newInputState.reciepientWalletId = data?.userDefaultWalletId
+        }
+      }
+
+      let newDestination: string | undefined = ""
+      if (parsedDestination.paymentType === "onchain") {
+        newDestination = parsedDestination.address
+      }
+
+      if (parsedDestination.paymentType === "lightning") {
+        newDestination = parsedDestination.paymentRequest
+      }
+
+      setInput((currInput) => ({
+        ...currInput,
+        ...newInputState,
+        destination: newDestination,
+        amount: newInputState.fixedAmount ? parsedDestination.amount : currInput.amount,
+        currency: newInputState.fixedAmount ? "SATS" : currInput.currency,
+      }))
+    },
+    [userDefaultWalletIdQuery],
+  )
+
   useEffect(() => {
     const parseInput = async () => {
       if (input.destination !== undefined) {
@@ -57,41 +109,11 @@ const Send = () => {
           network: config.network,
           pubKey,
         })
-
-        const newInputState: Partial<InvoiceInput> = {
-          valid: parsedDestination.valid,
-          errorMessage: parsedDestination.errorMessage,
-          paymentType: parsedDestination.paymentType,
-          sameNode: parsedDestination.sameNode,
-          fixedAmount: parsedDestination.amount !== undefined,
-          paymentRequset: parsedDestination.paymentRequest,
-          address: parsedDestination.address,
-        }
-
-        if (parsedDestination.paymentType === "intraledger") {
-          // Validate account handle (and get the default wallet id for account)
-          const { data, error } = await userDefaultWalletIdQuery({
-            username: parsedDestination.handle,
-          })
-
-          if (error) {
-            newInputState.errorMessage = error?.message || "Invaild username"
-            console.error(error)
-          } else {
-            newInputState.reciepientWalletId = data?.userDefaultWalletId
-          }
-        }
-
-        setInput((currInput) => ({
-          ...currInput,
-          ...newInputState,
-          amount: newInputState.fixedAmount ? parsedDestination.amount : currInput.amount,
-          currency: newInputState.fixedAmount ? "SATS" : currInput.currency,
-        }))
+        setInputFromParsedDestination(parsedDestination)
       }
     }
     parseInput()
-  }, [input.destination, pubKey, userDefaultWalletIdQuery])
+  }, [input.destination, pubKey, setInputFromParsedDestination])
 
   const handleAmountUpdate: OnNumberValueChange = useCallback(() => {
     setInput((currInput) => ({ ...currInput, amount: undefined }))
@@ -197,12 +219,39 @@ const Send = () => {
     dispatch({ type: "reset-current-screen" })
   }
 
+  const parseQRCode = useCallback<(destination: string) => false | ValidPaymentReponse>(
+    (destination) => {
+      if (destination.match(/^((bitcoin:|ligtning:)|1|3|bc|ln)/iu)) {
+        const parsedDestination = parsePaymentDestination({
+          destination,
+          network: config.network,
+          pubKey,
+        })
+
+        if (!parsedDestination.valid) {
+          return false
+        }
+
+        return parsedDestination
+      }
+      return false
+    },
+    [pubKey],
+  )
+
   const inputValue = input.amount === undefined ? "" : input.amount.toString()
-  const showSpinner =
+  const pendingInput =
     input.amount === undefined ||
     input.destination === undefined ||
-    input.memo === undefined ||
-    userDefaultWalletIdLoading
+    input.memo === undefined
+  const pendingSatAmount =
+    typeof input.amount === "number" && input.satAmount === undefined
+
+  const showSpinner = pendingInput || pendingSatAmount || userDefaultWalletIdLoading
+
+  if (!btcWalletId) {
+    return null
+  }
 
   return (
     <div className="send">
@@ -233,6 +282,7 @@ const Send = () => {
         <DebouncedInput
           onChange={handleDestinationUpdate}
           onDebouncedChange={handleDebouncedDestinationUpdate}
+          value={input.destination}
           name="destination"
           autoComplete="off"
           placeholder={translate("username or invoice")}
@@ -248,6 +298,10 @@ const Send = () => {
         />
       </div>
       {conversionDisplay && <div className="amount-converted">{conversionDisplay}</div>}
+      <Scan
+        onBarcodeDetected={parseQRCode}
+        onValidBarcode={setInputFromParsedDestination}
+      />
       <div className="action-container center-display">
         {showSpinner ? (
           <Spinner size="big" />

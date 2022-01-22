@@ -1,7 +1,8 @@
 type NormalizedCacheObject = import("@apollo/client").NormalizedCacheObject
+type BarcodeDetector = typeof import("barcode-detector/dist/BarcodeDetector").default
 
 type RoutePath = typeof import("../server/routes").SupportedRoutes[number]
-type RouteInfo = Record<string, string | (() => JSX.Element)>
+type RouteInfo = Record<string, string | (() => JSX.Element | null)>
 type AppRoutes = Record<RoutePath, RouteInfo>
 
 type PriceData = {
@@ -29,6 +30,7 @@ type GwwContextType = {
 }
 
 declare interface Window {
+  BarcodeDetector: BarcodeDetector
   __G_DATA: {
     GwwState: GwwState
     ssrData: NormalizedCacheObject
@@ -127,4 +129,8 @@ type SendLnActionProps = SendActionProps & {
 
 type SendLnNoAmountActionProps = SendLnActionProps & {
   satAmount: number
+}
+
+type BarCode = {
+  rawValue: string
 }

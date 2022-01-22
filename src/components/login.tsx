@@ -55,6 +55,9 @@ const PhoneNumber = ({ onSuccess }: PhoneNumberProps) => {
           autoFocus
           onChange={() => setErrorMessage("")}
         />
+        <button type="submit">
+          <i aria-hidden className="far fa-arrow-alt-circle-right"></i>
+        </button>
       </form>
       {errorMessage && <div className="error">{errorMessage}</div>}
     </div>
@@ -102,6 +105,9 @@ const AuthCode = ({ phoneNumber }: AuthCodeProps) => {
           pattern="[0-9]{6}"
           onChange={() => setErrorMessage("")}
         />
+        <button type="submit">
+          <i aria-hidden className="far fa-arrow-alt-circle-right"></i>
+        </button>
       </form>
       {errorMessage && <div className="error">{errorMessage}</div>}
     </div>

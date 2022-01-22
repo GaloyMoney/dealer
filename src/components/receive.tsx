@@ -66,7 +66,7 @@ const Receive = () => {
   }, [input.currency, input.debouncedAmount, shouldUpdateSatsForInvoice])
 
   useEffect(() => {
-    if (input.layer === "onchain") {
+    if (input.layer === "onchain" && btcWalletId) {
       // Layer switched to onchain, generate a btc address
       generateBtcAddress({
         variables: {
@@ -187,6 +187,10 @@ const Receive = () => {
       </>
     )
   }, [convertedValues])
+
+  if (!btcWalletId) {
+    return null
+  }
 
   const inputValue = Number.isNaN(input.amount) ? "" : input.amount.toString()
   const showInvoiceSpinner = Number.isNaN(input.debouncedAmount) || loading

@@ -30,7 +30,7 @@ Open [http://localhost:1234](http://localhost:1234) to view it in the browser.
 
 ## How to run this repo for production?
 
-In the project directory, modify the `.env` file as needed, then you can run:
+In the project directory, export the env vars, then you can run:
 
 ```sh
 yarn install
@@ -40,10 +40,4 @@ yarn build:all
 
 # To start the app
 yarn prod:start
-
-# To stop the app
-yarn prod:stop
-
-# To see production logs
-yarn prod:logs
 ```

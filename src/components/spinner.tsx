@@ -12,7 +12,7 @@ const faSize = (size: SpinnerSize): string => {
 type Props = { size?: SpinnerSize }
 
 const Spinner = ({ size = "small" }: Props) => {
-  return <i className={`spinner fas fa-spinner fa-spin ${faSize(size)}`} />
+  return <i aria-hidden className={`spinner fas fa-spinner fa-spin ${faSize(size)}`} />
 }
 
 export default Spinner

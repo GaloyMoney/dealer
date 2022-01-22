@@ -6782,6 +6782,14 @@ exports[`Root renders Login and matches snapshot 1`] = `
             type="tel"
           />
         </div>
+        <button
+          type="submit"
+        >
+          <i
+            aria-hidden="true"
+            class="far fa-arrow-alt-circle-right"
+          />
+        </button>
       </form>
     </div>
   </div>

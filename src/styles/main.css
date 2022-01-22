@@ -28,10 +28,6 @@ body {
   color: var(--color-gray);
 }
 
-input[type="tel"] {
-  border: thin solid var(--color-primary);
-}
-
 .error {
   color: red;
   margin: 1rem auto;
@@ -218,7 +214,7 @@ input[type="tel"] {
     margin-bottom: 1rem;
   }
   * input {
-    width: 100%;
+    min-width: 275px;
   }
 }
 
@@ -277,4 +273,20 @@ input[type="tel"] {
 
 .geetest_wind.geetest_panel .geetest_panel_box {
   top: 25% !important;
+}
+
+.qr-code-camera {
+  position: absolute;
+  top: 10%;
+  margin-left: auto;
+  margin-right: auto;
+  left: 0;
+  right: 0;
+  text-align: center;
+}
+
+.scan {
+  margin: 1rem auto;
+  font-size: 1.25rem;
+  font-weight: bold;
 }
