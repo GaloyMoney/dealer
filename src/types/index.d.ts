@@ -111,6 +111,8 @@ type InvoiceInput = {
   paymentRequset?: string // if payment is lightning
   address?: string // if payment is onchain
   reciepientWalletId?: string // if payment is intraledger
+
+  newDestination?: string // for scanned codes
 }
 
 type SendActionProps = InvoiceInput & {

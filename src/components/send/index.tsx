@@ -81,7 +81,7 @@ const Send = () => {
         }
       }
 
-      let newDestination: string | undefined = ""
+      let newDestination: string | undefined = undefined
       if (parsedDestination.paymentType === "onchain") {
         newDestination = parsedDestination.address
       }
@@ -93,7 +93,7 @@ const Send = () => {
       setInput((currInput) => ({
         ...currInput,
         ...newInputState,
-        destination: newDestination,
+        newDestination,
         amount: newInputState.fixedAmount ? parsedDestination.amount : currInput.amount,
         currency: newInputState.fixedAmount ? "SATS" : currInput.currency,
       }))
@@ -282,7 +282,7 @@ const Send = () => {
         <DebouncedInput
           onChange={handleDestinationUpdate}
           onDebouncedChange={handleDebouncedDestinationUpdate}
-          value={input.destination}
+          newValue={input.newDestination}
           name="destination"
           autoComplete="off"
           placeholder={translate("username or invoice")}

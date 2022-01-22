@@ -276,13 +276,28 @@ body {
 }
 
 .qr-code-camera {
-  position: absolute;
-  top: 10%;
-  margin-left: auto;
-  margin-right: auto;
+  position: fixed;
   left: 0;
   right: 0;
-  text-align: center;
+  top: 0;
+  bottom: 0;
+  background-color: var(--color-highlight-bg);
+  padding-top: 10%;
+  #qr-code-camera {
+    margin: 0 auto;
+    max-width: 600px;
+    video {
+      width: 100% !important;
+    }
+  }
+  .close {
+    margin-top: 0.5rem;
+    color: var(--color-highlight-fg);
+  }
+  .spinner,
+  .close {
+    text-align: center;
+  }
 }
 
 .scan {

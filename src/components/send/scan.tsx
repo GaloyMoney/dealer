@@ -1,3 +1,5 @@
+import Spinner from "components/spinner"
+import { Html5Qrcode, Html5QrcodeSupportedFormats } from "html5-qrcode"
 import { useEffect, useRef, useState } from "react"
 
 type Props = {
@@ -9,52 +11,39 @@ type Props = {
 
 const Scan = ({ onBarcodeDetected, onValidBarcode }: Props) => {
   const [detecting, setDetecting] = useState<boolean>(false)
-  const [showCloseButton, setShowCloseButton] = useState<boolean>(false)
-  const videoElementRef = useRef<HTMLVideoElement>(null)
+  const [cameraReady, setCameraReady] = useState<boolean>(false)
+  const qrCodeRef = useRef<Html5Qrcode | null>(null)
+
   useEffect(() => {
-    const supported = "mediaDevices" in navigator
-    if (supported && detecting) {
+    if (detecting) {
+      qrCodeRef.current =
+        qrCodeRef.current ||
+        new Html5Qrcode("qr-code-camera", {
+          formatsToSupport: [Html5QrcodeSupportedFormats.QR_CODE],
+          verbose: false,
+        })
+
       const detectBarcode = async () => {
-        const QRCodeDetecor =
-          "BarcodeDetector" in window
-            ? window.BarcodeDetector
-            : await import("barcode-detector")
-        const barcodeDetector = new QRCodeDetecor({ formats: ["qr_code"] })
+        const onScanSuccess = async (decodedText: string) => {
+          const parsedResult = onBarcodeDetected(decodedText)
 
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true })
-        const video = videoElementRef.current
-
-        if (!video || !barcodeDetector) {
-          return
-        }
-
-        video.srcObject = stream
-        video.onplaying = () => {
-          setShowCloseButton(true)
-        }
-
-        const renderLoop = async () => {
-          try {
-            if (!detecting) {
-              return
-            }
-            requestAnimationFrame(renderLoop)
-            const barcodes: BarCode[] = await barcodeDetector.detect(video)
-            for (const barcode of barcodes) {
-              const parsedResult = onBarcodeDetected(barcode.rawValue)
-              if (parsedResult) {
-                onValidBarcode(parsedResult)
-                stream.getTracks().forEach((track) => track.stop())
-                setDetecting(false)
-                break
-              }
-            }
-          } catch (err) {
-            // Do nothing
+          if (parsedResult) {
+            onValidBarcode(parsedResult)
+            await qrCodeRef.current?.stop()
+            setDetecting(false)
           }
         }
 
-        renderLoop()
+        const config = { fps: 2 }
+        await qrCodeRef.current?.start(
+          { facingMode: "environment" },
+          config,
+          onScanSuccess,
+          () => {
+            // Do nothing for invalid scans
+          },
+        )
+        setCameraReady(true)
       }
       detectBarcode()
     }
@@ -64,28 +53,27 @@ const Scan = ({ onBarcodeDetected, onValidBarcode }: Props) => {
     setDetecting(true)
   }
 
-  const handleClose = () => {
-    if (videoElementRef.current) {
-      ;(videoElementRef.current.srcObject as MediaStream)
-        .getTracks()
-        .forEach((track) => track.stop())
-    }
+  const handleClose = async () => {
+    await qrCodeRef.current?.stop()
     setDetecting(false)
   }
 
   return (
     <div>
-      <div className="scan link center-display" onClick={scanQRCode}>
-        Scan a QR code
-      </div>
-      {detecting && (
+      {detecting ? (
         <div className="qr-code-camera">
-          <video ref={videoElementRef} autoPlay />
-          {showCloseButton && (
+          <div id="qr-code-camera"></div>
+          {cameraReady ? (
             <div className="close link" onClick={handleClose}>
               Close
             </div>
+          ) : (
+            <Spinner size="big" />
           )}
+        </div>
+      ) : (
+        <div className="scan link center-display" onClick={scanQRCode}>
+          Scan a QR code
         </div>
       )}
     </div>

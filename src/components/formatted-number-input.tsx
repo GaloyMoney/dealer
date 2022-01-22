@@ -53,7 +53,7 @@ const FormattedNumberInput = ({
 
   const setDebouncedInputValue = useDebouncedCallback((debouncedValue) => {
     setInput((currInput) => ({ ...currInput, debouncedValue, typing: false }))
-  }, 1000)
+  }, 1500)
 
   useEffect(() => {
     if (input.typing) {
