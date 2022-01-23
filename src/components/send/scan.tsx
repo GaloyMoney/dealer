@@ -1,6 +1,7 @@
 import Spinner from "components/spinner"
 import { Html5Qrcode, Html5QrcodeSupportedFormats } from "html5-qrcode"
 import { useEffect, useRef, useState } from "react"
+import { translate } from "translate"
 
 type Props = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -65,7 +66,7 @@ const Scan = ({ onBarcodeDetected, onValidBarcode }: Props) => {
           <div id="qr-code-camera"></div>
           {cameraReady ? (
             <div className="close link" onClick={handleClose}>
-              Close
+              {translate("Close")}
             </div>
           ) : (
             <Spinner size="big" />
@@ -73,7 +74,7 @@ const Scan = ({ onBarcodeDetected, onValidBarcode }: Props) => {
         </div>
       ) : (
         <div className="scan link center-display" onClick={scanQRCode}>
-          Scan a QR code
+          {translate("Scan QR code")}
         </div>
       )}
     </div>

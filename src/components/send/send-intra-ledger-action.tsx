@@ -28,7 +28,7 @@ const SendIntraLedgerAction = (props: SendActionProps) => {
   return (
     <SendActionDisplay
       loading={loading}
-      error={error}
+      error={error?.message}
       data={data?.intraLedgerPaymentSend}
       feeSatAmount={0}
       reset={props.reset}

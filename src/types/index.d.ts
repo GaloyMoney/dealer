@@ -1,5 +1,4 @@
 type NormalizedCacheObject = import("@apollo/client").NormalizedCacheObject
-type BarcodeDetector = typeof import("barcode-detector/dist/BarcodeDetector").default
 
 type RoutePath = typeof import("../server/routes").SupportedRoutes[number]
 type RouteInfo = Record<string, string | (() => JSX.Element | null)>
@@ -30,7 +29,6 @@ type GwwContextType = {
 }
 
 declare interface Window {
-  BarcodeDetector: BarcodeDetector
   __G_DATA: {
     GwwState: GwwState
     ssrData: NormalizedCacheObject
@@ -117,6 +115,7 @@ type InvoiceInput = {
 
 type SendActionProps = InvoiceInput & {
   btcWalletId: string
+  btcWalletBalance: number
   reset: () => void
 }
 

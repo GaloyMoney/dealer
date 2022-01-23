@@ -8,6 +8,7 @@ import { history, useRequest } from "store"
 
 import Spinner from "./spinner"
 import { GaloyGQL, mutations } from "@galoymoney/client"
+import { errorsText } from "store/graphql"
 
 type PhoneNumberProps = { onSuccess: (arg: string) => void }
 
@@ -146,9 +147,7 @@ const CaptchaChallenge = ({ phoneNumber }: AuthCodeProps) => {
             },
           },
         })
-        const errorMessage = data?.captchaRequestAuthCode?.errors
-          ?.map((err) => err.message)
-          .join(", ")
+        const errorMessage = errorsText(data?.captchaRequestAuthCode)
 
         setCaptchaState({ status: errorMessage ? "error" : "success", errorMessage })
       }

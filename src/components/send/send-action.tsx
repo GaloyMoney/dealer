@@ -4,8 +4,16 @@ import { SendLnInvoiceAction, SendLnNoAmountInvoiceAction } from "./send-ln-acti
 import SendOnChainAction from "./send-onchain-action"
 
 const SendAction = (props: SendActionProps) => {
-  if (props.errorMessage) {
-    return <div className="error">{props.errorMessage}</div>
+  let { errorMessage } = props
+
+  if (props.satAmount && props.satAmount > props.btcWalletBalance) {
+    errorMessage = translate("Payment amount exceeds balance of %{balance} sats", {
+      balance: props.btcWalletBalance,
+    })
+  }
+
+  if (errorMessage) {
+    return <div className="error">{errorMessage}</div>
   }
 
   const validInput =

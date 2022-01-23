@@ -46,7 +46,7 @@ const SendOnChainAction = (props: SendOnChainActionProps) => {
   return (
     <SendActionDisplay
       loading={loading || feeLoading}
-      error={error || feeError}
+      error={error?.message || feeError?.message}
       data={data?.onChainPaymentSend}
       feeSatAmount={feeSatAmount}
       reset={props.reset}

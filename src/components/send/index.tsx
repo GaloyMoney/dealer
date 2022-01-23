@@ -24,7 +24,7 @@ import Scan from "./scan"
 
 const Send = () => {
   const dispatch = useAppDispatcher()
-  const { pubKey, btcWalletId } = useMainQuery()
+  const { pubKey, btcWalletId, btcWalletBalance } = useMainQuery()
   const { satsToUsd, usdToSats } = useMyUpdates()
 
   const [input, setInput] = useState<InvoiceInput>({
@@ -39,9 +39,10 @@ const Send = () => {
 
   useEffect(() => {
     if (usdToSats && input.currency === "USD" && typeof input.amount === "number") {
+      const newSatAmount = Math.round(usdToSats(input.amount as number))
       setInput((currInput) => ({
         ...currInput,
-        satAmount: Math.round(usdToSats(input.amount as number)),
+        satAmount: newSatAmount,
       }))
     }
   }, [input.amount, input.currency, usdToSats])
@@ -121,7 +122,11 @@ const Send = () => {
 
   const handleDebouncedAmountUpdate: OnNumberValueChange = useCallback(
     (debouncedAmount) => {
-      setInput((currInput) => ({ ...currInput, amount: debouncedAmount }))
+      setInput((currInput) => ({
+        ...currInput,
+        amount: debouncedAmount,
+        satAmount: undefined,
+      }))
     },
     [],
   )
@@ -240,10 +245,12 @@ const Send = () => {
   )
 
   const inputValue = input.amount === undefined ? "" : input.amount.toString()
+
   const pendingInput =
     input.amount === undefined ||
     input.destination === undefined ||
     input.memo === undefined
+
   const pendingSatAmount =
     typeof input.amount === "number" && input.satAmount === undefined
 
@@ -306,7 +313,12 @@ const Send = () => {
         {showSpinner ? (
           <Spinner size="big" />
         ) : (
-          <SendAction {...input} btcWalletId={btcWalletId} reset={resetSendScreen} />
+          <SendAction
+            {...input}
+            btcWalletId={btcWalletId}
+            btcWalletBalance={btcWalletBalance}
+            reset={resetSendScreen}
+          />
         )}
       </div>
     </div>

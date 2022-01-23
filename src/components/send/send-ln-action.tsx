@@ -3,6 +3,7 @@ import { MouseEvent, useEffect } from "react"
 
 import SendActionDisplay from "./send-action-display"
 import { GaloyGQL, mutations } from "@galoymoney/client"
+import { errorsText } from "store/graphql"
 
 export const SendLnInvoiceAction = (props: SendLnActionProps) => {
   const [sendPayment, { loading, error, data }] = useMutation<
@@ -43,10 +44,13 @@ export const SendLnInvoiceAction = (props: SendLnActionProps) => {
     })
   }
 
+  const paymentError = error?.message || errorsText(data?.lnInvoicePaymentSend)
+  const feePropeError = feeError?.message || errorsText(feeData?.lnInvoiceFeeProbe)
+
   return (
     <SendActionDisplay
       loading={loading || feeLoading}
-      error={error || feeError}
+      error={paymentError || feePropeError}
       data={data?.lnInvoicePaymentSend}
       feeSatAmount={feeSatAmount}
       reset={props.reset}
@@ -109,10 +113,14 @@ export const SendLnNoAmountInvoiceAction = (props: SendLnNoAmountActionProps) =>
     })
   }
 
+  const paymentError = error?.message || errorsText(data?.lnNoAmountInvoicePaymentSend)
+  const feePropeError =
+    feeError?.message || errorsText(feeData?.lnNoAmountInvoiceFeeProbe)
+
   return (
     <SendActionDisplay
       loading={loading || feeLoading}
-      error={error || feeError}
+      error={paymentError || feePropeError}
       data={data?.lnNoAmountInvoicePaymentSend}
       feeSatAmount={feeSatAmount}
       reset={props.reset}

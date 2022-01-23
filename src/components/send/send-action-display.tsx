@@ -1,4 +1,3 @@
-import { ApolloError } from "@apollo/client"
 import { MouseEvent } from "react"
 
 import Spinner from "../spinner"
@@ -31,7 +30,7 @@ const FeeDisplay = ({ satAmount }: { satAmount: number | undefined }) => {
 
 type SendActionDisplayProps = {
   loading: boolean
-  error: ApolloError | undefined
+  error: string | undefined
   data: GaloyGQL.PaymentSendPayload | undefined
   feeSatAmount: number | undefined
   reset: () => void
@@ -46,12 +45,14 @@ const SendActionDisplay = ({
   reset,
   handleSend,
 }: SendActionDisplayProps) => {
-  const errorString = error?.message ?? data?.errors?.map((err) => err.message).join(", ")
   const success = data?.status === "SUCCESS"
+
+  if (error) {
+    return <div className="error">{error}</div>
+  }
 
   return (
     <>
-      {errorString && <div className="error">{errorString}</div>}
       {success ? (
         <div className="invoice-paid">
           <SuccessCheckmark />

@@ -7,6 +7,7 @@ import { translate } from "translate"
 
 import { LightningInvoice, OnChainInvoice } from "./invoice"
 import { GaloyGQL, mutations } from "@galoymoney/client"
+import { errorsText } from "store/graphql"
 
 const INVOICE_EXPIRE_INTERVAL = 60 * 60 * 1000
 
@@ -74,13 +75,13 @@ const AmountInvoiceGenerator = ({
     return clearTimers
   }, [satAmount, btcWalletId, createInvoice, currency, memo])
 
-  let errorString: string | null = error?.message || null
+  let errorString: string | undefined = error?.message || undefined
   let invoice: GaloyGQL.Maybe<GaloyGQL.LnInvoice> | undefined = undefined
 
   if (data) {
     const invoiceData = data.lnInvoiceCreate
     if (invoiceData.errors?.length > 0) {
-      errorString = invoiceData.errors.map((err) => err.message).join(", ")
+      errorString = errorsText(invoiceData)
     } else {
       invoice = invoiceData.invoice
     }
@@ -158,13 +159,13 @@ const NoAmountInvoiceGenerator = ({ btcWalletId, regenerate, memo }: NoInvoicePr
     return clearTimers
   }, [btcWalletId, createInvoice, memo])
 
-  let errorString: string | null = error?.message || null
+  let errorString: string | undefined = error?.message || undefined
   let invoice: GaloyGQL.Maybe<GaloyGQL.LnNoAmountInvoice> | undefined = undefined
 
   if (data) {
     const invoiceData = data.lnNoAmountInvoiceCreate
     if (invoiceData.errors?.length > 0) {
-      errorString = invoiceData.errors.map((err) => err.message).join(", ")
+      errorString = errorsText(invoiceData)
     } else {
       invoice = invoiceData.invoice
     }
