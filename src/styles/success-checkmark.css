@@ -37,7 +37,6 @@
       content: "";
       height: 100px;
       position: absolute;
-      background: #ffffff;
       transform: rotate(-45deg);
     }
 
@@ -86,7 +85,6 @@
       height: 85px;
       position: absolute;
       transform: rotate(-45deg);
-      background-color: #ffffff;
     }
   }
 }
