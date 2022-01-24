@@ -9,6 +9,7 @@ html,
 body {
   height: 100%;
   min-width: 375px;
+  background-color: var(--color-bg);
 }
 
 body {
@@ -21,6 +22,42 @@ body {
     color: var(--color-links);
     text-decoration: none;
     cursor: pointer;
+  }
+
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  input[type="number"] {
+    -moz-appearance: textfield;
+  }
+
+  input,
+  textarea {
+    width: 100%;
+    padding: 6px 12px;
+    margin: 6px auto;
+    border: 1px solid var(--color-borders);
+    border-radius: 3px;
+  }
+
+  button,
+  .button {
+    display: inline-block;
+    padding: 6px 12px;
+    border: 1px solid var(--color-borders);
+    text-decoration: none;
+    text-align: center;
+    transition: all 0.2s;
+    color: var(--color-button-fg);
+    background-color: var(--color-button-bg);
+  }
+  button:disabled,
+  button[disabled] {
+    background-color: var(--color-disabled-button-bg);
+    color: var(--color-disabled-button-fg);
   }
 }
 
@@ -56,6 +93,20 @@ body {
   justify-content: space-around;
 }
 
+.header-nav {
+  margin-top: 3rem;
+  margin-bottom: 2rem;
+  .tabs {
+    max-width: 750px;
+    .tab {
+      width: unset;
+    }
+    a {
+      width: 100%;
+    }
+  }
+}
+
 .center-display {
   display: flex;
   flex-direction: column;
@@ -72,9 +123,6 @@ body {
     margin-right: 0.5rem;
     font-size: 1.5rem;
   }
-  input {
-    width: 100%;
-  }
   .toggle-currency {
     cursor: pointer;
     margin-left: 0.5rem;
@@ -82,20 +130,9 @@ body {
   }
 }
 
-.destination-input {
-  margin-top: 1rem;
-  input {
-    border: thin solid var(--color-gray);
-    width: 100%;
-  }
-}
-
 .note-input {
-  margin-top: 1rem;
   textarea {
-    border: thin solid var(--color-gray);
-    width: 100%;
-    font-size: 0.85rem;
+    font-size: 0.9rem;
   }
 }
 
@@ -146,19 +183,20 @@ body {
   justify-content: center;
   margin-bottom: 1.5rem;
   .tab {
-    border: thin solid var(--color-gray);
+    width: 100%;
+    border: thin solid var(--color-borders);
     padding: 0.5rem;
-    width: 50%;
     text-align: center;
   }
   .active {
     background-color: var(--color-active-bg);
     font-weight: bold;
+    color: var(--color-primary);
   }
 }
 
 #main-container {
-  height: 95%;
+  height: 92%;
   width: 90%;
   margin: 0 auto;
   max-width: 1024px;
@@ -169,8 +207,12 @@ body {
 
 #footer {
   width: 100%;
-  flex: 8;
-  justify-self: flex-end;
+  position: fixed;
+  bottom: 0;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  background-color: var(--color-bg);
+  z-index: 1;
 }
 
 .powered-by {
@@ -212,8 +254,14 @@ body {
   .intro {
     margin-bottom: 1rem;
   }
+  form {
+    width: 100%;
+  }
   * input {
     min-width: 275px;
+  }
+  input.auth-code {
+    width: unset;
   }
 }
 
@@ -247,7 +295,7 @@ body {
 }
 
 .invoice-copied {
-  margin-top: 2rem;
+  margin-top: 0.25rem;
   padding: 0.25rem;
   display: inline-block;
   background-color: var(--color-highlight-bg);
@@ -256,7 +304,7 @@ body {
 
 .fee-amount {
   padding: 0.75rem;
-  border: thin dashed var(--color-gray);
+  border: thin dashed var(--color-borders);
   display: flex;
   justify-content: center;
   align-items: center;

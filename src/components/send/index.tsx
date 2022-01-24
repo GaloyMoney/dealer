@@ -21,6 +21,7 @@ import {
   ValidPaymentReponse,
 } from "@galoymoney/client"
 import Scan from "./scan"
+import { ButtonLink } from "components/link"
 
 const Send = () => {
   const dispatch = useAppDispatcher()
@@ -43,6 +44,7 @@ const Send = () => {
       setInput((currInput) => ({
         ...currInput,
         satAmount: newSatAmount,
+        errorMessage: undefined,
       }))
     }
   }, [input.amount, input.currency, usdToSats])
@@ -52,6 +54,7 @@ const Send = () => {
       setInput((currInput) => ({
         ...currInput,
         satAmount: input.amount as number,
+        errorMessage: undefined,
       }))
     }
   }, [input.amount, input.currency])
@@ -68,7 +71,8 @@ const Send = () => {
         address: parsedDestination.address,
       }
 
-      if (parsedDestination.paymentType === "intraledger") {
+      // FIXME: Move userDefaultWalletIdQuery to galoy-client
+      if (btcWalletId && parsedDestination.paymentType === "intraledger") {
         // Validate account handle (and get the default wallet id for account)
         const { data, error } = await userDefaultWalletIdQuery({
           username: parsedDestination.handle,
@@ -99,7 +103,7 @@ const Send = () => {
         currency: newInputState.fixedAmount ? "SATS" : currInput.currency,
       }))
     },
-    [userDefaultWalletIdQuery],
+    [btcWalletId, userDefaultWalletIdQuery],
   )
 
   useEffect(() => {
@@ -114,7 +118,7 @@ const Send = () => {
       }
     }
     parseInput()
-  }, [input.destination, pubKey, setInputFromParsedDestination])
+  }, [btcWalletId, input.destination, pubKey, setInputFromParsedDestination])
 
   const handleAmountUpdate: OnNumberValueChange = useCallback(() => {
     setInput((currInput) => ({ ...currInput, amount: undefined }))
@@ -220,13 +224,13 @@ const Send = () => {
     )
   }, [convertedValues])
 
-  const resetSendScreen = () => {
+  const resetSendScreen = useCallback(() => {
     dispatch({ type: "reset-current-screen" })
-  }
+  }, [dispatch])
 
   const parseQRCode = useCallback<(destination: string) => false | ValidPaymentReponse>(
     (destination) => {
-      if (destination.match(/^((bitcoin:|ligtning:)|1|3|bc|ln)/iu)) {
+      if (destination.match(/^(bitcoin:|ligtning:|1|3|bc|ln)/iu)) {
         const parsedDestination = parsePaymentDestination({
           destination,
           network: config.network,
@@ -234,7 +238,10 @@ const Send = () => {
         })
 
         if (!parsedDestination.valid) {
-          return false
+          return {
+            ...parsedDestination,
+            errorMessage: parsedDestination?.errorMessage || translate("Invalid QR Code"),
+          }
         }
 
         return parsedDestination
@@ -244,26 +251,50 @@ const Send = () => {
     [pubKey],
   )
 
-  const inputValue = input.amount === undefined ? "" : input.amount.toString()
+  const ActionDislapy = () => {
+    if (!btcWalletId) {
+      return <ButtonLink to="/login">{translate("Login to send")}</ButtonLink>
+    }
 
-  const pendingInput =
-    input.amount === undefined ||
-    input.destination === undefined ||
-    input.memo === undefined
+    const pendingInput =
+      input.amount === undefined ||
+      input.destination === undefined ||
+      input.memo === undefined
 
-  const pendingSatAmount =
-    typeof input.amount === "number" && input.satAmount === undefined
+    const pendingSatAmount =
+      typeof input.amount === "number" && input.satAmount === undefined
 
-  const showSpinner = pendingInput || pendingSatAmount || userDefaultWalletIdLoading
+    if (input.satAmount && input.satAmount > btcWalletBalance) {
+      const errorMessage = translate(
+        "Payment amount exceeds balance of %{balance} sats",
+        {
+          balance: btcWalletBalance,
+        },
+      )
+      return <div className="error">{errorMessage}</div>
+    }
 
-  if (!btcWalletId) {
-    return null
+    const showSpinner = pendingInput || pendingSatAmount || userDefaultWalletIdLoading
+
+    if (showSpinner) {
+      return <Spinner size="big" />
+    }
+
+    return (
+      <SendAction
+        {...input}
+        btcWalletId={btcWalletId}
+        btcWalletBalance={btcWalletBalance}
+        reset={resetSendScreen}
+      />
+    )
   }
+
+  const inputValue = input.amount === undefined ? "" : input.amount.toString()
 
   return (
     <div className="send">
-      <Header />
-      <div className="page-title">{translate("Send Bitcoin")}</div>{" "}
+      <Header page="send-bitcoin" />
       <div className="amount-input center-display">
         <div className="currency-label">
           {input.currency === "SATS" ? <SatSymbol /> : "$"}
@@ -290,6 +321,7 @@ const Send = () => {
           onChange={handleDestinationUpdate}
           onDebouncedChange={handleDebouncedDestinationUpdate}
           newValue={input.newDestination}
+          type="text"
           name="destination"
           autoComplete="off"
           placeholder={translate("username or invoice")}
@@ -309,18 +341,7 @@ const Send = () => {
         onBarcodeDetected={parseQRCode}
         onValidBarcode={setInputFromParsedDestination}
       />
-      <div className="action-container center-display">
-        {showSpinner ? (
-          <Spinner size="big" />
-        ) : (
-          <SendAction
-            {...input}
-            btcWalletId={btcWalletId}
-            btcWalletBalance={btcWalletBalance}
-            reset={resetSendScreen}
-          />
-        )}
-      </div>
+      <div className="action-container center-display">{ActionDislapy()}</div>
     </div>
   )
 }

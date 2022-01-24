@@ -15,24 +15,26 @@ app.use(morgan("common"))
 app.use(express.static("public"))
 app.set("view engine", "ejs")
 
-app.use(
-  helmet({
-    contentSecurityPolicy: {
-      directives: {
-        defaultSrc: ["'self'"],
-        scriptSrc: ["'self'", "'unsafe-inline'", "https:"],
-        connectSrc: ["'self'", "*"],
-        imgSrc: ["'self'", "data:", "https:"],
+if (!config.isDev) {
+  app.use(
+    helmet({
+      contentSecurityPolicy: {
+        directives: {
+          defaultSrc: ["'self'"],
+          scriptSrc: ["'self'", "'unsafe-inline'", "https:"],
+          connectSrc: ["'self'", "*"],
+          imgSrc: ["'self'", "data:", "https:"],
+        },
       },
-    },
-    crossOriginEmbedderPolicy: false,
-  }),
-)
+      crossOriginEmbedderPolicy: false,
+    }),
+  )
+}
 
 app.use(
   cookieSession({
     name: "session",
-    keys: [config.sessionKeys as string],
+    keys: [config.sessionKeys],
     secure: !config.isDev,
     maxAge: 7 * 24 * 60 * 60 * 1000,
   }),

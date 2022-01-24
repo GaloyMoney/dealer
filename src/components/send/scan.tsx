@@ -35,10 +35,9 @@ const Scan = ({ onBarcodeDetected, onValidBarcode }: Props) => {
           }
         }
 
-        const config = { fps: 2 }
         await qrCodeRef.current?.start(
           { facingMode: "environment" },
-          config,
+          { fps: 10, qrbox: 400 },
           onScanSuccess,
           () => {
             // Do nothing for invalid scans

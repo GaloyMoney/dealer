@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from "react"
+import React, { ChangeEvent, useCallback, useEffect, useRef, useState } from "react"
 import { useMutation } from "@apollo/client"
 import intlTelInput from "intl-tel-input"
 
@@ -53,6 +53,7 @@ const PhoneNumber = ({ onSuccess }: PhoneNumberProps) => {
           ref={phoneRef}
           type="tel"
           name="phone"
+          className="phone"
           autoFocus
           onChange={() => setErrorMessage("")}
         />
@@ -71,12 +72,7 @@ const AuthCode = ({ phoneNumber }: AuthCodeProps) => {
   const request = useRequest()
   const [errorMessage, setErrorMessage] = useState("")
 
-  const handleAuthCodeSubmit: React.FormEventHandler<HTMLFormElement> = async (event) => {
-    event.preventDefault()
-    setErrorMessage("")
-
-    const authCode = event.currentTarget.authCode.value
-
+  const submitLoginRequest = async (authCode: string) => {
     const data = await request.post(config.authEndpoint, {
       phoneNumber,
       authCode,
@@ -89,6 +85,19 @@ const AuthCode = ({ phoneNumber }: AuthCodeProps) => {
     history.push("/", { authToken: data?.authToken })
   }
 
+  const handleAuthCodeSubmit: React.FormEventHandler<HTMLFormElement> = async (event) => {
+    event.preventDefault()
+    setErrorMessage("")
+    submitLoginRequest(event.currentTarget.authCode.value)
+  }
+
+  const handleOnChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setErrorMessage("")
+    if (event.currentTarget.value.match(/^[0-9]{6}$/u)) {
+      submitLoginRequest(event.currentTarget.value)
+    }
+  }
+
   return (
     <div className="login">
       <div className="intro">
@@ -99,12 +108,13 @@ const AuthCode = ({ phoneNumber }: AuthCodeProps) => {
       </div>
       <form onSubmit={handleAuthCodeSubmit}>
         <input
-          type="text"
+          type="number"
           name="authCode"
+          className="auth-code"
           autoFocus
           autoComplete="off"
           pattern="[0-9]{6}"
-          onChange={() => setErrorMessage("")}
+          onChange={handleOnChange}
         />
         <button type="submit">
           <i aria-hidden className="far fa-arrow-alt-circle-right"></i>

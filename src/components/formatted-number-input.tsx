@@ -80,7 +80,16 @@ const FormattedNumberInput = ({
     setInput({ numberValue, formattedValue, typing: true })
   }
 
-  return <input value={input.formattedValue} onChange={handleOnChange} {...inputProps} />
+  return (
+    <input
+      type="text"
+      pattern="\d*"
+      inputMode="numeric"
+      value={input.formattedValue}
+      onChange={handleOnChange}
+      {...inputProps}
+    />
+  )
 }
 
 export default memo(FormattedNumberInput)

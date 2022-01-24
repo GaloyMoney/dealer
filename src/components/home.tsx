@@ -1,20 +1,21 @@
 import { translate } from "translate"
 import Header from "./header"
-import Link from "./link"
 
 const Home = () => {
   return (
-    <div className="home">
-      <Header />
-      <div className="links">
-        <div>
-          <Link to="/send">{translate("Send")}</Link>
-        </div>
-        <div>
-          <Link to="/receive">{translate("Receive")}</Link>
+    <>
+      <div className="home">
+        <Header page="home" />
+      </div>
+      <div id="footer">
+        <div className="powered-by">
+          {translate("Powered By")}{" "}
+          <a href="https://galoy.io/" target="_blank" rel="noreferrer">
+            Galoy
+          </a>
         </div>
       </div>
-    </div>
+    </>
   )
 }
 

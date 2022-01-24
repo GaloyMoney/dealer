@@ -45,39 +45,47 @@ exports[`Root renders Home and matches snapshot 1`] = `
         </a>
       </div>
       <div
-        class="links"
+        class="header-nav"
       >
-        <div>
+        <div
+          class="tabs"
+        >
           <a
             href="/send"
           >
-            Send
+            <div
+              class="tab link"
+            >
+              Send Bitcoin
+            </div>
           </a>
-        </div>
-        <div>
           <a
             href="/receive"
           >
-            Receive
+            <div
+              class="tab link"
+            >
+              Receive Bitcoin
+            </div>
           </a>
         </div>
       </div>
     </div>
-  </div>
-  <div
-    id="footer"
-  >
     <div
-      class="powered-by"
+      id="footer"
     >
-      Powered By 
-      <a
-        href="https://galoy.io/"
-        rel="noreferrer"
-        target="_blank"
+      <div
+        class="powered-by"
       >
-        Galoy
-      </a>
+        Powered By 
+        <a
+          href="https://galoy.io/"
+          rel="noreferrer"
+          target="_blank"
+        >
+          Galoy
+        </a>
+      </div>
     </div>
   </div>
 </DocumentFragment>
@@ -6777,6 +6785,7 @@ exports[`Root renders Login and matches snapshot 1`] = `
           </div>
           <input
             autocomplete="off"
+            class="phone"
             data-intl-tel-input-id="0"
             name="phone"
             type="tel"
@@ -6791,22 +6800,6 @@ exports[`Root renders Login and matches snapshot 1`] = `
           />
         </button>
       </form>
-    </div>
-  </div>
-  <div
-    id="footer"
-  >
-    <div
-      class="powered-by"
-    >
-      Powered By 
-      <a
-        href="https://galoy.io/"
-        rel="noreferrer"
-        target="_blank"
-      >
-        Galoy
-      </a>
     </div>
   </div>
 </DocumentFragment>

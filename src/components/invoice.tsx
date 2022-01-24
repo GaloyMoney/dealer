@@ -55,6 +55,11 @@ const LightningInvoice = ({ invoice, onPaymentSuccess }: LightningInvoiceProps) 
     <div className="qr-code-container">
       <div>
         <div onClick={copyInvoice}>
+          {showCopied && (
+            <div className="invoice-copied">
+              {translate("Invoice has been copied to the clipboard")}
+            </div>
+          )}
           <QRCode
             value={`${invoice.paymentRequest}`}
             size={320}
@@ -66,11 +71,6 @@ const LightningInvoice = ({ invoice, onPaymentSuccess }: LightningInvoiceProps) 
       </div>
       <div className="copy-message">{translate("Click QR code to copy")}</div>
       <p>{translate("Waiting for payment confirmation...")}</p>
-      {showCopied && (
-        <div className="invoice-copied">
-          {translate("Invoice has been copied to the clipboard")}
-        </div>
-      )}
     </div>
   )
 }

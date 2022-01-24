@@ -1,9 +1,21 @@
 :root {
+  --color-bg: #f9f9f9;
   --color-primary: #111111;
   --color-secondary: #666666;
   --color-gray: #aaaaaa;
+
   --color-links: #2979ff;
+
   --color-highlight-bg: #999999;
   --color-highlight-fg: #eeeeee;
+
   --color-active-bg: #f8d9aa;
+
+  --color-borders: #c5c5c5;
+
+  --color-button-bg: #f2a900;
+  --color-button-fg: #000;
+
+  --color-disabled-button-bg: #ececec;
+  --color-disabled-button-fg: #aaa;
 }

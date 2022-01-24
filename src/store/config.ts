@@ -40,6 +40,7 @@ const config = isBrowser
       graphqlUri: window.__G_DATA.GwwConfig.graphqlUri,
       graphqlSubscriptionUri: window.__G_DATA.GwwConfig.graphqlSubscriptionUri,
       authEndpoint: window.__G_DATA.GwwConfig.authEndpoint,
+      sessionKeys: "",
     }
   : {
       isDev: process.env.NODE_ENV !== "production",

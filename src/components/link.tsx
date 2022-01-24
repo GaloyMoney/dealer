@@ -19,4 +19,14 @@ const Link = ({ to, children }: Props) => {
   )
 }
 
+export const ButtonLink = ({ to, children }: Props) => {
+  const navigate: React.MouseEventHandler<HTMLButtonElement> = (event) => {
+    if (!event.ctrlKey && !event.metaKey) {
+      event.preventDefault()
+    }
+    history.push(to)
+  }
+  return <button onClick={navigate}>{children}</button>
+}
+
 export default Link

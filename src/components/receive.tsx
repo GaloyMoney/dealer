@@ -13,6 +13,7 @@ import Spinner from "./spinner"
 import DebouncedTextarea, { OnTextValueChange } from "./debounced-textarea"
 import { useMutation } from "@apollo/client"
 import { GaloyGQL, mutations } from "@galoymoney/client"
+import { ButtonLink } from "./link"
 
 type InvoiceInputState = {
   layer: "lightning" | "onchain"
@@ -188,20 +189,39 @@ const Receive = () => {
     )
   }, [convertedValues])
 
-  if (!btcWalletId) {
-    return null
+  const InvoiceGeneratorDisplay = () => {
+    if (!btcWalletId) {
+      return <ButtonLink to="/login">{translate("Login to send")}</ButtonLink>
+    }
+
+    const showInvoiceSpinner = Number.isNaN(input.debouncedAmount) || loading
+    const showInvoice =
+      input.satsForInvoice !== undefined && !Number.isNaN(input.satsForInvoice)
+    return (
+      <>
+        {showInvoiceSpinner && <Spinner size="big" />}
+        {showInvoice && (
+          <InvoiceGenerator
+            layer={input.layer}
+            btcWalletId={btcWalletId}
+            btcAddress={btcAddress}
+            regenerate={regenerateInvoice}
+            amount={input.amount}
+            currency={input.currency}
+            memo={input.memo}
+            satAmount={input.satsForInvoice as number}
+            convertedUsdAmount={convertedValues?.usd || NaN}
+          />
+        )}
+      </>
+    )
   }
 
   const inputValue = Number.isNaN(input.amount) ? "" : input.amount.toString()
-  const showInvoiceSpinner = Number.isNaN(input.debouncedAmount) || loading
-  const showInvoice =
-    input.satsForInvoice !== undefined && !Number.isNaN(input.satsForInvoice)
 
   return (
     <div className="receive">
-      <Header />
-      <div className="page-title">{translate("Receive Bitcoin")}</div>
-
+      <Header page="receive-bitcoin" />
       <div className="tabs">
         <div
           className={`tab ${input.layer === "lightning" ? "active" : "link"}`}
@@ -248,22 +268,7 @@ const Receive = () => {
             <div className="amount-converted">{conversionDisplay}</div>
           </div>
         )}
-        <div className="action-container center-display">
-          {showInvoiceSpinner && <Spinner size="big" />}
-          {showInvoice && (
-            <InvoiceGenerator
-              layer={input.layer}
-              btcWalletId={btcWalletId}
-              btcAddress={btcAddress}
-              regenerate={regenerateInvoice}
-              amount={input.amount}
-              currency={input.currency}
-              memo={input.memo}
-              satAmount={input.satsForInvoice as number}
-              convertedUsdAmount={convertedValues?.usd || NaN}
-            />
-          )}
-        </div>
+        <div className="action-container center-display">{InvoiceGeneratorDisplay()}</div>
       </div>
     </div>
   )
