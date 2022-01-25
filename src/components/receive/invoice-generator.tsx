@@ -1,13 +1,13 @@
 import { useState, useEffect, useRef } from "react"
 import { useMutation } from "@apollo/client"
 
-import Spinner from "./spinner"
+import { GaloyGQL, mutations, translate } from "@galoymoney/client"
+
 import { usdFormatter } from "store"
-import { translate } from "translate"
+import { errorsText } from "store/graphql"
 
 import { LightningInvoice, OnChainInvoice } from "./invoice"
-import { GaloyGQL, mutations } from "@galoymoney/client"
-import { errorsText } from "store/graphql"
+import { Spinner } from "@galoymoney/react"
 
 const INVOICE_EXPIRE_INTERVAL = 60 * 60 * 1000
 

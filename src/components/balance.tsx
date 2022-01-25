@@ -1,8 +1,8 @@
+import { translate } from "@galoymoney/client"
+import { SatSymbol, Spinner } from "@galoymoney/react"
+
 import { history, useAppState, satsFormatter, usdFormatter } from "store"
 import { useMyUpdates } from "store/use-my-updates"
-import { translate } from "translate"
-import SatSymbol from "./sat-symbol"
-import Spinner from "./spinner"
 
 const navigateToHome = () => {
   history.push("/")
@@ -17,7 +17,7 @@ const MyBalance = ({ balance }: Props) => {
 
   return (
     <div className="balance" onClick={navigateToHome}>
-      <div className="title">{translate("CurrentBalance")}</div>
+      <div className="title">{translate("Current Balance")}</div>
       <div className="value">
         {Number.isNaN(balance) ? (
           <Spinner />
@@ -45,7 +45,7 @@ const Balance = ({ balance }: Props) => {
   if (!authToken) {
     return (
       <div className="balance" onClick={navigateToHome}>
-        <div className="title">{translate("CurrentBalance")}</div>
+        <div className="title">{translate("Current Balance")}</div>
         <div className="value">
           <div className="primary">
             <SatSymbol />0

@@ -6785,7 +6785,7 @@ exports[`Root renders Login and matches snapshot 1`] = `
           </div>
           <input
             autocomplete="off"
-            class="phone"
+            class="phone-number-input"
             data-intl-tel-input-id="0"
             name="phone"
             type="tel"

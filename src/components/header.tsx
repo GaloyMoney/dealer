@@ -1,10 +1,11 @@
-import { translate } from "translate"
+import { translate } from "@galoymoney/client"
+
 import useAuthToken from "store/use-auth-token"
+import useMainQuery from "store/use-main-query"
 
 import Balance from "./balance"
 import Link from "./link"
 import Logout from "./logout"
-import useMainQuery from "store/use-main-query"
 
 type Props = {
   page: "home" | "send-bitcoin" | "receive-bitcoin"

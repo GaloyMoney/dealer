@@ -1,8 +1,10 @@
 import { Suspense } from "react"
 import { ErrorBoundary } from "react-error-boundary"
+
+import { Spinner } from "@galoymoney/react"
+
 import appRoutes, { SupportedRoutes } from "server/routes"
 import ErrorFallback from "./error-fallback"
-import Spinner from "./spinner"
 
 type Props = { path: RoutePath }
 

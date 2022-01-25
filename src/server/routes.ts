@@ -1,7 +1,7 @@
-import Home from "../components/home"
+import Home from "../components/pages/home"
 import Login from "../components/login"
-import Send from "../components/send"
-import Receive from "../components/receive"
+import Send from "../components/pages/send"
+import Receive from "../components/pages/receive"
 
 export const SupportedRoutes = ["/", "/login", "/send", "/receive"] as const
 

@@ -1,6 +1,4 @@
 /*! purgecss start ignore */
-@import "normalize.css";
+@import "@galoymoney/react/styles";
 @import "./main";
-@import "./intl-tel-input";
-@import "./success-checkmark";
 /*! purgecss end ignore */

@@ -7,9 +7,10 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin")
 const config = (env) => ({
   devtool: env.dev ? "inline-source-map" : false,
   resolve: {
-    modules: [path.resolve("./src"), path.resolve("./node_modules")],
+    modules: [path.resolve("./src"), "node_modules"],
     extensions: [".ts", ".tsx", ".js", ".json"],
     fallback: {
+      events: require.resolve("events/"),
       stream: require.resolve("stream-browserify"),
       url: require.resolve("url"),
     },

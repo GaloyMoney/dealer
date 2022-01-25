@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
-    "target": "es2019",
+    "target": "es2021",
     "module": "commonjs",
-    "lib": ["dom", "es2019", "scripthost"],
+    "lib": ["dom", "es2021", "scripthost"],
     "outDir": "build",
     "baseUrl": "src",
     "jsx": "react-jsx",

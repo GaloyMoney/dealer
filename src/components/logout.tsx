@@ -1,6 +1,8 @@
 import { useApolloClient } from "@apollo/client"
+
+import { translate } from "@galoymoney/client"
+
 import { history, useRequest } from "store"
-import { translate } from "translate"
 
 const Logout = () => {
   const client = useApolloClient()

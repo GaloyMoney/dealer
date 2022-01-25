@@ -1,19 +1,24 @@
+import { useMutation } from "@apollo/client"
+
+import { GaloyGQL, mutations, translate } from "@galoymoney/client"
+import {
+  DebouncedTextarea,
+  FormattedNumberInput,
+  OnNumberValueChange,
+  OnTextValueChange,
+  SatSymbol,
+  Spinner,
+} from "@galoymoney/react"
+
 import { useCallback, useEffect, useMemo, useState } from "react"
+
 import { satsFormatter, usdFormatter } from "store"
 import useMainQuery from "store/use-main-query"
 import { useMyUpdates } from "store/use-my-updates"
 
-import { translate } from "translate"
-
-import FormattedNumberInput, { OnNumberValueChange } from "./formatted-number-input"
-import InvoiceGenerator from "./invoice-generator"
-import Header from "./header"
-import SatSymbol from "./sat-symbol"
-import Spinner from "./spinner"
-import DebouncedTextarea, { OnTextValueChange } from "./debounced-textarea"
-import { useMutation } from "@apollo/client"
-import { GaloyGQL, mutations } from "@galoymoney/client"
-import { ButtonLink } from "./link"
+import InvoiceGenerator from "../receive/invoice-generator"
+import Header from "../header"
+import { ButtonLink } from "../link"
 
 type InvoiceInputState = {
   layer: "lightning" | "onchain"

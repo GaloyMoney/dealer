@@ -1,8 +1,7 @@
 import { MouseEvent } from "react"
 
-import Spinner from "../spinner"
-import SuccessCheckmark from "../sucess-checkmark"
-import SatSymbol from "../sat-symbol"
+import { SatSymbol, Spinner, SuccessCheckmark } from "@galoymoney/react"
+
 import { satsFormatter, usdFormatter } from "store"
 import { useMyUpdates } from "store/use-my-updates"
 import { GaloyGQL } from "@galoymoney/client"

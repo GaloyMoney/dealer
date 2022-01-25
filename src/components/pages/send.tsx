@@ -3,25 +3,30 @@ import { useCallback, useEffect, useMemo, useState } from "react"
 import config from "store/config"
 import { satsFormatter, usdFormatter, useAppDispatcher } from "store"
 import { useMyUpdates } from "store/use-my-updates"
-import { translate } from "translate"
 
-import FormattedNumberInput, { OnNumberValueChange } from "../formatted-number-input"
-import Header from "../header"
-import SatSymbol from "../sat-symbol"
-import Spinner from "../spinner"
-import DebouncedTextarea, { OnTextValueChange } from "../debounced-textarea"
-import DebouncedInput from "../debounced-input"
-import useMainQuery from "store/use-main-query"
-import SendAction from "./send-action"
-import useDelayedQuery from "store/use-delayed-query"
 import {
   GaloyGQL,
   parsePaymentDestination,
   queries,
+  translate,
   ValidPaymentReponse,
 } from "@galoymoney/client"
-import Scan from "./scan"
+import {
+  FormattedNumberInput,
+  DebouncedInput,
+  DebouncedTextarea,
+  OnTextValueChange,
+  SatSymbol,
+  Spinner,
+  useDelayedQuery,
+  OnNumberValueChange,
+} from "@galoymoney/react"
+
+import useMainQuery from "store/use-main-query"
+import Scan from "../send/scan"
+import Header from "../header"
 import { ButtonLink } from "components/link"
+import SendAction from "components/send/send-action"
 
 const Send = () => {
   const dispatch = useAppDispatcher()

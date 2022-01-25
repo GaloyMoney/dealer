@@ -1,4 +1,4 @@
-import { translate } from "translate"
+import { translate } from "@galoymoney/client"
 import SendIntraLedgerAction from "./send-intra-ledger-action"
 import { SendLnInvoiceAction, SendLnNoAmountInvoiceAction } from "./send-ln-action"
 import SendOnChainAction from "./send-onchain-action"

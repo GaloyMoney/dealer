@@ -1,70 +1,12 @@
-import React, { ChangeEvent, useCallback, useEffect, useRef, useState } from "react"
+import React, { ChangeEvent, useCallback, useEffect, useState } from "react"
 import { useMutation } from "@apollo/client"
-import intlTelInput from "intl-tel-input"
+
+import { GaloyGQL, mutations, translate } from "@galoymoney/client"
+import { PhoneNumberInput, Spinner } from "@galoymoney/react"
 
 import config from "store/config"
-import { translate } from "translate"
 import { history, useRequest } from "store"
-
-import Spinner from "./spinner"
-import { GaloyGQL, mutations } from "@galoymoney/client"
 import { errorsText } from "store/graphql"
-
-type PhoneNumberProps = { onSuccess: (arg: string) => void }
-
-const PhoneNumber = ({ onSuccess }: PhoneNumberProps) => {
-  const iti = useRef<intlTelInput.Plugin | null>(null)
-
-  const [errorMessage, setErrorMessage] = useState("")
-
-  const phoneRef = useCallback(async (node: HTMLInputElement) => {
-    if (node !== null) {
-      iti.current = intlTelInput(node, {
-        autoPlaceholder: "off",
-        utilsScript:
-          "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.15/js/utils.min.js",
-      })
-      await iti.current.promise
-      node.focus()
-    }
-  }, [])
-
-  const handlePhoneNumberSubmit: React.FormEventHandler<HTMLFormElement> = async (
-    event,
-  ) => {
-    event.preventDefault()
-    setErrorMessage("")
-    if (!iti.current || !iti.current.isValidNumber()) {
-      setErrorMessage(translate("Invalid phone number"))
-      return
-    }
-
-    const number = iti.current.getNumber()
-    onSuccess(number)
-  }
-
-  return (
-    <div className="login">
-      <div className="intro">
-        Enter your phone number and we'll text you an access code
-      </div>
-      <form onSubmit={handlePhoneNumberSubmit}>
-        <input
-          ref={phoneRef}
-          type="tel"
-          name="phone"
-          className="phone"
-          autoFocus
-          onChange={() => setErrorMessage("")}
-        />
-        <button type="submit">
-          <i aria-hidden className="far fa-arrow-alt-circle-right"></i>
-        </button>
-      </form>
-      {errorMessage && <div className="error">{errorMessage}</div>}
-    </div>
-  )
-}
 
 type AuthCodeProps = { phoneNumber: string }
 
@@ -228,11 +170,18 @@ const CaptchaChallenge = ({ phoneNumber }: AuthCodeProps) => {
 
 const Login = () => {
   const [phoneNumber, setPhoneNumber] = useState<string>("")
+  const [errorMessage, setErrorMessage] = useState<string | number>("")
 
   return phoneNumber ? (
     <CaptchaChallenge phoneNumber={phoneNumber} />
   ) : (
-    <PhoneNumber onSuccess={setPhoneNumber} />
+    <div className="login">
+      <div className="intro">
+        {translate("Enter your phone number and we'll text you an access code")}
+      </div>
+      <PhoneNumberInput onSuccess={setPhoneNumber} onInvalidNumber={setErrorMessage} />
+      {errorMessage && <div className="error">{errorMessage}</div>}
+    </div>
   )
 }
 

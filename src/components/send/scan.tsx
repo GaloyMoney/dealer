@@ -1,7 +1,8 @@
-import Spinner from "components/spinner"
 import { Html5Qrcode, Html5QrcodeSupportedFormats } from "html5-qrcode"
 import { useEffect, useRef, useState } from "react"
-import { translate } from "translate"
+
+import { Spinner } from "@galoymoney/react"
+import { translate } from "@galoymoney/client"
 
 type Props = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

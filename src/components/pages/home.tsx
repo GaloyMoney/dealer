@@ -1,5 +1,5 @@
-import { translate } from "translate"
-import Header from "./header"
+import { translate } from "@galoymoney/client"
+import Header from "../header"
 
 const Home = () => {
   return (
