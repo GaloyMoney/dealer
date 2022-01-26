@@ -294,7 +294,7 @@ Position Leverage = Notional USD / (Used Balance BTC * Last Price USD/BTC)
 ![Perpetual basis in USD](./assets/perp_basis_in_usd.jpg)
 
 The difference between the Derivative Contract Last traded price and the Spot Index price. 
-The quantity a [Long the basis](./README.md#What-Is-Long-the-Basis?) trading strategy tries to capture.
+The quantity a [Long the basis](./README.md#What-Is-Long-the-Basis) trading strategy tries to capture.
 
 
 ## Risk Measure & Other Charts
