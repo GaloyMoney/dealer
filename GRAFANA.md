@@ -2,7 +2,7 @@
 ##### Overview
 ![Grafana Dashboard](./assets/grafana_dashboard.jpg)
 
-## Performance Data
+## Performance Data Charts
 
 ### Strategy Unrealized Profit and Loss
 ![Strategy Unrealized Profit and Loss](./assets/strategy_upnl.jpg)
@@ -23,7 +23,7 @@ There are two components to the strategy's unrealized PnL
 
 1. the derivative's position unrealized PnL
 
-    - Assuming a perpetual swap notional of 10k USD at an open price of 48,650 USD/BTC, and a current spot price of 43,700 USD/BTC, we calculate the PnL as follow:
+    - Assuming a perpetual swap notional of 10k USD at an open price of 48,650 USD/BTC, and a current swap price of 43,700 USD/BTC, we calculate the PnL as follow:
 
         ```
         Swap PnL in BTC = Balance USD * (CurrentPrice - OpenPrice) BTC/USD
@@ -31,12 +31,13 @@ There are two components to the strategy's unrealized PnL
         Swap PnL in BTC = 10 USD * (1/43.7 - 1/48.6) BTC/USD
         Swap PnL in BTC = 10 * 0.00230716351 BTC
         Swap PnL in BTC = 0.0230716351 BTC
+
         Swap PnL in USD = 0.0230716351 BTC @ 43.7k USD/BTC = 1008 USD
 
         * assuming Balance USD > 0 for long positions and < 0 for shorts
         ``` 
 
-The strategy Pnl is then:
+The strategy unrealized Pnl is then:
 
 ```
 Strat PnL = Sum of all positions PnL
@@ -49,7 +50,7 @@ Further reading: [OKEx Glossary and Formulae](https://www.okex.com/support/hc/en
 
 #### Hedge effectiveness
 
-If we want to understand why there's a discrepancy between both position, we have to realize that we are dealing with two different markets driven by different forces/processes.
+If we want to understand why there's a discrepancy between both position, we have to realize that we are dealing with two different markets driven by two different forces/processes.
 
 So a change in price ΔS on the spot market does not generates the same price change ΔD on the derivative's market.
 
@@ -57,7 +58,7 @@ The Derivative's market will eventually follow, as else if it diverged it would 
 
 If we plot ΔS vs ΔD, we can see the trend.
 
-Using linear regression we can plot the trending line which it slope gives us the optimal hedging ratio while the R^2 gives us the hedge effectiveness, i.e. the portion of variance that is eliminated by the hedge.
+Using linear regression we can plot the trending line which its slope gives us the optimal hedging ratio while the R^2 gives us the hedge effectiveness, i.e. the portion of variance that is eliminated by the hedge.
 
 In comparison we are using a hedging ratio of 1, i.e. the blue 45 degree line, which is not optimal and eliminated less of the variance.
 
@@ -89,6 +90,7 @@ There are two components to the strategy's realized PnL
 - the fees are debited (expense) or credited (income) directly from/into the exchange account balance
 
 Further reading: [OKEx Funding Rate Calculations](https://www.okex.com/support/hc/en-us/articles/360020412631-XI-Funding-Rate-Calculations)
+
 Further reading: [OKEx Settlement](https://www.okex.com/support/hc/en-us/articles/360020154032-XII-Settlement)
 
 ### Trading Fees
@@ -100,7 +102,7 @@ Further reading: [OKEx Settlement](https://www.okex.com/support/hc/en-us/article
 
 Further reading: [OKEx Perpetual Swap Trading Fees](https://www.okex.com/support/hc/en-us/articles/360040120852-XIII-Perpetual-Swap-Trading-Fees)
 
-## Positional Data
+## Positional Data Charts
 
 ### Liability in USD
 ![Liability in USD](./assets/liability_in_usd.jpg)
@@ -167,9 +169,10 @@ Given a current position of 6 contracts
 Average Open Price = (6 + 5) / (6/50k + 1/58k + 1/57k + 3/56k) = 52,794.09 USD/BTC
 
 Further reading: [OKEx Description of Order Types](https://www.okex.com/support/hc/en-us/articles/360020411351-IV-Description-of-Order-Types)
+
 Further reading: [OKEx Order Matching](https://www.okex.com/support/hc/en-us/articles/360020411471-V-Order-Matching)
 
-### BTC Balance on Exchange (Free/Used/Total)
+### BTC Balance on Exchange
 ![BTC Balance on Exchange](./assets/btc_on_exchange.jpg)
 
 Given that the Dealer is using an inverse Bitcoin contract, the funds on exchange are BTC and used to buy USD.
@@ -178,17 +181,20 @@ So the Total balance is the number of BTC held on exchange as either collateral 
 
 Trading and Funding fees are deducted directly from that balance.
 
-The Total balance can be split in two: the "Free" part and the "Used" part.
+The Total balance can be split in two: 
 
-The Used balance is the sum of the frozen funds that are actively held as collateral to the derivative USD position and the unrealized PnL of that position.
-The Free balance is a safety margin kept by the Dealer to avoid liquidation if the market moves against the taken position. So it is part of the calculation that determines the liquidation price.
-It is also a buffer that absorbs the trading as the USD liability varies triggering buys or sells to keep the hedge ratio constant.
+1. the "Free" part 
+    - The Free balance is a safety margin kept by the Dealer to avoid liquidation if the market moves against the taken position. So it is part of the calculation that determines the liquidation price.
+    - It is also a buffer that absorbs the trading as the USD liability varies triggering buys or sells to keep the hedge ratio constant.
+
+1. the "Used" part.
+    - The Used balance is the sum of the frozen funds that are actively held as collateral to the derivative USD position and the unrealized PnL of that position.
 
 ### Liquidation Price
 ![Liquidation Price](./assets/liquidation_price.jpg)
 
 It is the approximate price at which, if no more BTC funds are added to the account, the position is force closed, 
-i.e. the price at which the sum of the unrealized PnL and the balance reaches +/- "zero" or a certain limit greater than zero set by the exchange.
+i.e. the price at which the sum of the unrealized PnL and the balance reaches +/- zero or a certain limit greater than zero set by the exchange.
 That lower limit is reached when the [Margin Ratio](./GRAFANA.md#Margin-Ratio) is below the [Maintenance Margin Ratio](./GRAFANA.md#Maintenance-Margin-Ratio).
 
 In addition a Liquidation Fee is taken if triggered and is calculated according the current tier’s taker fee.
@@ -199,9 +205,9 @@ we have:
 Liquidation Fee = 0.005
 
 #### Liquidation Price Derivation
-Given the Total balance from the [BTC Balance on Exchange](./GRAFANA.md#BTC-Balance-on-Exchange-(Free/Used/Total)) section,
+Given the Total balance from the [BTC Balance on Exchange](./GRAFANA.md#BTC-Balance-on-Exchange) section,
 the unrealized PnL from the [Unrealized PnL in BTC](./GRAFANA.md#Unrealized-PnL-in-BTC) section,
-the Face Value and Number of Contracts from [Position Quantity in Contracts](./GRAFANA.md#Position-Quantity-in-Contracts) section
+the Face Value and Number of Contracts from [Position Quantity in Contracts](./GRAFANA.md#Position-Quantity-in-Contracts) section,
 the Average Open Price in USD from the [Average Open Price in USD](./GRAFANA.md#Average-Open-Price-in-USD) section,
 the Margin Ratio formula from the [Margin Ratio](./GRAFANA.md#Margin-Ratio) section,
 the Maintenance Margin Ratio from the [Maintenance Margin Ratio](./GRAFANA.md#Maintenance-Margin-Ratio) section,
@@ -232,14 +238,16 @@ Liquidation @ Margin Ratio <= Maintenance Margin Ratio
 So replacing the uPnL in the Margin Ratio and solving the inequality for Liquidation Price, 
 we get using abbreviations:
 
+```
 Liquidation Price (Short) >= (FV * #Ct) * (1 - MMR) * OPx / ((FV * #Ct) - Opx * Balance)
-Liquidation Price (Long) >= (FV * #Ct) * (MMR + 1) * OPx / ((FV * #Ct) + Opx * Balance)
+Liquidation Price (Long)  >= (FV * #Ct) * (MMR + 1) * OPx / ((FV * #Ct) + Opx * Balance)
+```
 
 #### Liquidation Price Calculation
 
 Liquidation Price (Short) >= 10,000 * (1 - 0.005) * 48,600 / (10,000 - 48,600 * 0.1136) = 107,963 USD
 
-So close enough to the OKEx calculator given that no liquidation fees were included int he calculation.
+So, close enough to the OKEx calculator given that no liquidation fees were included.
 
 ![Liquidation Price Short](./assets/LiquidationPriceShort.jpg)
 
@@ -250,14 +258,16 @@ Liquidation Price (Long) >= 10,000 * (0.005 + 1) * 48,600 / (10,000 + 48,600 * 0
 
 
 Further reading: [OKEx Margin & Leverage](https://www.okex.com/support/hc/en-us/articles/360020411531-VI-Margin-Leverage)
+
 Further reading: [OKEx Tiered Maintenance Margin Ratio System](https://www.okex.com/support/hc/en-us/articles/360020152712-VII-Tiered-Maintenance-Margin-Ratio-System)
+
 Further reading: [OKEx Forced Partial or Full Liquidation](https://www.okex.com/support/hc/en-us/articles/360020411711-VIII-Forced-Partial-or-Full-Liquidation)
 
 ### Exchange Leverage
 ![Exchange Leverage](./assets/exchange_leverage.jpg)
 
-The leverage the Dealer sets and expect to be using on the exchange to take hedging positions. 
-It allows for more effective use of funds put as margin.
+The leverage the Dealer sets and expects to be using on the exchange to take hedging positions. 
+It allows for more effective use of funds put up as margin.
 So at a leverage of 3, every unit deposited as collateral allows for a position 3x that size.
 
 ### Perpetuals Next Funding Rate
@@ -270,7 +280,7 @@ The Next Funding Rate shows the current level that can be expected to be "charge
 
 Further reading: [OKEx Funding Rate Calculations](https://www.okex.com/support/hc/en-us/articles/360020412631-XI-Funding-Rate-Calculations)
 
-## Last Price Driven
+## Last Price Driven Charts
 
 ### Position Leverage
 ![Position Leverage](./assets/position_leverage.jpg)
@@ -287,12 +297,12 @@ The difference between the Derivative Contract Last traded price and the Spot In
 The quantity a [Long the basis](./README.md#What-Is-Long-the-Basis?) trading strategy tries to capture.
 
 
-## Others
+## Risk Measure & Other Charts
 
 ### Margin Ratio
 ![Margin Ratio](./assets/margin_ratio.jpg)
 
-The Dealer operates in a "Cross Margin Mode" which set a dynamic requirement for margin/collateral as the price fluctuates 
+The Dealer operates in a "Cross Margin Mode" which sets a dynamic requirement for margin/collateral as the price fluctuates 
 versus a "Fixed Margin Mode" which set a static requirement regardless of the price. 
 
 Given that funds on exchanges are potentially at risk, managing them and keeping a balance in a more dynamic way is easier.
@@ -306,11 +316,12 @@ Position Value = Face Value in USD * Number of Contracts / Latest Mark Price in 
 
 ```
 
-Given the Total balance from the [BTC Balance on Exchange](./GRAFANA.md#BTC-Balance-on-Exchange-(Free/Used/Total)) section,
+Given the Total balance from the [BTC Balance on Exchange](./GRAFANA.md#BTC-Balance-on-Exchange) section,
 the Face Value and Number of Contracts from [Position Quantity in Contracts](./GRAFANA.md#Position-Quantity-in-Contracts) section,
-the Latest Mark Price from [BTC Spot & Perp Price in USD](./GRAFANA.md#BTC-Spot-&-Perp-Price-in-USD) section,
+the Latest Mark Price from [BTC Spot and Perp Price in USD](./GRAFANA.md#BTC-Spot-and-Perp-Price-in-USD) section,
 we have:
 
+```
 Balance + uPnL = Total Balance = 0.141 BTC
 Face Value = 100 USD
 Number of Contracts = 100
@@ -318,6 +329,7 @@ Latest Mark Price = 42,892 USD/BTC
 Position Value = 100 USD * 100 / 42,892 BTC = 0.23314371 BTC
 
 Margin Ratio =  0.141 BTC / 0.23314371 BTC =  0.60477720
+```
 
 So not quite the number we get from the exchange as displayed in Grafana.
 But to validate the formula (taken from OKEx) and the result, let's rearrange it as follow:
@@ -329,14 +341,16 @@ Margin Ratio = (Balance + uPnL) * Latest Mark Price / (Face Value * Number of Co
 Margin Ratio * (Face Value * Number of Contracts) = (Balance + uPnL) * Latest Mark Price = Total Account Value in USD
 ```
 
-Total Account Value in USD = 6039 USD ~= 0.60477720 * 100 USD * 100 = 6048 USD
+Total Account Value in USD = 6039 USD ~= 0.60477720 * 100 USD * 100 = 6048 USD,
 from [Total Account Value in USD](./GRAFANA.md#Total-Account-Value-in-USD) section
 
 So the Margin Ratio = 134 figure from the exchange seems to be factored by another number that does not seem to be documented anywhere.
 Even [CCXT](https://github.com/ccxt/ccxt)'s code is reporting yet a different MarginRatio calculation as of 2022-01-20, v1.61.93.
 
 Further reading: [OKEx Margin & Leverage](https://www.okex.com/support/hc/en-us/articles/360020411531-VI-Margin-Leverage)
+
 Further reading: [OKEx Tiered Maintenance Margin Ratio System](https://www.okex.com/support/hc/en-us/articles/360020152712-VII-Tiered-Maintenance-Margin-Ratio-System)
+
 Further reading: [OKEx Forced Partial or Full Liquidation](https://www.okex.com/support/hc/en-us/articles/360020411711-VIII-Forced-Partial-or-Full-Liquidation)
 
 ### Maintenance Margin Ratio
@@ -361,12 +375,10 @@ Maintenance Margin Ratio = 0.005
 
 Again here, the Maintenance Margin Ratio = 0.000933 figure from the exchange seems to be factored by another number that does not seem to be documented anywhere.
 
-
-
-- see Hysteresis section
-
 Further reading: [OKEx Margin & Leverage](https://www.okex.com/support/hc/en-us/articles/360020411531-VI-Margin-Leverage)
+
 Further reading: [OKEx Tiered Maintenance Margin Ratio System](https://www.okex.com/support/hc/en-us/articles/360020152712-VII-Tiered-Maintenance-Margin-Ratio-System)
+
 Further reading: [OKEx Forced Partial or Full Liquidation](https://www.okex.com/support/hc/en-us/articles/360020411711-VIII-Forced-Partial-or-Full-Liquidation)
 
 
@@ -377,7 +389,9 @@ Further reading: [OKEx Forced Partial or Full Liquidation](https://www.okex.com/
 The Unrealized PnL Ratio is the current uPnL in proportion to the original exposure position in BTC and factoring in the leverage.
 So it is a measure of percentage return over the funds invested or put at risk.
 
+```
 Unrealized PnL Ratio = uPnL / (Face Value * Number of Contracts / Average Open Price / Exchange Leverage)
+```
 
 
 ### Unrealized PnL in BTC
@@ -401,8 +415,8 @@ The Total balance (frozen & free) in USD as reported by the exchange.
 The total collateral in USD available on exchange. Same as [Total Account Value in USD](./GRAFANA.md#Total-Account-Value-in-USD)
 
 
-### BTC Spot & Perp Price in USD
-![BTC Spot & Perp Price in USD](./assets/spot_mark_perp_price_in_usd.jpg)
+### BTC Spot and Perp Price in USD
+![BTC Spot and Perp Price in USD](./assets/spot_mark_perp_price_in_usd.jpg)
 
 
 The Spot Index Price is the weighted average of the spot price in BTC/USD from 5 exchanges.
@@ -430,6 +444,7 @@ Moving Average of Basis = MA((Best Offer + Best Bid)/2 - Spot Index Price)
 The Swap Contract Price is the last traded price on the exchange.
 
 Further reading: [OKEx Index Computation Rules](https://www.okex.com/support/hc/en-us/articles/360020149412-II-Index-Computation-Rules)
+
 Further reading: [OKEx Mark Price](https://www.okex.com/support/hc/en-us/articles/360020411451-III-Mark-Price)
 
 ### Notional Lever
@@ -437,7 +452,7 @@ Further reading: [OKEx Mark Price](https://www.okex.com/support/hc/en-us/article
 
 The Notional Lever is the ratio of the notional USD value ([Position Exposure in USD](./GRAFANA.md#Position-Exposure-in-USD)) 
 and the [Position Collateral in USD](./GRAFANA.md#Position-Collateral-in-USD) as reported by the exchange.
-The same ratio is independently calculated by the Dealer and reported as [Exposure Leverage Ratio](./GAFANA.md#Exposure-Leverage-Ratio)
+The same ratio is independently calculated by the Dealer and reported as [Exposure Leverage Ratio](./GRAFANA.md#Exposure-Leverage-Ratio)
 
 It is a measure of the effective leverage versus the [Exchange Leverage](./GRAFANA.md#Exchange-Leverage) given that the Dealer keeps extra funds on exchange as a risk management procedure.
 
@@ -463,7 +478,7 @@ It is a measure of the effective hedge of the liability given that the Dealer ai
 
 For a current exposure level, as the liability moves higher the ratio shrinks and vice versa.
 
-The trading procedure regarding the Exposure Liability Ratio are as follow:
+The trading procedure regarding the Exposure Liability Ratio is as follow:
 1. if liability is zero, close (buyback) position if any
 1. if ratio is below 0.95, sell rounded number of contracts up to a ratio of 0.98
 1. if ratio is above 1.03, buyback rounded number of contracts up to a ratio of 1.00
@@ -484,25 +499,3 @@ The risk management rules regarding the Exposure Leverage Ratio are as follow:
 1. at zero funds on exchange, post 2.25x the required margin for a 3x exchange leverage
 1. allow an upper limit of 3x before adding funds to the exchange down to 2.25x
 1. allow an lower limit of 1.2x before moving funds out of the exchange up to 1.8x
-
-
-
-### (Margin - Upl) / mmr
-![(Margin - Upl) / mmr](./assets/margin_upl_mmr.jpg)
-
-Old Measure, TODO: remove.
-
-### Rebalance Leverage Ratio (liability / collateral)
-![Rebalance Leverage Ratio (liability / collateral)](./assets/rebalance_leverage_ratio.jpg)
-
-Old Measure, TODO: remove.
-
-### BTC Last Price in USD
-![BTC Last Price in USD](./assets/btc_last_price_in_usd.jpg)
-
-Duplicated, TODO: remove.
-
-### Liability Leverage Ratio
-![Liability Leverage Ratio](./assets/liability_leverage_ratio.jpg)
-
-Old Measure, TODO: remove.
