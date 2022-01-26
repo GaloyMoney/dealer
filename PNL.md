@@ -48,9 +48,30 @@ By definition:
 - b1 = S1 - F1
 - b2 = S2 - F2
 
-The hedge position is taken at t1 and closed out at t2, so the pnl is effectively the difference in futures prices. 
+Assuming we own the asset from t1 and liquidate it at t2,
+it follows that the hedge position is then taken at t1 and closed out at t2 along with the exposure to the asset.
+So the pnl is effectively the difference in futures prices plus the liquidation of the asset at t2. 
 Given that the hedge is a short position, the Pnl is:
 
-- Pnl = F1 - F2
+- Pnl = S2 + F1 - F2
 
+
+#### Hedge effectiveness
+
+If we want to understand why there's a discrepancy between both position, we have to realize that we are dealing with two different markets driven by different forces/processes.
+
+So a change in price ΔS on the spot market does not generates the same price change ΔD on the derivative's market.
+
+The Derivative's market will eventually follow, as else if it diverged it would create an arbitrage opportunity which market participants would take advantage of and cause the markets to re-converge.
+
+If we plot ΔS vs ΔD, we can see the trend.
+
+Using linear regression we can plot the trending line which it slope gives us the optimal hedging ratio while the R^2 gives us the hedge effectiveness, i.e. the portion of variance that is eliminated by the hedge.
+
+In comparison we are using a hedging ratio of 1, i.e. the blue 45 degree line, which is not optimal and eliminated less of the variance.
+
+So an improved strategy would be to calculate and use that minimum variance hedge ratio instead of the current constant 1.
+
+##### Regression of change in spot price against change in derivative's price
+![Regression of change in spot price against change in derivative's price](./assets/hedge_ratio.jpg)
 

@@ -9,12 +9,15 @@ integration:
 	yarn test:integration
 
 test-in-ci:
-	docker-compose up -d
+	docker compose up -d
 	. ./.envrc && \
 		LOG_LEVEL=error node_modules/.bin/jest --bail --runInBand --ci --reporters=default --reporters=jest-junit
 
+
 integration-in-ci:
+	docker compose up -d
 	. ./.envrc && \
+	sleep 10 && \
 	yarn migrate-ts up && \
 		LOG_LEVEL=error $(BIN_DIR)/jest --config ./test/jest-integration.config.js --bail --runInBand --ci --reporters=default --reporters=jest-junit
 
@@ -27,12 +30,3 @@ check-code:
 	yarn eslint-check
 	yarn prettier-check
 	yarn build
-
-start:
-	docker-compose up -d
-
-clean-deps:
-	docker-compose down
-
-migrate-db:
-	yarn migrate-ts up

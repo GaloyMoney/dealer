@@ -147,4 +147,4 @@ but a simple bitcoin margin held between:
 - 3x (deposit to keep 2x on average and avoid liquidation)
 are the current fund transfer rules.
 
-Also see the [Profit and loss analysis](./PNL.md) of the long basis trade with futures contracts.
+Also see the [Grafana Dashboard Charts Explained](./GRAFANA.md), and the [Profit and loss analysis](./PNL.md) of the long basis trade with futures contracts.
