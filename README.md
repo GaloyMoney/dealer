@@ -1,5 +1,11 @@
 # Dealer
 
+## Get Started
+
+The [dev documentation](./DEV.md) to deploy locally with a docker-compose script.
+
+The production environment relies on kubernetes. To setup with minikube, go to [INSTALLATION.md](./INSTALL.md).
+
 ## What Is a Dealer?
 
 Dealers are people or firms who buy and sell securities **for their own account**. A dealer acts as a principal in trading for its own account, as opposed to a broker who acts as an agent who executes orders on behalf of its clients. 
@@ -141,3 +147,4 @@ but a simple bitcoin margin held between:
 - 3x (deposit to keep 2x on average and avoid liquidation)
 are the current fund transfer rules.
 
+Also see the [Grafana Dashboard Charts Explained](./GRAFANA.md), and the [Profit and loss analysis](./PNL.md) of the long basis trade with futures contracts.
