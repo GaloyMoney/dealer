@@ -6,10 +6,21 @@
     "strict": true,
     "target": "es2020",
     "noImplicitAny": false,
+    "useUnknownInCatchVariables": false,
     "esModuleInterop": true,
     "baseUrl": "./",
     "moduleResolution": "node",
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "paths": {
+      "@config/*": ["src/config/*"],
+      "@core/*": ["src/core/*"],
+      "@app/*": ["src/app/*"],
+      "@domain/*": ["src/domain/*"],
+      "@services/*": ["src/services/*"],
+
+      "@graphql/*": ["src/graphql/*"],
+      "@servers/*": ["src/servers/*"]
+    }
   },
   "compileOnSave": true,
   "include": ["src/**/*", "migrations/**/*", "test/**/*"]
