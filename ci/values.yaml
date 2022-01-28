@@ -1,0 +1,18 @@
+#@data/values
+---
+git_uri: git@github.com:GaloyMoney/web-wallet.git
+git_branch: main
+git_charts_uri: git@github.com:GaloyMoney/charts.git
+git_charts_branch: main
+git_charts_bot_branch: bot-bump-web-wallet-image
+github_private_key: ((github.private_key))
+github_token: ((github.api_token))
+docker_registry: us.gcr.io/galoy-org
+docker_registry_user: ((docker-creds.username))
+docker_registry_password: ((docker-creds.password))
+artifacts_bucket_name: ((staging-gcp-creds.bucket_name))
+staging_inception_creds: ((staging-gcp-creds.creds_json))
+
+slack_channel: web-wallet-github
+slack_username: concourse
+slack_webhook_url: ((addons-slack.api_url))

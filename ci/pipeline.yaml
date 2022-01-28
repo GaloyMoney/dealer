@@ -1,0 +1,262 @@
+#@ load("@ytt:data", "data")
+
+#@ def pipeline_image():
+#@   return data.values.docker_registry + "/galoy-app-pipeline"
+#@ end
+
+#@ def web_wallet_image():
+#@   return data.values.docker_registry + "/web-wallet"
+#@ end
+
+#@ def task_image_config():
+type: registry-image
+source:
+  username: #@ data.values.docker_registry_user
+  password: #@ data.values.docker_registry_password
+  repository: #@ pipeline_image()
+#@ end
+
+#@ def slack_failure_notification():
+#@ fail_url = "<$ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME| :face_with_symbols_on_mouth: $BUILD_JOB_NAME> failed!"
+put: slack
+params:
+  channel: #@ data.values.slack_channel
+  username: #@ data.values.slack_username
+  icon_url: https://cl.ly/2F421Y300u07/concourse-logo-blue-transparent.png
+  text: #@ fail_url
+#@ end
+
+groups:
+  - name: web-wallet
+    jobs:
+      - check-code
+      - test
+      - build-edge-image
+      - bump-image-in-chart
+      - install-deps
+
+jobs:
+  - name: build-edge-image
+    serial: true
+    plan:
+      - in_parallel:
+          - { get: repo, trigger: true }
+          - { get: pipeline-tasks }
+      - task: prepare-docker-build
+        config:
+          platform: linux
+          image_resource: #@ task_image_config()
+          inputs:
+            - name: pipeline-tasks
+            - name: repo
+          outputs:
+            - name: repo
+          run:
+            path: pipeline-tasks/ci/tasks/prepare-docker-build.sh
+      - task: build
+        privileged: true
+        config:
+          platform: linux
+          image_resource:
+            type: registry-image
+            source:
+              repository: vito/oci-build-task
+          inputs:
+            - name: repo
+          outputs:
+            - name: image
+          params:
+            CONTEXT: repo
+          run:
+            path: build
+      - put: edge-image
+        params:
+          image: image/image.tar
+
+  - name: bump-image-in-chart
+    plan:
+      - in_parallel:
+          - get: edge-image
+            trigger: true
+            passed: [build-edge-image]
+            params: { skip_download: true }
+          - get: repo
+            trigger: true
+            passed:
+              - build-edge-image
+          - get: charts-repo
+            params: { skip_download: true }
+          - get: pipeline-tasks
+      - task: bump-image-digest-in-values
+        config:
+          platform: linux
+          image_resource: #@ task_image_config()
+          inputs:
+            - name: repo
+            - name: edge-image
+            - name: pipeline-tasks
+            - name: charts-repo
+          outputs:
+            - name: charts-repo
+          params:
+            BRANCH: #@ data.values.git_charts_branch
+          run:
+            path: pipeline-tasks/ci/tasks/bump-image-digest.sh
+      - put: charts-repo-bot-branch
+        params:
+          repository: charts-repo
+          force: true
+      - task: open-charts-pr
+        config:
+          platform: linux
+          image_resource: #@ task_image_config()
+          inputs:
+            - name: pipeline-tasks
+            - name: edge-image
+            - name: charts-repo
+          params:
+            GH_TOKEN: #@ data.values.github_token
+            BRANCH: #@ data.values.git_charts_branch
+            BOT_BRANCH: #@ data.values.git_charts_bot_branch
+          run:
+            path: pipeline-tasks/ci/tasks/open-charts-pr.sh
+
+  - name: check-code
+    serial: true
+    plan:
+      - in_parallel:
+          - { get: repo, trigger: true }
+          - { get: pipeline-tasks }
+          - { get: bundled-deps, trigger: true }
+      - task: check-code
+        config:
+          platform: linux
+          image_resource: #@ task_image_config()
+          inputs:
+            - name: bundled-deps
+            - name: pipeline-tasks
+            - name: repo
+          run:
+            path: pipeline-tasks/ci/tasks/check-code.sh
+    on_failure: #@ slack_failure_notification()
+
+  - name: test
+    serial: true
+    plan:
+      - in_parallel:
+          - { get: repo, trigger: true }
+          - { get: pipeline-tasks }
+          - { get: bundled-deps, trigger: true }
+      - task: test
+        config:
+          platform: linux
+          image_resource: #@ task_image_config()
+          inputs:
+            - name: bundled-deps
+            - name: pipeline-tasks
+            - name: repo
+          run:
+            path: pipeline-tasks/ci/tasks/test.sh
+    on_failure: #@ slack_failure_notification()
+
+  - name: install-deps
+    plan:
+      - in_parallel:
+          - { get: deps, trigger: true }
+          - { get: pipeline-tasks }
+          - { put: deps-version, params: { bump: patch } }
+      - task: install-deps
+        config:
+          platform: linux
+          image_resource: #@ task_image_config()
+          inputs:
+            - name: pipeline-tasks
+            - name: deps
+            - name: deps-version
+          outputs:
+            - name: bundled-deps
+          run:
+            path: pipeline-tasks/ci/tasks/install-deps.sh
+      - put: bundled-deps
+        params:
+          file: bundled-deps/bundled-deps-*.tgz
+    on_failure: #@ slack_failure_notification()
+
+resources:
+  - name: repo
+    type: git
+    source:
+      ignore_paths: ["ci/*[^md]"]
+      uri: #@ data.values.git_uri
+      branch: #@ data.values.git_branch
+      private_key: #@ data.values.github_private_key
+
+  - name: charts-repo-bot-branch
+    type: git
+    source:
+      uri: #@ data.values.git_charts_uri
+      branch: #@ data.values.git_charts_bot_branch
+      private_key: #@ data.values.github_private_key
+
+  - name: charts-repo
+    type: git
+    source:
+      uri: #@ data.values.git_charts_uri
+      branch: #@ data.values.git_charts_branch
+      private_key: #@ data.values.github_private_key
+
+  - name: edge-image
+    type: registry-image
+    source:
+      tag: edge
+      username: #@ data.values.docker_registry_user
+      password: #@ data.values.docker_registry_password
+      repository: #@ web_wallet_image()
+
+  - name: pipeline-tasks
+    type: git
+    source:
+      paths: [ci/tasks/*, Makefile]
+      uri: #@ data.values.git_uri
+      branch: #@ data.values.git_branch
+      private_key: #@ data.values.github_private_key
+
+  - name: deps
+    type: git
+    source:
+      paths: [yarn.lock]
+      uri: #@ data.values.git_uri
+      branch: #@ data.values.git_branch
+      private_key: #@ data.values.github_private_key
+
+  - name: deps-version
+    type: semver
+    source:
+      initial_version: 0.1.0
+      driver: gcs
+      bucket: #@ data.values.artifacts_bucket_name
+      key: web-wallet-artifacts/versions/deps
+      json_key: #@ data.values.staging_inception_creds
+
+  - name: bundled-deps
+    type: gcs-resource
+    source:
+      bucket: #@ data.values.artifacts_bucket_name
+      json_key: #@ data.values.staging_inception_creds
+      regexp: web-wallet-artifacts/deps/bundled-deps-v(.*)-.*.tgz
+
+  - name: slack
+    type: slack-notification
+    source:
+      url: #@ data.values.slack_webhook_url
+
+resource_types:
+  - name: gcs-resource
+    type: docker-image
+    source:
+      repository: frodenas/gcs-resource
+
+  - name: slack-notification
+    type: docker-image
+    source:
+      repository: cfcommunity/slack-notification-resource
