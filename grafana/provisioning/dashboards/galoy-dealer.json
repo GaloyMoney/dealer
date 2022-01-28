@@ -982,7 +982,7 @@
           "placement": "bottom"
         },
         "tooltip": {
-          "mode": "single"
+          "mode": "multi"
         }
       },
       "targets": [
@@ -1079,7 +1079,7 @@
           "placement": "bottom"
         },
         "tooltip": {
-          "mode": "single"
+          "mode": "multi"
         }
       },
       "targets": [
@@ -1349,7 +1349,7 @@
           "placement": "bottom"
         },
         "tooltip": {
-          "mode": "single"
+          "mode": "multi"
         }
       },
       "targets": [
@@ -1401,8 +1401,8 @@
             }
           },
           "mappings": [],
-          "max": 4,
-          "min": 0,
+          "max": 1.05,
+          "min": 0.93,
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -1412,19 +1412,19 @@
               },
               {
                 "color": "orange",
-                "value": 1.2
+                "value": 0.95
               },
               {
                 "color": "green",
-                "value": 1.8
+                "value": 0.98
               },
               {
                 "color": "orange",
-                "value": 2.25
+                "value": 1
               },
               {
                 "color": "red",
-                "value": 3
+                "value": 1.03
               }
             ]
           }
@@ -1433,22 +1433,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "total / margin"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "semi-dark-blue",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "liability / collateral"
+              "options": "exposure / liability"
             },
             "properties": [
               {
@@ -1476,19 +1461,19 @@
           "placement": "bottom"
         },
         "tooltip": {
-          "mode": "single"
+          "mode": "multi"
         }
       },
       "targets": [
         {
           "exemplar": true,
-          "expr": "(-galoy_dealer_liabilityInUsd)   / galoy_dealer_collateralInUsd",
+          "expr": "galoy_dealer_exposureInUsd / (-galoy_dealer_liabilityInUsd)",
           "interval": "",
-          "legendFormat": "liability / collateral",
+          "legendFormat": "exposure / liability",
           "refId": "A"
         }
       ],
-      "title": "Liability Leverage Ratio",
+      "title": "Exposure Liability Ratio",
       "type": "timeseries"
     },
     {
@@ -1603,7 +1588,7 @@
           "placement": "bottom"
         },
         "tooltip": {
-          "mode": "single"
+          "mode": "multi"
         }
       },
       "targets": [
@@ -1616,409 +1601,6 @@
         }
       ],
       "title": "Exposure Leverage Ratio",
-      "type": "timeseries"
-    },
-    {
-      "datasource": null,
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "axisSoftMax": 5,
-            "axisSoftMin": 0,
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 0,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineInterpolation": "linear",
-            "lineWidth": 5,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "area"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "super-light-orange",
-                "value": 1
-              },
-              {
-                "color": "yellow",
-                "value": 2
-              },
-              {
-                "color": "orange",
-                "value": 3
-              },
-              {
-                "color": "red",
-                "value": 4
-              }
-            ]
-          }
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "adl"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "super-light-blue",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 7,
-        "w": 6,
-        "x": 18,
-        "y": 14
-      },
-      "id": 28,
-      "options": {
-        "legend": {
-          "calcs": ["last"],
-          "displayMode": "list",
-          "placement": "bottom"
-        },
-        "tooltip": {
-          "mode": "single"
-        }
-      },
-      "targets": [
-        {
-          "exemplar": true,
-          "expr": "galoy_dealer_autoDeleveragingIndicator",
-          "interval": "",
-          "legendFormat": "adl",
-          "refId": "A"
-        }
-      ],
-      "title": "Auto De-leveraging Indicator",
-      "type": "timeseries"
-    },
-    {
-      "datasource": null,
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 0,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "mmr"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "semi-dark-orange",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 7,
-        "w": 6,
-        "x": 0,
-        "y": 21
-      },
-      "id": 42,
-      "options": {
-        "legend": {
-          "calcs": ["last"],
-          "displayMode": "list",
-          "placement": "bottom"
-        },
-        "tooltip": {
-          "mode": "single"
-        }
-      },
-      "targets": [
-        {
-          "exemplar": true,
-          "expr": "galoy_dealer_maintenanceMarginRequirement",
-          "interval": "",
-          "legendFormat": "mmr",
-          "refId": "A"
-        }
-      ],
-      "title": "Maintenance Margin Requirement",
-      "type": "timeseries"
-    },
-    {
-      "datasource": null,
-      "description": "",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 0,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "(margin - upl) / mmr"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "super-light-blue",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 7,
-        "w": 6,
-        "x": 6,
-        "y": 21
-      },
-      "id": 48,
-      "options": {
-        "legend": {
-          "calcs": ["last"],
-          "displayMode": "list",
-          "placement": "bottom"
-        },
-        "tooltip": {
-          "mode": "single"
-        }
-      },
-      "targets": [
-        {
-          "exemplar": true,
-          "expr": "(galoy_dealer_margin - galoy_dealer_unrealizedPnL) / galoy_dealer_maintenanceMarginRequirement",
-          "interval": "",
-          "legendFormat": "(margin - upl) / mmr",
-          "refId": "A"
-        }
-      ],
-      "title": "(Margin - Upl) / mmr",
-      "type": "timeseries"
-    },
-    {
-      "datasource": null,
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 0,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "position lever"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "super-light-blue",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 7,
-        "w": 6,
-        "x": 12,
-        "y": 21
-      },
-      "id": 16,
-      "options": {
-        "legend": {
-          "calcs": ["last"],
-          "displayMode": "list",
-          "placement": "bottom"
-        },
-        "tooltip": {
-          "mode": "single"
-        }
-      },
-      "targets": [
-        {
-          "exemplar": true,
-          "expr": "galoy_dealer_leverage",
-          "interval": "",
-          "legendFormat": "position lever",
-          "refId": "A"
-        }
-      ],
-      "title": "Position Leverage",
       "type": "timeseries"
     },
     {
@@ -2138,7 +1720,7 @@
         "h": 7,
         "w": 6,
         "x": 18,
-        "y": 21
+        "y": 14
       },
       "id": 30,
       "options": {
@@ -2225,7 +1807,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "margin ratio"
+              "options": "upl ratio"
             },
             "properties": [
               {
@@ -2234,6 +1816,37 @@
                   "fixedColor": "super-light-blue",
                   "mode": "fixed"
                 }
+              },
+              {
+                "id": "custom.axisPlacement",
+                "value": "left"
+              },
+              {
+                "id": "unit",
+                "value": "%"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "upl"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "dark-orange",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "custom.axisPlacement",
+                "value": "right"
+              },
+              {
+                "id": "unit",
+                "value": "currencyBTC"
               }
             ]
           }
@@ -2243,9 +1856,9 @@
         "h": 7,
         "w": 6,
         "x": 0,
-        "y": 28
+        "y": 21
       },
-      "id": 40,
+      "id": 38,
       "options": {
         "legend": {
           "calcs": ["last"],
@@ -2253,19 +1866,27 @@
           "placement": "bottom"
         },
         "tooltip": {
-          "mode": "single"
+          "mode": "multi"
         }
       },
       "targets": [
         {
           "exemplar": true,
-          "expr": "galoy_dealer_marginRatio",
+          "expr": "galoy_dealer_unrealizedPnLRatio * 100",
           "interval": "",
-          "legendFormat": "margin ratio",
+          "legendFormat": "upl ratio",
           "refId": "A"
+        },
+        {
+          "exemplar": true,
+          "expr": "galoy_dealer_unrealizedPnL",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "upl",
+          "refId": "B"
         }
       ],
-      "title": "Margin Ratio",
+      "title": "Unrealized PnL & Ratio",
       "type": "timeseries"
     },
     {
@@ -2278,6 +1899,8 @@
           "custom": {
             "axisLabel": "",
             "axisPlacement": "auto",
+            "axisSoftMax": 5,
+            "axisSoftMin": 0,
             "barAlignment": 0,
             "drawStyle": "line",
             "fillOpacity": 0,
@@ -2288,7 +1911,7 @@
               "viz": false
             },
             "lineInterpolation": "linear",
-            "lineWidth": 1,
+            "lineWidth": 5,
             "pointSize": 5,
             "scaleDistribution": {
               "type": "linear"
@@ -2300,7 +1923,7 @@
               "mode": "none"
             },
             "thresholdsStyle": {
-              "mode": "line"
+              "mode": "area"
             }
           },
           "mappings": [],
@@ -2312,20 +1935,20 @@
                 "value": null
               },
               {
-                "color": "red",
-                "value": 1.2
+                "color": "super-light-orange",
+                "value": 1
               },
               {
-                "color": "#EAB839",
-                "value": 1.8
+                "color": "yellow",
+                "value": 2
               },
               {
-                "color": "#6ED0E0",
-                "value": 2.25
-              },
-              {
-                "color": "purple",
+                "color": "orange",
                 "value": 3
+              },
+              {
+                "color": "red",
+                "value": 4
               }
             ]
           }
@@ -2334,7 +1957,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "original leverage ratio"
+              "options": "adl"
             },
             "properties": [
               {
@@ -2352,9 +1975,9 @@
         "h": 7,
         "w": 6,
         "x": 6,
-        "y": 28
+        "y": 21
       },
-      "id": 18,
+      "id": 28,
       "options": {
         "legend": {
           "calcs": ["last"],
@@ -2362,19 +1985,19 @@
           "placement": "bottom"
         },
         "tooltip": {
-          "mode": "single"
+          "mode": "multi"
         }
       },
       "targets": [
         {
           "exemplar": true,
-          "expr": "galoy_dealer_leverageRatio",
+          "expr": "galoy_dealer_autoDeleveragingIndicator",
           "interval": "",
-          "legendFormat": "original leverage ratio",
+          "legendFormat": "adl",
           "refId": "A"
         }
       ],
-      "title": "Rebalance Leverage Ratio (liability / collateral)",
+      "title": "Auto De-leveraging Indicator",
       "type": "timeseries"
     },
     {
@@ -2449,7 +2072,7 @@
         "h": 7,
         "w": 6,
         "x": 12,
-        "y": 28
+        "y": 21
       },
       "id": 24,
       "options": {
@@ -2459,7 +2082,7 @@
           "placement": "bottom"
         },
         "tooltip": {
-          "mode": "single"
+          "mode": "multi"
         }
       },
       "targets": [
@@ -2484,6 +2107,8 @@
           "custom": {
             "axisLabel": "",
             "axisPlacement": "auto",
+            "axisSoftMax": 6,
+            "axisSoftMin": 0,
             "barAlignment": 0,
             "drawStyle": "line",
             "fillOpacity": 0,
@@ -2528,7 +2153,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "exchange lever"
+              "options": "position lever"
             },
             "properties": [
               {
@@ -2546,9 +2171,9 @@
         "h": 7,
         "w": 6,
         "x": 18,
-        "y": 28
+        "y": 21
       },
-      "id": 20,
+      "id": 16,
       "options": {
         "legend": {
           "calcs": ["last"],
@@ -2556,19 +2181,27 @@
           "placement": "bottom"
         },
         "tooltip": {
-          "mode": "single"
+          "mode": "multi"
         }
       },
       "targets": [
+        {
+          "exemplar": true,
+          "expr": "galoy_dealer_leverage",
+          "interval": "",
+          "legendFormat": "position lever",
+          "refId": "A"
+        },
         {
           "exemplar": true,
           "expr": "galoy_dealer_exchangeLeverage",
+          "hide": false,
           "interval": "",
           "legendFormat": "exchange lever",
-          "refId": "A"
+          "refId": "B"
         }
       ],
-      "title": "Exchange Leverage ",
+      "title": "Position vs Exchange Leverage",
       "type": "timeseries"
     },
     {
@@ -2625,104 +2258,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "upl ratio"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "super-light-blue",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 7,
-        "w": 6,
-        "x": 0,
-        "y": 35
-      },
-      "id": 38,
-      "options": {
-        "legend": {
-          "calcs": ["last"],
-          "displayMode": "list",
-          "placement": "bottom"
-        },
-        "tooltip": {
-          "mode": "single"
-        }
-      },
-      "targets": [
-        {
-          "exemplar": true,
-          "expr": "galoy_dealer_unrealizedPnLRatio",
-          "interval": "",
-          "legendFormat": "upl ratio",
-          "refId": "A"
-        }
-      ],
-      "title": "Unrealized PnL Ratio",
-      "type": "timeseries"
-    },
-    {
-      "datasource": null,
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 0,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "last px"
+              "options": "total equity"
             },
             "properties": [
               {
@@ -2739,301 +2275,10 @@
       "gridPos": {
         "h": 7,
         "w": 6,
-        "x": 6,
-        "y": 35
-      },
-      "id": 14,
-      "options": {
-        "legend": {
-          "calcs": ["last"],
-          "displayMode": "list",
-          "placement": "bottom"
-        },
-        "tooltip": {
-          "mode": "single"
-        }
-      },
-      "targets": [
-        {
-          "exemplar": true,
-          "expr": "galoy_dealer_lastBtcPriceInUsd",
-          "interval": "",
-          "legendFormat": "last px",
-          "refId": "A"
-        }
-      ],
-      "title": "BTC Last Price in USD",
-      "type": "timeseries"
-    },
-    {
-      "datasource": null,
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 0,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "basis"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "dark-green",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 7,
-        "w": 6,
-        "x": 12,
-        "y": 35
-      },
-      "id": 10,
-      "options": {
-        "legend": {
-          "calcs": ["last"],
-          "displayMode": "list",
-          "placement": "bottom"
-        },
-        "tooltip": {
-          "mode": "single"
-        }
-      },
-      "targets": [
-        {
-          "exemplar": true,
-          "expr": "galoy_dealer_btcDerivativePriceInUsd - galoy_dealer_btcSpotPriceInUsd",
-          "interval": "",
-          "legendFormat": "basis",
-          "refId": "A"
-        }
-      ],
-      "title": "BTCUSD Perp basis in USD",
-      "type": "timeseries"
-    },
-    {
-      "datasource": null,
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 0,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 0
-              }
-            ]
-          }
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "next funding rate"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "super-light-blue",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 7,
-        "w": 6,
-        "x": 18,
-        "y": 35
-      },
-      "id": 6,
-      "options": {
-        "legend": {
-          "calcs": ["last"],
-          "displayMode": "list",
-          "placement": "bottom"
-        },
-        "tooltip": {
-          "mode": "single"
-        }
-      },
-      "targets": [
-        {
-          "exemplar": true,
-          "expr": "galoy_dealer_nextFundingRate",
-          "interval": "",
-          "legendFormat": "next funding rate",
-          "refId": "A"
-        }
-      ],
-      "title": "Perp Next Funding Rate",
-      "type": "timeseries"
-    },
-    {
-      "datasource": null,
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 0,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "upl"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "semi-dark-orange",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 7,
-        "w": 6,
         "x": 0,
-        "y": 42
+        "y": 28
       },
-      "id": 36,
+      "id": 26,
       "options": {
         "legend": {
           "calcs": ["last"],
@@ -3047,13 +2292,13 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "galoy_dealer_unrealizedPnL",
+          "expr": "galoy_dealer_totalAccountValueInUsd",
           "interval": "",
-          "legendFormat": "upl",
+          "legendFormat": "total equity",
           "refId": "A"
         }
       ],
-      "title": "Unrealized PnL in BTC",
+      "title": "Total Account Value in Usd",
       "type": "timeseries"
     },
     {
@@ -3158,7 +2403,7 @@
         "h": 7,
         "w": 6,
         "x": 6,
-        "y": 42
+        "y": 28
       },
       "id": 8,
       "options": {
@@ -3253,7 +2498,201 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "total equity"
+              "options": "basis"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "dark-green",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 6,
+        "x": 12,
+        "y": 28
+      },
+      "id": 10,
+      "options": {
+        "legend": {
+          "calcs": ["last"],
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "targets": [
+        {
+          "exemplar": true,
+          "expr": "galoy_dealer_btcDerivativePriceInUsd - galoy_dealer_btcSpotPriceInUsd",
+          "interval": "",
+          "legendFormat": "basis",
+          "refId": "A"
+        }
+      ],
+      "title": "BTCUSD Perp basis in USD",
+      "type": "timeseries"
+    },
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "mmr"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "semi-dark-orange",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 6,
+        "x": 18,
+        "y": 28
+      },
+      "id": 42,
+      "options": {
+        "legend": {
+          "calcs": ["last"],
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "targets": [
+        {
+          "exemplar": true,
+          "expr": "galoy_dealer_maintenanceMarginRequirement",
+          "interval": "",
+          "legendFormat": "mmr",
+          "refId": "A"
+        }
+      ],
+      "title": "Maintenance Margin Requirement",
+      "type": "timeseries"
+    },
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "collateral usd"
             },
             "properties": [
               {
@@ -3271,9 +2710,9 @@
         "h": 7,
         "w": 6,
         "x": 0,
-        "y": 49
+        "y": 35
       },
-      "id": 26,
+      "id": 22,
       "options": {
         "legend": {
           "calcs": ["last"],
@@ -3287,13 +2726,13 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "galoy_dealer_totalAccountValueInUsd",
+          "expr": "galoy_dealer_collateralInUsd",
           "interval": "",
-          "legendFormat": "total equity",
+          "legendFormat": "collateral usd",
           "refId": "A"
         }
       ],
-      "title": "Total Account Value in Usd",
+      "title": "Position Collateral in Usd",
       "type": "timeseries"
     },
     {
@@ -3384,7 +2823,7 @@
         "h": 7,
         "w": 6,
         "x": 6,
-        "y": 49
+        "y": 35
       },
       "id": 46,
       "options": {
@@ -3394,7 +2833,7 @@
           "placement": "bottom"
         },
         "tooltip": {
-          "mode": "single"
+          "mode": "multi"
         }
       },
       "targets": [
@@ -3454,7 +2893,7 @@
               },
               {
                 "color": "red",
-                "value": 80
+                "value": 0
               }
             ]
           }
@@ -3463,13 +2902,13 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "collateral usd"
+              "options": "next funding rate"
             },
             "properties": [
               {
                 "id": "color",
                 "value": {
-                  "fixedColor": "dark-green",
+                  "fixedColor": "super-light-blue",
                   "mode": "fixed"
                 }
               }
@@ -3480,10 +2919,10 @@
       "gridPos": {
         "h": 7,
         "w": 6,
-        "x": 0,
-        "y": 56
+        "x": 12,
+        "y": 35
       },
-      "id": 22,
+      "id": 6,
       "options": {
         "legend": {
           "calcs": ["last"],
@@ -3497,13 +2936,110 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "galoy_dealer_collateralInUsd",
+          "expr": "galoy_dealer_nextFundingRate",
           "interval": "",
-          "legendFormat": "collateral usd",
+          "legendFormat": "next funding rate",
           "refId": "A"
         }
       ],
-      "title": "Position Collateral in Usd",
+      "title": "Perp Next Funding Rate",
+      "type": "timeseries"
+    },
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "margin ratio"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "super-light-blue",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 6,
+        "x": 18,
+        "y": 35
+      },
+      "id": 40,
+      "options": {
+        "legend": {
+          "calcs": ["last"],
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "targets": [
+        {
+          "exemplar": true,
+          "expr": "galoy_dealer_marginRatio",
+          "interval": "",
+          "legendFormat": "margin ratio",
+          "refId": "A"
+        }
+      ],
+      "title": "Margin Ratio",
       "type": "timeseries"
     }
   ],
@@ -3515,12 +3051,12 @@
     "list": []
   },
   "time": {
-    "from": "now-15m",
+    "from": "now-13d",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "",
   "title": "Galoy Dealer",
   "uid": "pTEP9n47k",
-  "version": 12
+  "version": 16
 }
