@@ -25,5 +25,5 @@ fi
   git merge --no-edit ${BRANCH}
   git add -A
   git status
-  git commit -m "Bump dealer image to '${digest}'"
+  git commit -m "chore(deps): Bump dealer image to '${digest}'"
 )
