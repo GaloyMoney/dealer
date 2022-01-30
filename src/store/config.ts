@@ -3,7 +3,6 @@ const isBrowser = typeof window !== "undefined"
 if (!isBrowser) {
   const requiredEnvVars = [
     "NODE_ENV",
-    "NODE_PATH",
     "SESSION_KEYS",
     "HOST",
     "PORT",

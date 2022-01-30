@@ -1,15 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from "react"
 
-import config from "store/config"
-import { satsFormatter, usdFormatter, useAppDispatcher } from "store"
-import { useMyUpdates } from "store/use-my-updates"
-
 import {
-  GaloyGQL,
   parsePaymentDestination,
-  queries,
   translate,
   ValidPaymentReponse,
+  useDelayedQuery,
 } from "@galoymoney/client"
 import {
   FormattedNumberInput,
@@ -18,15 +13,18 @@ import {
   OnTextValueChange,
   SatSymbol,
   Spinner,
-  useDelayedQuery,
   OnNumberValueChange,
+  QRCodeDetecor,
 } from "@galoymoney/react"
 
-import useMainQuery from "store/use-main-query"
-import Scan from "../send/scan"
+import config from "../../store/config"
+import { satsFormatter, usdFormatter, useAppDispatcher } from "../../store"
+import useMainQuery from "../../hooks/use-main-query"
+import useMyUpdates from "../../hooks/use-my-updates"
+
 import Header from "../header"
-import { ButtonLink } from "components/link"
-import SendAction from "components/send/send-action"
+import { ButtonLink } from "../link"
+import SendAction from "../send/send-action"
 
 const Send = () => {
   const dispatch = useAppDispatcher()
@@ -34,6 +32,7 @@ const Send = () => {
   const { satsToUsd, usdToSats } = useMyUpdates()
 
   const [input, setInput] = useState<InvoiceInput>({
+    id: 1,
     currency: "USD",
     amount: "",
     destination: "",
@@ -41,7 +40,7 @@ const Send = () => {
   })
 
   const [userDefaultWalletIdQuery, { loading: userDefaultWalletIdLoading }] =
-    useDelayedQuery<GaloyGQL.UserDefaultWalletIdQuery>(queries.userDefaultWalletId)
+    useDelayedQuery.userDefaultWalletId()
 
   useEffect(() => {
     if (usdToSats && input.currency === "USD" && typeof input.amount === "number") {
@@ -72,38 +71,40 @@ const Send = () => {
         paymentType: parsedDestination.paymentType,
         sameNode: parsedDestination.sameNode,
         fixedAmount: parsedDestination.amount !== undefined,
-        paymentRequset: parsedDestination.paymentRequest,
+        paymentRequest: parsedDestination.paymentRequest,
         address: parsedDestination.address,
       }
 
       // FIXME: Move userDefaultWalletIdQuery to galoy-client
       if (btcWalletId && parsedDestination.paymentType === "intraledger") {
         // Validate account handle (and get the default wallet id for account)
-        const { data, error } = await userDefaultWalletIdQuery({
-          username: parsedDestination.handle,
+        const { data, errorsMessage } = await userDefaultWalletIdQuery({
+          username: parsedDestination.handle as string,
         })
 
-        if (error) {
-          newInputState.errorMessage = error?.message || "Invaild username"
-          console.error(error)
+        if (errorsMessage) {
+          newInputState.errorMessage = errorsMessage
         } else {
-          newInputState.reciepientWalletId = data?.userDefaultWalletId
+          newInputState.recipientWalletId = data?.userDefaultWalletId
         }
       }
 
-      let newDestination: string | undefined = undefined
       if (parsedDestination.paymentType === "onchain") {
-        newDestination = parsedDestination.address
+        newInputState.destination = parsedDestination.address
       }
 
       if (parsedDestination.paymentType === "lightning") {
-        newDestination = parsedDestination.paymentRequest
+        newInputState.destination = parsedDestination.paymentRequest
+      }
+
+      if (parsedDestination.memo) {
+        newInputState.memo = parsedDestination.memo
       }
 
       setInput((currInput) => ({
         ...currInput,
+        id: currInput.id + 1,
         ...newInputState,
-        newDestination,
         amount: newInputState.fixedAmount ? parsedDestination.amount : currInput.amount,
         currency: newInputState.fixedAmount ? "SATS" : currInput.currency,
       }))
@@ -169,7 +170,7 @@ const Send = () => {
       let newAmount: number | "" = ""
 
       if (currInput.currency === "SATS" && currInput.amount) {
-        newAmount = satsToUsd(currInput.amount)
+        newAmount = Math.round(satsToUsd(currInput.amount * 100)) / 100
       }
 
       if (currInput.currency === "USD" && currInput.satAmount) {
@@ -178,6 +179,7 @@ const Send = () => {
 
       return {
         ...currInput,
+        id: currInput.id + 1,
         currency: newCurrency,
         amount: newAmount,
       }
@@ -230,7 +232,7 @@ const Send = () => {
   }, [convertedValues])
 
   const resetSendScreen = useCallback(() => {
-    dispatch({ type: "reset-current-screen" })
+    dispatch({ type: "update", path: "/send" })
   }, [dispatch])
 
   const parseQRCode = useCallback<(destination: string) => false | ValidPaymentReponse>(
@@ -242,14 +244,14 @@ const Send = () => {
           pubKey,
         })
 
-        if (!parsedDestination.valid) {
-          return {
-            ...parsedDestination,
-            errorMessage: parsedDestination?.errorMessage || translate("Invalid QR Code"),
-          }
+        if (parsedDestination.valid) {
+          return parsedDestination
         }
 
-        return parsedDestination
+        return {
+          ...parsedDestination,
+          errorMessage: parsedDestination?.errorMessage || translate("Invalid QR Code"),
+        }
       }
       return false
     },
@@ -261,25 +263,23 @@ const Send = () => {
       return <ButtonLink to="/login">{translate("Login to send")}</ButtonLink>
     }
 
-    const pendingInput =
+    const inputPending =
       input.amount === undefined ||
       input.destination === undefined ||
       input.memo === undefined
 
-    const pendingSatAmount =
+    const satAmountPending =
       typeof input.amount === "number" && input.satAmount === undefined
 
     if (input.satAmount && input.satAmount > btcWalletBalance) {
       const errorMessage = translate(
         "Payment amount exceeds balance of %{balance} sats",
-        {
-          balance: btcWalletBalance,
-        },
+        { balance: btcWalletBalance },
       )
       return <div className="error">{errorMessage}</div>
     }
 
-    const showSpinner = pendingInput || pendingSatAmount || userDefaultWalletIdLoading
+    const showSpinner = inputPending || satAmountPending || userDefaultWalletIdLoading
 
     if (showSpinner) {
       return <Spinner size="big" />
@@ -305,8 +305,8 @@ const Send = () => {
           {input.currency === "SATS" ? <SatSymbol /> : "$"}
         </div>
         <FormattedNumberInput
-          key={input.currency}
-          value={inputValue}
+          key={input.id}
+          initValue={inputValue}
           onChange={handleAmountUpdate}
           onDebouncedChange={handleDebouncedAmountUpdate}
           disabled={input.fixedAmount}
@@ -323,9 +323,10 @@ const Send = () => {
       </div>
       <div className="destination-input center-display">
         <DebouncedInput
+          key={input.id}
+          initValue={input.destination}
           onChange={handleDestinationUpdate}
           onDebouncedChange={handleDebouncedDestinationUpdate}
-          newValue={input.newDestination}
           type="text"
           name="destination"
           autoComplete="off"
@@ -334,6 +335,8 @@ const Send = () => {
       </div>
       <div className="note-input center-display">
         <DebouncedTextarea
+          key={input.id}
+          initValue={input.memo}
           onChange={handleMemoUpdate}
           onDebouncedChange={handleDebouncedMemoUpdate}
           name="memo"
@@ -342,11 +345,14 @@ const Send = () => {
         />
       </div>
       {conversionDisplay && <div className="amount-converted">{conversionDisplay}</div>}
-      <Scan
-        onBarcodeDetected={parseQRCode}
-        onValidBarcode={setInputFromParsedDestination}
-      />
       <div className="action-container center-display">{ActionDislapy()}</div>
+      <QRCodeDetecor
+        autoStart={document.location.pathname === "/scan"}
+        startText={translate("Scan QR code")}
+        stopText={translate("Close")}
+        onCodeDetected={parseQRCode}
+        onValidCode={setInputFromParsedDestination}
+      />
     </div>
   )
 }

@@ -1,13 +1,11 @@
 import { useState, useEffect, useRef } from "react"
-import { useMutation } from "@apollo/client"
 
-import { GaloyGQL, mutations, translate } from "@galoymoney/client"
+import { GaloyGQL, translate, useMutation } from "@galoymoney/client"
+import { Spinner } from "@galoymoney/react"
 
-import { usdFormatter } from "store"
-import { errorsText } from "store/graphql"
+import { usdFormatter } from "../../store"
 
 import { LightningInvoice, OnChainInvoice } from "./invoice"
-import { Spinner } from "@galoymoney/react"
 
 const INVOICE_EXPIRE_INTERVAL = 60 * 60 * 1000
 
@@ -23,9 +21,9 @@ type InvoiceProps = {
   convertedUsdAmount: number
 }
 
-const ErrorMessage = () => (
+const ErrorMessage = ({ message = "Not able to generate invoice." }) => (
   <div className="error">
-    {translate("Not able to generate invoice.")}
+    {translate(message as never)}
     <br />
     {translate("Please try again later.")}
   </div>
@@ -53,11 +51,7 @@ const AmountInvoiceGenerator = ({
 
   const timerIds = useRef<number[]>([])
 
-  const [createInvoice, { loading, error, data }] = useMutation<
-    { lnInvoiceCreate: GaloyGQL.LnInvoicePayload },
-    { input: GaloyGQL.LnInvoiceCreateInput }
-  >(mutations.lnInvoiceCreate, {
-    onError: console.error,
+  const [createInvoice, { loading, errorsMessage, data }] = useMutation.lnInvoiceCreate({
     onCompleted: () => setInvoiceStatus("new"),
   })
 
@@ -75,25 +69,15 @@ const AmountInvoiceGenerator = ({
     return clearTimers
   }, [satAmount, btcWalletId, createInvoice, currency, memo])
 
-  let errorString: string | undefined = error?.message || undefined
-  let invoice: GaloyGQL.Maybe<GaloyGQL.LnInvoice> | undefined = undefined
-
-  if (data) {
-    const invoiceData = data.lnInvoiceCreate
-    if (invoiceData.errors?.length > 0) {
-      errorString = errorsText(invoiceData)
-    } else {
-      invoice = invoiceData.invoice
-    }
-  }
-
-  if (errorString) {
-    return <ErrorMessage />
+  if (errorsMessage) {
+    return <ErrorMessage message={errorsMessage} />
   }
 
   if (loading) {
     return <Spinner size="big" />
   }
+
+  const invoice = data?.lnInvoiceCreate?.invoice
 
   if (!invoice) {
     return null
@@ -137,13 +121,10 @@ const NoAmountInvoiceGenerator = ({ btcWalletId, regenerate, memo }: NoInvoicePr
 
   const timerIds = useRef<number[]>([])
 
-  const [createInvoice, { loading, error, data }] = useMutation<
-    { lnNoAmountInvoiceCreate: GaloyGQL.LnNoAmountInvoicePayload },
-    { input: GaloyGQL.LnNoAmountInvoiceCreateInput }
-  >(mutations.lnNoAmountInvoiceCreate, {
-    onError: console.error,
-    onCompleted: () => setInvoiceStatus("new"),
-  })
+  const [createInvoice, { loading, errorsMessage, data }] =
+    useMutation.lnNoAmountInvoiceCreate({
+      onCompleted: () => setInvoiceStatus("new"),
+    })
 
   const clearTimers = () => {
     timerIds.current.forEach((timerId) => clearTimeout(timerId))
@@ -159,26 +140,15 @@ const NoAmountInvoiceGenerator = ({ btcWalletId, regenerate, memo }: NoInvoicePr
     return clearTimers
   }, [btcWalletId, createInvoice, memo])
 
-  let errorString: string | undefined = error?.message || undefined
-  let invoice: GaloyGQL.Maybe<GaloyGQL.LnNoAmountInvoice> | undefined = undefined
-
-  if (data) {
-    const invoiceData = data.lnNoAmountInvoiceCreate
-    if (invoiceData.errors?.length > 0) {
-      errorString = errorsText(invoiceData)
-    } else {
-      invoice = invoiceData.invoice
-    }
-  }
-
-  if (errorString) {
-    console.error(errorString)
-    return <ErrorMessage />
+  if (errorsMessage) {
+    return <ErrorMessage message={errorsMessage} />
   }
 
   if (loading) {
     return <Spinner size="big" />
   }
+
+  const invoice = data?.lnNoAmountInvoiceCreate?.invoice
 
   if (!invoice) {
     return null

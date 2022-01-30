@@ -1,12 +1,11 @@
-import { useQuery } from "@apollo/client"
+import { setLocale, useQuery } from "@galoymoney/client"
 
-import useAuthToken from "store/use-auth-token"
-import { GaloyGQL, queries, setLocale } from "@galoymoney/client"
+import useAuthToken from "../store/use-auth-token"
 
 const useMainQuery = () => {
   const { hasToken } = useAuthToken()
 
-  const { data } = useQuery<GaloyGQL.MeQuery>(queries.main, {
+  const { data } = useQuery.main({
     variables: { hasToken },
     onCompleted: (completed) => {
       setLocale(completed?.me?.language)
@@ -20,7 +19,7 @@ const useMainQuery = () => {
   const btcWalletBalance = hasToken ? btcWallet?.balance ?? NaN : 0
 
   return {
-    btcPrice: data?.btcPrice,
+    btcPrice: data?.btcPrice ?? undefined,
     pubKey: data?.globals?.nodesIds?.[0] ?? "",
     btcWalletId: btcWallet?.id,
     btcWalletBalance,

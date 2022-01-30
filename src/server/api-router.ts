@@ -1,7 +1,8 @@
-import { mutations } from "@galoymoney/client"
-import "cross-fetch/polyfill" // The Apollo client depends on fetch
 import express from "express"
-import client from "./graphql"
+
+import { MUTATIONS } from "@galoymoney/client"
+
+import { createClient } from "../store"
 
 const apiRouter = express.Router({ caseSensitive: true })
 
@@ -13,13 +14,15 @@ apiRouter.post("/login", async (req, res) => {
       throw new Error("INVALID_LOGIN_REQUEST")
     }
 
-    const { data } = await client(req).mutate({
-      mutation: mutations.userLogin,
+    const { data } = await createClient({
+      headers: req.headers,
+    }).mutate({
+      mutation: MUTATIONS.userLogin,
       variables: { input: { phone: phoneNumber, code: authCode } },
     })
 
     if (data?.userLogin?.errors?.length > 0 || !data?.userLogin?.authToken) {
-      throw new Error(data?.userLogin?.errors?.[0].message || "SOMETHING_WENT_WRONG")
+      throw new Error(data?.userLogin?.errors?.[0].message || "Something went wrong")
     }
 
     const authToken = data?.userLogin?.authToken
@@ -32,7 +35,7 @@ apiRouter.post("/login", async (req, res) => {
     console.error(err)
     return res
       .status(500)
-      .send({ error: err instanceof Error ? err.message : "SOMETHING_WENT_WRONG" })
+      .send({ error: err instanceof Error ? err.message : "Something went wrong" })
   }
 })
 

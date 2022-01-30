@@ -1,15 +1,11 @@
-import { useMutation } from "@apollo/client"
-import { GaloyGQL, mutations } from "@galoymoney/client"
+import { useMutation } from "@galoymoney/client"
 import { MouseEvent } from "react"
 
 import SendActionDisplay from "./send-action-display"
 
-const SendIntraLedgerAction = (props: SendActionProps) => {
-  const [sendPayment, { loading, error, data }] = useMutation<{
-    intraLedgerPaymentSend: GaloyGQL.PaymentSendPayload
-  }>(mutations.intraLedgerPaymentSend, {
-    onError: console.error,
-  })
+const SendIntraLedgerAction = (props: SendIntraLedgerActionProps) => {
+  const [sendPayment, { loading, errorsMessage, data }] =
+    useMutation.intraLedgerPaymentSend()
 
   const handleSend = (event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault()
@@ -17,7 +13,7 @@ const SendIntraLedgerAction = (props: SendActionProps) => {
       variables: {
         input: {
           walletId: props.btcWalletId,
-          recipientWalletId: props.reciepientWalletId,
+          recipientWalletId: props.recipientWalletId,
           amount: props.satAmount,
           memo: props.memo,
         },
@@ -28,7 +24,7 @@ const SendIntraLedgerAction = (props: SendActionProps) => {
   return (
     <SendActionDisplay
       loading={loading}
-      error={error?.message}
+      error={errorsMessage}
       data={data?.intraLedgerPaymentSend}
       feeSatAmount={0}
       reset={props.reset}

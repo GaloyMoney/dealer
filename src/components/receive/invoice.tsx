@@ -5,11 +5,11 @@ import copy from "copy-to-clipboard"
 import { GaloyGQL, translate } from "@galoymoney/client"
 import { SuccessCheckmark } from "@galoymoney/react"
 
-import { useMyUpdates } from "store/use-my-updates"
-import { satsToBTC, useAppDispatcher } from "store"
+import { satsToBTC, useAppDispatcher } from "../../store"
+import useMyUpdates from "../../hooks/use-my-updates"
 
 type LightningInvoiceProps = {
-  invoice: GaloyGQL.LnInvoice | GaloyGQL.LnNoAmountInvoice
+  invoice: Pick<GaloyGQL.LnInvoice, "paymentHash" | "paymentRequest">
   onPaymentSuccess?: () => void
 }
 
@@ -25,7 +25,7 @@ const LightningInvoice = ({ invoice, onPaymentSuccess }: LightningInvoiceProps) 
   }
 
   const resetReceiveScreen = () => {
-    dispatch({ type: "reset-current-screen" })
+    dispatch({ type: "update", path: "/receive" })
   }
 
   const invoicePaid =
@@ -37,9 +37,11 @@ const LightningInvoice = ({ invoice, onPaymentSuccess }: LightningInvoiceProps) 
     }
 
     return (
-      <div className="invoice-paid">
+      <div className="invoice-status">
         <SuccessCheckmark />
-        <button onClick={resetReceiveScreen}>Receive another payment</button>
+        <button onClick={resetReceiveScreen}>
+          {translate("Receive another payment")}
+        </button>
       </div>
     )
   }
@@ -52,22 +54,20 @@ const LightningInvoice = ({ invoice, onPaymentSuccess }: LightningInvoiceProps) 
     paymentRequest.substring(paymentRequest.length - 21)
 
   return (
-    <div className="qr-code-container">
-      <div>
-        <div onClick={copyInvoice}>
-          {showCopied && (
-            <div className="invoice-copied">
-              {translate("Invoice has been copied to the clipboard")}
-            </div>
-          )}
-          <QRCode
-            value={`${invoice.paymentRequest}`}
-            size={320}
-            logoImage="/images/qr-logo.png"
-            logoWidth={100}
-          />
-          <div className="payment-destination-code">{paymentRequestLine}</div>
-        </div>
+    <div className="invoice-qrcode-container">
+      <div className="invoice-qrcode" onClick={copyInvoice}>
+        {showCopied && (
+          <div className="invoice-copied">
+            {translate("Invoice has been copied to the clipboard")}
+          </div>
+        )}
+        <QRCode
+          value={`${invoice.paymentRequest}`}
+          size={320}
+          logoImage="/images/qr-logo.png"
+          logoWidth={100}
+        />
+        <div className="payment-destination-code">{paymentRequestLine}</div>
       </div>
       <div className="copy-message">{translate("Click QR code to copy")}</div>
       <p>{translate("Waiting for payment confirmation...")}</p>
@@ -102,8 +102,13 @@ const OnChainInvoice = ({ btcAddress, satAmount, memo }: OnChainInvoiceProps) =>
   }
 
   return (
-    <div className="qr-code-container">
-      <div onClick={copyInvoice}>
+    <div className="invoice-qrcode-container">
+      <div className="invoice-qrcode" onClick={copyInvoice}>
+        {showCopied && (
+          <div className="invoice-copied">
+            {translate("Address has been copied to the clipboard")}
+          </div>
+        )}
         <QRCode
           value={btcAddress + btcAddressParams}
           size={320}
@@ -113,11 +118,6 @@ const OnChainInvoice = ({ btcAddress, satAmount, memo }: OnChainInvoiceProps) =>
         <div className="payment-destination-code">{btcAddress}</div>
       </div>
       <div className="copy-message">{translate("Click QR code to copy")}</div>
-      {showCopied && (
-        <div className="invoice-copied">
-          {translate("Address has been copied to the clipboard")}
-        </div>
-      )}
     </div>
   )
 }

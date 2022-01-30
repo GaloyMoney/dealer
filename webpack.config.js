@@ -10,6 +10,7 @@ const config = (env) => ({
     modules: [path.resolve("./src"), "node_modules"],
     extensions: [".ts", ".tsx", ".js", ".json"],
     fallback: {
+      buffer: require.resolve("buffer/"),
       events: require.resolve("events/"),
       stream: require.resolve("stream-browserify"),
       url: require.resolve("url"),

@@ -1,15 +1,8 @@
-type NormalizedCacheObject = import("@apollo/client").NormalizedCacheObject
+type NormalizedCacheObject = import("@galoymoney/client").NormalizedCacheObject
 
 type RoutePath = typeof import("../server/routes").SupportedRoutes[number]
 type RouteInfo = Record<string, string | (() => JSX.Element | null)>
 type AppRoutes = Record<RoutePath, RouteInfo>
-
-type PriceData = {
-  formattedAmount: string
-  base: number
-  offset: number
-  currencyUnit: string
-}
 
 type GwwState = {
   path: RoutePath
@@ -19,7 +12,7 @@ type GwwState = {
 }
 
 type GwwAction = {
-  type: "navigate" | "reset-current-screen"
+  type: "update"
   [payloadKey: string]: string | undefined
 }
 
@@ -49,34 +42,9 @@ type ServerRendererFunction = (path: RoutePath) => Promise<{
   pageData: RouteInfo
 }>
 
-type GeetestValidationData = {
-  geetestChallenge: string
-  geetestSecCode: string
-  geetestValidate: string
-}
-
-type CaptchaRequestAuthCodeData = {
-  errors: unknown[]
-  success: boolean
-}
-
-type GeetestCaptchaReturn = {
-  geetestError: string | null
-  geetestValidationData: GeetestValidationData | null
-  loadingRegisterCaptcha: boolean
-  registerCaptcha: () => void
-  resetError: () => void
-  resetValidationData: () => void
-}
-
 type UseAuthTokenFunction = () => {
   authToken: string | undefined
   hasToken: boolean
-}
-
-type CachedData = {
-  authToken: string
-  satPriceInCents: number
 }
 
 type UseMyUpdates = {
@@ -88,9 +56,8 @@ type UseMyUpdates = {
   onChainUpdate: import("@galoymoney/client").GaloyGQL.OnChainUpdate | null
 }
 
-type SpinnerSize = "small" | "big"
-
 type InvoiceInput = {
+  id: number // used to reset input components
   currency: "USD" | "SATS"
 
   // undefined in input is used to indicate their changing state
@@ -106,9 +73,9 @@ type InvoiceInput = {
 
   sameNode?: boolean
   fixedAmount?: boolean // if the invoice has amount
-  paymentRequset?: string // if payment is lightning
+  paymentRequest?: string // if payment is lightning
   address?: string // if payment is onchain
-  reciepientWalletId?: string // if payment is intraledger
+  recipientWalletId?: string // if payment is intraledger
 
   newDestination?: string // for scanned codes
 }
@@ -125,13 +92,16 @@ type SendOnChainActionProps = SendActionProps & {
 }
 
 type SendLnActionProps = SendActionProps & {
-  paymentRequset: string
+  paymentRequest: string
 }
 
 type SendLnNoAmountActionProps = SendLnActionProps & {
   satAmount: number
 }
 
-type BarCode = {
-  rawValue: string
+type SendIntraLedgerActionProps = SendActionProps & {
+  recipientWalletId: string
+  satAmount: number
 }
+
+type AtLeast<T, K extends keyof T> = Partial<T> & Pick<T, K>

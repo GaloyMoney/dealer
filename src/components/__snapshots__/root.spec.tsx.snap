@@ -9,64 +9,79 @@ exports[`Root renders Home and matches snapshot 1`] = `
       class="home"
     >
       <div
-        class="header"
+        class="header-container home"
       >
         <div
-          class="balance"
+          class="header"
         >
           <div
-            class="title"
+            class="balance"
           >
-            Current Balance
+            <div
+              class="title"
+            >
+              Current Balance
+            </div>
+            <div
+              class="value"
+            >
+              <div
+                class="primary"
+              >
+                <i
+                  aria-hidden="true"
+                  class="fak fa-satoshisymbol-solidtilt sat-symbol"
+                />
+                0
+              </div>
+              <div
+                class="secondary"
+              >
+                $0.00
+              </div>
+            </div>
           </div>
           <div
-            class="value"
+            class="links"
           >
-            <div
-              class="primary"
+            <a
+              href="/login"
             >
-              <i
-                aria-hidden="true"
-                class="fak fa-satoshisymbol-solidtilt sat-symbol"
-              />
-              0
-            </div>
-            <div
-              class="secondary"
-            >
-              $0.00
-            </div>
+              Login
+            </a>
           </div>
         </div>
-        <a
-          href="/login"
-        >
-          Login
-        </a>
-      </div>
-      <div
-        class="header-nav"
-      >
         <div
-          class="tabs"
+          class="header-nav"
         >
           <a
-            href="/send"
+            href="/scan"
           >
-            <div
-              class="tab link"
-            >
-              Send Bitcoin
-            </div>
+            <i
+              aria-hidden="true"
+              class="fas fa-qrcode"
+            />
+            Scan QR code
           </a>
           <a
+            class="link"
+            href="/send"
+          >
+            <i
+              aria-hidden="true"
+              class="fas fa-paper-plane"
+            />
+            Send Bitcoin
+          </a>
+          <a
+            class="link"
             href="/receive"
           >
-            <div
-              class="tab link"
-            >
-              Receive Bitcoin
-            </div>
+            <i
+              aria-hidden="true"
+              class="far fa-dot-circle"
+            />
+            Receive Bitcoin
           </a>
         </div>
       </div>

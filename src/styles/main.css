@@ -89,22 +89,64 @@ body {
 }
 
 .links {
-  margin: 4rem auto;
   display: flex;
-  font-size: 1.5rem;
   justify-content: space-around;
 }
 
-.header-nav {
-  margin-top: 3rem;
+.separator {
+  display: inline-block;
+  margin: 0 0.5rem;
+  color: var(--color-gray);
+}
+
+.header-container {
   margin-bottom: 2rem;
-  .tabs {
-    max-width: 750px;
-    .tab {
-      width: unset;
+}
+
+.header-nav {
+  margin: 1rem auto;
+  display: flex;
+  flex-direction: row;
+  a {
+    margin: 1rem auto;
+    border: thin solid var(--color-borders);
+    padding: 0.75rem 1.75rem;
+    background-color: white;
+    width: 75%;
+    max-width: 225px;
+    text-align: center;
+    i {
+      margin-right: 0.75rem;
     }
-    a {
-      width: 100%;
+  }
+  .active {
+    background-color: var(--color-active-bg);
+    font-weight: bold;
+    color: var(--color-primary);
+  }
+}
+
+.home {
+  .header-nav {
+    margin-top: 3rem;
+  }
+}
+
+@media (max-width: 800px) {
+  .header-nav {
+    display: none;
+  }
+}
+
+@media (max-width: 800px) {
+  .home {
+    .header-nav {
+      margin-top: 2.5rem;
+      display: flex;
+      flex-direction: column;
+      a {
+        text-align: unset;
+      }
     }
   }
 }
@@ -142,7 +184,7 @@ body {
   padding-top: 1rem;
 }
 
-.invoice-paid {
+.invoice-status {
   margin: 1.5rem;
 }
 
@@ -168,10 +210,6 @@ body {
   pre {
     white-space: pre-wrap;
   }
-}
-
-.separator {
-  margin: 0 0.5rem;
 }
 
 #root {
@@ -288,24 +326,6 @@ body {
   }
 }
 
-.payment-destination-code {
-  color: var(--color-gray);
-  font-size: 0.75rem;
-}
-
-.copy-message {
-  font-size: 0.8rem;
-  margin-top: 1rem;
-}
-
-.invoice-copied {
-  margin-top: 0.25rem;
-  padding: 0.25rem;
-  display: inline-block;
-  background-color: var(--color-highlight-bg);
-  color: var(--color-highlight-fg);
-}
-
 .fee-amount {
   padding: 0.75rem;
   border: thin dashed var(--color-borders);
@@ -326,33 +346,77 @@ body {
   top: 25% !important;
 }
 
-.qr-code-camera {
-  position: fixed;
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  background-color: var(--color-highlight-bg);
-  padding-top: 10%;
-  #qr-code-camera {
-    margin: 0 auto;
-    max-width: 600px;
-    video {
-      width: 100% !important;
+.qrcode-detector {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  max-width: 375px;
+  margin: 1.25rem auto;
+  text-align: center;
+  font-weight: bold;
+  .qrcode-camera {
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background-color: var(--color-highlight-bg);
+    padding-top: 10%;
+    #qrCodeCamera {
+      margin: 0 auto;
+      max-width: 600px;
+      video {
+        width: 100% !important;
+      }
     }
   }
-  .close {
+
+  .spinner {
+    text-align: center;
+  }
+
+  .scan-stop {
     margin-top: 0.5rem;
+    text-align: center;
     color: var(--color-highlight-fg);
   }
-  .spinner,
-  .close {
-    text-align: center;
+
+  .scan-start {
+    margin: 1rem auto;
+    border-top: thin solid var(--color-borders);
+    padding: 0.75rem 1.75rem;
+    width: 75%;
+    max-width: 250px;
+    i {
+      margin-right: 0.75rem;
+    }
   }
 }
 
-.scan {
-  margin: 1rem auto;
-  font-size: 1.25rem;
-  font-weight: bold;
+.invoice-qrcode-container {
+  position: relative;
+
+  .invoice-qrcode {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    .invoice-copied {
+      position: absolute;
+      padding: 1rem;
+      margin: 0.5rem auto;
+      background-color: var(--color-bg);
+      color: var(--color-primary);
+    }
+  }
+
+  .payment-destination-code {
+    color: var(--color-gray);
+    font-size: 0.75rem;
+  }
+
+  .copy-message {
+    font-size: 0.8rem;
+    margin-top: 1rem;
+  }
 }

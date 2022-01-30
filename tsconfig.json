@@ -4,7 +4,6 @@
     "module": "commonjs",
     "lib": ["dom", "es2021", "scripthost"],
     "outDir": "build",
-    "baseUrl": "src",
     "jsx": "react-jsx",
     "strict": true,
     "forceConsistentCasingInFileNames": true,

@@ -1,4 +1,4 @@
-import { useAppState } from "store"
+import { useAppState } from "../store"
 
 const useAuthToken: UseAuthTokenFunction = () => {
   const { authToken } = useAppState()

@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useReducer } from "react"
-import { ApolloClient, ApolloProvider } from "@apollo/client"
+import { useErrorHandler } from "react-error-boundary"
 
-import { createApolloClient, GwwContext, history, postRequest } from "store"
-import mainReducer from "store/reducer"
-import { setLocale } from "@galoymoney/client"
+import { GaloyClient, GaloyProvider, postRequest, setLocale } from "@galoymoney/client"
+
+import { createClient, GwwContext, history } from "../store"
+import mainReducer from "../store/reducer"
 
 import RootComponent from "../components/root-component"
-import { useErrorHandler } from "react-error-boundary"
 
 type RootProps = { GwwState: GwwState }
 
@@ -17,17 +17,16 @@ const Root = ({ GwwState }: RootProps) => {
     return initState
   })
 
-  const apolloClient = useMemo(
+  const galoyClient = useMemo(
     () =>
-      createApolloClient(state?.authToken, {
+      createClient({
+        authToken: state?.authToken,
         onError: ({ graphQLErrors, networkError }) => {
           if (graphQLErrors) {
-            graphQLErrors.forEach((error) => {
-              console.error(`[GraphQL error]: ${JSON.stringify(error)}`)
-            })
+            console.debug("[GraphQL errors]:", graphQLErrors)
           }
           if (networkError) {
-            console.error(`[Network error]: ${networkError}`)
+            console.debug("[Network error]:", networkError)
             if (
               "result" in networkError &&
               networkError.result.errors?.[0]?.code === "INVALID_AUTHENTICATION"
@@ -47,7 +46,7 @@ const Root = ({ GwwState }: RootProps) => {
   useEffect(() => {
     const unlisten = history.listen(({ location }) => {
       dispatch({
-        type: "navigate",
+        type: "update",
         path: location.pathname,
         ...(location.state as Record<string, unknown> | null),
       })
@@ -56,16 +55,16 @@ const Root = ({ GwwState }: RootProps) => {
   }, [state?.authToken])
 
   return (
-    <ApolloProvider client={apolloClient}>
+    <GaloyProvider client={galoyClient}>
       <GwwContext.Provider value={{ state, dispatch }}>
         <RootComponent path={state.path} key={state.key} />
       </GwwContext.Provider>
-    </ApolloProvider>
+    </GaloyProvider>
   )
 }
 
 type SSRootProps = {
-  client: ApolloClient<unknown>
+  client: GaloyClient<unknown>
   GwwState: GwwState
 }
 
@@ -76,11 +75,11 @@ export const SSRRoot = ({ client, GwwState }: SSRootProps) => {
   })
 
   return (
-    <ApolloProvider client={client}>
+    <GaloyProvider client={client}>
       <GwwContext.Provider value={{ state, dispatch }}>
         <RootComponent path={state.path} />
       </GwwContext.Provider>
-    </ApolloProvider>
+    </GaloyProvider>
   )
 }
 

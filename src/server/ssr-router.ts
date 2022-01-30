@@ -1,6 +1,6 @@
 import express from "express"
 
-import { serverRenderer } from "renderers/server"
+import { serverRenderer } from "../renderers/server"
 import { SupportedRoutes } from "./routes"
 
 const ssrRouter = express.Router({ caseSensitive: true })

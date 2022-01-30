@@ -1,10 +1,10 @@
 import { MouseEvent } from "react"
 
+import { GaloyGQL, translate } from "@galoymoney/client"
 import { SatSymbol, Spinner, SuccessCheckmark } from "@galoymoney/react"
 
-import { satsFormatter, usdFormatter } from "store"
-import { useMyUpdates } from "store/use-my-updates"
-import { GaloyGQL } from "@galoymoney/client"
+import { satsFormatter, usdFormatter } from "../../store"
+import useMyUpdates from "../../hooks/use-my-updates"
 
 const FeeDisplay = ({ satAmount }: { satAmount: number | undefined }) => {
   const { satsToUsd } = useMyUpdates()
@@ -36,6 +36,17 @@ type SendActionDisplayProps = {
   handleSend: (event: MouseEvent<HTMLButtonElement>) => void
 }
 
+const StatusDisplay = ({ status }: { status: GaloyGQL.PaymentSendResult }) => {
+  switch (status) {
+    case "ALREADY_PAID":
+      return <div className="error">{translate("Invoice is already paid")}</div>
+    case "SUCCESS":
+      return <SuccessCheckmark />
+    default:
+      return <div className="error">{translate("Payment failed")}</div>
+  }
+}
+
 const SendActionDisplay = ({
   loading,
   error,
@@ -44,27 +55,25 @@ const SendActionDisplay = ({
   reset,
   handleSend,
 }: SendActionDisplayProps) => {
-  const success = data?.status === "SUCCESS"
-
   if (error) {
     return <div className="error">{error}</div>
   }
 
+  if (data?.status) {
+    return (
+      <div className="invoice-status">
+        <StatusDisplay status={data.status} />
+        <button onClick={reset}>{translate("Send another payment")}</button>
+      </div>
+    )
+  }
+
   return (
     <>
-      {success ? (
-        <div className="invoice-paid">
-          <SuccessCheckmark />
-          <button onClick={reset}>Send another payment</button>
-        </div>
-      ) : (
-        <>
-          {feeSatAmount !== undefined && <FeeDisplay satAmount={feeSatAmount} />}
-          <button onClick={handleSend} disabled={loading}>
-            Send {loading && <Spinner size="small" />}
-          </button>
-        </>
-      )}
+      {feeSatAmount !== undefined && <FeeDisplay satAmount={feeSatAmount} />}
+      <button onClick={handleSend} disabled={loading}>
+        {translate("Send Payment")} {loading && <Spinner size="small" />}
+      </button>
     </>
   )
 }

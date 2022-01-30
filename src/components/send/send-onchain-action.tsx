@@ -1,31 +1,23 @@
-import { useMutation, useQuery } from "@apollo/client"
-import { GaloyGQL, mutations, queries } from "@galoymoney/client"
+import { useMutation, useQuery } from "@galoymoney/client"
 import { MouseEvent } from "react"
 
 import SendActionDisplay from "./send-action-display"
 
 const SendOnChainAction = (props: SendOnChainActionProps) => {
-  const [sendPayment, { loading, error, data }] = useMutation<
-    { onChainPaymentSend: GaloyGQL.PaymentSendPayload },
-    { input: GaloyGQL.OnChainPaymentSendInput }
-  >(mutations.onChainPaymentSend, {
-    onError: console.error,
-  })
+  const [sendPayment, { loading, data, errorsMessage: paymentError }] =
+    useMutation.onChainPaymentSend()
 
   const {
     loading: feeLoading,
-    error: feeError,
     data: feeData,
-  } = useQuery<{ onChainTxFee: GaloyGQL.OnChainTxFee }, GaloyGQL.QueryOnChainTxFeeArgs>(
-    queries.onChainTxFee,
-    {
-      variables: {
-        walletId: props.btcWalletId,
-        address: props.address,
-        amount: props.satAmount,
-      },
+    errorsMessage: feeProbeError,
+  } = useQuery.onChainTxFee({
+    variables: {
+      walletId: props.btcWalletId,
+      address: props.address,
+      amount: props.satAmount,
     },
-  )
+  })
 
   const feeSatAmount = feeData?.onChainTxFee?.amount
 
@@ -46,7 +38,7 @@ const SendOnChainAction = (props: SendOnChainActionProps) => {
   return (
     <SendActionDisplay
       loading={loading || feeLoading}
-      error={error?.message || feeError?.message}
+      error={paymentError || feeProbeError}
       data={data?.onChainPaymentSend}
       feeSatAmount={feeSatAmount}
       reset={props.reset}

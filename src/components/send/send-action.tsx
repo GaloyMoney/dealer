@@ -19,7 +19,7 @@ const SendAction = (props: SendActionProps) => {
   const validInput =
     props.valid &&
     (props.fixedAmount || typeof props.amount === "number") &&
-    (props.paymentType !== "intraledger" || props.reciepientWalletId)
+    (props.paymentType !== "intraledger" || props.recipientWalletId)
 
   if (!validInput) {
     return <button disabled>{translate("Enter amount and destination")}</button>
@@ -38,7 +38,7 @@ const SendAction = (props: SendActionProps) => {
   }
 
   if (props.paymentType === "intraledger") {
-    return <SendIntraLedgerAction {...props} />
+    return <SendIntraLedgerAction {...(props as SendIntraLedgerActionProps)} />
   }
 
   return <button disabled>{translate("Enter amount and destination")}</button>

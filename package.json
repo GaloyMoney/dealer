@@ -20,9 +20,8 @@
     "tsc:check": "tsc --pretty --noEmit --skipLibCheck"
   },
   "dependencies": {
-    "@apollo/client": "^3.5.7",
-    "@galoymoney/client": "^0.0.11",
-    "@galoymoney/react": "^0.0.9",
+    "@galoymoney/client": "^0.0.14",
+    "@galoymoney/react": "^0.0.11",
     "@testing-library/jest-dom": "^5.16.0",
     "@testing-library/react": "^12.1.2",
     "@testing-library/user-event": "^13.5.0",
@@ -52,7 +51,6 @@
     "graphql": "^16.2.0",
     "helmet": "^5.0.1",
     "history": "^5.2.0",
-    "html5-qrcode": "^2.1.6",
     "mini-css-extract-plugin": "^2.5.2",
     "morgan": "^1.10.0",
     "normalize.css": "^8.0.1",

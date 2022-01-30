@@ -1,6 +1,6 @@
-import { useMutation } from "@apollo/client"
+import { useCallback, useEffect, useMemo, useState } from "react"
 
-import { GaloyGQL, mutations, translate } from "@galoymoney/client"
+import { translate, useMutation } from "@galoymoney/client"
 import {
   DebouncedTextarea,
   FormattedNumberInput,
@@ -10,11 +10,9 @@ import {
   Spinner,
 } from "@galoymoney/react"
 
-import { useCallback, useEffect, useMemo, useState } from "react"
-
-import { satsFormatter, usdFormatter } from "store"
-import useMainQuery from "store/use-main-query"
-import { useMyUpdates } from "store/use-my-updates"
+import { satsFormatter, usdFormatter } from "../../store"
+import useMainQuery from "../../hooks/use-main-query"
+import useMyUpdates from "../../hooks/use-my-updates"
 
 import InvoiceGenerator from "../receive/invoice-generator"
 import Header from "../header"
@@ -23,15 +21,13 @@ import { ButtonLink } from "../link"
 type InvoiceInputState = {
   layer: "lightning" | "onchain"
   currency: "USD" | "SATS"
-  amount: number | ""
-  debouncedAmount?: number | ""
-  memo: string
+  amount?: number | ""
+  memo?: string
   satsForInvoice?: number
 }
 
 const Receive = () => {
   const { btcWalletId } = useMainQuery()
-
   const { satsToUsd, usdToSats } = useMyUpdates()
 
   const [input, setInput] = useState<InvoiceInputState>({
@@ -41,72 +37,61 @@ const Receive = () => {
     memo: "",
   })
 
-  const [generateBtcAddress, { loading, error, data }] = useMutation<
-    { onChainAddressCurrent: GaloyGQL.OnChainAddressPayload },
-    { input: GaloyGQL.OnChainAddressCreateInput }
-  >(mutations.onChainAddressCurrent, {
-    onError: console.error,
-  })
+  const [generateBtcAddress, { loading, errorsMessage, data }] =
+    useMutation.onChainAddressCurrent()
 
   const shouldUpdateSatsForInvoice =
     Number.isNaN(input.satsForInvoice) &&
-    typeof input.debouncedAmount === "number" &&
-    !Number.isNaN(input.debouncedAmount)
+    typeof input.amount === "number" &&
+    !Number.isNaN(input.amount)
 
   useEffect(() => {
     if (usdToSats && input.currency === "USD" && shouldUpdateSatsForInvoice) {
       setInput((currInput) => ({
         ...currInput,
-        satsForInvoice: Math.round(usdToSats(input.debouncedAmount as number)),
+        satsForInvoice: Math.round(usdToSats(input.amount as number)),
       }))
     }
-  }, [input.currency, input.debouncedAmount, shouldUpdateSatsForInvoice, usdToSats])
+  }, [input.currency, input.amount, shouldUpdateSatsForInvoice, usdToSats])
 
   useEffect(() => {
     if (input.currency === "SATS" && shouldUpdateSatsForInvoice) {
       setInput((currInput) => ({
         ...currInput,
-        satsForInvoice: input.debouncedAmount as number,
+        satsForInvoice: input.amount as number,
       }))
     }
-  }, [input.currency, input.debouncedAmount, shouldUpdateSatsForInvoice])
+  }, [input.currency, input.amount, shouldUpdateSatsForInvoice])
 
   useEffect(() => {
     if (input.layer === "onchain" && btcWalletId) {
       // Layer switched to onchain, generate a btc address
       generateBtcAddress({
         variables: {
-          input: {
-            walletId: btcWalletId,
-          },
+          input: { walletId: btcWalletId },
         },
       })
     }
   }, [btcWalletId, generateBtcAddress, input.layer])
 
-  const onChainAddressErrrors = data?.onChainAddressCurrent?.errors
-
-  if (error || (onChainAddressErrrors && onChainAddressErrrors?.length > 0)) {
-    console.error(error || onChainAddressErrrors)
+  if (errorsMessage) {
+    console.debug("[BTC address error]:", errorsMessage)
+    throw new Error("Unable to get BTC address for wallet")
   }
 
   const btcAddress = data?.onChainAddressCurrent?.address ?? undefined
 
-  const handleAmountUpdate: OnNumberValueChange = useCallback((numberValue) => {
-    setInput((currInput) => ({
-      ...currInput,
-      amount: numberValue,
-      satsForInvoice: NaN,
-      debouncedAmount: NaN,
-    }))
+  const handleAmountUpdate: OnNumberValueChange = useCallback(() => {
+    setInput((currInput) => ({ ...currInput, amount: undefined, satsForInvoice: NaN }))
   }, [])
 
-  const handleDebouncedAmountUpdate: OnNumberValueChange = useCallback(
-    (debouncedAmount) => {
-      setInput((currInput) => ({ ...currInput, debouncedAmount }))
-    },
-    [],
-  )
+  const handleMemoUpdate: OnTextValueChange = useCallback(() => {
+    setInput((currInput) => ({ ...currInput, memo: undefined, satsForInvoice: NaN }))
+  }, [])
+
+  const handleDebouncedAmountUpdate: OnNumberValueChange = useCallback((amount) => {
+    setInput((currInput) => ({ ...currInput, amount }))
+  }, [])
 
   const handleDebouncedMemoUpdate: OnTextValueChange = useCallback((debouncedMemo) => {
     setInput((currInput) => ({ ...currInput, memo: debouncedMemo }))
@@ -122,7 +107,7 @@ const Receive = () => {
       let newAmount: number | "" = ""
 
       if (currInput.currency === "SATS" && currInput.amount) {
-        newAmount = satsToUsd(currInput.amount)
+        newAmount = Math.round(satsToUsd(currInput.amount * 100)) / 100
       }
 
       if (currInput.currency === "USD" && currInput.satsForInvoice) {
@@ -133,7 +118,7 @@ const Receive = () => {
         ...currInput,
         currency: newCurrency,
         amount: newAmount,
-        debouncedAmount: newAmount,
+        satsForInvoice: NaN,
       }
     })
   }, [satsToUsd])
@@ -199,9 +184,13 @@ const Receive = () => {
       return <ButtonLink to="/login">{translate("Login to send")}</ButtonLink>
     }
 
-    const showInvoiceSpinner = Number.isNaN(input.debouncedAmount) || loading
+    const inputPending = input.amount === undefined || input.memo === undefined
+    const showInvoiceSpinner = loading || inputPending
     const showInvoice =
-      input.satsForInvoice !== undefined && !Number.isNaN(input.satsForInvoice)
+      !inputPending &&
+      input.satsForInvoice !== undefined &&
+      !Number.isNaN(input.satsForInvoice)
+
     return (
       <>
         {showInvoiceSpinner && <Spinner size="big" />}
@@ -211,9 +200,9 @@ const Receive = () => {
             btcWalletId={btcWalletId}
             btcAddress={btcAddress}
             regenerate={regenerateInvoice}
-            amount={input.amount}
+            amount={input.amount as number}
             currency={input.currency}
-            memo={input.memo}
+            memo={input.memo as string}
             satAmount={input.satsForInvoice as number}
             convertedUsdAmount={convertedValues?.usd || NaN}
           />
@@ -221,8 +210,6 @@ const Receive = () => {
       </>
     )
   }
-
-  const inputValue = Number.isNaN(input.amount) ? "" : input.amount.toString()
 
   return (
     <div className="receive">
@@ -249,7 +236,6 @@ const Receive = () => {
           </div>
           <FormattedNumberInput
             key={input.currency}
-            value={inputValue}
             onChange={handleAmountUpdate}
             onDebouncedChange={handleDebouncedAmountUpdate}
             placeholder={translate("Set invoice value in %{currency}", {
@@ -262,6 +248,7 @@ const Receive = () => {
         </div>
         <div className="note-input center-display">
           <DebouncedTextarea
+            onChange={handleMemoUpdate}
             onDebouncedChange={handleDebouncedMemoUpdate}
             name="memo"
             rows={3}

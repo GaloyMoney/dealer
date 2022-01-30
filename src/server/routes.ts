@@ -1,9 +1,9 @@
 import Home from "../components/pages/home"
-import Login from "../components/login"
+import Login from "../components/pages/login"
 import Send from "../components/pages/send"
 import Receive from "../components/pages/receive"
 
-export const SupportedRoutes = ["/", "/login", "/send", "/receive"] as const
+export const SupportedRoutes = ["/", "/login", "/scan", "/send", "/receive"] as const
 
 // Note: The component property is skipped by the serialize function
 // It's only used on the front-end
@@ -17,6 +17,10 @@ const appRoutes: AppRoutes = {
     title: "Login to Galoy Web Wallet",
   },
   "/send": {
+    component: Send,
+    title: "Send Bitcoin",
+  },
+  "/scan": {
     component: Send,
     title: "Send Bitcoin",
   },

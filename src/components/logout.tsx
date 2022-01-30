@@ -1,17 +1,15 @@
-import { useApolloClient } from "@apollo/client"
+import { useResetClient, translate } from "@galoymoney/client"
 
-import { translate } from "@galoymoney/client"
-
-import { history, useRequest } from "store"
+import { history, useRequest } from "../store"
 
 const Logout = () => {
-  const client = useApolloClient()
+  const resetClient = useResetClient()
   const request = useRequest()
 
   const handleLogout: React.MouseEventHandler<HTMLAnchorElement> = async (event) => {
     event.preventDefault()
     await request.post("/api/logout")
-    client.clearStore()
+    resetClient()
     history.push("/", { authToken: undefined })
   }
 
