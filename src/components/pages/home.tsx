@@ -1,11 +1,16 @@
 import { translate } from "@galoymoney/client"
 import Header from "../header"
+import TransactionList from "../transactions/list"
 
 const Home = () => {
   return (
     <>
       <div className="home">
         <Header page="home" />
+        <div className="recent-transactions">
+          <div className="header">{translate("Recent Transactions")}</div>
+          <TransactionList />
+        </div>
       </div>
       <div id="footer">
         <div className="powered-by">

@@ -17,7 +17,6 @@ export const GwwContext = createContext<GwwContextType>({
 })
 
 export * from "./history"
-export * from "./currencies"
 
 export const useAppState = () => {
   const { state } = useContext<GwwContextType>(GwwContext)

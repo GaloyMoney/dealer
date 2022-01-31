@@ -2,7 +2,8 @@
   --color-bg: #f9f9f9;
   --color-primary: #111111;
   --color-secondary: #666666;
-  --color-gray: #aaaaaa;
+
+  --color-subtext: #999999;
 
   --color-links: #2979ff;
 
@@ -18,4 +19,7 @@
 
   --color-disabled-button-bg: #ececec;
   --color-disabled-button-fg: #aaa;
+
+  --color-send: #d50505;
+  --color-receive: #197019;
 }

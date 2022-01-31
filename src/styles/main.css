@@ -64,7 +64,7 @@ body {
 }
 
 ::placeholder {
-  color: var(--color-gray);
+  color: var(--color-subtext);
 }
 
 .error {
@@ -78,7 +78,7 @@ body {
 }
 
 .sat-symbol {
-  margin-right: 4px;
+  margin-right: 2px;
 }
 
 .page-title {
@@ -96,7 +96,7 @@ body {
 .separator {
   display: inline-block;
   margin: 0 0.5rem;
-  color: var(--color-gray);
+  color: var(--color-subtext);
 }
 
 .header-container {
@@ -132,20 +132,22 @@ body {
   }
 }
 
-@media (max-width: 800px) {
+@media (max-width: 700px) {
   .header-nav {
     display: none;
   }
 }
 
-@media (max-width: 800px) {
+@media (max-width: 700px) {
   .home {
     .header-nav {
-      margin-top: 2.5rem;
+      margin-top: 1.5rem;
       display: flex;
       flex-direction: column;
       a {
         text-align: unset;
+        margin: 0.65rem auto;
+        padding: 0.75rem 1.5rem;
       }
     }
   }
@@ -411,12 +413,80 @@ body {
   }
 
   .payment-destination-code {
-    color: var(--color-gray);
+    color: var(--color-subtext);
     font-size: 0.75rem;
   }
 
   .copy-message {
     font-size: 0.8rem;
     margin-top: 1rem;
+  }
+}
+
+.sat-format {
+  white-space: nowrap;
+  .minus {
+    margin-right: 2px;
+  }
+}
+
+.recent-transactions {
+  display: flex;
+  flex-direction: column;
+  .header {
+    font-weight: bold;
+    margin: 0 auto;
+  }
+}
+
+.transaction-list {
+  margin: 1rem auto;
+  width: 95%;
+  max-width: 600px;
+  .transaction-item {
+    display: flex;
+    padding: 0.5rem;
+    background-color: white;
+    border: thin solid var(--color-borders);
+    margin: 0.75rem;
+    align-items: center;
+    div {
+      flex: 1;
+      padding-left: 0.5rem;
+      padding-right: 0.5rem;
+    }
+    .content {
+      flex: 2;
+      .date {
+        margin-top: 0.25rem;
+        color: var(--color-subtext);
+      }
+    }
+    .icon {
+      flex: 0;
+    }
+    .converted-usd {
+      font-size: 90%;
+      margin-top: 0.25rem;
+      color: var(--color-secondary);
+    }
+  }
+  .direction-receive {
+    .icon,
+    .amount {
+      color: green;
+    }
+  }
+  .direction-send {
+    .icon,
+    .amount {
+      color: var(--color-send);
+    }
+  }
+  .pending-true {
+    .icon,
+    .amount {
+      color: var(--color-secondary);
+    }
   }
 }

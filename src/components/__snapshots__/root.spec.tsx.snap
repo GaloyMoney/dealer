@@ -30,7 +30,7 @@ exports[`Root renders Home and matches snapshot 1`] = `
               >
                 <i
                   aria-hidden="true"
-                  class="fak fa-satoshisymbol-solidtilt sat-symbol"
+                  class="fak fa-satoshisymbol-solid sat-symbol"
                 />
                 0
               </div>
@@ -83,6 +83,15 @@ exports[`Root renders Home and matches snapshot 1`] = `
             />
             Receive Bitcoin
           </a>
+        </div>
+      </div>
+      <div
+        class="recent-transactions"
+      >
+        <div
+          class="header"
+        >
+          Recent Transactions
         </div>
       </div>
     </div>

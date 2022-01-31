@@ -2,10 +2,10 @@ import { useState } from "react"
 import { QRCode } from "react-qrcode-logo"
 import copy from "copy-to-clipboard"
 
-import { GaloyGQL, translate } from "@galoymoney/client"
+import { GaloyGQL, satsToBTC, translate } from "@galoymoney/client"
 import { SuccessCheckmark } from "@galoymoney/react"
 
-import { satsToBTC, useAppDispatcher } from "../../store"
+import { useAppDispatcher } from "../../store"
 import useMyUpdates from "../../hooks/use-my-updates"
 
 type LightningInvoiceProps = {

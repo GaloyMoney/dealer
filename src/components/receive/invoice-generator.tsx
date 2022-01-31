@@ -1,9 +1,7 @@
 import { useState, useEffect, useRef } from "react"
 
-import { GaloyGQL, translate, useMutation } from "@galoymoney/client"
+import { formatUsd, GaloyGQL, translate, useMutation } from "@galoymoney/client"
 import { Spinner } from "@galoymoney/react"
-
-import { usdFormatter } from "../../store"
 
 import { LightningInvoice, OnChainInvoice } from "./invoice"
 
@@ -96,11 +94,11 @@ const AmountInvoiceGenerator = ({
       {invoiceNeedUpdate && (
         <div className="invoice-message">
           {translate("Invoice value is now %{value}", {
-            value: usdFormatter.format(convertedUsdAmount),
+            value: formatUsd(convertedUsdAmount),
           })}
           <div className="link" onClick={regenerate}>
             {translate("Generate new invoice for %{amount}", {
-              amount: usdFormatter.format(amount as number),
+              amount: formatUsd(amount as number),
             })}
           </div>
         </div>
