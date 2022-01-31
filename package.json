@@ -19,6 +19,8 @@
     "servers:graphql:elk": "yarn build && node lib/servers/graphql/WalletGraphqlServer.js | pino-elasticsearch",
     "servers:exporter:pretty": "yarn build && node lib/servers/exporter/exporter.js | pino-pretty -c -l",
     "servers:exporter:elk": "yarn build && node lib/servers/exporter/exporter.js | pino-elasticsearch",
+    "servers:price:pretty": "yarn build && node lib/servers/price/index.js | pino-pretty -c -l",
+    "servers:price-client:pretty": "yarn build && node lib/servers/price/sample_client.js | pino-pretty -c -l",
     "app:scheduler:pretty": "yarn build && node lib/app/scheduler.js | pino-pretty -c -l",
     "app:scheduler:elk": "yarn build && node lib/app/scheduler.js | pino-elasticsearch",
     "app:dealer:pretty": "yarn build && node lib/app/dealer.js | pino-pretty -c -l",
