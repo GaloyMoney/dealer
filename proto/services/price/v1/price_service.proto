@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+package services.price.v1;
+
+service PriceService {
+  rpc GetImmediateUsdPriceForBuy(GetImmediateUsdPriceForBuyRequest) returns (GetImmediateUsdPriceForBuyResponse) {}
+  rpc GetImmediateUsdPriceForSell(GetImmediateUsdPriceForSellRequest) returns (GetImmediateUsdPriceForSellResponse) {}
+  rpc GetImmediateUsdPriceForOptionBuy(GetImmediateUsdPriceForOptionBuyRequest) returns (GetImmediateUsdPriceForOptionBuyResponse) {}
+  rpc GetImmediateUsdPriceForOptionSell(GetImmediateUsdPriceForOptionSellRequest) returns (GetImmediateUsdPriceForOptionSellResponse) {}
+}
+
+message GetImmediateUsdPriceForBuyRequest {
+  float amount_in_satoshis = 1;
+}
+
+message GetImmediateUsdPriceForSellRequest {
+  float amount_in_satoshis = 1;
+}
+
+message GetImmediateUsdPriceForOptionBuyRequest {
+  float amount_in_satoshis = 1;
+  float time_in_minutes = 2;
+}
+
+message GetImmediateUsdPriceForOptionSellRequest {
+  float amount_in_satoshis = 1;
+  float time_in_minutes = 2;
+}
+
+message GetImmediateUsdPriceForBuyResponse {
+  float price_in_usd = 1;
+}
+  
+message GetImmediateUsdPriceForSellResponse {
+  float price_in_usd = 1;
+}
+  
+message GetImmediateUsdPriceForOptionBuyResponse {
+  float price_in_usd = 1;
+}
+  
+message GetImmediateUsdPriceForOptionSellResponse {
+  float price_in_usd = 1;
+}
