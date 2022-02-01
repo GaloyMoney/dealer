@@ -6,23 +6,25 @@ RUN apk update && apk add git
 
 COPY  ./*.json ./yarn.lock ./
 
-RUN yarn install --frozen-lockfile
+RUN yarn install --frozen-lockfile --production
 
 COPY ./src ./src
 COPY ./*.js ./
 
 RUN yarn build:node && yarn build:files && yarn build:webpack
 
-RUN yarn install --frozen-lockfile --production
 
 # FROM gcr.io/distroless/nodejs:16
 FROM node:16-alpine
 
+COPY --from=BUILD_IMAGE /app/.gvars.json /app/.gvars.json
 COPY --from=BUILD_IMAGE /app/build /app/build
+COPY ./public /app/public
+COPY --from=BUILD_IMAGE /app/public/bundles /app/public/bundles
 COPY --from=BUILD_IMAGE /app/node_modules /app/node_modules
 
 WORKDIR /app
-COPY ./*.js ./package.json ./tsconfig.json ./yarn.lock ./
+COPY ./views ./views
 
 USER 1000
 
