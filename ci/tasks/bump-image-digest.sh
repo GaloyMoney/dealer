@@ -5,6 +5,7 @@ set -eu
 export digest=$(cat ./dealer-image/digest)
 export fake_galoyapi_digest=$(cat ./fake-galoyapi-image/digest)
 export ref=$(cat ./repo/.git/short_ref)
+export app_version=$(cat version/version)
 
 pushd charts-repo
 
@@ -12,6 +13,7 @@ yq -i e '.dealer.image.digest = strenv(digest)' ./charts/dealer/values.yaml
 yq -i e '.fakeGaloyApi.image.digest = strenv(fake_galoyapi_digest)' ./charts/dealer/values.yaml
 yq -i e '.dealer.image.git_ref = strenv(ref)' ./charts/dealer/values.yaml
 yq -i e '.fakeGaloyApi.image.git_ref = strenv(ref)' ./charts/dealer/values.yaml
+yq -i e '.appVersion = strenv(app_version)' ./charts/dealer/Chart.yaml
 
 if [[ -z $(git config --global user.email) ]]; then
   git config --global user.email "bot@galoy.io"

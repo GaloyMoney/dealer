@@ -12,12 +12,24 @@
 #@   return data.values.docker_registry + "/fake-galoyapi"
 #@ end
 
+#@ def release_pipeline_image():
+#@   return data.values.docker_registry + "/release-pipeline"
+#@ end
+
 #@ def task_image_config():
 type: registry-image
 source:
   username: #@ data.values.docker_registry_user
   password: #@ data.values.docker_registry_password
   repository: #@ pipeline_image()
+#@ end
+
+#@ def release_task_image_config():
+type: registry-image
+source:
+  username: #@ data.values.docker_registry_user
+  password: #@ data.values.docker_registry_password
+  repository: #@ release_pipeline_image()
 #@ end
 
 #@ def slack_failure_notification():
@@ -39,6 +51,7 @@ groups:
   - check-code
   - build-dealer-image
   - build-fake-galoyapi-image
+  - release
   - bump-image-in-chart
 
 jobs:
@@ -209,6 +222,50 @@ jobs:
       image: image/image.tar
   on_failure: #@ slack_failure_notification()
 
+- name: release
+  plan:
+  - in_parallel:
+    - get: repo
+      trigger: true
+      passed: [ build-dealer-image ]
+    - get: dealer-image
+      passed: [ build-dealer-image ]
+      params:
+        format: oci
+    - get: meta-release
+    - get: version
+    - get: charts-repo
+  - task: prep-release
+    config:
+      platform: linux
+      image_resource: #@ release_task_image_config()
+      inputs:
+      - name: repo
+      - name: dealer-image
+        path: edge-image
+      - name: meta-release
+      - name: version
+      - name: charts-repo
+      outputs:
+      - name: version
+      - name: artifacts
+      params:
+        CHART: dealer
+      run:
+        path: meta-release/ci/tasks/prep-release-src.sh
+  - put: versioned-image
+    params:
+      image: dealer-image/image.tar
+      additional_tags: artifacts/gh-release-tag
+  - put: gh-release
+    params:
+      name: artifacts/gh-release-name
+      tag: artifacts/gh-release-tag
+      body: artifacts/gh-release-notes.md
+  - put: version
+    params:
+      file: version/version
+
 - name: bump-image-in-chart
   plan:
   - in_parallel:
@@ -228,6 +285,10 @@ jobs:
       - test-integration
       - build-dealer-image
       - build-fake-galoyapi-image
+      - release
+    - get: version
+      trigger: true
+      passed: [ release ]
     - get: charts-repo
       params: { skip_download: true }
     - get: pipeline-tasks
@@ -241,6 +302,7 @@ jobs:
       - name: fake-galoyapi-image
       - name: charts-repo
       - name: pipeline-tasks
+      - name: version
       outputs:
       - name: charts-repo
       params:
@@ -282,6 +344,30 @@ resources:
     paths: [ci/tasks/*, Makefile]
     uri: #@ data.values.git_uri
     branch: #@ data.values.git_branch
+    private_key: #@ data.values.github_private_key
+
+- name: version
+  type: semver
+  source:
+    initial_version: 0.0.0
+    driver: git
+    file: dealer-src-version
+    uri: #@ data.values.meta_release_git_uri
+    branch: #@ data.values.meta_release_git_version_branch
+    private_key: #@ data.values.github_private_key
+
+- name: gh-release
+  type: github-release
+  source:
+    owner: #@ data.values.gh_org
+    repository: #@ data.values.gh_repository
+    access_token: #@ data.values.github_token
+
+- name: meta-release
+  type: git
+  source:
+    uri: #@ data.values.meta_release_git_uri
+    branch: #@ data.values.meta_release_git_branch
     private_key: #@ data.values.github_private_key
 
 - name: charts-repo-bot-branch
@@ -337,6 +423,13 @@ resources:
     username: #@ data.values.docker_registry_user
     password: #@ data.values.docker_registry_password
     repository: #@ fake_galoyapi_image()
+
+- name: versioned-image
+  type: registry-image
+  source:
+    username: #@ data.values.docker_registry_user
+    password: #@ data.values.docker_registry_password
+    repository: #@ dealer_image()
 
 - name: slack
   type: slack-notification
