@@ -1,83 +1,32 @@
-import { credentials, ServiceError } from "@grpc/grpc-js"
-import { PriceServiceClient } from "./proto/services/price/v1/price_service_grpc_pb"
-import {
-  GetImmediateUsdPriceForBuyRequest,
-  GetImmediateUsdPriceForBuyResponse,
-  GetImmediateUsdPriceForSellRequest,
-  GetImmediateUsdPriceForSellResponse,
-  GetImmediateUsdPriceForOptionBuyRequest,
-  GetImmediateUsdPriceForOptionBuyResponse,
-  GetImmediateUsdPriceForOptionSellRequest,
-  GetImmediateUsdPriceForOptionSellResponse,
-} from "./proto/services/price/v1/price_service_pb"
+import { DealerPriceService } from "./client_service"
 
-function buyRequestCallback(
-  error: ServiceError | null,
-  response: GetImmediateUsdPriceForBuyResponse,
-) {
-  if (error) {
-    console.error({ err: error })
-    return
-  }
-  console.info(`GetImmediateUsdPriceForBuy: ${response.getPriceInUsd()}`)
+const priceService = DealerPriceService()
+const someUsd = 100 as UsdCents
+const someSats = 100000 as Satoshis
+const fewMins = 2 as Minutes
+export const run = async function () {
+  console.info(
+    `ExchangeRateForFutureUsdBuy from service: ${await priceService.getExchangeRateForFutureUsdBuy(
+      someSats,
+      fewMins,
+    )}`,
+  )
+  console.info(
+    `ExchangeRateForFutureUsdSell from service: ${await priceService.getExchangeRateForFutureUsdSell(
+      someUsd,
+      fewMins,
+    )}`,
+  )
+  console.info(
+    `ExchangeRateForImmediateUsdBuy from service: ${await priceService.getExchangeRateForImmediateUsdBuy(
+      someSats,
+    )}`,
+  )
+  console.info(
+    `ExchangeRateForImmediateUsdSell from service: ${await priceService.getExchangeRateForImmediateUsdSell(
+      someUsd,
+    )}`,
+  )
 }
 
-function sellRequestCallback(
-  error: ServiceError | null,
-  response: GetImmediateUsdPriceForSellResponse,
-) {
-  if (error) {
-    console.error({ err: error })
-    return
-  }
-  console.info(`GetImmediateUsdPriceForSell: ${response.getPriceInUsd()}`)
-}
-
-function optionBuyRequestCallback(
-  error: ServiceError | null,
-  response: GetImmediateUsdPriceForOptionBuyResponse,
-) {
-  if (error) {
-    console.error({ err: error })
-    return
-  }
-  console.info(`GetImmediateUsdPriceForOptionBuy: ${response.getPriceInUsd()}`)
-}
-
-function optionSellRequestCallback(
-  error: ServiceError | null,
-  response: GetImmediateUsdPriceForOptionSellResponse,
-) {
-  if (error) {
-    console.error({ err: error })
-    return
-  }
-  console.info(`GetImmediateUsdPriceForOptionSell: ${response.getPriceInUsd()}`)
-}
-
-const serverPort = process.env.PRICE_SERVER_PORT ?? "50055"
-const client = new PriceServiceClient(
-  `localhost:${serverPort}`,
-  credentials.createInsecure(),
-)
-
-client.getImmediateUsdPriceForBuy(
-  new GetImmediateUsdPriceForBuyRequest().setAmountInSatoshis(100),
-  buyRequestCallback,
-)
-client.getImmediateUsdPriceForSell(
-  new GetImmediateUsdPriceForSellRequest().setAmountInSatoshis(100),
-  sellRequestCallback,
-)
-client.getImmediateUsdPriceForOptionBuy(
-  new GetImmediateUsdPriceForOptionBuyRequest()
-    .setAmountInSatoshis(100)
-    .setTimeInMinutes(2),
-  optionBuyRequestCallback,
-)
-client.getImmediateUsdPriceForOptionSell(
-  new GetImmediateUsdPriceForOptionSellRequest()
-    .setAmountInSatoshis(100)
-    .setTimeInMinutes(2),
-  optionSellRequestCallback,
-)
+run()
