@@ -1,5 +1,5 @@
 import util from "util"
-import { credentials, ServiceError } from "@grpc/grpc-js"
+import { credentials } from "@grpc/grpc-js"
 import { UnknownDealerPriceServiceError } from "./errors"
 import { baseLogger } from "../../services/logger"
 import { PriceServiceClient } from "./proto/services/price/v1/price_service_grpc_pb"
