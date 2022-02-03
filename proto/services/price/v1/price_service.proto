@@ -3,42 +3,42 @@ syntax = "proto3";
 package services.price.v1;
 
 service PriceService {
-  rpc GetImmediateUsdPriceForBuy(GetImmediateUsdPriceForBuyRequest) returns (GetImmediateUsdPriceForBuyResponse) {}
-  rpc GetImmediateUsdPriceForSell(GetImmediateUsdPriceForSellRequest) returns (GetImmediateUsdPriceForSellResponse) {}
-  rpc GetImmediateUsdPriceForOptionBuy(GetImmediateUsdPriceForOptionBuyRequest) returns (GetImmediateUsdPriceForOptionBuyResponse) {}
-  rpc GetImmediateUsdPriceForOptionSell(GetImmediateUsdPriceForOptionSellRequest) returns (GetImmediateUsdPriceForOptionSellResponse) {}
+  rpc GetExchangeRateForImmediateUsdBuy(GetExchangeRateForImmediateUsdBuyRequest) returns (GetExchangeRateForImmediateUsdBuyResponse) {}
+  rpc GetExchangeRateForImmediateUsdSell(GetExchangeRateForImmediateUsdSellRequest) returns (GetExchangeRateForImmediateUsdSellResponse) {}
+  rpc GetExchangeRateForFutureUsdBuy(GetExchangeRateForFutureUsdBuyRequest) returns (GetExchangeRateForFutureUsdBuyResponse) {}
+  rpc GetExchangeRateForFutureUsdSell(GetExchangeRateForFutureUsdSellRequest) returns (GetExchangeRateForFutureUsdSellResponse) {}
 }
 
-message GetImmediateUsdPriceForBuyRequest {
+message GetExchangeRateForImmediateUsdBuyRequest {
   float amount_in_satoshis = 1;
 }
 
-message GetImmediateUsdPriceForSellRequest {
-  float amount_in_satoshis = 1;
+message GetExchangeRateForImmediateUsdSellRequest {
+  float amount_in_usd = 1;
 }
 
-message GetImmediateUsdPriceForOptionBuyRequest {
-  float amount_in_satoshis = 1;
-  float time_in_minutes = 2;
-}
-
-message GetImmediateUsdPriceForOptionSellRequest {
+message GetExchangeRateForFutureUsdBuyRequest {
   float amount_in_satoshis = 1;
   float time_in_minutes = 2;
 }
 
-message GetImmediateUsdPriceForBuyResponse {
+message GetExchangeRateForFutureUsdSellRequest {
+  float amount_in_usd = 1;
+  float time_in_minutes = 2;
+}
+
+message GetExchangeRateForImmediateUsdBuyResponse {
   float price_in_usd = 1;
 }
   
-message GetImmediateUsdPriceForSellResponse {
+message GetExchangeRateForImmediateUsdSellResponse {
+  float price_in_satoshis = 1;
+}
+  
+message GetExchangeRateForFutureUsdBuyResponse {
   float price_in_usd = 1;
 }
   
-message GetImmediateUsdPriceForOptionBuyResponse {
-  float price_in_usd = 1;
-}
-  
-message GetImmediateUsdPriceForOptionSellResponse {
-  float price_in_usd = 1;
+message GetExchangeRateForFutureUsdSellResponse {
+  float price_in_satoshis = 1;
 }

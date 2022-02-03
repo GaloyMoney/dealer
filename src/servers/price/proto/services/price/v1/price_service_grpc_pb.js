@@ -1,229 +1,143 @@
 // GENERATED CODE -- DO NOT EDIT!
 
-"use strict"
-var grpc = require("@grpc/grpc-js")
-var services_price_v1_price_service_pb = require("../../../services/price/v1/price_service_pb.js")
+'use strict';
+var grpc = require('@grpc/grpc-js');
+var services_price_v1_price_service_pb = require('../../../services/price/v1/price_service_pb.js');
 
-function serialize_services_price_v1_GetImmediateUsdPriceForBuyRequest(arg) {
-  if (
-    !(arg instanceof services_price_v1_price_service_pb.GetImmediateUsdPriceForBuyRequest)
-  ) {
-    throw new Error(
-      "Expected argument of type services.price.v1.GetImmediateUsdPriceForBuyRequest",
-    )
+function serialize_services_price_v1_GetExchangeRateForFutureUsdBuyRequest(arg) {
+  if (!(arg instanceof services_price_v1_price_service_pb.GetExchangeRateForFutureUsdBuyRequest)) {
+    throw new Error('Expected argument of type services.price.v1.GetExchangeRateForFutureUsdBuyRequest');
   }
-  return Buffer.from(arg.serializeBinary())
+  return Buffer.from(arg.serializeBinary());
 }
 
-function deserialize_services_price_v1_GetImmediateUsdPriceForBuyRequest(buffer_arg) {
-  return services_price_v1_price_service_pb.GetImmediateUsdPriceForBuyRequest.deserializeBinary(
-    new Uint8Array(buffer_arg),
-  )
+function deserialize_services_price_v1_GetExchangeRateForFutureUsdBuyRequest(buffer_arg) {
+  return services_price_v1_price_service_pb.GetExchangeRateForFutureUsdBuyRequest.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
-function serialize_services_price_v1_GetImmediateUsdPriceForBuyResponse(arg) {
-  if (
-    !(
-      arg instanceof services_price_v1_price_service_pb.GetImmediateUsdPriceForBuyResponse
-    )
-  ) {
-    throw new Error(
-      "Expected argument of type services.price.v1.GetImmediateUsdPriceForBuyResponse",
-    )
+function serialize_services_price_v1_GetExchangeRateForFutureUsdBuyResponse(arg) {
+  if (!(arg instanceof services_price_v1_price_service_pb.GetExchangeRateForFutureUsdBuyResponse)) {
+    throw new Error('Expected argument of type services.price.v1.GetExchangeRateForFutureUsdBuyResponse');
   }
-  return Buffer.from(arg.serializeBinary())
+  return Buffer.from(arg.serializeBinary());
 }
 
-function deserialize_services_price_v1_GetImmediateUsdPriceForBuyResponse(buffer_arg) {
-  return services_price_v1_price_service_pb.GetImmediateUsdPriceForBuyResponse.deserializeBinary(
-    new Uint8Array(buffer_arg),
-  )
+function deserialize_services_price_v1_GetExchangeRateForFutureUsdBuyResponse(buffer_arg) {
+  return services_price_v1_price_service_pb.GetExchangeRateForFutureUsdBuyResponse.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
-function serialize_services_price_v1_GetImmediateUsdPriceForOptionBuyRequest(arg) {
-  if (
-    !(
-      arg instanceof
-      services_price_v1_price_service_pb.GetImmediateUsdPriceForOptionBuyRequest
-    )
-  ) {
-    throw new Error(
-      "Expected argument of type services.price.v1.GetImmediateUsdPriceForOptionBuyRequest",
-    )
+function serialize_services_price_v1_GetExchangeRateForFutureUsdSellRequest(arg) {
+  if (!(arg instanceof services_price_v1_price_service_pb.GetExchangeRateForFutureUsdSellRequest)) {
+    throw new Error('Expected argument of type services.price.v1.GetExchangeRateForFutureUsdSellRequest');
   }
-  return Buffer.from(arg.serializeBinary())
+  return Buffer.from(arg.serializeBinary());
 }
 
-function deserialize_services_price_v1_GetImmediateUsdPriceForOptionBuyRequest(
-  buffer_arg,
-) {
-  return services_price_v1_price_service_pb.GetImmediateUsdPriceForOptionBuyRequest.deserializeBinary(
-    new Uint8Array(buffer_arg),
-  )
+function deserialize_services_price_v1_GetExchangeRateForFutureUsdSellRequest(buffer_arg) {
+  return services_price_v1_price_service_pb.GetExchangeRateForFutureUsdSellRequest.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
-function serialize_services_price_v1_GetImmediateUsdPriceForOptionBuyResponse(arg) {
-  if (
-    !(
-      arg instanceof
-      services_price_v1_price_service_pb.GetImmediateUsdPriceForOptionBuyResponse
-    )
-  ) {
-    throw new Error(
-      "Expected argument of type services.price.v1.GetImmediateUsdPriceForOptionBuyResponse",
-    )
+function serialize_services_price_v1_GetExchangeRateForFutureUsdSellResponse(arg) {
+  if (!(arg instanceof services_price_v1_price_service_pb.GetExchangeRateForFutureUsdSellResponse)) {
+    throw new Error('Expected argument of type services.price.v1.GetExchangeRateForFutureUsdSellResponse');
   }
-  return Buffer.from(arg.serializeBinary())
+  return Buffer.from(arg.serializeBinary());
 }
 
-function deserialize_services_price_v1_GetImmediateUsdPriceForOptionBuyResponse(
-  buffer_arg,
-) {
-  return services_price_v1_price_service_pb.GetImmediateUsdPriceForOptionBuyResponse.deserializeBinary(
-    new Uint8Array(buffer_arg),
-  )
+function deserialize_services_price_v1_GetExchangeRateForFutureUsdSellResponse(buffer_arg) {
+  return services_price_v1_price_service_pb.GetExchangeRateForFutureUsdSellResponse.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
-function serialize_services_price_v1_GetImmediateUsdPriceForOptionSellRequest(arg) {
-  if (
-    !(
-      arg instanceof
-      services_price_v1_price_service_pb.GetImmediateUsdPriceForOptionSellRequest
-    )
-  ) {
-    throw new Error(
-      "Expected argument of type services.price.v1.GetImmediateUsdPriceForOptionSellRequest",
-    )
+function serialize_services_price_v1_GetExchangeRateForImmediateUsdBuyRequest(arg) {
+  if (!(arg instanceof services_price_v1_price_service_pb.GetExchangeRateForImmediateUsdBuyRequest)) {
+    throw new Error('Expected argument of type services.price.v1.GetExchangeRateForImmediateUsdBuyRequest');
   }
-  return Buffer.from(arg.serializeBinary())
+  return Buffer.from(arg.serializeBinary());
 }
 
-function deserialize_services_price_v1_GetImmediateUsdPriceForOptionSellRequest(
-  buffer_arg,
-) {
-  return services_price_v1_price_service_pb.GetImmediateUsdPriceForOptionSellRequest.deserializeBinary(
-    new Uint8Array(buffer_arg),
-  )
+function deserialize_services_price_v1_GetExchangeRateForImmediateUsdBuyRequest(buffer_arg) {
+  return services_price_v1_price_service_pb.GetExchangeRateForImmediateUsdBuyRequest.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
-function serialize_services_price_v1_GetImmediateUsdPriceForOptionSellResponse(arg) {
-  if (
-    !(
-      arg instanceof
-      services_price_v1_price_service_pb.GetImmediateUsdPriceForOptionSellResponse
-    )
-  ) {
-    throw new Error(
-      "Expected argument of type services.price.v1.GetImmediateUsdPriceForOptionSellResponse",
-    )
+function serialize_services_price_v1_GetExchangeRateForImmediateUsdBuyResponse(arg) {
+  if (!(arg instanceof services_price_v1_price_service_pb.GetExchangeRateForImmediateUsdBuyResponse)) {
+    throw new Error('Expected argument of type services.price.v1.GetExchangeRateForImmediateUsdBuyResponse');
   }
-  return Buffer.from(arg.serializeBinary())
+  return Buffer.from(arg.serializeBinary());
 }
 
-function deserialize_services_price_v1_GetImmediateUsdPriceForOptionSellResponse(
-  buffer_arg,
-) {
-  return services_price_v1_price_service_pb.GetImmediateUsdPriceForOptionSellResponse.deserializeBinary(
-    new Uint8Array(buffer_arg),
-  )
+function deserialize_services_price_v1_GetExchangeRateForImmediateUsdBuyResponse(buffer_arg) {
+  return services_price_v1_price_service_pb.GetExchangeRateForImmediateUsdBuyResponse.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
-function serialize_services_price_v1_GetImmediateUsdPriceForSellRequest(arg) {
-  if (
-    !(
-      arg instanceof services_price_v1_price_service_pb.GetImmediateUsdPriceForSellRequest
-    )
-  ) {
-    throw new Error(
-      "Expected argument of type services.price.v1.GetImmediateUsdPriceForSellRequest",
-    )
+function serialize_services_price_v1_GetExchangeRateForImmediateUsdSellRequest(arg) {
+  if (!(arg instanceof services_price_v1_price_service_pb.GetExchangeRateForImmediateUsdSellRequest)) {
+    throw new Error('Expected argument of type services.price.v1.GetExchangeRateForImmediateUsdSellRequest');
   }
-  return Buffer.from(arg.serializeBinary())
+  return Buffer.from(arg.serializeBinary());
 }
 
-function deserialize_services_price_v1_GetImmediateUsdPriceForSellRequest(buffer_arg) {
-  return services_price_v1_price_service_pb.GetImmediateUsdPriceForSellRequest.deserializeBinary(
-    new Uint8Array(buffer_arg),
-  )
+function deserialize_services_price_v1_GetExchangeRateForImmediateUsdSellRequest(buffer_arg) {
+  return services_price_v1_price_service_pb.GetExchangeRateForImmediateUsdSellRequest.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
-function serialize_services_price_v1_GetImmediateUsdPriceForSellResponse(arg) {
-  if (
-    !(
-      arg instanceof
-      services_price_v1_price_service_pb.GetImmediateUsdPriceForSellResponse
-    )
-  ) {
-    throw new Error(
-      "Expected argument of type services.price.v1.GetImmediateUsdPriceForSellResponse",
-    )
+function serialize_services_price_v1_GetExchangeRateForImmediateUsdSellResponse(arg) {
+  if (!(arg instanceof services_price_v1_price_service_pb.GetExchangeRateForImmediateUsdSellResponse)) {
+    throw new Error('Expected argument of type services.price.v1.GetExchangeRateForImmediateUsdSellResponse');
   }
-  return Buffer.from(arg.serializeBinary())
+  return Buffer.from(arg.serializeBinary());
 }
 
-function deserialize_services_price_v1_GetImmediateUsdPriceForSellResponse(buffer_arg) {
-  return services_price_v1_price_service_pb.GetImmediateUsdPriceForSellResponse.deserializeBinary(
-    new Uint8Array(buffer_arg),
-  )
+function deserialize_services_price_v1_GetExchangeRateForImmediateUsdSellResponse(buffer_arg) {
+  return services_price_v1_price_service_pb.GetExchangeRateForImmediateUsdSellResponse.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
-var PriceServiceService = (exports.PriceServiceService = {
-  getImmediateUsdPriceForBuy: {
-    path: "/services.price.v1.PriceService/GetImmediateUsdPriceForBuy",
+
+var PriceServiceService = exports.PriceServiceService = {
+  getExchangeRateForImmediateUsdBuy: {
+    path: '/services.price.v1.PriceService/GetExchangeRateForImmediateUsdBuy',
     requestStream: false,
     responseStream: false,
-    requestType: services_price_v1_price_service_pb.GetImmediateUsdPriceForBuyRequest,
-    responseType: services_price_v1_price_service_pb.GetImmediateUsdPriceForBuyResponse,
-    requestSerialize: serialize_services_price_v1_GetImmediateUsdPriceForBuyRequest,
-    requestDeserialize: deserialize_services_price_v1_GetImmediateUsdPriceForBuyRequest,
-    responseSerialize: serialize_services_price_v1_GetImmediateUsdPriceForBuyResponse,
-    responseDeserialize: deserialize_services_price_v1_GetImmediateUsdPriceForBuyResponse,
+    requestType: services_price_v1_price_service_pb.GetExchangeRateForImmediateUsdBuyRequest,
+    responseType: services_price_v1_price_service_pb.GetExchangeRateForImmediateUsdBuyResponse,
+    requestSerialize: serialize_services_price_v1_GetExchangeRateForImmediateUsdBuyRequest,
+    requestDeserialize: deserialize_services_price_v1_GetExchangeRateForImmediateUsdBuyRequest,
+    responseSerialize: serialize_services_price_v1_GetExchangeRateForImmediateUsdBuyResponse,
+    responseDeserialize: deserialize_services_price_v1_GetExchangeRateForImmediateUsdBuyResponse,
   },
-  getImmediateUsdPriceForSell: {
-    path: "/services.price.v1.PriceService/GetImmediateUsdPriceForSell",
+  getExchangeRateForImmediateUsdSell: {
+    path: '/services.price.v1.PriceService/GetExchangeRateForImmediateUsdSell',
     requestStream: false,
     responseStream: false,
-    requestType: services_price_v1_price_service_pb.GetImmediateUsdPriceForSellRequest,
-    responseType: services_price_v1_price_service_pb.GetImmediateUsdPriceForSellResponse,
-    requestSerialize: serialize_services_price_v1_GetImmediateUsdPriceForSellRequest,
-    requestDeserialize: deserialize_services_price_v1_GetImmediateUsdPriceForSellRequest,
-    responseSerialize: serialize_services_price_v1_GetImmediateUsdPriceForSellResponse,
-    responseDeserialize:
-      deserialize_services_price_v1_GetImmediateUsdPriceForSellResponse,
+    requestType: services_price_v1_price_service_pb.GetExchangeRateForImmediateUsdSellRequest,
+    responseType: services_price_v1_price_service_pb.GetExchangeRateForImmediateUsdSellResponse,
+    requestSerialize: serialize_services_price_v1_GetExchangeRateForImmediateUsdSellRequest,
+    requestDeserialize: deserialize_services_price_v1_GetExchangeRateForImmediateUsdSellRequest,
+    responseSerialize: serialize_services_price_v1_GetExchangeRateForImmediateUsdSellResponse,
+    responseDeserialize: deserialize_services_price_v1_GetExchangeRateForImmediateUsdSellResponse,
   },
-  getImmediateUsdPriceForOptionBuy: {
-    path: "/services.price.v1.PriceService/GetImmediateUsdPriceForOptionBuy",
+  getExchangeRateForFutureUsdBuy: {
+    path: '/services.price.v1.PriceService/GetExchangeRateForFutureUsdBuy',
     requestStream: false,
     responseStream: false,
-    requestType:
-      services_price_v1_price_service_pb.GetImmediateUsdPriceForOptionBuyRequest,
-    responseType:
-      services_price_v1_price_service_pb.GetImmediateUsdPriceForOptionBuyResponse,
-    requestSerialize: serialize_services_price_v1_GetImmediateUsdPriceForOptionBuyRequest,
-    requestDeserialize:
-      deserialize_services_price_v1_GetImmediateUsdPriceForOptionBuyRequest,
-    responseSerialize:
-      serialize_services_price_v1_GetImmediateUsdPriceForOptionBuyResponse,
-    responseDeserialize:
-      deserialize_services_price_v1_GetImmediateUsdPriceForOptionBuyResponse,
+    requestType: services_price_v1_price_service_pb.GetExchangeRateForFutureUsdBuyRequest,
+    responseType: services_price_v1_price_service_pb.GetExchangeRateForFutureUsdBuyResponse,
+    requestSerialize: serialize_services_price_v1_GetExchangeRateForFutureUsdBuyRequest,
+    requestDeserialize: deserialize_services_price_v1_GetExchangeRateForFutureUsdBuyRequest,
+    responseSerialize: serialize_services_price_v1_GetExchangeRateForFutureUsdBuyResponse,
+    responseDeserialize: deserialize_services_price_v1_GetExchangeRateForFutureUsdBuyResponse,
   },
-  getImmediateUsdPriceForOptionSell: {
-    path: "/services.price.v1.PriceService/GetImmediateUsdPriceForOptionSell",
+  getExchangeRateForFutureUsdSell: {
+    path: '/services.price.v1.PriceService/GetExchangeRateForFutureUsdSell',
     requestStream: false,
     responseStream: false,
-    requestType:
-      services_price_v1_price_service_pb.GetImmediateUsdPriceForOptionSellRequest,
-    responseType:
-      services_price_v1_price_service_pb.GetImmediateUsdPriceForOptionSellResponse,
-    requestSerialize:
-      serialize_services_price_v1_GetImmediateUsdPriceForOptionSellRequest,
-    requestDeserialize:
-      deserialize_services_price_v1_GetImmediateUsdPriceForOptionSellRequest,
-    responseSerialize:
-      serialize_services_price_v1_GetImmediateUsdPriceForOptionSellResponse,
-    responseDeserialize:
-      deserialize_services_price_v1_GetImmediateUsdPriceForOptionSellResponse,
+    requestType: services_price_v1_price_service_pb.GetExchangeRateForFutureUsdSellRequest,
+    responseType: services_price_v1_price_service_pb.GetExchangeRateForFutureUsdSellResponse,
+    requestSerialize: serialize_services_price_v1_GetExchangeRateForFutureUsdSellRequest,
+    requestDeserialize: deserialize_services_price_v1_GetExchangeRateForFutureUsdSellRequest,
+    responseSerialize: serialize_services_price_v1_GetExchangeRateForFutureUsdSellResponse,
+    responseDeserialize: deserialize_services_price_v1_GetExchangeRateForFutureUsdSellResponse,
   },
-})
+};
 
-exports.PriceServiceClient = grpc.makeGenericClientConstructor(PriceServiceService)
+exports.PriceServiceClient = grpc.makeGenericClientConstructor(PriceServiceService);
