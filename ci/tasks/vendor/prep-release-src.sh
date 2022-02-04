@@ -8,14 +8,14 @@ pushd repo
 
 # First time
 if [[ $(cat version/version) == "0.0.0" ]]; then
-  git cliff --config ci/vendor/config/git-cliff.toml > ../artifacts/gh-release-notes.md
+  git cliff --config ci/config/vendor/git-cliff.toml > ../artifacts/gh-release-notes.md
 
 # Fetch changelog from last ref
 else
   export prev_ref=$(git rev-list -n 1 $(cat version/version))
   export new_ref=$(cd repo && git rev-parse HEAD)
 
-  git cliff --config ci/vendor/config/git-cliff.toml $prev_ref..$new_ref > ../artifacts/gh-release-notes.md
+  git cliff --config ci/config/vendor/git-cliff.toml $prev_ref..$new_ref > ../artifacts/gh-release-notes.md
 fi
 
 popd

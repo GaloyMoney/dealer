@@ -2,16 +2,14 @@ apiVersion: vendir.k14s.io/v1alpha1
 directories:
 - contents:
   - git:
-      commitTitle: 'feat: added git cliff config and prep release source code task
-        (#1)'
-      sha: b71d51f8293ef74c23d7ad5ff97c92fa3ea66a2e
+      commitTitle: 'ci: added ci pipeline (#2)...'
+      sha: 9704383749e34cb71b27bd73e84bccfbd7e28f7d
     path: .
   path: tasks/vendor
 - contents:
   - git:
-      commitTitle: 'feat: added git cliff config and prep release source code task
-        (#1)'
-      sha: b71d51f8293ef74c23d7ad5ff97c92fa3ea66a2e
+      commitTitle: 'ci: added ci pipeline (#2)...'
+      sha: 9704383749e34cb71b27bd73e84bccfbd7e28f7d
     path: .
   path: config/vendor
 kind: LockConfig
