@@ -84,13 +84,13 @@ function getExchangeRateForFutureUsdBuy(
   const response = new GetExchangeRateForFutureUsdBuyResponse()
 
   const amountInSatoshis = call.request.getAmountInSatoshis()
-  const timeInMinutes = call.request.getTimeInMinutes()
+  const timeInSeconds = call.request.getTimeInSeconds()
   // validate
   // convert to btc
   // use last price with calc'd spread
   baseLogger.info(
-    { amountInSatoshis, timeInMinutes },
-    "Received a GetExchangeRateForFutureUsdBuy({amountInSatoshis}, {timeInMinutes}) call",
+    { amountInSatoshis, timeInSeconds },
+    "Received a GetExchangeRateForFutureUsdBuy({amountInSatoshis}, {timeInSeconds}) call",
   )
   response.setPriceInUsd(lastBid)
 
@@ -107,13 +107,13 @@ function getExchangeRateForFutureUsdSell(
   const response = new GetExchangeRateForFutureUsdSellResponse()
 
   const amountInSatoshis = call.request.getAmountInUsd()
-  const timeInMinutes = call.request.getTimeInMinutes()
+  const timeInSeconds = call.request.getTimeInSeconds()
   // validate
   // convert to btc
   // use last price with calc'd spread
   baseLogger.info(
-    { amountInSatoshis, timeInMinutes },
-    "Received a GetExchangeRateForFutureUsdSell({amountInSatoshis}, {timeInMinutes}) call",
+    { amountInSatoshis, timeInSeconds },
+    "Received a GetExchangeRateForFutureUsdSell({amountInSatoshis}, {timeInSeconds}) call",
   )
   response.setPriceInSatoshis(lastAsk)
 

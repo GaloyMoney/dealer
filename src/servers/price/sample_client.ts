@@ -3,7 +3,7 @@ import { DealerPriceService } from "./client_service"
 const priceService = DealerPriceService()
 const someUsd = 100 as UsdCents
 const someSats = 100000 as Satoshis
-const fewMins = 2 as Minutes
+const fewMins = (2 * 60) as Seconds
 export const run = async function () {
   console.info(
     `ExchangeRateForFutureUsdBuy from service: ${await priceService.getExchangeRateForFutureUsdBuy(

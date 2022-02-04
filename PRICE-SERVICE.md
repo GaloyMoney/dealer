@@ -37,7 +37,7 @@ it make sense to use at the maximum the **bid** from the exchange directly, appl
 
 ### Future USD Buy
 ```
-GetExchangeRateForFutureUsdBuy(amount: Satoshis, time-to-maturity: Minutes): USD
+GetExchangeRateForFutureUsdBuy(amount: Satoshis, time-to-maturity: Seconds): USD
 ```
 
 This interface takes an amount of BTC/sats and returns the equivalent amount of USD using an internal exchange rate.
@@ -86,7 +86,7 @@ In doing so it becomes a zero sum game instead of slightly positive for the buye
 
 ### Future USD Sell (BTC Buy)
 ```
-GetExchangeRateForFutureUsdSell(amount: USD, time-to-maturity: Minutes): Satoshis
+GetExchangeRateForFutureUsdSell(amount: USD, time-to-maturity: Seconds): Satoshis
 ```
 
 This interface takes an amount of USD and returns the equivalent amount of BTC/sats using an internal exchange rate.

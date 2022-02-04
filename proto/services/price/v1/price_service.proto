@@ -19,12 +19,12 @@ message GetExchangeRateForImmediateUsdSellRequest {
 
 message GetExchangeRateForFutureUsdBuyRequest {
   float amount_in_satoshis = 1;
-  float time_in_minutes = 2;
+  float time_in_seconds = 2;
 }
 
 message GetExchangeRateForFutureUsdSellRequest {
   float amount_in_usd = 1;
-  float time_in_minutes = 2;
+  float time_in_seconds = 2;
 }
 
 message GetExchangeRateForImmediateUsdBuyResponse {

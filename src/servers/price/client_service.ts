@@ -72,13 +72,13 @@ export const DealerPriceService = (): IDealerPriceService => {
 
   const getExchangeRateForFutureUsdBuy = async function (
     amountInSatoshis: Satoshis,
-    timeToExpiryInMinutes: Minutes,
+    timeToExpiryInSeconds: Seconds,
   ): Promise<UsdCents | DealerPriceServiceError> {
     try {
       const response = (await clientGetExchangeRateForFutureUsdBuy(
         new GetExchangeRateForFutureUsdBuyRequest()
           .setAmountInSatoshis(amountInSatoshis)
-          .setTimeInMinutes(timeToExpiryInMinutes),
+          .setTimeInSeconds(timeToExpiryInSeconds),
       )) as GetExchangeRateForFutureUsdBuyResponse
       return response.getPriceInUsd() as UsdCents
     } catch (error) {
@@ -88,13 +88,13 @@ export const DealerPriceService = (): IDealerPriceService => {
   }
   const getExchangeRateForFutureUsdSell = async function (
     amountInUsd: UsdCents,
-    timeToExpiryInMinutes: Minutes,
+    timeToExpiryInSeconds: Seconds,
   ): Promise<Satoshis | DealerPriceServiceError> {
     try {
       const response = (await clientGetExchangeRateForFutureUsdSell(
         new GetExchangeRateForFutureUsdSellRequest()
           .setAmountInUsd(amountInUsd)
-          .setTimeInMinutes(timeToExpiryInMinutes),
+          .setTimeInSeconds(timeToExpiryInSeconds),
       )) as GetExchangeRateForFutureUsdSellResponse
       return response.getPriceInSatoshis() as Satoshis
     } catch (error) {
