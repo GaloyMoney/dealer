@@ -228,11 +228,11 @@ jobs:
     - get: repo
       trigger: true
       passed: [ build-dealer-image ]
+    - get: pipeline-tasks
     - get: dealer-image
       passed: [ build-dealer-image ]
       params:
         format: oci
-    - get: meta-release
     - get: version
     - get: charts-repo
   - task: prep-release
@@ -243,16 +243,15 @@ jobs:
       - name: repo
       - name: dealer-image
         path: edge-image
-      - name: meta-release
+      - name: pipeline-tasks
       - name: version
-      - name: charts-repo
       outputs:
       - name: version
       - name: artifacts
       params:
         CHART: dealer
       run:
-        path: meta-release/ci/tasks/prep-release-src.sh
+        path: pipeline-tasks/ci/tasks/vendor/prep-release-src.sh
   - put: versioned-image
     params:
       image: dealer-image/image.tar
@@ -334,6 +333,7 @@ resources:
   type: git
   source:
     ignore_paths: ["ci/*[^md]"]
+    fetch_tags: true
     uri: #@ data.values.git_uri
     branch: #@ data.values.git_branch
     private_key: #@ data.values.github_private_key
@@ -341,7 +341,7 @@ resources:
 - name: pipeline-tasks
   type: git
   source:
-    paths: [ci/tasks/*, Makefile]
+    paths: [ci/tasks/*, ci/config/*, Makefile]
     uri: #@ data.values.git_uri
     branch: #@ data.values.git_branch
     private_key: #@ data.values.github_private_key
@@ -362,13 +362,6 @@ resources:
     owner: #@ data.values.gh_org
     repository: #@ data.values.gh_repository
     access_token: #@ data.values.github_token
-
-- name: meta-release
-  type: git
-  source:
-    uri: #@ data.values.meta_release_git_uri
-    branch: #@ data.values.meta_release_git_branch
-    private_key: #@ data.values.github_private_key
 
 - name: charts-repo-bot-branch
   type: git
