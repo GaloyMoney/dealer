@@ -17,9 +17,16 @@ if (!isBrowser) {
       throw new Error(`Missing env var: ${envVar}`)
     }
   })
+
+  if (
+    process.env.NETWORK &&
+    !["mainnet", "testnet", "regtest"].includes(process.env.NETWORK)
+  ) {
+    throw new Error("Invalid NETWORK value")
+  }
 }
 
-const networkMap = (graphqlUri: string): "mainnet" | "testnet" | "regtest" => {
+const networkMap = (graphqlUri: string): Network => {
   if (graphqlUri.match("mainnet")) {
     return "mainnet"
   }
@@ -35,7 +42,7 @@ const config = isBrowser
   ? {
       isBrowser,
       supportEmail: window.__G_DATA.GwwConfig.supportEmail,
-      network: networkMap(window.__G_DATA.GwwConfig.graphqlUri),
+      network: window.__G_DATA.GwwConfig.network,
       graphqlUri: window.__G_DATA.GwwConfig.graphqlUri,
       graphqlSubscriptionUri: window.__G_DATA.GwwConfig.graphqlSubscriptionUri,
       authEndpoint: window.__G_DATA.GwwConfig.authEndpoint,
@@ -48,7 +55,8 @@ const config = isBrowser
       host: process.env.HOST as string,
       port: Number(process.env.PORT),
       supportEmail: process.env.SUPPORT_EMAIL as string,
-      network: networkMap(process.env.GRAPHQL_URI as string),
+      network:
+        (process.env.NETWORK as Network) ?? networkMap(process.env.GRAPHQL_URI as string),
       graphqlUri: process.env.GRAPHQL_URI as string,
       graphqlSubscriptionUri: process.env.GRAPHQL_SUBSCRIPTION_URI as string,
 

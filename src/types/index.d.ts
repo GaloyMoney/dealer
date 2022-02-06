@@ -2,6 +2,7 @@
 type NormalizedCacheObject = import("@galoymoney/client").NormalizedCacheObject
 
 type PaymentType = import("@galoymoney/client").PaymentType
+type Network = import("@galoymoney/client").Network
 
 type Transaction = import("@galoymoney/client").GaloyGQL.Transaction
 type SettlementType = import("@galoymoney/client").GaloyGQL.SettlementVia["__typename"]
@@ -48,6 +49,7 @@ declare interface Window {
       supportEmail: string
       graphqlUri: string
       graphqlSubscriptionUri: string
+      network: Network
       authEndpoint: string
     }
   }
