@@ -34,7 +34,6 @@ const Send = () => {
   const { satsToUsd, usdToSats } = useMyUpdates()
 
   const [input, setInput] = useState<InvoiceInput>({
-    id: 1,
     currency: "USD",
     amount: "",
     destination: "",
@@ -107,7 +106,6 @@ const Send = () => {
 
       setInput((currInput) => ({
         ...currInput,
-        id: currInput.id + 1,
         ...newInputState,
         amount: newInputState.fixedAmount ? parsedDestination.amount : currInput.amount,
         currency: newInputState.fixedAmount ? "SATS" : currInput.currency,
@@ -183,7 +181,6 @@ const Send = () => {
 
       return {
         ...currInput,
-        id: currInput.id + 1,
         currency: newCurrency,
         amount: newAmount,
       }
@@ -294,8 +291,6 @@ const Send = () => {
     )
   }
 
-  const inputValue = input.amount === undefined ? "" : input.amount.toString()
-
   return (
     <div className="send">
       <Header page="send-bitcoin" />
@@ -304,8 +299,7 @@ const Send = () => {
           {input.currency === "SATS" ? <SatSymbol /> : "$"}
         </div>
         <FormattedNumberInput
-          key={input.id}
-          initValue={inputValue}
+          initValue={input.amount}
           onChange={handleAmountUpdate}
           onDebouncedChange={handleDebouncedAmountUpdate}
           disabled={input.fixedAmount}
@@ -322,7 +316,6 @@ const Send = () => {
       </div>
       <div className="destination-input center-display">
         <DebouncedInput
-          key={input.id}
           initValue={input.destination}
           onChange={handleDestinationUpdate}
           onDebouncedChange={handleDebouncedDestinationUpdate}
@@ -334,7 +327,6 @@ const Send = () => {
       </div>
       <div className="note-input center-display">
         <DebouncedTextarea
-          key={input.id}
           initValue={input.memo}
           onChange={handleMemoUpdate}
           onDebouncedChange={handleDebouncedMemoUpdate}

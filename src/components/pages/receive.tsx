@@ -19,7 +19,6 @@ import Header from "../header"
 import { ButtonLink } from "../link"
 
 type InvoiceInputState = {
-  id: number
   layer: "lightning" | "onchain"
   currency: "USD" | "SATS"
   amount?: number | ""
@@ -32,7 +31,6 @@ const Receive = () => {
   const { satsToUsd, usdToSats } = useMyUpdates()
 
   const [input, setInput] = useState<InvoiceInputState>({
-    id: 1,
     layer: "lightning",
     currency: "USD",
     amount: "",
@@ -118,7 +116,6 @@ const Receive = () => {
 
       return {
         ...currInput,
-        id: currInput.id + 1,
         currency: newCurrency,
         amount: newAmount,
         satsForInvoice: NaN,
@@ -209,8 +206,6 @@ const Receive = () => {
     )
   }
 
-  const inputValue = input.amount === undefined ? "" : input.amount.toString()
-
   return (
     <div className="receive">
       <Header page="receive-bitcoin" />
@@ -235,8 +230,7 @@ const Receive = () => {
             {input.currency === "SATS" ? <SatSymbol /> : "$"}
           </div>
           <FormattedNumberInput
-            key={input.id}
-            initValue={inputValue}
+            initValue={input.amount}
             onChange={handleAmountUpdate}
             onDebouncedChange={handleDebouncedAmountUpdate}
             placeholder={translate("Set invoice value in %{currency}", {
@@ -249,7 +243,6 @@ const Receive = () => {
         </div>
         <div className="note-input center-display">
           <DebouncedTextarea
-            key={input.id}
             initValue={input.memo}
             onChange={handleMemoUpdate}
             onDebouncedChange={handleDebouncedMemoUpdate}

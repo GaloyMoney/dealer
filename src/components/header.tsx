@@ -16,7 +16,7 @@ const Header = ({ page }: Props) => {
   const { btcWalletBalance } = useMainQuery()
 
   return (
-    <div className={`header-container ${page}`}>
+    <div className={`header-container ${page}-page`}>
       <div className="header">
         <Balance balance={btcWalletBalance} />
         <div className="links">
@@ -32,7 +32,7 @@ const Header = ({ page }: Props) => {
       {page && (
         <div className="header-nav">
           <Link to="/scan">
-            <i aria-hidden className="fas fa-qrcode"></i>
+            <i aria-hidden className="fas fa-qrcode" />
             {translate("Scan QR code")}
           </Link>
           <Link to="/send" className={`${page === "send-bitcoin" ? "active" : "link"}`}>

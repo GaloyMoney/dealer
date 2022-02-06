@@ -9,7 +9,7 @@ exports[`Root renders Home and matches snapshot 1`] = `
       class="home"
     >
       <div
-        class="header-container home"
+        class="header-container home-page"
       >
         <div
           class="header"
@@ -87,13 +87,7 @@ exports[`Root renders Home and matches snapshot 1`] = `
       </div>
       <div
         class="recent-transactions"
-      >
-        <div
-          class="header"
-        >
-          Recent Transactions
-        </div>
-      </div>
+      />
     </div>
     <div
       id="footer"

@@ -1,15 +1,21 @@
 import { translate } from "@galoymoney/client"
+import useAuthToken from "../../store/use-auth-token"
 import Header from "../header"
 import TransactionList from "../transactions/list"
 
 const Home = () => {
+  const { hasToken } = useAuthToken()
   return (
     <>
       <div className="home">
         <Header page="home" />
         <div className="recent-transactions">
-          <div className="header">{translate("Recent Transactions")}</div>
-          <TransactionList />
+          {hasToken && (
+            <>
+              <div className="header">{translate("Recent Transactions")}</div>
+              <TransactionList />
+            </>
+          )}
         </div>
       </div>
       <div id="footer">

@@ -7,7 +7,6 @@ const useMainQuery = () => {
 
   const { data } = useQuery.main({
     variables: { hasToken, recentTransactions: 5 },
-    fetchPolicy: "cache-and-network",
     onCompleted: (completed) => {
       setLocale(completed?.me?.language)
     },
@@ -23,7 +22,7 @@ const useMainQuery = () => {
   const btcWalletId = btcWallet?.id
   const btcWalletBalance = hasToken ? btcWallet?.balance ?? NaN : 0
 
-  const transactionsEdges = btcWallet?.transactions?.edges
+  const transactions = btcWallet?.transactions
 
   const username = me?.username
   const phoneNumber = me?.phone
@@ -34,7 +33,7 @@ const useMainQuery = () => {
     pubKey,
     btcWalletId,
     btcWalletBalance,
-    transactionsEdges,
+    transactions,
     username,
     phoneNumber,
     language,

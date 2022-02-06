@@ -56,7 +56,7 @@ const AuthCode = ({ phoneNumber }: Props) => {
           onChange={handleOnChange}
         />
         <button type="submit">
-          <i aria-hidden className="far fa-arrow-alt-circle-right"></i>
+          <i aria-hidden className="far fa-arrow-alt-circle-right" />
         </button>
       </form>
       {errorMessage && <div className="error">{errorMessage}</div>}

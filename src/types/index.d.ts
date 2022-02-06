@@ -1,5 +1,18 @@
+// Galoy Client
 type NormalizedCacheObject = import("@galoymoney/client").NormalizedCacheObject
 
+type PaymentType = import("@galoymoney/client").PaymentType
+
+type Transaction = import("@galoymoney/client").GaloyGQL.Transaction
+type SettlementType = import("@galoymoney/client").GaloyGQL.SettlementVia["__typename"]
+type IntraLedgerUpdate = import("@galoymoney/client").GaloyGQL.IntraLedgerUpdate
+type LnUpdate = import("@galoymoney/client").GaloyGQL.LnUpdate
+type OnChainUpdate = import("@galoymoney/client").GaloyGQL.OnChainUpdate
+
+// Helpers
+type AtLeast<T, K extends keyof T> = Partial<T> & Pick<T, K>
+
+// Server and state
 type RoutePath = typeof import("../server/routes").SupportedRoutes[number]
 type RouteInfo = Record<string, string | (() => JSX.Element | null)>
 type AppRoutes = Record<RoutePath, RouteInfo>
@@ -21,6 +34,12 @@ type GwwContextType = {
   dispatch: React.Dispatch<GwwAction>
 }
 
+type ServerRendererFunction = (path: RoutePath) => Promise<{
+  GwwState: GwwState
+  initialMarkup: string
+  pageData: RouteInfo
+}>
+
 declare interface Window {
   __G_DATA: {
     GwwState: GwwState
@@ -36,11 +55,7 @@ declare interface Window {
   initGeetest: (...args: any[]) => void
 }
 
-type ServerRendererFunction = (path: RoutePath) => Promise<{
-  GwwState: GwwState
-  initialMarkup: string
-  pageData: RouteInfo
-}>
+// Hooks
 
 type UseAuthTokenFunction = () => {
   authToken: string | undefined
@@ -51,14 +66,15 @@ type UseMyUpdates = {
   satsToUsd: ((sats: number) => number) | null
   usdToSats: ((usd: number) => number) | null
   currentBalance: number | null
-  intraLedgerUpdate: import("@galoymoney/client").GaloyGQL.IntraLedgerUpdate | null
-  lnUpdate: import("@galoymoney/client").GaloyGQL.LnUpdate | null
-  onChainUpdate: import("@galoymoney/client").GaloyGQL.OnChainUpdate | null
+  intraLedgerUpdate: IntraLedgerUpdate | null
+  lnUpdate: LnUpdate | null
+  onChainUpdate: OnChainUpdate | null
 }
 
+type Currency = "USD" | "SATS"
+
 type InvoiceInput = {
-  id: number // used to reset input components
-  currency: "USD" | "SATS"
+  currency: Currency
 
   // undefined in input is used to indicate their changing state
   amount?: number | ""
@@ -69,7 +85,7 @@ type InvoiceInput = {
 
   valid?: boolean // from parsing
   errorMessage?: string
-  paymentType?: "lightning" | "onchain" | "intraledger" | "lnurl"
+  paymentType?: PaymentType
 
   sameNode?: boolean
   fixedAmount?: boolean // if the invoice has amount
@@ -79,6 +95,8 @@ type InvoiceInput = {
 
   newDestination?: string // for scanned codes
 }
+
+// Components
 
 type SendActionProps = InvoiceInput & {
   btcWalletId: string
@@ -104,4 +122,10 @@ type SendIntraLedgerActionProps = SendActionProps & {
   satAmount: number
 }
 
-type AtLeast<T, K extends keyof T> = Partial<T> & Pick<T, K>
+type TransactionDetailProps = {
+  tx: Transaction
+  isReceive: boolean
+  isPending: boolean
+  description: string
+  usdAmount: number
+}
