@@ -236,7 +236,7 @@ const Send = () => {
 
   const parseQRCode = useCallback<(destination: string) => false | ValidPaymentReponse>(
     (destination) => {
-      if (destination.match(/^(bitcoin:|ligtning:|1|3|bc|ln)/iu)) {
+      if (destination.match(/^(bitcoin:|lightning:|1|3|bc|ln)/iu)) {
         const parsedDestination = parsePaymentDestination({
           destination,
           network: config.network,
