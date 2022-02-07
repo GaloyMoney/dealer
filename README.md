@@ -1,4 +1,4 @@
-# Galay Web-Wallet
+# Galoy Web-Wallet
 
 ## What is it for?
 
