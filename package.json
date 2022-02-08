@@ -36,6 +36,7 @@
     "@profusion/apollo-validation-directives": "^2.1.5",
     "apollo-server-errors": "^2.5.0",
     "apollo-server-express": "^2.25.2",
+    "black-scholes-model": "^1.0.10",
     "ccxt": "^1.61.93",
     "csv-parse": "^4.16.0",
     "dateformat": "^4.5.1",
@@ -56,7 +57,7 @@
     "pino-http": "^5.6.0",
     "prom-client": "^13.2.0",
     "ts-md5": "^1.2.10",
-    "typescript": "^4.3.5",
+    "typescript": "^4.5.5",
     "uuid": "^8.3.2"
   },
   "devDependencies": {
