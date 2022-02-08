@@ -13,3 +13,7 @@ export const btc2sat = (btc: number) => {
 export const sat2btc = (sat: number) => {
   return sat / Math.pow(10, 8)
 }
+
+export const toSats = (amount: number): Satoshis => {
+  return amount as Satoshis
+}
