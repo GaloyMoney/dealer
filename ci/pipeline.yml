@@ -227,8 +227,17 @@ jobs:
   - in_parallel:
     - get: repo
       trigger: true
-      passed: [ build-dealer-image ]
+      passed: 
+      - check-code
+      - test-unit
+      - test-integration
+      - build-dealer-image
+      - build-fake-galoyapi-image
     - get: pipeline-tasks
+    - get: fake-galoyapi-image
+      passed: [ build-fake-galoyapi-image ]
+      params:
+        format: oci
     - get: dealer-image
       passed: [ build-dealer-image ]
       params:
@@ -252,39 +261,39 @@ jobs:
         CHART: dealer
       run:
         path: pipeline-tasks/ci/tasks/vendor/prep-release-src.sh
-  - put: versioned-image
-    params:
-      image: dealer-image/image.tar
-      additional_tags: artifacts/gh-release-tag
-  - put: gh-release
-    params:
-      name: artifacts/gh-release-name
-      tag: artifacts/gh-release-tag
-      body: artifacts/gh-release-notes.md
-  - put: version
-    params:
-      file: version/version
+  - in_parallel:
+    - put: versioned-image
+      params:
+        image: dealer-image/image.tar
+        additional_tags: artifacts/gh-release-tag
+    - put: versioned-fake-galoyapi-image
+      params:
+        image: fake-galoyapi-image/image.tar
+        additional_tags: artifacts/gh-release-tag
+    - put: gh-release
+      params:
+        name: artifacts/gh-release-name
+        tag: artifacts/gh-release-tag
+        body: artifacts/gh-release-notes.md
+    - put: version
+      params:
+        file: version/version
+  on_failure: #@ slack_failure_notification()
 
 - name: bump-image-in-chart
   plan:
   - in_parallel:
     - get: dealer-image
       trigger: true
-      passed: [ build-dealer-image ]
+      passed: [ release ]
       params: { skip_download: true }
     - get: fake-galoyapi-image
       trigger: true
-      passed: [ build-fake-galoyapi-image ]
+      passed: [ release ]
       params: { skip_download: true }
     - get: repo
       trigger: true
-      passed:
-      - check-code
-      - test-unit
-      - test-integration
-      - build-dealer-image
-      - build-fake-galoyapi-image
-      - release
+      passed: [ release ]
     - get: version
       trigger: true
       passed: [ release ]
@@ -351,9 +360,9 @@ resources:
   source:
     initial_version: 0.0.0
     driver: git
-    file: dealer-src-version
-    uri: #@ data.values.meta_release_git_uri
-    branch: #@ data.values.meta_release_git_version_branch
+    file: version
+    uri: #@ data.values.git_uri
+    branch: #@ data.values.git_version_branch
     private_key: #@ data.values.github_private_key
 
 - name: gh-release
@@ -423,6 +432,13 @@ resources:
     username: #@ data.values.docker_registry_user
     password: #@ data.values.docker_registry_password
     repository: #@ dealer_image()
+
+- name: versioned-fake-galoyapi-image
+  type: registry-image
+  source:
+    username: #@ data.values.docker_registry_user
+    password: #@ data.values.docker_registry_password
+    repository: #@ fake_galoyapi_image()
 
 - name: slack
   type: slack-notification
