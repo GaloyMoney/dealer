@@ -4,12 +4,14 @@ import { translate } from "@galoymoney/client"
 
 import config from "../../store/config"
 import { history, useRequest } from "../../store"
+import { useAuthContext } from "../../store/use-auth-context"
 
 type Props = { phoneNumber: string }
 
 const AuthCode = ({ phoneNumber }: Props) => {
   const request = useRequest()
   const [errorMessage, setErrorMessage] = useState("")
+  const { setAuthSession } = useAuthContext()
 
   const submitLoginRequest = async (authCode: string) => {
     const data = await request.post(config.authEndpoint, {
@@ -21,7 +23,10 @@ const AuthCode = ({ phoneNumber }: Props) => {
       setErrorMessage(data.message)
       return
     }
-    history.push("/", { authToken: data?.authToken })
+
+    const session = { galoyJwtToken: data?.galoyJwtToken }
+    setAuthSession(session.galoyJwtToken ? session : null)
+    history.push("/", { galoyJwtToken: data?.galoyJwtToken })
   }
 
   const handleAuthCodeSubmit: React.FormEventHandler<HTMLFormElement> = async (event) => {

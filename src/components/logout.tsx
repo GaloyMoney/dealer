@@ -1,16 +1,19 @@
 import { useResetClient, translate } from "@galoymoney/client"
 
 import { history, useRequest } from "../store"
+import { useAuthContext } from "../store/use-auth-context"
 
 const Logout = () => {
-  const resetClient = useResetClient()
   const request = useRequest()
+  const { setAuthSession } = useAuthContext()
 
+  const resetClient = useResetClient()
   const handleLogout: React.MouseEventHandler<HTMLAnchorElement> = async (event) => {
     event.preventDefault()
     await request.post("/api/logout")
     resetClient()
-    history.push("/", { authToken: undefined })
+    setAuthSession(null)
+    history.push("/", { galoyJwtToken: undefined })
   }
 
   return (

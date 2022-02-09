@@ -11,20 +11,21 @@ export const serverRenderer =
   (req: Request) =>
   async ({ path }: { path: RoutePath }) => {
     try {
-      const authToken = req.session?.authToken
+      const galoyJwtToken = req.session?.galoyJwtToken
 
       const GwwState: GwwState = {
         path,
         key: 0,
-        authToken,
         defaultLanguage: req.acceptsLanguages()?.[0],
       }
 
       const galoyClient = createClient({
-        authToken,
+        authToken: galoyJwtToken,
         headers: req.headers,
       })
-      const App = <SSRRoot client={galoyClient} GwwState={GwwState} />
+      const App = (
+        <SSRRoot client={galoyClient} GwwState={GwwState} galoyJwtToken={galoyJwtToken} />
+      )
 
       const initialMarkup = await renderToStringWithData(App)
       const ssrData = galoyClient.extract()

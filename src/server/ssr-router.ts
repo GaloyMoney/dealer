@@ -7,7 +7,7 @@ const ssrRouter = express.Router({ caseSensitive: true })
 
 ssrRouter.get("/logout", async (req, res) => {
   req.session = req.session || {}
-  req.session.authToken = null
+  req.session.galoyJwtToken = null
   return res.redirect("/")
 })
 

@@ -25,12 +25,12 @@ apiRouter.post("/login", async (req, res) => {
       throw new Error(data?.userLogin?.errors?.[0].message || "Something went wrong")
     }
 
-    const authToken = data?.userLogin?.authToken
+    const galoyJwtToken = data?.userLogin?.authToken
 
     req.session = req.session || {}
-    req.session.authToken = authToken
+    req.session.galoyJwtToken = galoyJwtToken
 
-    return res.send({ authToken })
+    return res.send({ galoyJwtToken })
   } catch (err) {
     console.error(err)
     return res
@@ -41,8 +41,8 @@ apiRouter.post("/login", async (req, res) => {
 
 apiRouter.post("/logout", async (req, res) => {
   req.session = req.session || {}
-  req.session.authToken = null
-  return res.send({ authToken: null })
+  req.session.galoyJwtToken = null
+  return res.send({ galoyJwtToken: null })
 })
 
 export default apiRouter

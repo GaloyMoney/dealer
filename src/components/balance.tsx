@@ -3,7 +3,8 @@ import { SatFormat, SatSymbol, Spinner } from "@galoymoney/react"
 
 import useMyUpdates from "../hooks/use-my-updates"
 
-import { history, useAppState } from "../store"
+import { history } from "../store"
+import { useAuthContext } from "../store/use-auth-context"
 
 const navigateToHome = () => {
   history.push("/")
@@ -38,9 +39,9 @@ const MyBalance = ({ balance }: Props) => {
 }
 
 const Balance = ({ balance }: Props) => {
-  const { authToken } = useAppState()
+  const { isAuthenticated } = useAuthContext()
 
-  if (!authToken) {
+  if (!isAuthenticated) {
     return (
       <div className="balance" onClick={navigateToHome}>
         <div className="title">{translate("Current Balance")}</div>

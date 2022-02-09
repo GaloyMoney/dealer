@@ -6,7 +6,7 @@ import {
   postRequest,
 } from "@galoymoney/client"
 
-import useAuthToken from "./use-auth-token"
+import { useAuthContext } from "./use-auth-context"
 import config from "./config"
 
 export const GwwContext = createContext<GwwContextType>({
@@ -29,10 +29,10 @@ export const useAppDispatcher = () => {
 }
 
 export const useRequest = () => {
-  const { authToken } = useAuthToken()
+  const { galoyJwtToken } = useAuthContext()
 
   return {
-    post: postRequest(authToken),
+    post: postRequest(galoyJwtToken),
   }
 }
 

@@ -21,7 +21,6 @@ type AppRoutes = Record<RoutePath, RouteInfo>
 type GwwState = {
   path: RoutePath
   key: number
-  authToken?: string
   defaultLanguage?: string
 }
 
@@ -33,6 +32,16 @@ type GwwAction = {
 type GwwContextType = {
   state: GwwState
   dispatch: React.Dispatch<GwwAction>
+}
+
+type AuthSession = {
+  galoyJwtToken: string
+} | null
+
+type AuthContextType = {
+  galoyJwtToken?: string
+  isAuthenticated: boolean
+  setAuthSession: (session: AuthSession) => void
 }
 
 type ServerRendererFunction = (path: RoutePath) => Promise<{
@@ -59,10 +68,7 @@ declare interface Window {
 
 // Hooks
 
-type UseAuthTokenFunction = () => {
-  authToken: string | undefined
-  hasToken: boolean
-}
+type UseAuthContextFunction = () => AuthContextType
 
 type UseMyUpdates = {
   satsToUsd: ((sats: number) => number) | null

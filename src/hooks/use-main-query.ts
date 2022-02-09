@@ -1,12 +1,12 @@
 import { setLocale, useQuery } from "@galoymoney/client"
 
-import useAuthToken from "../store/use-auth-token"
+import { useAuthContext } from "../store/use-auth-context"
 
 const useMainQuery = () => {
-  const { hasToken } = useAuthToken()
+  const { isAuthenticated } = useAuthContext()
 
   const { data } = useQuery.main({
-    variables: { hasToken, recentTransactions: 5 },
+    variables: { hasToken: isAuthenticated, recentTransactions: 5 },
     onCompleted: (completed) => {
       setLocale(completed?.me?.language)
     },
@@ -20,7 +20,7 @@ const useMainQuery = () => {
     (wallet) => wallet?.__typename === "BTCWallet",
   )
   const btcWalletId = btcWallet?.id
-  const btcWalletBalance = hasToken ? btcWallet?.balance ?? NaN : 0
+  const btcWalletBalance = isAuthenticated ? btcWallet?.balance ?? NaN : 0
 
   const transactions = btcWallet?.transactions
 

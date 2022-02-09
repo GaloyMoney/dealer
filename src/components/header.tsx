@@ -1,7 +1,7 @@
 import { translate } from "@galoymoney/client"
 
 import useMainQuery from "../hooks/use-main-query"
-import useAuthToken from "../store/use-auth-token"
+import { useAuthContext } from "../store/use-auth-context"
 
 import Balance from "./balance"
 import Link from "./link"
@@ -12,7 +12,7 @@ type Props = {
 }
 
 const Header = ({ page }: Props) => {
-  const { hasToken } = useAuthToken()
+  const { isAuthenticated } = useAuthContext()
   const { btcWalletBalance } = useMainQuery()
 
   return (
@@ -26,7 +26,7 @@ const Header = ({ page }: Props) => {
               <div className="separator">|</div>
             </>
           )}
-          {hasToken ? <Logout /> : <Link to="/login">{translate("Login")}</Link>}
+          {isAuthenticated ? <Logout /> : <Link to="/login">{translate("Login")}</Link>}
         </div>
       </div>
       {page && (
