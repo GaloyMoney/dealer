@@ -4,11 +4,13 @@ set -eu
 
 export digest=$(cat ./edge-image/digest)
 export ref=$(cat ./repo/.git/short_ref)
+export app_version=$(cat version/version)
 
 pushd charts-repo
 
 yq -i e '.image.digest = strenv(digest)' ./charts/web-wallet/values.yaml
 yq -i e '.image.git_ref = strenv(ref)' ./charts/web-wallet/values.yaml
+yq -i e '.appVersion = strenv(app_version)' ./charts/web-wallet/Chart.yaml
 
 if [[ -z $(git config --global user.email) ]]; then
   git config --global user.email "bot@galoy.io"

@@ -12,6 +12,9 @@ docker_registry_user: ((docker-creds.username))
 docker_registry_password: ((docker-creds.password))
 artifacts_bucket_name: ((staging-gcp-creds.bucket_name))
 staging_inception_creds: ((staging-gcp-creds.creds_json))
+git_version_branch: version
+gh_org: GaloyMoney
+gh_repository: web-wallet
 
 slack_channel: web-wallet-github
 slack_username: concourse
