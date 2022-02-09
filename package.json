@@ -20,7 +20,7 @@
     "tsc:check": "tsc --pretty --noEmit --skipLibCheck"
   },
   "dependencies": {
-    "@galoymoney/client": "^0.0.20",
+    "@galoymoney/client": "^0.0.21",
     "@galoymoney/react": "^0.0.15",
     "@testing-library/jest-dom": "^5.16.2",
     "@testing-library/react": "^12.1.2",

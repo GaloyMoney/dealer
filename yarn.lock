@@ -338,10 +338,10 @@
     minimatch "^3.0.4"
     strip-json-comments "^3.1.1"
 
-"@galoymoney/client@^0.0.20":
-  version "0.0.20"
-  resolved "https://registry.yarnpkg.com/@galoymoney/client/-/client-0.0.20.tgz#1ed4b7f055b4fa1b8b7a913e245d44cc54df29ea"
-  integrity sha512-aO9wTJn0aUfye0EXZjA3jDLA1NnpwxkmJYuquCylB30z58I0ZUQ+YxcWLHPDaG4fCuzlpsLThWixehvkpZiouQ==
+"@galoymoney/client@^0.0.21":
+  version "0.0.21"
+  resolved "https://registry.yarnpkg.com/@galoymoney/client/-/client-0.0.21.tgz#fe106e279e19f122b36bcc9c02cdeae4cca5149c"
+  integrity sha512-WGj30lWF+C8TE5xoVbfje8Zf8faTjuoWW+Rh2ae4pZ+CjD+KRWvX6M4o/0uwtAURD7lu2gqlLGmdTMavdXH0AQ==
   dependencies:
     "@apollo/client" "^3.5.8"
     bitcoinjs-lib "^5.0.0"
