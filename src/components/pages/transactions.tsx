@@ -1,9 +1,9 @@
-import { GaloyGQL, translate, useDelayedQuery } from "@galoymoney/client"
+import { GaloyGQL, translate, useQuery } from "@galoymoney/client"
 import { Spinner } from "@galoymoney/react"
-import { useRef } from "react"
+import { useCallback, useRef } from "react"
+import Header from "../header"
 
-import useMainQuery from "../../hooks/use-main-query"
-import TransactionItem from "./item"
+import TransactionItem from "../transactions/item"
 
 const TRANSACTIONS_PER_PAGE = 25
 const EMPTY_CONNECTION = {
@@ -11,28 +11,40 @@ const EMPTY_CONNECTION = {
   pageInfo: { hasNextPage: false, hasPreviousPage: false },
 } as const
 
-const TransactionList = () => {
-  const { transactions } = useMainQuery()
-  const [fetchTransactions, { loading }] = useDelayedQuery.transactionList()
+type Props = {
+  username: string
+}
+
+const Transactions = ({ username }: Props) => {
+  const {
+    loading,
+    data: initialData,
+    refetch: fetchTransactions,
+  } = useQuery.transactionListForContact({
+    variables: { username, first: TRANSACTIONS_PER_PAGE },
+  })
 
   // The source of truth for listing the transactions
   // The data gets "cached" here and more pages are appended when they're fetched
   const transactionsRef = useRef<GaloyGQL.TransactionConnection>(EMPTY_CONNECTION)
 
-  if (!transactionsRef.current.edges && transactions) {
-    transactionsRef.current = transactions
+  const initialTxsData = initialData?.me?.contactByUsername.transactions
+
+  if (!transactionsRef.current.edges && initialTxsData) {
+    transactionsRef.current = initialTxsData
   }
 
-  const fetchNextTransactionsPage = async () => {
+  const fetchNextTransactionsPage = useCallback(async () => {
     const { pageInfo } = transactionsRef.current
 
     if (pageInfo.hasNextPage) {
       const { data } = await fetchTransactions({
+        username,
         first: TRANSACTIONS_PER_PAGE,
         after: pageInfo.endCursor,
       })
 
-      const txsData = data?.me?.defaultAccount?.wallets[0].transactions
+      const txsData = data?.me?.contactByUsername.transactions
 
       if (!txsData || !txsData.edges) {
         return
@@ -43,12 +55,16 @@ const TransactionList = () => {
         pageInfo: txsData.pageInfo,
       }
     }
-  }
+  }, [fetchTransactions, username])
 
   const { edges, pageInfo } = transactionsRef.current
 
   return (
     <div className="transaction-list">
+      <Header page="transactions" />
+      <div className="page-title">
+        {translate("Transactions with %{contactUsername}", { contactUsername: username })}
+      </div>
       {edges?.length === 0 && (
         <div className="no-transactions">{translate("No transactions")}</div>
       )}
@@ -74,4 +90,4 @@ const TransactionList = () => {
   )
 }
 
-export default TransactionList
+export default Transactions

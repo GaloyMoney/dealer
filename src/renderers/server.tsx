@@ -15,6 +15,7 @@ export const serverRenderer =
 
       const GwwState: GwwState = {
         path,
+        props: req.query,
         key: 0,
         defaultLanguage: req.acceptsLanguages()?.[0],
       }

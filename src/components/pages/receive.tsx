@@ -52,7 +52,7 @@ const Receive = () => {
         satsForInvoice: Math.round(usdToSats(input.amount as number)),
       }))
     }
-  }, [input.currency, input.amount, shouldUpdateSatsForInvoice, usdToSats])
+  }, [input.currency, input.amount, input.memo, shouldUpdateSatsForInvoice, usdToSats])
 
   useEffect(() => {
     if (input.currency === "SATS" && shouldUpdateSatsForInvoice) {
@@ -61,7 +61,7 @@ const Receive = () => {
         satsForInvoice: input.amount as number,
       }))
     }
-  }, [input.currency, input.amount, shouldUpdateSatsForInvoice])
+  }, [input.currency, input.amount, input.memo, shouldUpdateSatsForInvoice])
 
   useEffect(() => {
     if (input.layer === "onchain" && btcWalletId) {

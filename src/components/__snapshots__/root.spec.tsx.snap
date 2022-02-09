@@ -9,7 +9,7 @@ exports[`Root renders Home and matches snapshot 1`] = `
       class="home"
     >
       <div
-        class="header-container home-page"
+        class="header-container home-header"
       >
         <div
           class="header"
@@ -47,8 +47,29 @@ exports[`Root renders Home and matches snapshot 1`] = `
             <a
               href="/login"
             >
-              Login
+              <i
+                aria-hidden="true"
+                class="fas fa-sign-in-alt"
+              />
+              <span
+                class="name"
+              >
+                Login
+              </span>
             </a>
+            <div
+              class="separator"
+            >
+              |
+            </div>
+            <div
+              class="menu-icon"
+            >
+              <i
+                aria-hidden="true"
+                class="fas fa-bars"
+              />
+            </div>
           </div>
         </div>
         <div

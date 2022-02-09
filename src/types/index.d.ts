@@ -14,19 +14,19 @@ type OnChainUpdate = import("@galoymoney/client").GaloyGQL.OnChainUpdate
 type AtLeast<T, K extends keyof T> = Partial<T> & Pick<T, K>
 
 // Server and state
-type RoutePath = typeof import("../server/routes").SupportedRoutes[number]
+type RoutePath = import("../server/routes").SupportedRoutes
 type RouteInfo = Record<string, string | (() => JSX.Element | null)>
-type AppRoutes = Record<RoutePath, RouteInfo>
 
 type GwwState = {
   path: RoutePath
+  props?: Record<string, unknown>
   key: number
   defaultLanguage?: string
 }
 
 type GwwAction = {
   type: "update"
-  [payloadKey: string]: string | undefined
+  [payloadKey: string]: string | Record<string, string> | undefined
 }
 
 type GwwContextType = {

@@ -18,9 +18,12 @@ const Root = ({ GwwState }: RootProps) => {
 
   useEffect(() => {
     const unlisten = history.listen(({ location }) => {
+      const props = Object.fromEntries(new URLSearchParams(location.search))
+
       dispatch({
         type: "update",
         path: location.pathname,
+        props,
         ...(location.state as Record<string, unknown> | null),
       })
     })
@@ -30,7 +33,7 @@ const Root = ({ GwwState }: RootProps) => {
   return (
     <AuthProvider>
       <GwwContext.Provider value={{ state, dispatch }}>
-        <RootComponent path={state.path} key={state.key} />
+        <RootComponent path={state.path} key={state.key} {...state.props} />
       </GwwContext.Provider>
     </AuthProvider>
   )
@@ -51,7 +54,7 @@ export const SSRRoot = ({ client, GwwState, galoyJwtToken }: SSRootProps) => {
   return (
     <AuthProvider galoyClient={client} galoyJwtToken={galoyJwtToken}>
       <GwwContext.Provider value={{ state, dispatch }}>
-        <RootComponent path={state.path} />
+        <RootComponent path={state.path} {...state.props} />
       </GwwContext.Provider>
     </AuthProvider>
   )

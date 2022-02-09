@@ -22,6 +22,9 @@ body {
     color: var(--color-links);
     text-decoration: none;
     cursor: pointer;
+    i {
+      margin-right: 0.45rem;
+    }
   }
 
   input::-webkit-outer-spin-button,
@@ -88,11 +91,6 @@ body {
   margin: 2rem auto;
 }
 
-.links {
-  display: flex;
-  justify-content: space-around;
-}
-
 .separator {
   display: inline-block;
   margin: 0 0.5rem;
@@ -101,6 +99,42 @@ body {
 
 .header-container {
   margin-bottom: 2rem;
+  .header {
+    margin-right: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    .balance {
+      cursor: pointer;
+      .title {
+        text-align: center;
+        margin-bottom: 0.5rem;
+      }
+
+      .value {
+        text-align: center;
+        .primary {
+          font-size: 1.2rem;
+          text-align: center;
+        }
+        .secondary {
+          color: var(--color-secondary);
+          margin-top: 0.2rem;
+          text-align: center;
+        }
+      }
+    }
+    .links {
+      display: flex;
+      justify-content: space-around;
+      font-size: 1.1rem;
+      .menu-icon {
+        cursor: pointer;
+        font-size: 1.25rem;
+        color: var(--color-links);
+      }
+    }
+  }
 }
 
 .header-nav {
@@ -111,13 +145,10 @@ body {
     margin: 1rem auto;
     border: thin solid var(--color-borders);
     padding: 0.75rem 1.75rem;
-    background-color: white;
+    background-color: var(--color-light-bg);
     width: 75%;
     max-width: 225px;
     text-align: center;
-    i {
-      margin-right: 0.75rem;
-    }
   }
   .active {
     background-color: var(--color-active-bg);
@@ -260,31 +291,6 @@ body {
   text-align: center;
 }
 
-.header {
-  display: flex;
-  justify-content: space-between;
-  .balance {
-    cursor: pointer;
-    .title {
-      text-align: center;
-      margin-bottom: 0.5rem;
-    }
-
-    .value {
-      text-align: center;
-      .primary {
-        font-size: 1.2rem;
-        text-align: center;
-      }
-      .secondary {
-        color: var(--color-secondary);
-        margin-top: 0.2rem;
-        text-align: center;
-      }
-    }
-  }
-}
-
 .login {
   display: flex;
   flex-direction: column;
@@ -384,7 +390,7 @@ body {
   .scan-start {
     margin: 1rem auto;
     border-top: thin solid var(--color-borders);
-    padding: 0.75rem 1.75rem;
+    padding: 1.25rem 1.75rem;
     width: 75%;
     max-width: 250px;
     i {
@@ -436,6 +442,14 @@ body {
   }
 }
 
+.no-transactions {
+  text-align: center;
+  border: solid thin var(--color-borders);
+  padding: 1rem;
+  margin: 1rem;
+  background-color: var(--color-light-bg);
+}
+
 .transaction-list {
   margin: 1rem auto;
   width: 95%;
@@ -443,7 +457,7 @@ body {
   .transaction-item {
     padding: 0.5rem;
     margin: 0.75rem;
-    background-color: white;
+    background-color: var(--color-light-bg);
     border: thin solid var(--color-borders);
   }
 
@@ -516,4 +530,83 @@ body {
 .load-more {
   text-align: center;
   margin-top: 1rem;
+}
+
+#root {
+  .menu {
+    background-color: var(--color-menu-bg);
+    border-left: 1px solid var(--color-borders);
+    position: fixed;
+    height: 100%;
+    top: 0px;
+    right: 0px;
+    bottom: 0px;
+    padding: 3em 1.5em;
+    font-size: 1.1em;
+    min-width: 175px;
+    a {
+      display: flex;
+      margin: 1rem;
+      i {
+        width: 30px;
+      }
+    }
+    .close {
+      position: fixed;
+      top: 15px;
+      right: 15px;
+      margin-bottom: 1rem;
+      cursor: pointer;
+    }
+  }
+}
+
+.contacts {
+  .list {
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 2rem;
+    .contact {
+      display: flex;
+      background-color: var(--color-light-bg);
+      margin: 0 1.75rem 1.75rem 1.75rem;
+      width: 230px;
+      padding: 1rem 1.5rem;
+      border: 1px solid var(--color-borders);
+      border-radius: 5px;
+      i {
+        flex: 0;
+        margin-right: 0.75rem;
+      }
+      .name {
+        flex: 1;
+      }
+      .actions {
+        flex: 0;
+        display: flex;
+        div {
+          cursor: pointer;
+          color: var(--color-links);
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 800px) {
+  .contacts {
+    .list {
+      justify-content: center;
+    }
+  }
+}
+
+@media (max-width: 600px) {
+  .header-container {
+    .links {
+      a .name {
+        display: none;
+      }
+    }
+  }
 }

@@ -28,7 +28,11 @@ import Header from "../header"
 import { ButtonLink } from "../link"
 import SendAction from "../send/send-action"
 
-const Send = () => {
+type Props = {
+  to?: string
+}
+
+const Send = ({ to }: Props) => {
   const dispatch = useAppDispatcher()
   const { pubKey, btcWalletId, btcWalletBalance, username } = useMainQuery()
   const { satsToUsd, usdToSats } = useMyUpdates()
@@ -36,7 +40,7 @@ const Send = () => {
   const [input, setInput] = useState<InvoiceInput>({
     currency: "USD",
     amount: "",
-    destination: "",
+    destination: to ?? "",
     memo: "",
   })
 
@@ -51,7 +55,7 @@ const Send = () => {
         satAmount: newSatAmount,
       }))
     }
-  }, [input.amount, input.currency, usdToSats])
+  }, [input.currency, input.amount, usdToSats])
 
   useEffect(() => {
     if (input.currency === "SATS" && typeof input.amount === "number") {
@@ -60,7 +64,7 @@ const Send = () => {
         satAmount: input.amount as number,
       }))
     }
-  }, [input.amount, input.currency])
+  }, [input.currency, input.amount])
 
   const setInputFromParsedDestination = useCallback(
     async (parsedDestination: ValidPaymentReponse) => {

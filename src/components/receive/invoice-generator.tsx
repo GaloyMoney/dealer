@@ -4,6 +4,7 @@ import { formatUsd, GaloyGQL, translate, useMutation } from "@galoymoney/client"
 import { Spinner } from "@galoymoney/react"
 
 import { LightningInvoice, OnChainInvoice } from "./invoice"
+import ErrorMessage from "../error-message"
 
 const INVOICE_EXPIRE_INTERVAL = 60 * 60 * 1000
 
@@ -18,14 +19,6 @@ type InvoiceProps = {
   satAmount: number
   convertedUsdAmount: number
 }
-
-const ErrorMessage = ({ message = "Not able to generate invoice." }) => (
-  <div className="error">
-    {translate(message as never)}
-    <br />
-    {translate("Please try again later.")}
-  </div>
-)
 
 const ExpiredMessage = ({ onClick }: { onClick: () => void }) => (
   <div className="invoice-message expired-invoice">
