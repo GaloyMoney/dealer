@@ -2,3 +2,7 @@
 success-animation.json
 tsconfig.json
 assetlinks.json
+
+**/*.yaml
+**/*.yml
+**/*.md

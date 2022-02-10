@@ -4,6 +4,10 @@
 #@   return data.values.docker_registry + "/galoy-app-pipeline"
 #@ end
 
+#@ def release_pipeline_image():
+#@   return data.values.docker_registry + "/release-pipeline"
+#@ end
+
 #@ def galoy_pay_image():
 #@   return data.values.docker_registry + "/galoy-pay"
 #@ end
@@ -16,10 +20,19 @@ source:
   repository: #@ pipeline_image()
 #@ end
 
+#@ def release_task_image_config():
+type: registry-image
+source:
+  username: #@ data.values.docker_registry_user
+  password: #@ data.values.docker_registry_password
+  repository: #@ release_pipeline_image()
+#@ end
+
 groups:
   - name: galoy-pay
     jobs:
       - build-edge-image
+      - release
       - bump-image-in-chart
 
 jobs:
@@ -60,20 +73,64 @@ jobs:
         params:
           image: image/image.tar
 
+  - name: release
+    serial: true
+    plan:
+    - in_parallel:
+      - get: repo
+        trigger: true
+        passed: [ build-edge-image ]
+      - get: edge-image
+        passed: [ build-edge-image ]
+        params:
+          format: oci
+      - get: pipeline-tasks
+      - get: version
+      - get: charts-repo
+    - task: prep-release
+      config:
+        platform: linux
+        image_resource: #@ release_task_image_config()
+        inputs:
+        - name: repo
+        - name: pipeline-tasks
+        - name: edge-image
+        - name: version
+        - name: charts-repo
+        outputs:
+        - name: version
+        - name: artifacts
+        run:
+          path: pipeline-tasks/ci/tasks/vendor/prep-release-src.sh
+    - in_parallel:
+      - put: versioned-image
+        params:
+          image: edge-image/image.tar
+          additional_tags: artifacts/gh-release-tag
+      - put: gh-release
+        params:
+          name: artifacts/gh-release-name
+          tag: artifacts/gh-release-tag
+          body: artifacts/gh-release-notes.md
+      - put: version
+        params:
+          file: version/version
+
   - name: bump-image-in-chart
     plan:
       - in_parallel:
           - get: edge-image
-            trigger: true
-            passed: [build-edge-image]
+            passed: [ release ]
             params: { skip_download: true }
           - get: repo
             trigger: true
-            passed:
-              - build-edge-image
+            passed: [ release ]
+          - get: version
+            passed: [ release ]
           - get: charts-repo
             params: { skip_download: true }
           - get: pipeline-tasks
+          - get: version
       - task: bump-image-digest-in-values
         config:
           platform: linux
@@ -83,6 +140,7 @@ jobs:
             - name: edge-image
             - name: pipeline-tasks
             - name: charts-repo
+            - name: version
           outputs:
             - name: charts-repo
           params:
@@ -113,9 +171,27 @@ resources:
     type: git
     source:
       ignore_paths: ["ci/*[^md]"]
+      fetch_tags: true
       uri: #@ data.values.git_uri
       branch: #@ data.values.git_branch
       private_key: #@ data.values.github_private_key
+
+  - name: version
+    type: semver
+    source:
+      initial_version: 0.0.0
+      driver: git
+      file: version
+      uri: #@ data.values.git_uri
+      branch: #@ data.values.git_version_branch
+      private_key: #@ data.values.github_private_key
+
+  - name: gh-release
+    type: github-release
+    source:
+      owner: #@ data.values.gh_org
+      repository: #@ data.values.gh_repository
+      access_token: #@ data.values.github_token
 
   - name: charts-repo-bot-branch
     type: git
@@ -139,10 +215,17 @@ resources:
       password: #@ data.values.docker_registry_password
       repository: #@ galoy_pay_image()
 
+  - name: versioned-image
+    type: registry-image
+    source:
+      username: #@ data.values.docker_registry_user
+      password: #@ data.values.docker_registry_password
+      repository: #@ galoy_pay_image()
+
   - name: pipeline-tasks
     type: git
     source:
-      paths: [ci/tasks/*, Makefile]
+      paths: [ci/tasks/*, ci/config/*, Makefile]
       uri: #@ data.values.git_uri
       branch: #@ data.values.git_branch
       private_key: #@ data.values.github_private_key
