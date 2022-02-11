@@ -3,13 +3,19 @@ import { renderToStringWithData } from "@galoymoney/client"
 
 import config from "../store/config"
 import { createClient } from "../store"
-import appRoutes from "../server/routes"
+import { appRoutes, authRoutes } from "../server/routes"
 
 import { SSRRoot } from "../components/root"
 
 export const serverRenderer =
   (req: Request) =>
-  async ({ path }: { path: RoutePath }) => {
+  async ({
+    path,
+    flowData,
+  }: {
+    path: RoutePath | AuthRoutePath
+    flowData?: KratosFlowData
+  }) => {
     try {
       const galoyJwtToken = req.session?.galoyJwtToken
 
@@ -18,6 +24,7 @@ export const serverRenderer =
         props: req.query,
         key: 0,
         defaultLanguage: req.acceptsLanguages()?.[0],
+        flowData,
       }
 
       const galoyClient = createClient({
@@ -25,7 +32,12 @@ export const serverRenderer =
         headers: req.headers,
       })
       const App = (
-        <SSRRoot client={galoyClient} GwwState={GwwState} galoyJwtToken={galoyJwtToken} />
+        <SSRRoot
+          client={galoyClient}
+          GwwState={GwwState}
+          galoyJwtToken={galoyJwtToken}
+          flowData={flowData}
+        />
       )
 
       const initialMarkup = await renderToStringWithData(App)
@@ -45,7 +57,10 @@ export const serverRenderer =
         },
         initialMarkup,
         ssrData,
-        pageData: appRoutes[path],
+        pageData:
+          flowData === undefined
+            ? appRoutes[path as RoutePath]
+            : authRoutes[path as AuthRoutePath],
       })
     } catch (err) {
       console.error(err)

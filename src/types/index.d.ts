@@ -17,11 +17,22 @@ type AtLeast<T, K extends keyof T> = Partial<T> & Pick<T, K>
 type RoutePath = import("../server/routes").SupportedRoutes
 type RouteInfo = Record<string, string | (() => JSX.Element | null)>
 
+type KratosFlowData = { registrationData?: SelfServiceRegistrationFlow }
+type AuthRoutePath = typeof import("../server/routes").SupportedAuthRoutes
+
+type HandleRegisterResponse =
+  | {
+      redirect: true
+      redirectTo: string
+    }
+  | { redirect: false; flowData: KratosFlowData }
+
 type GwwState = {
-  path: RoutePath
+  path: RoutePath | AuthRoutePath
   props?: Record<string, unknown>
   key: number
   defaultLanguage?: string
+  flowData?: KratosFlowData
 }
 
 type GwwAction = {
@@ -60,6 +71,7 @@ declare interface Window {
       graphqlSubscriptionUri: string
       network: Network
       authEndpoint: string
+      kratosFeatureFlag: boolean
     }
   }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

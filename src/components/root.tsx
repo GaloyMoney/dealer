@@ -33,7 +33,12 @@ const Root = ({ GwwState }: RootProps) => {
   return (
     <AuthProvider>
       <GwwContext.Provider value={{ state, dispatch }}>
-        <RootComponent path={state.path} key={state.key} {...state.props} />
+        <RootComponent
+          path={state.path}
+          key={state.key}
+          flowData={state.flowData}
+          {...state.props}
+        />
       </GwwContext.Provider>
     </AuthProvider>
   )
@@ -43,6 +48,7 @@ type SSRootProps = {
   client: GaloyClient<unknown>
   galoyJwtToken?: string
   GwwState: GwwState
+  flowData?: KratosFlowData
 }
 
 export const SSRRoot = ({ client, GwwState, galoyJwtToken }: SSRootProps) => {
@@ -54,7 +60,7 @@ export const SSRRoot = ({ client, GwwState, galoyJwtToken }: SSRootProps) => {
   return (
     <AuthProvider galoyClient={client} galoyJwtToken={galoyJwtToken}>
       <GwwContext.Provider value={{ state, dispatch }}>
-        <RootComponent path={state.path} {...state.props} />
+        <RootComponent path={state.path} flowData={state.flowData} {...state.props} />
       </GwwContext.Provider>
     </AuthProvider>
   )
