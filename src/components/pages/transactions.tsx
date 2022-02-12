@@ -66,7 +66,7 @@ const Transactions = ({ username }: Props) => {
         {translate("Transactions with %{contactUsername}", { contactUsername: username })}
       </div>
       {edges?.length === 0 && (
-        <div className="no-transactions">{translate("No transactions")}</div>
+        <div className="no-data">{translate("No transactions")}</div>
       )}
       {edges?.map((edge) => {
         const node = edge?.node

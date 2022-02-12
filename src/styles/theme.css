@@ -65,3 +65,11 @@
     @mixin dark-mode;
   }
 }
+
+body.light {
+  @mixin light-mode;
+}
+
+body.dark {
+  @mixin dark-mode;
+}

@@ -484,7 +484,7 @@ a svg {
   }
 }
 
-.no-transactions {
+.no-data {
   text-align: center;
   border: thin solid var(--color-borders);
   padding: 1rem;
@@ -586,6 +586,7 @@ a svg {
     padding: 3em 1.5em;
     font-size: 1.1em;
     min-width: 175px;
+    z-index: 1;
     a {
       display: flex;
       margin: 1rem;
@@ -646,18 +647,18 @@ a svg {
     padding: 1rem;
     border: thin solid var(--color-borders);
     border-radius: 0.5rem;
-    .icon,
-    .name,
-    .action {
-      margin-left: 1rem;
-      margin-right: 1rem;
+    position: relative;
+    .icon {
+      width: 5%;
+      min-width: 45px;
     }
     .icon i,
     .action i {
-      font-size: 2rem;
+      font-size: 1.5rem;
     }
     .name {
-      flex: 2;
+      width: 45%;
+      min-width: 200px;
       .sub {
         color: var(--color-subtext);
         margin-top: 0.5rem;
@@ -665,7 +666,9 @@ a svg {
       }
     }
     .action {
-      flex: 1;
+      width: 50%;
+      min-width: 250px;
+      text-align: right;
     }
   }
 }
@@ -683,6 +686,22 @@ a svg {
     .links {
       a .name {
         display: none;
+      }
+    }
+  }
+  .settings {
+    .setting {
+      flex-wrap: wrap;
+      .icon {
+        font-size: 0.75rem;
+      }
+      .action {
+        width: 100%;
+        margin-top: 1rem;
+        text-align: center;
+        i {
+          display: none;
+        }
       }
     }
   }

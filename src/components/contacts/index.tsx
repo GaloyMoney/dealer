@@ -2,6 +2,7 @@ import { translate, useQuery } from "@galoymoney/client"
 import { Icon, Spinner } from "@galoymoney/react"
 
 import { history } from "../../store"
+import { useAuthContext } from "../../store/use-auth-context"
 import ErrorMessage from "../error-message"
 import Header from "../header"
 
@@ -13,7 +14,7 @@ const nameDisplay = (name: string): string => {
   return name
 }
 
-const Contacts = () => {
+const ContactsList = () => {
   const { loading, errorsMessage, data } = useQuery.contacts()
 
   const handleSendBitcoin = (contactUsername: string) => {
@@ -25,40 +26,50 @@ const Contacts = () => {
   }
 
   return (
+    <div className="list">
+      {loading && <Spinner size="big" />}
+
+      {errorsMessage && <ErrorMessage message={errorsMessage} />}
+
+      {data?.me?.contacts.length === 0 && <div className="no-data">No Contacts</div>}
+
+      {data?.me?.contacts.map((contact) => {
+        return (
+          <div key={contact.username} className="contact">
+            <Icon name="person" />
+            <div className="name" onClick={() => handleSendBitcoin(contact.username)}>
+              {nameDisplay(contact.alias ?? contact.username)}
+            </div>
+            <div className="actions">
+              <div
+                title={translate("Transaction List")}
+                onClick={() => showContactDetails(contact.username)}
+              >
+                <Icon name="list" />
+              </div>
+              <div
+                title={translate("Send Bitcoin")}
+                onClick={() => handleSendBitcoin(contact.username)}
+              >
+                <Icon name="send" />
+              </div>
+            </div>
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
+const Contacts = () => {
+  const { isAuthenticated } = useAuthContext()
+
+  return (
     <div className="contacts">
       <Header page="contacts" />
 
       <div className="page-title">{translate("Contacts")}</div>
-      <div className="list">
-        {loading && <Spinner size="big" />}
-
-        {errorsMessage && <ErrorMessage message={errorsMessage} />}
-
-        {data?.me?.contacts.map((contact) => {
-          return (
-            <div key={contact.username} className="contact">
-              <Icon name="person" />
-              <div className="name" onClick={() => handleSendBitcoin(contact.username)}>
-                {nameDisplay(contact.alias ?? contact.username)}
-              </div>
-              <div className="actions">
-                <div
-                  title={translate("Transaction List")}
-                  onClick={() => showContactDetails(contact.username)}
-                >
-                  <Icon name="list" />
-                </div>
-                <div
-                  title={translate("Send Bitcoin")}
-                  onClick={() => handleSendBitcoin(contact.username)}
-                >
-                  <Icon name="send" />
-                </div>
-              </div>
-            </div>
-          )
-        })}
-      </div>
+      {isAuthenticated ? <ContactsList /> : <div className="no-data">No Contacts</div>}
     </div>
   )
 }

@@ -20,9 +20,9 @@
     "tsc:check": "tsc --pretty --noEmit --skipLibCheck"
   },
   "dependencies": {
-    "@galoymoney/client": "^0.0.21",
-    "@galoymoney/react": "^0.0.15",
-    "@ory/client": "^0.0.1-alpha.49",
+    "@galoymoney/client": "^0.1.1",
+    "@galoymoney/react": "^0.1.2",
+    "@ory/client": "^0.0.1-alpha.91",
     "@ory/kratos-client": "^0.8.2-alpha.1",
     "@testing-library/jest-dom": "^5.16.2",
     "@testing-library/react": "^12.1.2",
@@ -81,7 +81,7 @@
     "@typescript-eslint/eslint-plugin": "^5.11.0",
     "@typescript-eslint/parser": "^5.11.0",
     "babel-jest": "^27.5.1",
-    "eslint": "^8.7.0",
+    "eslint": "^8.9.0",
     "eslint-plugin-import": "^2.25.4",
     "eslint-plugin-react": "^7.28.0",
     "eslint-plugin-react-hooks": "^4.3.0",
