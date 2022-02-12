@@ -19,9 +19,9 @@ const satPriceInCents = (update: PriceData | undefined) => {
 }
 
 const useMyUpdates = (): UseMyUpdates => {
-  const intraLedgerUpdate = useRef<GaloyGQL.IntraLedgerUpdate | null>(null)
-  const lnUpdate = useRef<GaloyGQL.LnUpdate | null>(null)
-  const onChainUpdate = useRef<GaloyGQL.OnChainUpdate | null>(null)
+  const intraLedgerUpdate = useRef<Partial<GaloyGQL.IntraLedgerUpdate> | null>(null)
+  const lnUpdate = useRef<Partial<GaloyGQL.LnUpdate> | null>(null)
+  const onChainUpdate = useRef<Partial<GaloyGQL.OnChainUpdate> | null>(null)
 
   const priceCacheStore = PriceCacheStore()
   const { btcPrice } = useMainQuery()

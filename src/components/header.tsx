@@ -17,8 +17,12 @@ const LoginLink = () => (
   </Link>
 )
 
+const headerNavPages = ["home", "send-bitcoin", "receive-bitcoin"] as const
+
+type Page = typeof headerNavPages[number] | "contacts" | "transactions" | "settings"
+
 type Props = {
-  page?: "home" | "send-bitcoin" | "receive-bitcoin" | "contacts" | "transactions"
+  page?: Page
 }
 
 const Header = ({ page }: Props) => {
@@ -37,7 +41,7 @@ const Header = ({ page }: Props) => {
     setShowMenu(false)
   }
 
-  const showHeaderNav = page && ["home", "send-bitcoin", "receive-bitcoin"].includes(page)
+  const showHeaderNav = page && headerNavPages.includes(page)
 
   return (
     <div className={`header-container ${page}-header`}>
@@ -95,6 +99,11 @@ const Header = ({ page }: Props) => {
           <Link to="/contacts">
             <Icon name="people" />
             {translate("Contacts")}
+          </Link>
+
+          <Link to="/settings">
+            <Icon name="settings" />
+            {translate("Settings")}
           </Link>
 
           {isAuthenticated ? <Logout /> : <LoginLink />}

@@ -1,14 +1,19 @@
 import { setLocale, useQuery } from "@galoymoney/client"
+import { useAppState } from "../store"
 
 import { useAuthContext } from "../store/use-auth-context"
 
+// FIX: should come from the client
+type Language = "" | "en-US" | "es-SV"
+
 const useMainQuery = () => {
   const { isAuthenticated } = useAuthContext()
+  const { defaultLanguage } = useAppState()
 
   const { data } = useQuery.main({
     variables: { hasToken: isAuthenticated, recentTransactions: 5 },
     onCompleted: (completed) => {
-      setLocale(completed?.me?.language)
+      setLocale(completed?.me?.language ?? defaultLanguage)
     },
   })
 
@@ -26,7 +31,7 @@ const useMainQuery = () => {
 
   const username = me?.username
   const phoneNumber = me?.phone
-  const language = me?.language
+  const language = (me?.language ?? "DEFAULT") as Language
 
   return {
     btcPrice,

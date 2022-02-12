@@ -86,9 +86,9 @@ type UseMyUpdates = {
   satsToUsd: ((sats: number) => number) | null
   usdToSats: ((usd: number) => number) | null
   currentBalance: number | null
-  intraLedgerUpdate: IntraLedgerUpdate | null
-  lnUpdate: LnUpdate | null
-  onChainUpdate: OnChainUpdate | null
+  intraLedgerUpdate: Partial<IntraLedgerUpdate> | null
+  lnUpdate: Partial<LnUpdate> | null
+  onChainUpdate: Partial<OnChainUpdate> | null
 }
 
 type Currency = "USD" | "SATS"

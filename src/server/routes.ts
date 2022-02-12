@@ -4,6 +4,7 @@ import Send from "../components/pages/send"
 import Receive from "../components/pages/receive"
 import Contacts from "../components/contacts"
 import Transactions from "../components/pages/transactions"
+import Settings from "../components/settings"
 
 // Note: The component property is skipped by the serialize function
 // It's only used on the front-end
@@ -35,6 +36,10 @@ const appRoutesDef = {
   "/transactions": {
     component: Transactions,
     title: "Transactions with Contact",
+  },
+  "/settings": {
+    component: Settings,
+    title: "Settings",
   },
 }
 
