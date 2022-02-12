@@ -1,7 +1,7 @@
 import { history } from "../store"
 
 type Props = {
-  to: RoutePath
+  to: RoutePath | AuthRoutePath
   className?: string
   children: React.ReactNode
 }

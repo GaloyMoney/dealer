@@ -348,6 +348,10 @@ a svg {
   input.auth-code {
     width: unset;
   }
+  .register {
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
 }
 
 .captcha-challenge {

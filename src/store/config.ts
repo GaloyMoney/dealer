@@ -11,9 +11,10 @@ if (!isBrowser) {
     "GRAPHQL_SUBSCRIPTION_URI",
     "AUTH_ENDPOINT",
     "AUTH_BASE_URL",
-    "KRATOS_API_BASE_URL",
-    "KRATOS_BROWSER_URL",
   ]
+  if (process.env.KRATOS_FEATURE_FLAG) {
+    requiredEnvVars.concat(["KRATOS_API_URL", "KRATOS_BROWSER_URL"])
+  }
 
   requiredEnvVars.forEach((envVar) => {
     if (!process.env[envVar]) {
@@ -50,6 +51,7 @@ const config = isBrowser
       graphqlSubscriptionUri: window.__G_DATA.GwwConfig.graphqlSubscriptionUri,
       authEndpoint: window.__G_DATA.GwwConfig.authEndpoint,
       kratosFeatureFlag: window.__G_DATA.GwwConfig.kratosFeatureFlag,
+      kratosBrowserUrl: window.__G_DATA.GwwConfig.kratosBrowserUrl,
       sessionKeys: "",
     }
   : {
@@ -66,6 +68,7 @@ const config = isBrowser
 
       authEndpoint: process.env.AUTH_ENDPOINT as string,
       kratosFeatureFlag: Boolean(process.env.KRATOS_FEATURE_FLAG || false),
+      kratosBrowserUrl: process.env.KRATOS_BROWSER_URL as string,
     }
 
 export default config

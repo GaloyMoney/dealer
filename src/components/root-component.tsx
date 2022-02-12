@@ -1,4 +1,4 @@
-import { kratosFeatureFlag } from "../kratos"
+import config from "../store/config"
 import { Suspense } from "react"
 import { ErrorBoundary } from "react-error-boundary"
 
@@ -35,7 +35,7 @@ const RootComponent = ({ path, flowData, ...props }: Props) => {
       </Suspense>
     )
   }
-  if (kratosFeatureFlag) {
+  if (config.kratosFeatureFlag) {
     const checkedAuthRoutePath = checkAuthRoute(path)
     if (!(checkedAuthRoutePath instanceof Error)) {
       const Component = authRoutes[checkedAuthRoutePath].component

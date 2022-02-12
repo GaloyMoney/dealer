@@ -72,6 +72,7 @@ declare interface Window {
       network: Network
       authEndpoint: string
       kratosFeatureFlag: boolean
+      kratosBrowserUrl: string
     }
   }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

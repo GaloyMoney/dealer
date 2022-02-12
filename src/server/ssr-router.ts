@@ -2,7 +2,8 @@ import express from "express"
 
 import { serverRenderer } from "../renderers/server"
 import { checkRoute } from "./routes"
-import { kratosFeatureFlag, handleRegister } from "../kratos"
+import { handleRegister } from "../kratos"
+import config from "../store/config"
 
 const ssrRouter = express.Router({ caseSensitive: true })
 
@@ -23,11 +24,11 @@ ssrRouter.get("/*", async (req, res) => {
       return res.render("index", vars)
     }
 
-    if (kratosFeatureFlag) {
+    if (config.kratosFeatureFlag) {
       let flowData = undefined
       switch (routePath) {
         case "/register/email": {
-          const registerResult = await handleRegister(req)
+          const registerResult = await handleRegister(req, config.kratosBrowserUrl)
           if (registerResult.redirect) {
             return res.redirect(registerResult.redirectTo)
           }
