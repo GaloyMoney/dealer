@@ -1,3 +1,5 @@
+import { useState } from "react"
+
 import {
   formatRelativeTime,
   formatTime,
@@ -5,8 +7,7 @@ import {
   GaloyGQL,
   translate,
 } from "@galoymoney/client"
-import { SatFormat } from "@galoymoney/react"
-import { useState } from "react"
+import { Icon, SatFormat } from "@galoymoney/react"
 
 export const BLOCKCHAIN_EXPLORER_URL = "https://mempool.space/tx/"
 
@@ -50,6 +51,8 @@ const descriptionDisplay = (tx: GaloyGQL.Transaction) => {
   }
 }
 
+type IconName = "send" | "receive" | "send-pending" | "receive-pending"
+
 type Props = {
   tx: GaloyGQL.Transaction
 }
@@ -67,18 +70,18 @@ const TransactionItem = ({ tx }: Props) => {
     setShowDetails(!showDetails)
   }
 
+  const txIconName = isReceive ? "receive" : "send"
+  const txIcon = (
+    <Icon name={(isPending ? txIconName + "-pending" : txIconName) as IconName} />
+  )
+
   if (showDetails) {
     return (
       <div
         className={`transaction-item pending-${isPending} direction-${tx.direction.toLocaleLowerCase()}`}
       >
         <div className="transaction-summary" onClick={handleOnClick}>
-          <div className="icon">
-            <i
-              aria-hidden
-              className={`fas ${isReceive ? "fa-dot-circle" : "fa-paper-plane"}`}
-            />
-          </div>
+          <div className="icon">{txIcon}</div>
 
           <div className="content">
             <div className="description">{typeDisplay(tx.settlementVia.__typename)}</div>
@@ -159,12 +162,7 @@ const TransactionItem = ({ tx }: Props) => {
       className={`transaction-item pending-${isPending} direction-${tx.direction.toLocaleLowerCase()}`}
     >
       <div className="transaction-summary" onClick={handleOnClick}>
-        <div className="icon">
-          <i
-            aria-hidden
-            className={`fas ${isReceive ? "fa-dot-circle" : "fa-paper-plane"}`}
-          />
-        </div>
+        <div className="icon">{txIcon}</div>
 
         <div className="content">
           <div className="description">{description}</div>

@@ -27,6 +27,10 @@ body {
     }
   }
 
+  img {
+    vertical-align: middle;
+  }
+
   input::-webkit-outer-spin-button,
   input::-webkit-inner-spin-button {
     -webkit-appearance: none;
@@ -44,15 +48,23 @@ body {
     padding: 0.5rem 1rem;
     margin-top: 0.5rem;
     margin-bottom: 0.5rem;
-    border: 1px solid var(--color-borders);
-    border-radius: 3px;
+    color: var(--color-primary);
+    background-color: var(--color-light-bg);
+    border: thin solid var(--color-borders);
+    border-radius: 0.25rem;
+  }
+
+  input:focus,
+  textarea:focus {
+    outline: none;
   }
 
   button,
   .button {
     display: inline-block;
     padding: 6px 12px;
-    border: 1px solid var(--color-borders);
+    border: thin solid var(--color-borders);
+    border-radius: 0.25rem;
     text-decoration: none;
     text-align: center;
     transition: all 0.2s;
@@ -71,7 +83,7 @@ body {
 }
 
 .error {
-  color: red;
+  color: var(--color-error);
   margin: 1rem auto;
   text-align: center;
 }
@@ -82,6 +94,15 @@ body {
 
 .sat-symbol {
   margin-right: 2px;
+}
+
+svg {
+  width: 21px;
+  height: 21px;
+}
+
+a svg {
+  margin-right: 0.75rem;
 }
 
 .page-title {
@@ -144,11 +165,14 @@ body {
   a {
     margin: 1rem auto;
     border: thin solid var(--color-borders);
+    border-radius: 0.25rem;
     padding: 0.75rem 1.75rem;
     background-color: var(--color-light-bg);
     width: 75%;
     max-width: 225px;
-    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
   .active {
     background-color: var(--color-active-bg);
@@ -444,7 +468,7 @@ body {
 
 .no-transactions {
   text-align: center;
-  border: solid thin var(--color-borders);
+  border: thin solid var(--color-borders);
   padding: 1rem;
   margin: 1rem;
   background-color: var(--color-light-bg);
@@ -510,7 +534,7 @@ body {
   .direction-receive {
     .icon,
     .amount {
-      color: green;
+      color: var(--color-receive);
     }
   }
   .direction-send {
@@ -572,14 +596,16 @@ body {
       margin: 0 1.75rem 1.75rem 1.75rem;
       width: 230px;
       padding: 1rem 1.5rem;
-      border: 1px solid var(--color-borders);
-      border-radius: 5px;
+      border: thin solid var(--color-borders);
+      border-radius: 0.5rem;
       i {
         flex: 0;
-        margin-right: 0.75rem;
+        margin-right: 1rem;
+        font-size: 1.35rem;
       }
       .name {
         flex: 1;
+        cursor: pointer;
       }
       .actions {
         flex: 0;

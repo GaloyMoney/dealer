@@ -1,4 +1,5 @@
 import { useResetClient, translate } from "@galoymoney/client"
+import { Icon } from "@galoymoney/react"
 
 import { history, useRequest } from "../store"
 import { useAuthContext } from "../store/use-auth-context"
@@ -18,7 +19,7 @@ const Logout = () => {
 
   return (
     <a href="/logout" onClick={handleLogout}>
-      <i aria-hidden className="fas fa-sign-out-alt" />
+      <Icon name="logout" />
       <span className="name">{translate("Logout")}</span>
     </a>
   )

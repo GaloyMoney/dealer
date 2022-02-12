@@ -1,5 +1,6 @@
 import { translate, useQuery } from "@galoymoney/client"
-import { Spinner } from "@galoymoney/react"
+import { Icon, Spinner } from "@galoymoney/react"
+
 import { history } from "../../store"
 import ErrorMessage from "../error-message"
 import Header from "../header"
@@ -36,20 +37,22 @@ const Contacts = () => {
         {data?.me?.contacts.map((contact) => {
           return (
             <div key={contact.username} className="contact">
-              <i aria-hidden className="fas fa-user-alt" />
-              <div className="name">{nameDisplay(contact.alias ?? contact.username)}</div>
+              <Icon name="person" />
+              <div className="name" onClick={() => handleSendBitcoin(contact.username)}>
+                {nameDisplay(contact.alias ?? contact.username)}
+              </div>
               <div className="actions">
                 <div
                   title={translate("Transaction List")}
                   onClick={() => showContactDetails(contact.username)}
                 >
-                  <i aria-hidden className="fas fa-list" />
+                  <Icon name="list" />
                 </div>
                 <div
                   title={translate("Send Bitcoin")}
                   onClick={() => handleSendBitcoin(contact.username)}
                 >
-                  <i aria-hidden className="fas fa-paper-plane" />
+                  <Icon name="send" />
                 </div>
               </div>
             </div>

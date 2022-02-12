@@ -1,6 +1,7 @@
 import React, { ChangeEvent, useState } from "react"
 
 import { translate } from "@galoymoney/client"
+import { Icon } from "@galoymoney/react"
 
 import config from "../../store/config"
 import { history, useRequest } from "../../store"
@@ -61,7 +62,7 @@ const AuthCode = ({ phoneNumber }: Props) => {
           onChange={handleOnChange}
         />
         <button type="submit">
-          <i aria-hidden className="far fa-arrow-alt-circle-right" />
+          <Icon name="submit" />
         </button>
       </form>
       {errorMessage && <div className="error">{errorMessage}</div>}

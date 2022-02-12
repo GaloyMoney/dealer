@@ -1,12 +1,12 @@
-:root {
+@define-mixin light-mode {
   --color-bg: #f9f9f9;
   --color-light-bg: #fdfdfd;
   --color-menu-bg: #f2f2f2;
   --color-primary: #111111;
   --color-secondary: #666666;
-
   --color-subtext: #999999;
 
+  --color-error: #ff2222;
   --color-links: #2979ff;
 
   --color-highlight-bg: #999999;
@@ -22,6 +22,46 @@
   --color-disabled-button-bg: #ececec;
   --color-disabled-button-fg: #aaa;
 
-  --color-send: #d50505;
-  --color-receive: #197019;
+  --color-send: #ed4b85;
+  --color-receive: #28bf89;
+}
+
+@define-mixin dark-mode {
+  --color-bg: #151515;
+  --color-light-bg: #131313;
+  --color-menu-bg: #1c1c1c;
+  --color-primary: #eeeeee;
+  --color-secondary: #999999;
+  --color-subtext: #666666;
+
+  --color-error: #e36969;
+  --color-links: #2979ff;
+
+  --color-highlight-bg: #666666;
+  --color-highlight-fg: #111111;
+
+  --color-active-bg: #4a453d;
+
+  --color-borders: #494949;
+
+  --color-button-bg: #f2a900;
+  --color-button-fg: #000;
+
+  --color-disabled-button-bg: #191919;
+  --color-disabled-button-fg: #999;
+
+  --color-send: #ed4b85;
+  --color-receive: #28bf89;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    @mixin light-mode;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    @mixin dark-mode;
+  }
 }
