@@ -17,9 +17,19 @@ export const AuthProvider = ({
   galoyClient,
   galoyJwtToken,
 }: AuthContextProps) => {
-  const [authSession, setAuthSession] = useState<AuthSession>(
+  const [authSession, setAuthSession] = useState<AuthSession>(() =>
     getPersistedSession(galoyJwtToken),
   )
+
+  const setAuth = (session: AuthSession) => {
+    if (session) {
+      persistSession(session)
+    } else {
+      clearSession()
+    }
+
+    setAuthSession(session)
+  }
 
   const handleError = useErrorHandler()
   const client = useMemo(() => {
@@ -39,9 +49,9 @@ export const AuthProvider = ({
             "result" in networkError &&
             networkError.result.errors?.[0]?.code === "INVALID_AUTHENTICATION"
           ) {
-            postRequest(authSession?.galoyJwtToken)("/api/logout").then(
-              () => (document.location = "/"),
-            )
+            postRequest(authSession?.galoyJwtToken)("/api/logout").then(() => {
+              setAuth(null)
+            })
           } else {
             handleError(networkError)
           }
@@ -49,16 +59,6 @@ export const AuthProvider = ({
       },
     })
   }, [handleError, galoyClient, authSession])
-
-  const setAuth = (session: AuthSession) => {
-    if (session) {
-      persistSession(session)
-    } else {
-      clearSession()
-    }
-
-    setAuthSession(session)
-  }
 
   return (
     <AuthContext.Provider
