@@ -10,7 +10,6 @@ if (!isBrowser) {
     "GRAPHQL_URI",
     "GRAPHQL_SUBSCRIPTION_URI",
     "AUTH_ENDPOINT",
-    "AUTH_BASE_URL",
   ]
   if (process.env.KRATOS_FEATURE_FLAG) {
     requiredEnvVars.concat(["KRATOS_API_URL", "KRATOS_BROWSER_URL"])
