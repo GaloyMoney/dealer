@@ -15,5 +15,15 @@ export const sat2btc = (sat: number) => {
 }
 
 export const toSats = (amount: number): Satoshis => {
+  // TODO: safety protection during dev. remove before prod (should not throw)
+  if (!Number.isInteger(amount))
+    throw new Error(`${amount} type ${typeof amount} is not an integer`)
   return amount as Satoshis
+}
+
+export const toCents = (amount: number): UsdCents => {
+  // TODO: safety protection during dev. remove before prod (should not throw)
+  if (!Number.isInteger(amount))
+    throw new Error(`${amount} type ${typeof amount} is not an integer`)
+  return amount as UsdCents
 }
