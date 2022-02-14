@@ -4,18 +4,22 @@ import { baseLogger } from "../../services/logger"
 
 import { PriceServiceService } from "./proto/services/price/v1/price_service_grpc_pb"
 import {
-  GetExchangeRateForImmediateUsdBuyRequest,
-  GetExchangeRateForImmediateUsdBuyResponse,
-  GetExchangeRateForImmediateUsdBuyFromCentsRequest,
-  GetExchangeRateForImmediateUsdBuyFromCentsResponse,
-  GetExchangeRateForImmediateUsdSellRequest,
-  GetExchangeRateForImmediateUsdSellResponse,
-  GetExchangeRateForImmediateUsdSellFromSatoshisRequest,
-  GetExchangeRateForImmediateUsdSellFromSatoshisResponse,
-  GetQuoteRateForFutureUsdBuyRequest,
-  GetQuoteRateForFutureUsdBuyResponse,
-  GetQuoteRateForFutureUsdSellRequest,
-  GetQuoteRateForFutureUsdSellResponse,
+  GetCentsFromSatsForImmediateBuyRequest,
+  GetCentsFromSatsForImmediateBuyResponse,
+  GetCentsFromSatsForImmediateSellRequest,
+  GetCentsFromSatsForImmediateSellResponse,
+  GetCentsFromSatsForFutureBuyRequest,
+  GetCentsFromSatsForFutureBuyResponse,
+  GetCentsFromSatsForFutureSellRequest,
+  GetCentsFromSatsForFutureSellResponse,
+  GetSatsFromCentsForImmediateBuyRequest,
+  GetSatsFromCentsForImmediateBuyResponse,
+  GetSatsFromCentsForImmediateSellRequest,
+  GetSatsFromCentsForImmediateSellResponse,
+  GetSatsFromCentsForFutureBuyRequest,
+  GetSatsFromCentsForFutureBuyResponse,
+  GetSatsFromCentsForFutureSellRequest,
+  GetSatsFromCentsForFutureSellResponse,
 } from "./proto/services/price/v1/price_service_pb"
 // import {
 //   PriceServiceError,
@@ -34,14 +38,14 @@ export const main = async () => {
   await loop()
 }
 
-function getExchangeRateForImmediateUsdBuy(
+function getCentsFromSatsForImmediateBuy(
   call: ServerUnaryCall<
-    GetExchangeRateForImmediateUsdBuyRequest,
-    GetExchangeRateForImmediateUsdBuyResponse
+    GetCentsFromSatsForImmediateBuyRequest,
+    GetCentsFromSatsForImmediateBuyResponse
   >,
-  callback: sendUnaryData<GetExchangeRateForImmediateUsdBuyResponse>,
+  callback: sendUnaryData<GetCentsFromSatsForImmediateBuyResponse>,
 ) {
-  const response = new GetExchangeRateForImmediateUsdBuyResponse()
+  const response = new GetCentsFromSatsForImmediateBuyResponse()
 
   const amountInSatoshis = call.request.getAmountInSatoshis()
   // validate
@@ -49,21 +53,89 @@ function getExchangeRateForImmediateUsdBuy(
   // use last price with calc'd spread
   baseLogger.info(
     { amountInSatoshis },
-    "Received a GetExchangeRateForImmediateUsdBuy({amountInSatoshis}) call",
+    "Received a GetCentsFromSatsForImmediateBuy({amountInSatoshis}) call",
   )
-  response.setAmountInUsd(lastBid)
+  response.setAmountInCents(lastBid)
 
   callback(null, response)
 }
 
-function getExchangeRateForImmediateUsdBuyFromCents(
+function getCentsFromSatsForImmediateSell(
   call: ServerUnaryCall<
-    GetExchangeRateForImmediateUsdBuyFromCentsRequest,
-    GetExchangeRateForImmediateUsdBuyFromCentsResponse
+    GetCentsFromSatsForImmediateSellRequest,
+    GetCentsFromSatsForImmediateSellResponse
   >,
-  callback: sendUnaryData<GetExchangeRateForImmediateUsdBuyFromCentsResponse>,
+  callback: sendUnaryData<GetCentsFromSatsForImmediateSellResponse>,
 ) {
-  const response = new GetExchangeRateForImmediateUsdBuyFromCentsResponse()
+  const response = new GetCentsFromSatsForImmediateSellResponse()
+
+  const amountInSatoshis = call.request.getAmountInSatoshis()
+  // validate
+  // convert to btc
+  // use last price with calc'd spread
+  baseLogger.info(
+    { amountInSatoshis },
+    "Received a GetCentsFromSatsForImmediateSell({amountInSatoshis}) call",
+  )
+  response.setAmountInCents(lastAsk)
+
+  callback(null, response)
+}
+
+function getCentsFromSatsForFutureBuy(
+  call: ServerUnaryCall<
+    GetCentsFromSatsForFutureBuyRequest,
+    GetCentsFromSatsForFutureBuyResponse
+  >,
+  callback: sendUnaryData<GetCentsFromSatsForFutureBuyResponse>,
+) {
+  const response = new GetCentsFromSatsForFutureBuyResponse()
+
+  const amountInSatoshis = call.request.getAmountInSatoshis()
+  const timeInSeconds = call.request.getTimeInSeconds()
+  // validate
+  // convert to btc
+  // use last price with calc'd spread
+  baseLogger.info(
+    { amountInSatoshis, timeInSeconds },
+    "Received a GetCentsFromSatsForFutureBuy({amountInSatoshis}, {timeInSeconds}) call",
+  )
+  response.setAmountInCents(lastBid)
+
+  callback(null, response)
+}
+
+function getCentsFromSatsForFutureSell(
+  call: ServerUnaryCall<
+    GetCentsFromSatsForFutureSellRequest,
+    GetCentsFromSatsForFutureSellResponse
+  >,
+  callback: sendUnaryData<GetCentsFromSatsForFutureSellResponse>,
+) {
+  const response = new GetCentsFromSatsForFutureSellResponse()
+
+  const amountInSatoshis = call.request.getAmountInSatoshis()
+  const timeInSeconds = call.request.getTimeInSeconds()
+  // validate
+  // convert to btc
+  // use last price with calc'd spread
+  baseLogger.info(
+    { amountInSatoshis, timeInSeconds },
+    "Received a GetCentsFromSatsForFutureSell({amountInSatoshis}, {timeInSeconds}) call",
+  )
+  response.setAmountInCents(lastBid)
+
+  callback(null, response)
+}
+
+function getSatsFromCentsForImmediateBuy(
+  call: ServerUnaryCall<
+    GetSatsFromCentsForImmediateBuyRequest,
+    GetSatsFromCentsForImmediateBuyResponse
+  >,
+  callback: sendUnaryData<GetSatsFromCentsForImmediateBuyResponse>,
+) {
+  const response = new GetSatsFromCentsForImmediateBuyResponse()
 
   const amountInSatoshis = call.request.getAmountInCents()
   // validate
@@ -71,97 +143,75 @@ function getExchangeRateForImmediateUsdBuyFromCents(
   // use last price with calc'd spread
   baseLogger.info(
     { amountInSatoshis },
-    "Received a GetExchangeRateForImmediateUsdBuyFromCents({amountInSatoshis}) call",
+    "Received a GetSatsFromCentsForImmediateBuy({amountInSatoshis}) call",
   )
   response.setAmountInSatoshis(lastBid)
 
   callback(null, response)
 }
 
-function getExchangeRateForImmediateUsdSell(
+function getSatsFromCentsForImmediateSell(
   call: ServerUnaryCall<
-    GetExchangeRateForImmediateUsdSellRequest,
-    GetExchangeRateForImmediateUsdSellResponse
+    GetSatsFromCentsForImmediateSellRequest,
+    GetSatsFromCentsForImmediateSellResponse
   >,
-  callback: sendUnaryData<GetExchangeRateForImmediateUsdSellResponse>,
+  callback: sendUnaryData<GetSatsFromCentsForImmediateSellResponse>,
 ) {
-  const response = new GetExchangeRateForImmediateUsdSellResponse()
+  const response = new GetSatsFromCentsForImmediateSellResponse()
 
-  const amountInSatoshis = call.request.getAmountInUsd()
+  const amountInSatoshis = call.request.getAmountInCents()
   // validate
   // convert to btc
   // use last price with calc'd spread
   baseLogger.info(
     { amountInSatoshis },
-    "Received a GetExchangeRateForImmediateUsdSell({amountInSatoshis}) call",
+    "Received a GetSatsFromCentsForImmediateSell({amountInSatoshis}) call",
   )
   response.setAmountInSatoshis(lastAsk)
 
   callback(null, response)
 }
 
-function getExchangeRateForImmediateUsdSellFromSatoshis(
+function getSatsFromCentsForFutureBuy(
   call: ServerUnaryCall<
-    GetExchangeRateForImmediateUsdSellFromSatoshisRequest,
-    GetExchangeRateForImmediateUsdSellFromSatoshisResponse
+    GetSatsFromCentsForFutureBuyRequest,
+    GetSatsFromCentsForFutureBuyResponse
   >,
-  callback: sendUnaryData<GetExchangeRateForImmediateUsdSellFromSatoshisResponse>,
+  callback: sendUnaryData<GetSatsFromCentsForFutureBuyResponse>,
 ) {
-  const response = new GetExchangeRateForImmediateUsdSellFromSatoshisResponse()
+  const response = new GetSatsFromCentsForFutureBuyResponse()
 
-  const amountInSatoshis = call.request.getAmountInSatoshis()
-  // validate
-  // convert to btc
-  // use last price with calc'd spread
-  baseLogger.info(
-    { amountInSatoshis },
-    "Received a GetExchangeRateForImmediateUsdSellFromSatoshis({amountInSatoshis}) call",
-  )
-  response.setAmountInUsd(lastAsk)
-
-  callback(null, response)
-}
-
-function getQuoteRateForFutureUsdBuy(
-  call: ServerUnaryCall<
-    GetQuoteRateForFutureUsdBuyRequest,
-    GetQuoteRateForFutureUsdBuyResponse
-  >,
-  callback: sendUnaryData<GetQuoteRateForFutureUsdBuyResponse>,
-) {
-  const response = new GetQuoteRateForFutureUsdBuyResponse()
-
-  const amountInSatoshis = call.request.getAmountInSatoshis()
+  const amountInSatoshis = call.request.getAmountInCents()
   const timeInSeconds = call.request.getTimeInSeconds()
   // validate
   // convert to btc
   // use last price with calc'd spread
   baseLogger.info(
     { amountInSatoshis, timeInSeconds },
-    "Received a GetQuoteRateForFutureUsdBuy({amountInSatoshis}, {timeInSeconds}) call",
+    "Received a GetSatsFromCentsForFutureBuy({amountInSatoshis}, {timeInSeconds}) call",
   )
-  response.setAmountInUsd(lastBid)
+  response.setAmountInSatoshis(lastAsk)
 
   callback(null, response)
 }
 
-function getQuoteRateForFutureUsdSell(
+function getSatsFromCentsForFutureSell(
   call: ServerUnaryCall<
-    GetQuoteRateForFutureUsdSellRequest,
-    GetQuoteRateForFutureUsdSellResponse
+    GetSatsFromCentsForFutureSellRequest,
+    GetSatsFromCentsForFutureSellResponse
   >,
-  callback: sendUnaryData<GetQuoteRateForFutureUsdSellResponse>,
+  callback: sendUnaryData<GetSatsFromCentsForFutureSellResponse>,
 ) {
-  const response = new GetQuoteRateForFutureUsdSellResponse()
+  const response = new GetSatsFromCentsForFutureSellResponse()
 
-  const amountInSatoshis = call.request.getAmountInUsd()
+  const amountInSatoshis = call.request.getAmountInCents()
   const timeInSeconds = call.request.getTimeInSeconds()
   // validate
   // convert to btc
   // use last price with calc'd spread
   baseLogger.info(
     { amountInSatoshis, timeInSeconds },
-    "Received a GetQuoteRateForFutureUsdSell({amountInSatoshis}, {timeInSeconds}) call",
+    "Received a GetSatsFromCentsForFutureSell({amountInSatoshis}, {timeInSeconds}) call",
   )
   response.setAmountInSatoshis(lastAsk)
 
@@ -171,12 +221,17 @@ function getQuoteRateForFutureUsdSell(
 function getServer() {
   const server = new Server()
   server.addService(PriceServiceService, {
-    getExchangeRateForImmediateUsdBuy,
-    getExchangeRateForImmediateUsdBuyFromCents,
-    getExchangeRateForImmediateUsdSell,
-    getExchangeRateForImmediateUsdSellFromSatoshis,
-    getQuoteRateForFutureUsdBuy,
-    getQuoteRateForFutureUsdSell,
+    getCentsFromSatsForImmediateBuy,
+    getCentsFromSatsForImmediateSell,
+
+    getCentsFromSatsForFutureBuy,
+    getCentsFromSatsForFutureSell,
+
+    getSatsFromCentsForImmediateBuy,
+    getSatsFromCentsForImmediateSell,
+
+    getSatsFromCentsForFutureBuy,
+    getSatsFromCentsForFutureSell,
   })
   return server
 }
