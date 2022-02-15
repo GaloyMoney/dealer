@@ -20,6 +20,8 @@ import {
   GetSatsFromCentsForFutureBuyResponse,
   GetSatsFromCentsForFutureSellRequest,
   GetSatsFromCentsForFutureSellResponse,
+  GetCentsPerBtcExchangeMidRateRequest,
+  GetCentsPerBtcExchangeMidRateResponse,
 } from "./proto/services/price/v1/price_service_pb"
 // import {
 //   PriceServiceError,
@@ -218,6 +220,20 @@ function getSatsFromCentsForFutureSell(
   callback(null, response)
 }
 
+function getCentsPerBtcExchangeMidRate(
+  call: ServerUnaryCall<
+    GetCentsPerBtcExchangeMidRateRequest,
+    GetCentsPerBtcExchangeMidRateResponse
+  >,
+  callback: sendUnaryData<GetCentsPerBtcExchangeMidRateResponse>,
+) {
+  const response = new GetCentsPerBtcExchangeMidRateResponse()
+  baseLogger.info({ lastAsk, lastBid }, "Received a GetCentsPerBtcExchangeMidRate() call")
+  response.setAmountInCents((lastAsk + lastBid) / 2)
+
+  callback(null, response)
+}
+
 function getServer() {
   const server = new Server()
   server.addService(PriceServiceService, {
@@ -232,6 +248,8 @@ function getServer() {
 
     getSatsFromCentsForFutureBuy,
     getSatsFromCentsForFutureSell,
+
+    getCentsPerBtcExchangeMidRate,
   })
   return server
 }

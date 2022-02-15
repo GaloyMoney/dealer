@@ -20,6 +20,8 @@ import {
   GetSatsFromCentsForFutureBuyResponse,
   GetSatsFromCentsForFutureSellRequest,
   GetSatsFromCentsForFutureSellResponse,
+  GetCentsPerBtcExchangeMidRateRequest,
+  GetCentsPerBtcExchangeMidRateResponse,
 } from "./proto/services/price/v1/price_service_pb"
 import { toCents, toSats } from "../../utils"
 
@@ -68,6 +70,11 @@ const clientGetSatsFromCentsForFutureSell = util.promisify<
   GetSatsFromCentsForFutureSellRequest,
   GetSatsFromCentsForFutureSellResponse
 >(client.getSatsFromCentsForFutureSell.bind(client))
+
+const clientGetCentsPerBtcExchangeMidRate = util.promisify<
+  GetCentsPerBtcExchangeMidRateRequest,
+  GetCentsPerBtcExchangeMidRateResponse
+>(client.getCentsPerBtcExchangeMidRate.bind(client))
 
 export const DealerPriceService = (): IDealerPriceService => {
   const getCentsFromSatsForImmediateBuy = async function (
@@ -204,6 +211,20 @@ export const DealerPriceService = (): IDealerPriceService => {
     }
   }
 
+  const getCentsPerBtcExchangeMidRate = async function (): Promise<
+    UsdCents | DealerPriceServiceError
+  > {
+    try {
+      const response = await clientGetCentsPerBtcExchangeMidRate(
+        new GetCentsPerBtcExchangeMidRateRequest(),
+      )
+      return toCents(response.getAmountInCents())
+    } catch (error) {
+      baseLogger.error({ error }, "GetCentsPerBtcExchangeMidRate unable to fetch price")
+      return new UnknownDealerPriceServiceError(error)
+    }
+  }
+
   return {
     getCentsFromSatsForImmediateBuy,
     getCentsFromSatsForImmediateSell,
@@ -216,5 +237,7 @@ export const DealerPriceService = (): IDealerPriceService => {
 
     getSatsFromCentsForFutureBuy,
     getSatsFromCentsForFutureSell,
+
+    getCentsPerBtcExchangeMidRate,
   }
 }
