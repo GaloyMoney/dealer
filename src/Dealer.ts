@@ -33,6 +33,11 @@ export type UpdatedPositionAndLeverageResult = {
   updatedLeverageResult: Result<UpdatedBalance>
 }
 
+export interface DerivativeMarketInfoResult {
+  bidInUsd: number
+  askInUsd: number
+}
+
 export class Dealer {
   private wallet: GaloyWallet
   private strategy: HedgingStrategy
@@ -393,6 +398,14 @@ export class Dealer {
       return NaN
     }
     return result.value
+  }
+
+  public async getDerivativeMarketInfo(): Promise<DerivativeMarketInfoResult> {
+    const result = await this.strategy.getDerivativeMarketInfo()
+    if (!result.ok) {
+      return { askInUsd: NaN, bidInUsd: NaN }
+    }
+    return { askInUsd: result.value.askInUsd, bidInUsd: result.value.bidInUsd }
   }
 
   public async getNextFundingRateInBtc(): Promise<number> {

@@ -15,11 +15,14 @@ export let lastAsk: number
 export async function loop() {
   while (dealer) {
     try {
-      // TODO: replace with fetchTicker() bid and ask
-      lastBid = lastAsk = await dealer.getDerivativePriceInUsd()
+      const result = await dealer.getDerivativeMarketInfo()
+      lastBid = result.bidInUsd
+      lastAsk = result.askInUsd
       logger.debug({ date: new Date(), lastBid, lastAsk }, "Price from exchange")
       await sleep(500)
     } catch (e) {
+      lastBid = NaN
+      lastAsk = NaN
       logger.error({ e }, "Error: getDerivativePriceInUsd() failed.")
     }
   }

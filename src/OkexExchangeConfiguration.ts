@@ -352,6 +352,8 @@ export class OkexExchangeConfiguration implements ExchangeConfiguration {
     return {
       originalResponseAsIs: response,
       lastBtcPriceInUsd: response.last,
+      bidInUsd: response.bid,
+      askInUsd: response.ask,
     }
   }
 }
