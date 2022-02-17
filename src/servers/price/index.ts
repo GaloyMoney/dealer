@@ -20,18 +20,22 @@ import {
   GetSatsFromCentsForFutureBuyResponse,
   GetSatsFromCentsForFutureSellRequest,
   GetSatsFromCentsForFutureSellResponse,
-  GetCentsPerBtcExchangeMidRateRequest,
-  GetCentsPerBtcExchangeMidRateResponse,
+  GetCentsPerSatsExchangeMidRateRequest,
+  GetCentsPerSatsExchangeMidRateResponse,
 } from "./proto/services/price/v1/price_service_pb"
-// import {
-//   PriceServiceError,
-//   UnknownPriceServiceError,
-//   PriceNotAvailableError,
-// } from "@domain/price"
-
-// import { SATS_PER_BTC } from "@domain/bitcoin"
 
 import { loop, lastBid, lastAsk } from "./price_fetcher"
+import { SATS_PER_BTC, toCents, toCentsPerSatsRatio } from "../../utils"
+
+export const CENTS_PER_USD = 100
+
+export const usd2cents = (usd: number): UsdCents => {
+  return toCents(Math.round(usd * CENTS_PER_USD))
+}
+
+export const cents2usd = (cents: UsdCents): number => {
+  return cents / CENTS_PER_USD
+}
 
 export const main = async () => {
   //
@@ -220,16 +224,22 @@ function getSatsFromCentsForFutureSell(
   callback(null, response)
 }
 
-function getCentsPerBtcExchangeMidRate(
+function getCentsPerSatsExchangeMidRate(
   call: ServerUnaryCall<
-    GetCentsPerBtcExchangeMidRateRequest,
-    GetCentsPerBtcExchangeMidRateResponse
+    GetCentsPerSatsExchangeMidRateRequest,
+    GetCentsPerSatsExchangeMidRateResponse
   >,
-  callback: sendUnaryData<GetCentsPerBtcExchangeMidRateResponse>,
+  callback: sendUnaryData<GetCentsPerSatsExchangeMidRateResponse>,
 ) {
-  const response = new GetCentsPerBtcExchangeMidRateResponse()
-  baseLogger.info({ lastAsk, lastBid }, "Received a GetCentsPerBtcExchangeMidRate() call")
-  response.setAmountInCents((lastAsk + lastBid) / 2)
+  const response = new GetCentsPerSatsExchangeMidRateResponse()
+  baseLogger.info(
+    { lastAsk, lastBid },
+    "Received a GetCentsPerSatsExchangeMidRate() call",
+  )
+  const lastMid = (lastAsk + lastBid) / 2
+  response.setRatioInCentsPerSatoshis(
+    toCentsPerSatsRatio((lastMid * CENTS_PER_USD) / SATS_PER_BTC),
+  )
 
   callback(null, response)
 }
@@ -249,7 +259,7 @@ function getServer() {
     getSatsFromCentsForFutureBuy,
     getSatsFromCentsForFutureSell,
 
-    getCentsPerBtcExchangeMidRate,
+    getCentsPerSatsExchangeMidRate,
   })
   return server
 }

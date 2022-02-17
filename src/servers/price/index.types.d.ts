@@ -1,5 +1,6 @@
 type Satoshis = number & { readonly brand: unique symbol }
 type UsdCents = number & { readonly brand: unique symbol }
+type CentsPerSatsRatio = number & { readonly brand: unique symbol }
 type Seconds = number & { readonly brand: unique symbol }
 
 type DealerPriceServiceError = import("./errors").DealerPriceServiceError
@@ -34,5 +35,5 @@ interface IDealerPriceService {
     amountInUsd: UsdCents,
     timeToExpiryInSeconds: Seconds,
   ): Promise<Satoshis | DealerPriceServiceError>
-  getCentsPerBtcExchangeMidRate(): Promise<UsdCents | DealerPriceServiceError>
+  getCentsPerSatsExchangeMidRate(): Promise<CentsPerSatsRatio | DealerPriceServiceError>
 }

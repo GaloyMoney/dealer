@@ -6,12 +6,14 @@ export const roundBtc = (btc: number) => {
   return sat2btc(btc2sat(btc))
 }
 
+export const SATS_PER_BTC = 10 ** 8
+
 export const btc2sat = (btc: number) => {
-  return Math.round(btc * Math.pow(10, 8))
+  return Math.round(btc * SATS_PER_BTC)
 }
 
 export const sat2btc = (sat: number) => {
-  return sat / Math.pow(10, 8)
+  return sat / SATS_PER_BTC
 }
 
 export const toSats = (amount: number): Satoshis => {
@@ -26,4 +28,8 @@ export const toCents = (amount: number): UsdCents => {
   if (!Number.isInteger(amount))
     throw new Error(`${amount} type ${typeof amount} is not an integer`)
   return amount as UsdCents
+}
+
+export const toCentsPerSatsRatio = (amount: number): CentsPerSatsRatio => {
+  return amount as CentsPerSatsRatio
 }
