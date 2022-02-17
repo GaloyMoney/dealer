@@ -24,18 +24,19 @@ import {
   GetCentsPerSatsExchangeMidRateResponse,
 } from "./proto/services/price/v1/price_service_pb"
 
-import { loop, lastBid, lastAsk } from "./price_fetcher"
-import { SATS_PER_BTC, toCents, toCentsPerSatsRatio } from "../../utils"
-
-export const CENTS_PER_USD = 100
-
-export const usd2cents = (usd: number): UsdCents => {
-  return toCents(Math.round(usd * CENTS_PER_USD))
-}
-
-export const cents2usd = (cents: UsdCents): number => {
-  return cents / CENTS_PER_USD
-}
+import { loop, lastBidInUsdPerBtc, lastAskInUsdPerBtc } from "./price_fetcher"
+import {
+  btc2sat,
+  cents2usd,
+  CENTS_PER_USD,
+  sat2btc,
+  SATS_PER_BTC,
+  toCents,
+  toCentsPerSatsRatio,
+  toSats,
+  toSeconds,
+  usd2cents,
+} from "../../utils"
 
 export const main = async () => {
   //
@@ -53,16 +54,24 @@ function getCentsFromSatsForImmediateBuy(
 ) {
   const response = new GetCentsFromSatsForImmediateBuyResponse()
 
-  const amountInSatoshis = call.request.getAmountInSatoshis()
-  // validate
-  // convert to btc
-  // use last price with calc'd spread
+  const amountInSats = call.request.getAmountInSatoshis()
   baseLogger.info(
-    { amountInSatoshis },
-    "Received a GetCentsFromSatsForImmediateBuy({amountInSatoshis}) call",
+    { amountInSats },
+    "Received a GetCentsFromSatsForImmediateBuy({amountInSats}) call",
   )
-  response.setAmountInCents(lastBid)
 
+  // validate
+  const amountInBtc = sat2btc(toSats(amountInSats))
+  // use the bid as the maximum conversion rate
+  // preferably lower by a % fee
+  const amountInCents = usd2cents(lastBidInUsdPerBtc * amountInBtc)
+
+  baseLogger.info(
+    { amountInSats, amountInCents },
+    "Responding to GetCentsFromSatsForImmediateBuy({amountInSats}) call with {amountInCents}",
+  )
+
+  response.setAmountInCents(amountInCents)
   callback(null, response)
 }
 
@@ -75,16 +84,24 @@ function getCentsFromSatsForImmediateSell(
 ) {
   const response = new GetCentsFromSatsForImmediateSellResponse()
 
-  const amountInSatoshis = call.request.getAmountInSatoshis()
-  // validate
-  // convert to btc
-  // use last price with calc'd spread
+  const amountInSats = call.request.getAmountInSatoshis()
   baseLogger.info(
-    { amountInSatoshis },
-    "Received a GetCentsFromSatsForImmediateSell({amountInSatoshis}) call",
+    { amountInSats },
+    "Received a GetCentsFromSatsForImmediateSell({amountInSats}) call",
   )
-  response.setAmountInCents(lastAsk)
 
+  // validate
+  const amountInBtc = sat2btc(toSats(amountInSats))
+  // use the ask as the maximum conversion rate
+  // preferably higher by a % fee
+  const amountInCents = usd2cents(lastAskInUsdPerBtc * amountInBtc)
+
+  baseLogger.info(
+    { amountInSats, amountInCents },
+    "Responding to GetCentsFromSatsForImmediateSell({amountInSats}) call with {amountInCents}",
+  )
+
+  response.setAmountInCents(amountInCents)
   callback(null, response)
 }
 
@@ -97,17 +114,26 @@ function getCentsFromSatsForFutureBuy(
 ) {
   const response = new GetCentsFromSatsForFutureBuyResponse()
 
-  const amountInSatoshis = call.request.getAmountInSatoshis()
-  const timeInSeconds = call.request.getTimeInSeconds()
-  // validate
-  // convert to btc
-  // use last price with calc'd spread
+  const amountInSats = call.request.getAmountInSatoshis()
+  const timeInSec = call.request.getTimeInSeconds()
   baseLogger.info(
-    { amountInSatoshis, timeInSeconds },
-    "Received a GetCentsFromSatsForFutureBuy({amountInSatoshis}, {timeInSeconds}) call",
+    { amountInSats, timeInSec },
+    "Received a GetCentsFromSatsForFutureBuy({amountInSats}, {timeInSec}) call",
   )
-  response.setAmountInCents(lastBid)
 
+  // validate
+  const amountInBtc = sat2btc(toSats(amountInSats))
+  const timeInSeconds = toSeconds(timeInSec)
+  // use the bid as the maximum conversion rate
+  // preferably lower by a % fee
+  const amountInCents = usd2cents(lastBidInUsdPerBtc * amountInBtc) + 0 * timeInSeconds
+
+  baseLogger.info(
+    { amountInSats, timeInSeconds, amountInCents },
+    "Responding to GetCentsFromSatsForFutureBuy({amountInSats}, {timeInSeconds}) call with {amountInCents}",
+  )
+
+  response.setAmountInCents(amountInCents)
   callback(null, response)
 }
 
@@ -120,17 +146,26 @@ function getCentsFromSatsForFutureSell(
 ) {
   const response = new GetCentsFromSatsForFutureSellResponse()
 
-  const amountInSatoshis = call.request.getAmountInSatoshis()
-  const timeInSeconds = call.request.getTimeInSeconds()
-  // validate
-  // convert to btc
-  // use last price with calc'd spread
+  const amountInSats = call.request.getAmountInSatoshis()
+  const timeInSec = call.request.getTimeInSeconds()
   baseLogger.info(
-    { amountInSatoshis, timeInSeconds },
-    "Received a GetCentsFromSatsForFutureSell({amountInSatoshis}, {timeInSeconds}) call",
+    { amountInSats, timeInSec },
+    "Received a GetCentsFromSatsForFutureSell({amountInSats}, {timeInSec}) call",
   )
-  response.setAmountInCents(lastBid)
 
+  // validate
+  const amountInBtc = sat2btc(toSats(amountInSats))
+  const timeInSeconds = toSeconds(timeInSec)
+  // use the ask as the maximum conversion rate
+  // preferably higher by a % fee
+  const amountInCents = usd2cents(lastAskInUsdPerBtc * amountInBtc) + 0 * timeInSeconds
+
+  baseLogger.info(
+    { amountInSats, timeInSeconds, amountInCents },
+    "Responding to GetCentsFromSatsForFutureSell({amountInSats}, {timeInSeconds}) call with {amountInCents}",
+  )
+
+  response.setAmountInCents(amountInCents)
   callback(null, response)
 }
 
@@ -143,16 +178,24 @@ function getSatsFromCentsForImmediateBuy(
 ) {
   const response = new GetSatsFromCentsForImmediateBuyResponse()
 
-  const amountInSatoshis = call.request.getAmountInCents()
-  // validate
-  // convert to btc
-  // use last price with calc'd spread
+  const amountInCents = call.request.getAmountInCents()
   baseLogger.info(
-    { amountInSatoshis },
-    "Received a GetSatsFromCentsForImmediateBuy({amountInSatoshis}) call",
+    { amountInCents },
+    "Received a GetSatsFromCentsForImmediateBuy({amountInCents}) call",
   )
-  response.setAmountInSatoshis(lastBid)
 
+  // validate
+  const amountInUsd = cents2usd(toCents(amountInCents))
+  // use the ask as the maximum conversion rate
+  // preferably higher by a % fee
+  const amountInSatoshis = btc2sat(amountInUsd / lastAskInUsdPerBtc)
+
+  baseLogger.info(
+    { amountInCents, amountInSatoshis },
+    "Responding to GetSatsFromCentsForImmediateBuy({amountInCents}) call with {amountInSatoshis}",
+  )
+
+  response.setAmountInSatoshis(amountInSatoshis)
   callback(null, response)
 }
 
@@ -165,16 +208,24 @@ function getSatsFromCentsForImmediateSell(
 ) {
   const response = new GetSatsFromCentsForImmediateSellResponse()
 
-  const amountInSatoshis = call.request.getAmountInCents()
-  // validate
-  // convert to btc
-  // use last price with calc'd spread
+  const amountInCents = call.request.getAmountInCents()
   baseLogger.info(
-    { amountInSatoshis },
-    "Received a GetSatsFromCentsForImmediateSell({amountInSatoshis}) call",
+    { amountInCents },
+    "Received a GetSatsFromCentsForImmediateSell({amountInCents}) call",
   )
-  response.setAmountInSatoshis(lastAsk)
 
+  // validate
+  const amountInUsd = cents2usd(toCents(amountInCents))
+  // use the bid as the maximum conversion rate
+  // preferably lower by a % fee
+  const amountInSatoshis = btc2sat(amountInUsd / lastBidInUsdPerBtc)
+
+  baseLogger.info(
+    { amountInCents, amountInSatoshis },
+    "Responding to GetSatsFromCentsForImmediateSell({amountInCents}) call with {amountInSatoshis}",
+  )
+
+  response.setAmountInSatoshis(amountInSatoshis)
   callback(null, response)
 }
 
@@ -187,17 +238,26 @@ function getSatsFromCentsForFutureBuy(
 ) {
   const response = new GetSatsFromCentsForFutureBuyResponse()
 
-  const amountInSatoshis = call.request.getAmountInCents()
-  const timeInSeconds = call.request.getTimeInSeconds()
-  // validate
-  // convert to btc
-  // use last price with calc'd spread
+  const amountInCents = call.request.getAmountInCents()
+  const timeInSec = call.request.getTimeInSeconds()
   baseLogger.info(
-    { amountInSatoshis, timeInSeconds },
-    "Received a GetSatsFromCentsForFutureBuy({amountInSatoshis}, {timeInSeconds}) call",
+    { amountInCents, timeInSec },
+    "Received a GetSatsFromCentsForFutureBuy({amountInCents}, {timeInSec}) call",
   )
-  response.setAmountInSatoshis(lastAsk)
 
+  // validate
+  const amountInUsd = cents2usd(toCents(amountInCents))
+  const timeInSeconds = toSeconds(timeInSec)
+  // use the ask as the maximum conversion rate
+  // preferably higher by a % fee
+  const amountInSatoshis = btc2sat(amountInUsd / lastAskInUsdPerBtc) + 0 * timeInSeconds
+
+  baseLogger.info(
+    { amountInCents, timeInSeconds, amountInSatoshis },
+    "Responding to GetSatsFromCentsForFutureBuy({amountInCents}, {timeInSeconds}) call with {amountInSatoshis}",
+  )
+
+  response.setAmountInSatoshis(amountInSatoshis)
   callback(null, response)
 }
 
@@ -210,17 +270,26 @@ function getSatsFromCentsForFutureSell(
 ) {
   const response = new GetSatsFromCentsForFutureSellResponse()
 
-  const amountInSatoshis = call.request.getAmountInCents()
-  const timeInSeconds = call.request.getTimeInSeconds()
-  // validate
-  // convert to btc
-  // use last price with calc'd spread
+  const amountInCents = call.request.getAmountInCents()
+  const timeInSec = call.request.getTimeInSeconds()
   baseLogger.info(
-    { amountInSatoshis, timeInSeconds },
-    "Received a GetSatsFromCentsForFutureSell({amountInSatoshis}, {timeInSeconds}) call",
+    { amountInCents, timeInSec },
+    "Received a GetSatsFromCentsForFutureSell({amountInCents}, {timeInSec}) call",
   )
-  response.setAmountInSatoshis(lastAsk)
 
+  // validate
+  const amountInUsd = cents2usd(toCents(amountInCents))
+  const timeInSeconds = toSeconds(timeInSec)
+  // use the bid as the maximum conversion rate
+  // preferably lower by a % fee
+  const amountInSatoshis = btc2sat(amountInUsd / lastBidInUsdPerBtc) + 0 * timeInSeconds
+
+  baseLogger.info(
+    { amountInCents, timeInSeconds, amountInSatoshis },
+    "Responding to GetSatsFromCentsForFutureSell({amountInCents}, {timeInSeconds}) call with {amountInSatoshis}",
+  )
+
+  response.setAmountInSatoshis(amountInSatoshis)
   callback(null, response)
 }
 
@@ -233,10 +302,10 @@ function getCentsPerSatsExchangeMidRate(
 ) {
   const response = new GetCentsPerSatsExchangeMidRateResponse()
   baseLogger.info(
-    { lastAsk, lastBid },
+    { lastAsk: lastAskInUsdPerBtc, lastBid: lastBidInUsdPerBtc },
     "Received a GetCentsPerSatsExchangeMidRate() call",
   )
-  const lastMid = (lastAsk + lastBid) / 2
+  const lastMid = (lastAskInUsdPerBtc + lastBidInUsdPerBtc) / 2
   response.setRatioInCentsPerSatoshis(
     toCentsPerSatsRatio((lastMid * CENTS_PER_USD) / SATS_PER_BTC),
   )

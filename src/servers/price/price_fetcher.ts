@@ -9,20 +9,23 @@ dotenv.config()
 const logger = baseLogger.child({ module: "exporter" })
 const dealer = new Dealer(logger)
 
-export let lastBid: number
-export let lastAsk: number
+export let lastBidInUsdPerBtc: number
+export let lastAskInUsdPerBtc: number
 
 export async function loop() {
   while (dealer) {
     try {
       const result = await dealer.getDerivativeMarketInfo()
-      lastBid = result.bidInUsd
-      lastAsk = result.askInUsd
-      logger.debug({ date: new Date(), lastBid, lastAsk }, "Price from exchange")
+      lastBidInUsdPerBtc = result.bidInUsd
+      lastAskInUsdPerBtc = result.askInUsd
+      logger.debug(
+        { date: new Date(), lastBid: lastBidInUsdPerBtc, lastAsk: lastAskInUsdPerBtc },
+        "Price from exchange",
+      )
       await sleep(500)
     } catch (e) {
-      lastBid = NaN
-      lastAsk = NaN
+      lastBidInUsdPerBtc = NaN
+      lastAskInUsdPerBtc = NaN
       logger.error({ e }, "Error: getDerivativePriceInUsd() failed.")
     }
   }
