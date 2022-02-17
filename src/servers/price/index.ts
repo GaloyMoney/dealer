@@ -38,6 +38,9 @@ import {
   usd2cents,
 } from "../../utils"
 
+import { yamlConfig } from "../../config"
+const fees = yamlConfig.fees
+
 export const main = async () => {
   //
   // Get and update data
@@ -64,7 +67,8 @@ function getCentsFromSatsForImmediateBuy(
   const amountInBtc = sat2btc(toSats(amountInSats))
   // use the bid as the maximum conversion rate
   // preferably lower by a % fee
-  const amountInCents = usd2cents(lastBidInUsdPerBtc * amountInBtc)
+  const currentFee = 1 - (fees.BASE_FEE + fees.IMMEDIATE_CONVERSION_SPREAD)
+  const amountInCents = usd2cents(lastBidInUsdPerBtc * amountInBtc * currentFee)
 
   baseLogger.info(
     { amountInSats, amountInCents },
@@ -94,7 +98,8 @@ function getCentsFromSatsForImmediateSell(
   const amountInBtc = sat2btc(toSats(amountInSats))
   // use the ask as the maximum conversion rate
   // preferably higher by a % fee
-  const amountInCents = usd2cents(lastAskInUsdPerBtc * amountInBtc)
+  const currentFee = 1 + (fees.BASE_FEE + fees.IMMEDIATE_CONVERSION_SPREAD)
+  const amountInCents = usd2cents(lastAskInUsdPerBtc * amountInBtc * currentFee)
 
   baseLogger.info(
     { amountInSats, amountInCents },
@@ -126,7 +131,8 @@ function getCentsFromSatsForFutureBuy(
   const timeInSeconds = toSeconds(timeInSec)
   // use the bid as the maximum conversion rate
   // preferably lower by a % fee
-  const amountInCents = usd2cents(lastBidInUsdPerBtc * amountInBtc) + 0 * timeInSeconds
+  const currentFee = 1 - (fees.BASE_FEE + fees.DELAYED_CONVERSION_SPREAD)
+  const amountInCents = usd2cents(lastBidInUsdPerBtc * amountInBtc * currentFee)
 
   baseLogger.info(
     { amountInSats, timeInSeconds, amountInCents },
@@ -158,7 +164,8 @@ function getCentsFromSatsForFutureSell(
   const timeInSeconds = toSeconds(timeInSec)
   // use the ask as the maximum conversion rate
   // preferably higher by a % fee
-  const amountInCents = usd2cents(lastAskInUsdPerBtc * amountInBtc) + 0 * timeInSeconds
+  const currentFee = 1 + (fees.BASE_FEE + fees.DELAYED_CONVERSION_SPREAD)
+  const amountInCents = usd2cents(lastAskInUsdPerBtc * amountInBtc * currentFee)
 
   baseLogger.info(
     { amountInSats, timeInSeconds, amountInCents },
@@ -188,7 +195,8 @@ function getSatsFromCentsForImmediateBuy(
   const amountInUsd = cents2usd(toCents(amountInCents))
   // use the ask as the maximum conversion rate
   // preferably higher by a % fee
-  const amountInSatoshis = btc2sat(amountInUsd / lastAskInUsdPerBtc)
+  const currentFee = 1 + (fees.BASE_FEE + fees.IMMEDIATE_CONVERSION_SPREAD)
+  const amountInSatoshis = btc2sat(amountInUsd / (lastAskInUsdPerBtc * currentFee))
 
   baseLogger.info(
     { amountInCents, amountInSatoshis },
@@ -218,7 +226,8 @@ function getSatsFromCentsForImmediateSell(
   const amountInUsd = cents2usd(toCents(amountInCents))
   // use the bid as the maximum conversion rate
   // preferably lower by a % fee
-  const amountInSatoshis = btc2sat(amountInUsd / lastBidInUsdPerBtc)
+  const currentFee = 1 - (fees.BASE_FEE + fees.IMMEDIATE_CONVERSION_SPREAD)
+  const amountInSatoshis = btc2sat(amountInUsd / (lastBidInUsdPerBtc * currentFee))
 
   baseLogger.info(
     { amountInCents, amountInSatoshis },
@@ -250,7 +259,8 @@ function getSatsFromCentsForFutureBuy(
   const timeInSeconds = toSeconds(timeInSec)
   // use the ask as the maximum conversion rate
   // preferably higher by a % fee
-  const amountInSatoshis = btc2sat(amountInUsd / lastAskInUsdPerBtc) + 0 * timeInSeconds
+  const currentFee = 1 + (fees.BASE_FEE + fees.DELAYED_CONVERSION_SPREAD)
+  const amountInSatoshis = btc2sat(amountInUsd / (lastAskInUsdPerBtc * currentFee))
 
   baseLogger.info(
     { amountInCents, timeInSeconds, amountInSatoshis },
@@ -282,7 +292,8 @@ function getSatsFromCentsForFutureSell(
   const timeInSeconds = toSeconds(timeInSec)
   // use the bid as the maximum conversion rate
   // preferably lower by a % fee
-  const amountInSatoshis = btc2sat(amountInUsd / lastBidInUsdPerBtc) + 0 * timeInSeconds
+  const currentFee = 1 - (fees.BASE_FEE + fees.DELAYED_CONVERSION_SPREAD)
+  const amountInSatoshis = btc2sat(amountInUsd / (lastBidInUsdPerBtc * currentFee))
 
   baseLogger.info(
     { amountInCents, timeInSeconds, amountInSatoshis },

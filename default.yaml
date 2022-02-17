@@ -23,3 +23,7 @@ rebalancing:
   ratioTargetWithdraw: 1
   minOnchain: 10000000 # 0.1
 
+fees:
+  BASE_FEE: 0.0005
+  IMMEDIATE_CONVERSION_SPREAD: 0.0005
+  DELAYED_CONVERSION_SPREAD: 0.0010
