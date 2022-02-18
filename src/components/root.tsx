@@ -28,10 +28,13 @@ const Root = ({ GwwState }: RootProps) => {
       })
     })
 
-    const screenMediaQuery = window.matchMedia("(max-width: 420px)")
+    const screenMediaQuery = window.matchMedia("(max-width: 500px)")
     dispatch({
       type: "update",
-      layout: screenMediaQuery.matches ? "Small" : "Large",
+      layout:
+        "ontouchstart" in document.documentElement || screenMediaQuery.matches
+          ? "Small"
+          : "Large",
     })
 
     const screenMediaListener = (event: MediaQueryListEvent) => {

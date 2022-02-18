@@ -12,29 +12,33 @@ import { Icon, Spinner } from "@galoymoney/react"
 import useMainQuery from "../hooks/use-main-query"
 import { history } from "../store"
 import config from "../store/config"
+import { useAuthContext } from "../store/use-auth-context"
 
 const ContactListForSending = () => {
-  const { username } = useMainQuery()
+  const { isAuthenticated } = useAuthContext()
   const [showCopied, setShowCopied] = useState(false)
-  const { loading, data } = useQuery.contacts()
+
+  const { username } = useMainQuery()
+  const { loading, data } = useQuery.contacts({
+    skip: !isAuthenticated,
+  })
 
   const handleSendBitcoin = (contactUsername: string) => {
     history.push(`/send?to=${contactUsername}`)
   }
 
+  const shareUri = `${config.shareUri}${username ?? ""}`
+
   const handleInvite = () => {
     if (!navigator.share) {
-      copy(config.shareUri + username)
+      copy(shareUri)
       setShowCopied(true)
       setTimeout(() => setShowCopied(false), 3000)
       return
     }
 
     navigator
-      .share({
-        title: `${config.walletName} Wallet`,
-        url: config.shareUri + username,
-      })
+      .share({ title: `${config.walletName} Wallet`, url: shareUri })
       .catch(console.error)
   }
 

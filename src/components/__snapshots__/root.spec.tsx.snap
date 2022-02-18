@@ -166,14 +166,6 @@ exports[`Root renders Home and matches snapshot 1`] = `
             Invite
           </div>
         </div>
-        <div
-          class="spinner"
-        >
-          <i
-            aria-hidden="true"
-            class="fas fa-spinner fa-spin fa-5x"
-          />
-        </div>
       </div>
       <div
         class="buttons"
@@ -332,10 +324,14 @@ exports[`Root renders Home and matches snapshot 1`] = `
           <div
             class="tab disabled"
           >
-            <i
-              aria-hidden="true"
-              class="fa-solid fa-user-alt"
-            />
+            <a
+              href="/login"
+            >
+              <i
+                aria-hidden="true"
+                class="fa-solid fa-user-alt"
+              />
+            </a>
           </div>
         </div>
       </div>
@@ -7517,10 +7513,14 @@ exports[`Root renders Settings and matches snapshot 1`] = `
         <div
           class="tab disabled"
         >
-          <i
-            aria-hidden="true"
-            class="fa-solid fa-user-alt"
-          />
+          <a
+            href="/login"
+          >
+            <i
+              aria-hidden="true"
+              class="fa-solid fa-user-alt"
+            />
+          </a>
         </div>
       </div>
     </div>
@@ -7583,10 +7583,14 @@ exports[`Root renders Transactions and matches snapshot 1`] = `
         <div
           class="tab disabled"
         >
-          <i
-            aria-hidden="true"
-            class="fa-solid fa-user-alt"
-          />
+          <a
+            href="/login"
+          >
+            <i
+              aria-hidden="true"
+              class="fa-solid fa-user-alt"
+            />
+          </a>
         </div>
       </div>
     </div>
