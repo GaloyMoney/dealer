@@ -4,6 +4,8 @@ if (!isBrowser) {
   const requiredEnvVars = [
     "NODE_ENV",
     "SESSION_KEYS",
+    "WALLET_NAME",
+    "SHARE_URI",
     "HOST",
     "PORT",
     "SUPPORT_EMAIL",
@@ -11,8 +13,9 @@ if (!isBrowser) {
     "GRAPHQL_SUBSCRIPTION_URI",
     "AUTH_ENDPOINT",
   ]
+
   if (process.env.KRATOS_FEATURE_FLAG) {
-    requiredEnvVars.concat(["KRATOS_API_URL", "KRATOS_BROWSER_URL"])
+    requiredEnvVars.push("KRATOS_API_URL", "KRATOS_BROWSER_URL")
   }
 
   requiredEnvVars.forEach((envVar) => {
@@ -44,6 +47,8 @@ const networkMap = (graphqlUri: string): Network => {
 const config = isBrowser
   ? {
       isBrowser,
+      walletName: window.__G_DATA.GwwConfig.walletName,
+      shareUri: window.__G_DATA.GwwConfig.shareUri,
       supportEmail: window.__G_DATA.GwwConfig.supportEmail,
       network: window.__G_DATA.GwwConfig.network,
       graphqlUri: window.__G_DATA.GwwConfig.graphqlUri,
@@ -56,6 +61,8 @@ const config = isBrowser
   : {
       isDev: process.env.NODE_ENV !== "production",
       isBrowser,
+      walletName: process.env.WALLET_NAME as string,
+      shareUri: process.env.SHARE_URI as string,
       sessionKeys: process.env.SESSION_KEYS as string,
       host: process.env.HOST as string,
       port: Number(process.env.PORT),

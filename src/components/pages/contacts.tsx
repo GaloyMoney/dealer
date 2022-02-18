@@ -1,18 +1,10 @@
-import { translate, useQuery } from "@galoymoney/client"
+import { translate, truncatedDisplay, useQuery } from "@galoymoney/client"
 import { Icon, Spinner } from "@galoymoney/react"
 
 import { history } from "../../store"
 import { useAuthContext } from "../../store/use-auth-context"
 import ErrorMessage from "../error-message"
 import Header from "../header"
-
-const nameDisplay = (name: string): string => {
-  if (name.length > 15) {
-    return name.substring(0, 15) + "..."
-  }
-
-  return name
-}
 
 const ContactsList = () => {
   const { loading, errorsMessage, data } = useQuery.contacts()
@@ -38,7 +30,7 @@ const ContactsList = () => {
           <div key={contact.username} className="contact">
             <Icon name="person" />
             <div className="name" onClick={() => handleSendBitcoin(contact.username)}>
-              {nameDisplay(contact.alias ?? contact.username)}
+              {truncatedDisplay(contact.alias ?? contact.username)}
             </div>
             <div className="actions">
               <div
@@ -61,17 +53,21 @@ const ContactsList = () => {
   )
 }
 
-const Contacts = () => {
+const Contacts = {} as LayoutComponent<Record<string, never>>
+
+Contacts.Large = function Contacts() {
   const { isAuthenticated } = useAuthContext()
 
   return (
     <div className="contacts">
-      <Header page="contacts" />
+      <Header.Large page="contacts" />
 
       <div className="page-title">{translate("Contacts")}</div>
       {isAuthenticated ? <ContactsList /> : <div className="no-data">No Contacts</div>}
     </div>
   )
 }
+
+Contacts.Small = Contacts.Large
 
 export default Contacts

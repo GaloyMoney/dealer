@@ -27,16 +27,24 @@ type HandleRegisterResponse =
     }
   | { redirect: false; flowData: KratosFlowData }
 
+type Layout = "Small" | "Large"
+
+type LayoutComponent<P> = {
+  Small: React.FC<P & { layout?: Layout }>
+  Large: React.FC<P & { layout?: Layout }>
+}
+
 type GwwState = {
-  path: RoutePath | AuthRoutePath
-  props?: Record<string, unknown>
   key: number
+  path: RoutePath | AuthRoutePath
+  layout?: Layout
+  props?: Record<string, unknown>
   defaultLanguage?: string
   flowData?: KratosFlowData
 }
 
 type GwwAction = {
-  type: "update"
+  type: "update" | "update-with-key"
   [payloadKey: string]: string | Record<string, string> | undefined
 }
 
@@ -66,7 +74,9 @@ declare interface Window {
     GwwState: GwwState
     ssrData: NormalizedCacheObject
     GwwConfig: {
+      walletName: string
       supportEmail: string
+      shareUri: string
       graphqlUri: string
       graphqlSubscriptionUri: string
       network: Network
@@ -95,6 +105,7 @@ type UseMyUpdates = {
 type Currency = "USD" | "SATS"
 
 type InvoiceInput = {
+  view?: "destination" | "amount" | "confirm"
   currency: Currency
 
   // undefined in input is used to indicate their changing state

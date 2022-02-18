@@ -17,17 +17,35 @@ const Root = ({ GwwState }: RootProps) => {
   })
 
   useEffect(() => {
-    const unlisten = history.listen(({ location }) => {
+    const removeHistoryListener = history.listen(({ location }) => {
       const props = Object.fromEntries(new URLSearchParams(location.search))
 
       dispatch({
-        type: "update",
+        type: "update-with-key",
         path: location.pathname,
         props,
         ...(location.state as Record<string, unknown> | null),
       })
     })
-    return () => unlisten()
+
+    const screenMediaQuery = window.matchMedia("(max-width: 420px)")
+    dispatch({
+      type: "update",
+      layout: screenMediaQuery.matches ? "Small" : "Large",
+    })
+
+    const screenMediaListener = (event: MediaQueryListEvent) => {
+      dispatch({
+        type: "update",
+        layout: event.matches ? "Small" : "Large",
+      })
+    }
+    screenMediaQuery.addEventListener("change", screenMediaListener)
+
+    return () => {
+      removeHistoryListener()
+      screenMediaQuery.removeEventListener("change", screenMediaListener)
+    }
   }, [dispatch])
 
   return (

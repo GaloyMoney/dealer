@@ -21,14 +21,25 @@ const headerNavPages = ["home", "send-bitcoin", "receive-bitcoin"] as const
 
 type Page = typeof headerNavPages[number] | "contacts" | "transactions" | "settings"
 
-type Props = {
+const Header = {} as LayoutComponent<{
   page?: Page
-}
+}>
 
-const Header = ({ page }: Props) => {
-  const { isAuthenticated } = useAuthContext()
+Header.Small = function Header({ page }) {
   const { btcWalletBalance } = useMainQuery()
 
+  return (
+    <div className={`header-container ${page}-header`}>
+      <div className="header">
+        <Balance.Small balance={btcWalletBalance} />
+      </div>
+    </div>
+  )
+}
+
+Header.Large = function Header({ page }) {
+  const { isAuthenticated } = useAuthContext()
+  const { btcWalletBalance } = useMainQuery()
   const [showMenu, setShowMenu] = useState(false)
 
   const handleMenuClick: React.MouseEventHandler<HTMLDivElement> = (event) => {
@@ -46,7 +57,7 @@ const Header = ({ page }: Props) => {
   return (
     <div className={`header-container ${page}-header`}>
       <div className="header">
-        <Balance balance={btcWalletBalance} />
+        <Balance.Large balance={btcWalletBalance} />
         <div className="links">
           {page !== "home" && (
             <>

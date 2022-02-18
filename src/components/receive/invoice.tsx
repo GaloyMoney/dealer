@@ -25,7 +25,7 @@ const LightningInvoice = ({ invoice, onPaymentSuccess }: LightningInvoiceProps) 
   }
 
   const resetReceiveScreen = () => {
-    dispatch({ type: "update", path: "/receive" })
+    dispatch({ type: "update-with-key", path: "/receive" })
   }
 
   const invoicePaid =

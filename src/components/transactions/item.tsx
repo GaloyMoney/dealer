@@ -6,12 +6,12 @@ import {
   formatUsd,
   GaloyGQL,
   translate,
+  truncatedDisplay,
 } from "@galoymoney/client"
 import { Icon, SatFormat } from "@galoymoney/react"
+import config from "../../store/config"
 
 export const BLOCKCHAIN_EXPLORER_URL = "https://mempool.space/tx/"
-
-// BLOCKCHAIN_EXPLORER_URL + hash
 
 const typeDisplay = (type: SettlementType) => {
   switch (type) {
@@ -20,7 +20,7 @@ const typeDisplay = (type: SettlementType) => {
     case "SettlementViaLn":
       return "Lightning Payment"
     case "SettlementViaIntraLedger":
-      return "Galoy Payment"
+      return `${config.walletName} Payment`
   }
 }
 
@@ -44,10 +44,13 @@ const descriptionDisplay = (tx: GaloyGQL.Transaction) => {
       return "OnChain Payment"
     case "SettlementViaLn":
       return "Lightning Payment"
-    case "SettlementViaIntraLedger":
+    case "SettlementViaIntraLedger": {
+      const counterParty =
+        settlementVia.counterPartyUsername || `${config.walletName} Wallet`
       return isReceive
-        ? `From ${settlementVia.counterPartyUsername || "Galoy Wallet"}`
-        : `To ${settlementVia.counterPartyUsername || "Galoy Wallet"}`
+        ? `${translate("From")} ${counterParty}`
+        : `${translate("To")} ${counterParty}`
+    }
   }
 }
 
@@ -117,7 +120,7 @@ const TransactionItem = ({ tx }: Props) => {
                 {translate(isReceive ? "Received from" : "Sent to")}
               </div>
               <div className="value">
-                {tx.settlementVia.counterPartyUsername || "Galoy Wallet"}
+                {tx.settlementVia.counterPartyUsername || `${config.walletName} Wallet`}
               </div>
             </div>
           )}
@@ -165,7 +168,7 @@ const TransactionItem = ({ tx }: Props) => {
         <div className="icon">{txIcon}</div>
 
         <div className="content">
-          <div className="description">{description}</div>
+          <div className="description">{truncatedDisplay(description ?? "")}</div>
           <div className="date">{formatRelativeTime(tx.createdAt)}</div>
         </div>
 

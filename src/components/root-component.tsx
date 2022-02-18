@@ -7,6 +7,7 @@ import { Spinner } from "@galoymoney/react"
 import { appRoutes, checkRoute, authRoutes, checkAuthRoute } from "../server/routes"
 
 import ErrorFallback from "./error-fallback"
+import { useAppState } from "../store"
 
 type Props = {
   path: RoutePath
@@ -15,9 +16,12 @@ type Props = {
 }
 
 const RootComponent = ({ path, flowData, ...props }: Props) => {
+  const { layout } = useAppState()
+  const appLayout = layout ?? "Small"
   const checkedRoutePath = checkRoute(path)
+
   if (!(checkedRoutePath instanceof Error)) {
-    const Component = appRoutes[checkedRoutePath].component
+    const Component = appRoutes[checkedRoutePath].component[appLayout]
 
     return (
       <Suspense
@@ -28,13 +32,14 @@ const RootComponent = ({ path, flowData, ...props }: Props) => {
         }
       >
         <ErrorBoundary FallbackComponent={ErrorFallback}>
-          <div id="main-container">
-            <Component {...props} />
+          <div id="main-container" className={`layout${appLayout}`}>
+            <Component layout={appLayout} {...props} />
           </div>
         </ErrorBoundary>
       </Suspense>
     )
   }
+
   if (config.kratosFeatureFlag) {
     const checkedAuthRoutePath = checkAuthRoute(path)
     if (!(checkedAuthRoutePath instanceof Error)) {

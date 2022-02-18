@@ -1,21 +1,24 @@
+import Contacts from "../components/pages/contacts"
 import Home from "../components/pages/home"
 import Login from "../components/pages/login"
-import Send from "../components/pages/send"
 import Receive from "../components/pages/receive"
-import Contacts from "../components/contacts"
+import Send from "../components/pages/send"
+import Settings from "../components/pages/settings"
 import Transactions from "../components/pages/transactions"
-import Settings from "../components/settings"
+
+import Register from "../components/pages/register"
+import config from "../store/config"
 
 // Note: The component property is skipped by the serialize function
 // It's only used on the front-end
 const appRoutesDef = {
   "/": {
     component: Home,
-    title: "Galoy Web Wallet",
+    title: `${config.walletName} Web Wallet`,
   },
   "/login": {
     component: Login,
-    title: "Login to Galoy Web Wallet",
+    title: `Login to ${config.walletName} Web Wallet`,
   },
   "/send": {
     component: Send,
@@ -44,14 +47,8 @@ const appRoutesDef = {
 }
 
 export type SupportedRoutes = keyof typeof appRoutesDef
+type AppRoutes = Record<RoutePath, { component: LayoutComponent<unknown>; title: string }>
 
-type AppRoutes = Record<
-  RoutePath,
-  {
-    component: (props: Record<string, unknown>) => JSX.Element
-    title: string
-  }
->
 export const appRoutes: AppRoutes = appRoutesDef as unknown as AppRoutes
 
 export const checkRoute = (path: string): RoutePath | Error => {
@@ -60,8 +57,6 @@ export const checkRoute = (path: string): RoutePath | Error => {
   }
   return new Error("Invaild route path")
 }
-
-import Register from "../components/pages/register"
 
 const authRoutesDef = {
   "/register/email": {

@@ -3,6 +3,8 @@ const mainReducer = (state: GwwState, action: GwwAction): GwwState => {
 
   switch (type) {
     case "update":
+      return { ...state, ...newState }
+    case "update-with-key":
       return { ...state, ...newState, key: Math.random() }
     default:
       throw new Error("UNSUPPORTED_ACTION")

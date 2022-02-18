@@ -44,7 +44,9 @@ export const serverRenderer =
       const ssrData = galoyClient.extract()
 
       const {
+        walletName,
         supportEmail,
+        shareUri,
         graphqlUri,
         graphqlSubscriptionUri,
         network,
@@ -56,7 +58,9 @@ export const serverRenderer =
       return Promise.resolve({
         GwwState,
         GwwConfig: {
+          walletName,
           supportEmail,
+          shareUri,
           graphqlUri,
           graphqlSubscriptionUri,
           network,

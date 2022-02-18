@@ -10,52 +10,58 @@ const navigateToHome = () => {
   history.push("/")
 }
 
-type Props = {
-  balance: number
-}
+const MyBalance: React.FC<{ balance: number; layout: "Small" | "Large" }> =
+  function Balance({ balance, layout }) {
+    const { isAuthenticated } = useAuthContext()
+    const { satsToUsd } = useMyUpdates()
 
-const MyBalance = ({ balance }: Props) => {
-  const { satsToUsd } = useMyUpdates()
-
-  return (
-    <div className="balance" onClick={navigateToHome}>
-      <div className="title">{translate("Current Balance")}</div>
-      <div className="value">
-        {Number.isNaN(balance) ? (
-          <Spinner />
-        ) : (
-          <>
+    if (!isAuthenticated) {
+      return (
+        <div className="balance" onClick={navigateToHome}>
+          {layout === "Large" && (
+            <div className="title">{translate("Current Balance")}</div>
+          )}
+          <div className="value">
             <div className="primary">
-              <SatFormat amount={balance} />
+              <SatSymbol />0
             </div>
-            {satsToUsd && (
-              <div className="secondary">&#8776; {formatUsd(satsToUsd(balance))}</div>
-            )}
-          </>
-        )}
-      </div>
-    </div>
-  )
-}
+            <div className="secondary">{formatUsd(0)}</div>
+          </div>
+        </div>
+      )
+    }
 
-const Balance = ({ balance }: Props) => {
-  const { isAuthenticated } = useAuthContext()
-
-  if (!isAuthenticated) {
     return (
       <div className="balance" onClick={navigateToHome}>
-        <div className="title">{translate("Current Balance")}</div>
+        {layout === "Large" && (
+          <div className="title">{translate("Current Balance")}</div>
+        )}
         <div className="value">
-          <div className="primary">
-            <SatSymbol />0
-          </div>
-          <div className="secondary">{formatUsd(0)}</div>
+          {Number.isNaN(balance) ? (
+            <Spinner />
+          ) : (
+            <>
+              <div className="primary">
+                <SatFormat amount={balance} />
+              </div>
+              {satsToUsd && (
+                <div className="secondary">&#8776; {formatUsd(satsToUsd(balance))}</div>
+              )}
+            </>
+          )}
         </div>
       </div>
     )
   }
 
-  return <MyBalance balance={balance} />
+const Balance = {} as LayoutComponent<{ balance: number }>
+
+Balance.Small = function Balance({ balance }) {
+  return <MyBalance balance={balance} layout="Small" />
+}
+
+Balance.Large = function Balance({ balance }) {
+  return <MyBalance balance={balance} layout="Large" />
 }
 
 export default Balance
