@@ -10,24 +10,24 @@ It provides price quotes for immediate transactions as well as option like locke
 
 ### Immediate USD Buy
 ```
-GetExchangeRateForImmediateUsdBuy(amount: Satoshis): USD
+GetCentsFromSatsForImmediateBuy(amount: Satoshis): USD
 ```
 
-This interface takes an amount of BTC/sats and returns the equivalent amount of USD using an internal exchange rate.
+This interface takes an amount of BTC in sats and returns the equivalent amount of USD using an internal exchange rate.
 
 #### Internal Exchange Rate
-Since the balances are only records in the ledger, and that the USD is ultimately hedged by the Dealer, which in turn uses an market exchange (OKEx) to do so,
-it make sense to use at the minimum the **ask** from the exchange directly, apply the transaction fee (ex.: 0.05%) and then some discretionary fees.
+Since the balances are only records in the ledger, and that the USD is ultimately hedged by the Dealer, which in turn uses a market exchange (OKEx) to do so,
+it make sense to use at the maximum the **bid** from the exchange directly, apply the transaction fee (ex.: 0.05%) and then some discretionary fees.
 
 
 
 
 ### Immediate USD Sell (BTC Buy)
 ```
-GetExchangeRateForImmediateUsdSell(amount: USD): Satoshis
+GetSatsFromCentsForImmediateSell(amount: USD): Satoshis
 ```
 
-This interface takes an amount of USD and returns the equivalent amount of BTC/sats using an internal exchange rate.
+This interface takes an amount of USD in cents and returns the equivalent amount of BTC in sats using an internal exchange rate.
 
 #### Internal Exchange Rate
 For the same reasons as explained [above](./PRICE-SERVICE.md#Immediate-USD-Buy),
@@ -37,14 +37,14 @@ it make sense to use at the maximum the **bid** from the exchange directly, appl
 
 ### Future USD Buy
 ```
-GetExchangeRateForFutureUsdBuy(amount: Satoshis, time-to-maturity: Seconds): USD
+GetCentsFromSatsForFutureBuy(amount: Satoshis, time-to-maturity: Seconds): USD
 ```
 
-This interface takes an amount of BTC/sats and returns the equivalent amount of USD using an internal exchange rate.
+This interface takes an amount of BTC in sats and returns the equivalent amount of USD using an internal exchange rate.
 
 #### Internal Exchange Rate
 For the same reasons as explained [above](./PRICE-SERVICE.md#Immediate-USD-Buy),
-and the fact that the rate isa greed upon now for a future settlement, there's an extra component added, namely and optionality spread.
+and the fact that the rate is agreed upon now for a future settlement, there's an extra component added, namely and optionality spread.
 
 ##### Optionality Spread
 An invoice that fixes the exchange rate now for reception of the agreed upon funds at a later time, presents an opportunity for abuse.
@@ -89,7 +89,7 @@ In doing so it becomes a zero sum game instead of slightly positive for the buye
 GetExchangeRateForFutureUsdSell(amount: USD, time-to-maturity: Seconds): Satoshis
 ```
 
-This interface takes an amount of USD and returns the equivalent amount of BTC/sats using an internal exchange rate.
+This interface takes an amount of USD and returns the equivalent amount of BTC in sats using an internal exchange rate.
 
 #### Internal Exchange Rate
-Same as [above](./PRICE-SERVICE.md#Future-USD-Buy), but using the **bid** as ceiling.
+Same as [above](./PRICE-SERVICE.md#Future-USD-Buy), but using the **ask** as ceiling.
