@@ -4,6 +4,7 @@ import { Dealer } from "../Dealer"
 import { exporter } from "../servers/exporter/exporter"
 import nodePgMigrate from "node-pg-migrate"
 import { RunnerOption } from "node-pg-migrate/dist/types"
+import { priceService } from "../servers/price"
 
 const logger = baseLogger.child({ module: "cron" })
 
@@ -32,6 +33,7 @@ const scheduler = async () => {
 
 Promise.all([
   exporter().catch((err) => logger.error(err)),
+  priceService().catch((err) => logger.error(err)),
   scheduler().catch((err) => logger.error(err)),
   nodePgMigrate(options).catch((err) => logger.error(err)),
 ])

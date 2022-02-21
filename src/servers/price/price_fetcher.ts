@@ -6,7 +6,7 @@ import { sleep } from "../../utils"
 
 dotenv.config()
 
-const logger = baseLogger.child({ module: "exporter" })
+const logger = baseLogger.child({ module: "price-service" })
 const dealer = new Dealer(logger)
 
 export let lastBidInUsdPerBtc: number
