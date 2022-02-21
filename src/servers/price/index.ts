@@ -41,10 +41,9 @@ import {
 import { yamlConfig } from "../../config"
 const fees = yamlConfig.fees
 
-export const main = async () => {
-  //
-  // Get and update data
-  //
+const logger = baseLogger.child({ module: "price-service" })
+
+const updateMarketData = async () => {
   await loop()
 }
 
@@ -58,7 +57,7 @@ function getCentsFromSatsForImmediateBuy(
   const response = new GetCentsFromSatsForImmediateBuyResponse()
 
   const amountInSats = call.request.getAmountInSatoshis()
-  baseLogger.info(
+  logger.info(
     { amountInSats },
     "Received a GetCentsFromSatsForImmediateBuy({amountInSats}) call",
   )
@@ -70,7 +69,7 @@ function getCentsFromSatsForImmediateBuy(
   const currentFee = 1 - (fees.BASE_FEE + fees.IMMEDIATE_CONVERSION_SPREAD)
   const amountInCents = usd2cents(lastBidInUsdPerBtc * amountInBtc * currentFee)
 
-  baseLogger.info(
+  logger.info(
     { amountInSats, amountInCents },
     "Responding to GetCentsFromSatsForImmediateBuy({amountInSats}) call with {amountInCents}",
   )
@@ -89,7 +88,7 @@ function getCentsFromSatsForImmediateSell(
   const response = new GetCentsFromSatsForImmediateSellResponse()
 
   const amountInSats = call.request.getAmountInSatoshis()
-  baseLogger.info(
+  logger.info(
     { amountInSats },
     "Received a GetCentsFromSatsForImmediateSell({amountInSats}) call",
   )
@@ -101,7 +100,7 @@ function getCentsFromSatsForImmediateSell(
   const currentFee = 1 + (fees.BASE_FEE + fees.IMMEDIATE_CONVERSION_SPREAD)
   const amountInCents = usd2cents(lastAskInUsdPerBtc * amountInBtc * currentFee)
 
-  baseLogger.info(
+  logger.info(
     { amountInSats, amountInCents },
     "Responding to GetCentsFromSatsForImmediateSell({amountInSats}) call with {amountInCents}",
   )
@@ -121,7 +120,7 @@ function getCentsFromSatsForFutureBuy(
 
   const amountInSats = call.request.getAmountInSatoshis()
   const timeInSec = call.request.getTimeInSeconds()
-  baseLogger.info(
+  logger.info(
     { amountInSats, timeInSec },
     "Received a GetCentsFromSatsForFutureBuy({amountInSats}, {timeInSec}) call",
   )
@@ -134,7 +133,7 @@ function getCentsFromSatsForFutureBuy(
   const currentFee = 1 - (fees.BASE_FEE + fees.DELAYED_CONVERSION_SPREAD)
   const amountInCents = usd2cents(lastBidInUsdPerBtc * amountInBtc * currentFee)
 
-  baseLogger.info(
+  logger.info(
     { amountInSats, timeInSeconds, amountInCents },
     "Responding to GetCentsFromSatsForFutureBuy({amountInSats}, {timeInSeconds}) call with {amountInCents}",
   )
@@ -154,7 +153,7 @@ function getCentsFromSatsForFutureSell(
 
   const amountInSats = call.request.getAmountInSatoshis()
   const timeInSec = call.request.getTimeInSeconds()
-  baseLogger.info(
+  logger.info(
     { amountInSats, timeInSec },
     "Received a GetCentsFromSatsForFutureSell({amountInSats}, {timeInSec}) call",
   )
@@ -167,7 +166,7 @@ function getCentsFromSatsForFutureSell(
   const currentFee = 1 + (fees.BASE_FEE + fees.DELAYED_CONVERSION_SPREAD)
   const amountInCents = usd2cents(lastAskInUsdPerBtc * amountInBtc * currentFee)
 
-  baseLogger.info(
+  logger.info(
     { amountInSats, timeInSeconds, amountInCents },
     "Responding to GetCentsFromSatsForFutureSell({amountInSats}, {timeInSeconds}) call with {amountInCents}",
   )
@@ -186,7 +185,7 @@ function getSatsFromCentsForImmediateBuy(
   const response = new GetSatsFromCentsForImmediateBuyResponse()
 
   const amountInCents = call.request.getAmountInCents()
-  baseLogger.info(
+  logger.info(
     { amountInCents },
     "Received a GetSatsFromCentsForImmediateBuy({amountInCents}) call",
   )
@@ -198,7 +197,7 @@ function getSatsFromCentsForImmediateBuy(
   const currentFee = 1 + (fees.BASE_FEE + fees.IMMEDIATE_CONVERSION_SPREAD)
   const amountInSatoshis = btc2sat(amountInUsd / (lastAskInUsdPerBtc * currentFee))
 
-  baseLogger.info(
+  logger.info(
     { amountInCents, amountInSatoshis },
     "Responding to GetSatsFromCentsForImmediateBuy({amountInCents}) call with {amountInSatoshis}",
   )
@@ -217,7 +216,7 @@ function getSatsFromCentsForImmediateSell(
   const response = new GetSatsFromCentsForImmediateSellResponse()
 
   const amountInCents = call.request.getAmountInCents()
-  baseLogger.info(
+  logger.info(
     { amountInCents },
     "Received a GetSatsFromCentsForImmediateSell({amountInCents}) call",
   )
@@ -229,7 +228,7 @@ function getSatsFromCentsForImmediateSell(
   const currentFee = 1 - (fees.BASE_FEE + fees.IMMEDIATE_CONVERSION_SPREAD)
   const amountInSatoshis = btc2sat(amountInUsd / (lastBidInUsdPerBtc * currentFee))
 
-  baseLogger.info(
+  logger.info(
     { amountInCents, amountInSatoshis },
     "Responding to GetSatsFromCentsForImmediateSell({amountInCents}) call with {amountInSatoshis}",
   )
@@ -249,7 +248,7 @@ function getSatsFromCentsForFutureBuy(
 
   const amountInCents = call.request.getAmountInCents()
   const timeInSec = call.request.getTimeInSeconds()
-  baseLogger.info(
+  logger.info(
     { amountInCents, timeInSec },
     "Received a GetSatsFromCentsForFutureBuy({amountInCents}, {timeInSec}) call",
   )
@@ -262,7 +261,7 @@ function getSatsFromCentsForFutureBuy(
   const currentFee = 1 + (fees.BASE_FEE + fees.DELAYED_CONVERSION_SPREAD)
   const amountInSatoshis = btc2sat(amountInUsd / (lastAskInUsdPerBtc * currentFee))
 
-  baseLogger.info(
+  logger.info(
     { amountInCents, timeInSeconds, amountInSatoshis },
     "Responding to GetSatsFromCentsForFutureBuy({amountInCents}, {timeInSeconds}) call with {amountInSatoshis}",
   )
@@ -282,7 +281,7 @@ function getSatsFromCentsForFutureSell(
 
   const amountInCents = call.request.getAmountInCents()
   const timeInSec = call.request.getTimeInSeconds()
-  baseLogger.info(
+  logger.info(
     { amountInCents, timeInSec },
     "Received a GetSatsFromCentsForFutureSell({amountInCents}, {timeInSec}) call",
   )
@@ -295,7 +294,7 @@ function getSatsFromCentsForFutureSell(
   const currentFee = 1 - (fees.BASE_FEE + fees.DELAYED_CONVERSION_SPREAD)
   const amountInSatoshis = btc2sat(amountInUsd / (lastBidInUsdPerBtc * currentFee))
 
-  baseLogger.info(
+  logger.info(
     { amountInCents, timeInSeconds, amountInSatoshis },
     "Responding to GetSatsFromCentsForFutureSell({amountInCents}, {timeInSeconds}) call with {amountInSatoshis}",
   )
@@ -312,7 +311,7 @@ function getCentsPerSatsExchangeMidRate(
   callback: sendUnaryData<GetCentsPerSatsExchangeMidRateResponse>,
 ) {
   const response = new GetCentsPerSatsExchangeMidRateResponse()
-  baseLogger.info(
+  logger.info(
     { lastAsk: lastAskInUsdPerBtc, lastBid: lastBidInUsdPerBtc },
     "Received a GetCentsPerSatsExchangeMidRate() call",
   )
@@ -344,10 +343,16 @@ function getServer() {
   return server
 }
 
-const serverPort = process.env.PRICE_SERVER_PORT ?? "50055"
-const routeServer = getServer()
-routeServer.bindAsync(`0.0.0.0:${serverPort}`, ServerCredentials.createInsecure(), () => {
-  console.info(`Price server running on port ${serverPort}`)
-  main()
-  routeServer.start()
-})
+export const priceService = async () => {
+  const serverPort = process.env.PRICE_SERVER_PORT ?? "50055"
+  const routeServer = getServer()
+  routeServer.bindAsync(
+    `0.0.0.0:${serverPort}`,
+    ServerCredentials.createInsecure(),
+    () => {
+      logger.info(`Price Service running on port ${serverPort}`)
+      updateMarketData()
+      routeServer.start()
+    },
+  )
+}
