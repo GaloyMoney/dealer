@@ -1,5 +1,6 @@
 import { Transaction } from "./database/models"
 import {
+  FetchTickerResult,
   GetAccountAndPositionRiskResult,
   GetTransactionHistoryParameters,
 } from "./ExchangeTradingType"
@@ -45,6 +46,7 @@ export interface HedgingStrategy {
   getSpotPriceInUsd(): Promise<Result<number>>
   getMarkPriceInUsd(): Promise<Result<number>>
   getDerivativePriceInUsd(): Promise<Result<number>>
+  getDerivativeMarketInfo(): Promise<Result<FetchTickerResult>>
   getNextFundingRateInBtc(): Promise<Result<number>>
   getAccountAndPositionRisk(): Promise<Result<GetAccountAndPositionRiskResult>>
 

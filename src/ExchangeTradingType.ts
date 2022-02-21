@@ -218,6 +218,8 @@ export interface FetchPositionResult {
 export interface FetchTickerResult {
   originalResponseAsIs
   lastBtcPriceInUsd: number
+  bidInUsd: number
+  askInUsd: number
 }
 
 export interface GetAccountAndPositionRiskResult {

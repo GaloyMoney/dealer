@@ -347,6 +347,8 @@ function getProcessedFetchTickerProcessApiResponse(response) {
   return {
     originalResponseAsIs: response,
     lastBtcPriceInUsd: response.last,
+    bidInUsd: response.bid,
+    askInUsd: response.ask,
   }
 }
 

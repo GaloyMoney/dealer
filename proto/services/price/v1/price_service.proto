@@ -1,0 +1,63 @@
+syntax = "proto3";
+
+package services.price.v1;
+
+service PriceService {
+  rpc GetExchangeRateForImmediateUsdBuy(GetExchangeRateForImmediateUsdBuyRequest) returns (GetExchangeRateForImmediateUsdBuyResponse) {}
+  rpc GetExchangeRateForImmediateUsdBuyFromCents(GetExchangeRateForImmediateUsdBuyFromCentsRequest) returns (GetExchangeRateForImmediateUsdBuyFromCentsResponse) {}
+  rpc GetExchangeRateForImmediateUsdSell(GetExchangeRateForImmediateUsdSellRequest) returns (GetExchangeRateForImmediateUsdSellResponse) {}
+  rpc GetExchangeRateForImmediateUsdSellFromSatoshis(GetExchangeRateForImmediateUsdSellFromSatoshisRequest) returns (GetExchangeRateForImmediateUsdSellFromSatoshisResponse) {}
+  
+  rpc GetQuoteRateForFutureUsdBuy(GetQuoteRateForFutureUsdBuyRequest) returns (GetQuoteRateForFutureUsdBuyResponse) {}
+  rpc GetQuoteRateForFutureUsdSell(GetQuoteRateForFutureUsdSellRequest) returns (GetQuoteRateForFutureUsdSellResponse) {}
+}
+
+message GetExchangeRateForImmediateUsdBuyRequest {
+  float amount_in_satoshis = 1;
+}
+
+message GetExchangeRateForImmediateUsdBuyFromCentsRequest {
+  float amount_in_satoshis = 1;
+}
+
+message GetExchangeRateForImmediateUsdSellRequest {
+  float amount_in_usd = 1;
+}
+
+message GetExchangeRateForImmediateUsdSellFromSatoshisRequest {
+  float amount_in_usd = 1;
+}
+
+message GetQuoteRateForFutureUsdBuyRequest {
+  float amount_in_satoshis = 1;
+  float time_in_seconds = 2;
+}
+
+message GetQuoteRateForFutureUsdSellRequest {
+  float amount_in_usd = 1;
+  float time_in_seconds = 2;
+}
+
+message GetExchangeRateForImmediateUsdBuyResponse {
+  float price_in_usd = 1;
+}
+  
+message GetExchangeRateForImmediateUsdBuyFromCentsResponse {
+  float price_in_usd = 1;
+}
+  
+message GetExchangeRateForImmediateUsdSellResponse {
+  float price_in_satoshis = 1;
+}
+  
+message GetExchangeRateForImmediateUsdSellFromSatoshisResponse {
+  float price_in_satoshis = 1;
+}
+  
+message GetQuoteRateForFutureUsdBuyResponse {
+  float price_in_usd = 1;
+}
+  
+message GetQuoteRateForFutureUsdSellResponse {
+  float price_in_satoshis = 1;
+}
