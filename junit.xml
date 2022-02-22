@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="jest tests" tests="55" failures="0" errors="0" time="27.252">
+  <testsuite name="Dealer" errors="0" failures="0" skipped="0" timestamp="2022-02-22T08:39:06" time="20.493" tests="5">
+    <testcase classname="Dealer first scenario should execute successfully scenario 01" name="Dealer first scenario should execute successfully scenario 01" time="3.528">
+    </testcase>
+    <testcase classname="Dealer first scenario should execute successfully scenario 02" name="Dealer first scenario should execute successfully scenario 02" time="4.289">
+    </testcase>
+    <testcase classname="Dealer first scenario should execute successfully scenario 03" name="Dealer first scenario should execute successfully scenario 03" time="3.303">
+    </testcase>
+    <testcase classname="Dealer first scenario should execute successfully scenario 04" name="Dealer first scenario should execute successfully scenario 04" time="2.589">
+    </testcase>
+    <testcase classname="Dealer first scenario should execute successfully scenario 05" name="Dealer first scenario should execute successfully scenario 05" time="2.623">
+    </testcase>
+  </testsuite>
+  <testsuite name="DealerPriceService" errors="0" failures="0" skipped="0" timestamp="2022-02-22T08:39:26" time="0.128" tests="9">
+    <testcase classname="DealerPriceService getCentsFromSatsForImmediateBuy should return amount within range" name="DealerPriceService getCentsFromSatsForImmediateBuy should return amount within range" time="0.002">
+    </testcase>
+    <testcase classname="DealerPriceService getCentsFromSatsForImmediateSell should return amount within range" name="DealerPriceService getCentsFromSatsForImmediateSell should return amount within range" time="0.002">
+    </testcase>
+    <testcase classname="DealerPriceService getCentsFromSatsForFutureBuy should return amount within range" name="DealerPriceService getCentsFromSatsForFutureBuy should return amount within range" time="0.001">
+    </testcase>
+    <testcase classname="DealerPriceService getCentsFromSatsForFutureSell should return amount within range" name="DealerPriceService getCentsFromSatsForFutureSell should return amount within range" time="0">
+    </testcase>
+    <testcase classname="DealerPriceService getSatsFromCentsForImmediateBuy should return amount within range" name="DealerPriceService getSatsFromCentsForImmediateBuy should return amount within range" time="0">
+    </testcase>
+    <testcase classname="DealerPriceService getSatsFromCentsForImmediateSell should return amount within range" name="DealerPriceService getSatsFromCentsForImmediateSell should return amount within range" time="0.001">
+    </testcase>
+    <testcase classname="DealerPriceService getSatsFromCentsForFutureBuy should return amount within range" name="DealerPriceService getSatsFromCentsForFutureBuy should return amount within range" time="0.001">
+    </testcase>
+    <testcase classname="DealerPriceService getSatsFromCentsForFutureSell should return amount within range" name="DealerPriceService getSatsFromCentsForFutureSell should return amount within range" time="0">
+    </testcase>
+    <testcase classname="DealerPriceService getCentsPerSatsExchangeMidRate should return mid" name="DealerPriceService getCentsPerSatsExchangeMidRate should return mid" time="0">
+    </testcase>
+  </testsuite>
+  <testsuite name="ExternalTransfersRepository" errors="0" failures="0" skipped="0" timestamp="2022-02-22T08:39:26" time="0.859" tests="4">
+    <testcase classname="ExternalTransfersRepository insertExternalTransfer should create a row in the database table" name="ExternalTransfersRepository insertExternalTransfer should create a row in the database table" time="0.331">
+    </testcase>
+    <testcase classname="ExternalTransfersRepository clearAllExternalTransfers should truncate all rows from the database table" name="ExternalTransfersRepository clearAllExternalTransfers should truncate all rows from the database table" time="0.136">
+    </testcase>
+    <testcase classname="ExternalTransfersRepository getCount should count all rows from the database table" name="ExternalTransfersRepository getCount should count all rows from the database table" time="0.123">
+    </testcase>
+    <testcase classname="ExternalTransfersRepository fillExternalTransfers should truncate all rows from the database table" name="ExternalTransfersRepository fillExternalTransfers should truncate all rows from the database table" time="0.086">
+    </testcase>
+  </testsuite>
+  <testsuite name="GraphqlRepository" errors="0" failures="0" skipped="0" timestamp="2022-02-22T08:39:27" time="0.324" tests="3">
+    <testcase classname="GraphqlRepository getWallet should retrieve a wallet row from the database table" name="GraphqlRepository getWallet should retrieve a wallet row from the database table" time="0.045">
+    </testcase>
+    <testcase classname="GraphqlRepository getLastOnChainAddress should retrieve the last on chain address row from the database table" name="GraphqlRepository getLastOnChainAddress should retrieve the last on chain address row from the database table" time="0.012">
+    </testcase>
+    <testcase classname="GraphqlRepository setOnChainPay should create a row in the database table" name="GraphqlRepository setOnChainPay should create a row in the database table" time="0.018">
+    </testcase>
+  </testsuite>
+  <testsuite name="InFlightTransfersRepository" errors="0" failures="0" skipped="0" timestamp="2022-02-22T08:39:28" time="1.777" tests="14">
+    <testcase classname="InFlightTransfersRepository insertInFlightTransfer should create a row in the database table" name="InFlightTransfersRepository insertInFlightTransfer should create a row in the database table" time="0.038">
+    </testcase>
+    <testcase classname="InFlightTransfersRepository insertInFlightTransfer should create a deposit row in the database table" name="InFlightTransfersRepository insertInFlightTransfer should create a deposit row in the database table" time="0.005">
+    </testcase>
+    <testcase classname="InFlightTransfersRepository insertInFlightTransfer should create a completed row in the database table" name="InFlightTransfersRepository insertInFlightTransfer should create a completed row in the database table" time="0.005">
+    </testcase>
+    <testcase classname="InFlightTransfersRepository completedInFlightTransfer should update one row in the database table" name="InFlightTransfersRepository completedInFlightTransfer should update one row in the database table" time="0.136">
+    </testcase>
+    <testcase classname="InFlightTransfersRepository completedInFlightTransfer should update zero row in the database table and error out" name="InFlightTransfersRepository completedInFlightTransfer should update zero row in the database table and error out" time="0.143">
+    </testcase>
+    <testcase classname="InFlightTransfersRepository completedInFlightTransfer should update more than one row in the database table and error out" name="InFlightTransfersRepository completedInFlightTransfer should update more than one row in the database table and error out" time="0.161">
+    </testcase>
+    <testcase classname="InFlightTransfersRepository getAllInFlightTransfers should retrieve zero rows from the database table" name="InFlightTransfersRepository getAllInFlightTransfers should retrieve zero rows from the database table" time="0.142">
+    </testcase>
+    <testcase classname="InFlightTransfersRepository getAllInFlightTransfers should retrieve one rows from the database table" name="InFlightTransfersRepository getAllInFlightTransfers should retrieve one rows from the database table" time="0.131">
+    </testcase>
+    <testcase classname="InFlightTransfersRepository getAllInFlightTransfers should retrieve more than one rows from the database table" name="InFlightTransfersRepository getAllInFlightTransfers should retrieve more than one rows from the database table" time="0.145">
+    </testcase>
+    <testcase classname="InFlightTransfersRepository clearAllInFlightTransfers should truncate all rows from the database table" name="InFlightTransfersRepository clearAllInFlightTransfers should truncate all rows from the database table" time="0.116">
+    </testcase>
+    <testcase classname="InFlightTransfersRepository getThisInFlightTransfer should retrieve one specific row from the database table" name="InFlightTransfersRepository getThisInFlightTransfer should retrieve one specific row from the database table" time="0.12">
+    </testcase>
+    <testcase classname="InFlightTransfersRepository getPendingInFlightTransfers should retrieve only pending  rows from the database table" name="InFlightTransfersRepository getPendingInFlightTransfers should retrieve only pending  rows from the database table" time="0.124">
+    </testcase>
+    <testcase classname="InFlightTransfersRepository getPendingDepositInFlightTransfers should retrieve only pending deposit rows from the database table" name="InFlightTransfersRepository getPendingDepositInFlightTransfers should retrieve only pending deposit rows from the database table" time="0.148">
+    </testcase>
+    <testcase classname="InFlightTransfersRepository getPendingWithdrawInFlightTransfers should retrieve only pending withdraw rows from the database table" name="InFlightTransfersRepository getPendingWithdrawInFlightTransfers should retrieve only pending withdraw rows from the database table" time="0.156">
+    </testcase>
+  </testsuite>
+  <testsuite name="InternalTransfersRepository" errors="0" failures="0" skipped="0" timestamp="2022-02-22T08:39:29" time="0.711" tests="4">
+    <testcase classname="InternalTransfersRepository insertInternalTransfer should create a row in the database table" name="InternalTransfersRepository insertInternalTransfer should create a row in the database table" time="0.214">
+    </testcase>
+    <testcase classname="InternalTransfersRepository clearAllInternalTransfers should truncate all rows from the database table" name="InternalTransfersRepository clearAllInternalTransfers should truncate all rows from the database table" time="0.1">
+    </testcase>
+    <testcase classname="InternalTransfersRepository getCount should count all rows from the database table" name="InternalTransfersRepository getCount should count all rows from the database table" time="0.108">
+    </testcase>
+    <testcase classname="InternalTransfersRepository fillInternalTransfers should truncate all rows from the database table" name="InternalTransfersRepository fillInternalTransfers should truncate all rows from the database table" time="0.121">
+    </testcase>
+  </testsuite>
+  <testsuite name="OrdersRepository" errors="0" failures="0" skipped="0" timestamp="2022-02-22T08:39:30" time="1.041" tests="5">
+    <testcase classname="OrdersRepository insertOrder should create a row in the database table" name="OrdersRepository insertOrder should create a row in the database table" time="0.329">
+    </testcase>
+    <testcase classname="OrdersRepository clearAllOrders should truncate all rows from the database table" name="OrdersRepository clearAllOrders should truncate all rows from the database table" time="0.124">
+    </testcase>
+    <testcase classname="OrdersRepository getCount should count all rows from the database table" name="OrdersRepository getCount should count all rows from the database table" time="0.114">
+    </testcase>
+    <testcase classname="OrdersRepository getSideCount should count all rows per side from the database table" name="OrdersRepository getSideCount should count all rows per side from the database table" time="0.124">
+    </testcase>
+    <testcase classname="OrdersRepository fillOrders should truncate all rows from the database table" name="OrdersRepository fillOrders should truncate all rows from the database table" time="0.117">
+    </testcase>
+  </testsuite>
+  <testsuite name="TransactionsRepository" errors="0" failures="0" skipped="0" timestamp="2022-02-22T08:39:31" time="1.687" tests="11">
+    <testcase classname="TransactionsRepository insertTransaction should create a row in the database table" name="TransactionsRepository insertTransaction should create a row in the database table" time="0.212">
+    </testcase>
+    <testcase classname="TransactionsRepository clearAllTransactions should truncate all rows from the database table" name="TransactionsRepository clearAllTransactions should truncate all rows from the database table" time="0.146">
+    </testcase>
+    <testcase classname="TransactionsRepository getCount should count all rows from the database table" name="TransactionsRepository getCount should count all rows from the database table" time="0.136">
+    </testcase>
+    <testcase classname="TransactionsRepository getTypeCount should count all rows per type from the database table" name="TransactionsRepository getTypeCount should count all rows per type from the database table" time="0.145">
+    </testcase>
+    <testcase classname="TransactionsRepository getTradingFeesMetrics should return 0s when no transactions in the database table" name="TransactionsRepository getTradingFeesMetrics should return 0s when no transactions in the database table" time="0.093">
+    </testcase>
+    <testcase classname="TransactionsRepository getTradingFeesMetrics should get exact metrics from the database table" name="TransactionsRepository getTradingFeesMetrics should get exact metrics from the database table" time="0.164">
+    </testcase>
+    <testcase classname="TransactionsRepository getFundingFeesMetrics should return 0s when no transactions in the database table" name="TransactionsRepository getFundingFeesMetrics should return 0s when no transactions in the database table" time="0.113">
+    </testcase>
+    <testcase classname="TransactionsRepository getFundingFeesMetrics should get exact metrics from the database table" name="TransactionsRepository getFundingFeesMetrics should get exact metrics from the database table" time="0.13">
+    </testcase>
+    <testcase classname="TransactionsRepository getLastBillId should get null bill_id when no transactions in the database table" name="TransactionsRepository getLastBillId should get null bill_id when no transactions in the database table" time="0.079">
+    </testcase>
+    <testcase classname="TransactionsRepository getLastBillId should get most recent bill_id from the database table" name="TransactionsRepository getLastBillId should get most recent bill_id from the database table" time="0.105">
+    </testcase>
+    <testcase classname="TransactionsRepository fillTransactions should truncate all rows from the database table" name="TransactionsRepository fillTransactions should truncate all rows from the database table" time="0.148">
+    </testcase>
+  </testsuite>
+</testsuites>
