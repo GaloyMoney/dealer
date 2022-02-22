@@ -20,13 +20,13 @@ describe("GraphqlRepository", () => {
       const walletObj = walletRow.jsonData[0]
       expect(walletObj).toBeTruthy()
       expect(walletObj.id).toBe("BTCWallet")
-      expect(walletObj.balance).toBeGreaterThanOrEqual(0)
+      expect(walletObj.balance).toBeLessThanOrEqual(0)
       expect(walletObj.walletCurrency).toBe("BTC")
 
       const walletObj2 = walletRow.jsonData[1]
       expect(walletObj2).toBeTruthy()
       expect(walletObj2.id).toBe("USDWallet")
-      expect(walletObj2.balance).toBeGreaterThanOrEqual(0)
+      expect(walletObj2.balance).toBeLessThanOrEqual(0)
       expect(walletObj2.walletCurrency).toBe("USD")
     })
   })
