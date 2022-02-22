@@ -213,8 +213,8 @@ jobs:
       outputs:
       - name: image
       params:
-        CONTEXT: repo
-        DOCKERFILE: "repo/src/servers/graphql/Dockerfile"
+        CONTEXT: repo/dealer
+        DOCKERFILE: "repo/dealer/Dockerfile"
       run:
         path: build
   - put: fake-galoyapi-image
