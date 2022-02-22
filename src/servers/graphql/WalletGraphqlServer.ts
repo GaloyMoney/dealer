@@ -53,16 +53,11 @@ export async function startApolloServer() {
       BTC
     }
 
-    type Balance {
-      currency: Currency!
-      amount: Int!
-      quantityInBtc: Float!
-    }
-
     # ?: Account? Multiple wallets
     type Wallet {
       id: ID!
-      balance: Balance!
+      walletCurrency: Currency!
+      balance: Int!
     }
 
     type LastOnChainAddress {

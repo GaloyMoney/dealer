@@ -148,7 +148,7 @@ export class Dealer {
       return { ok: false, error: priceResult.error }
     }
     const btcPriceInUsd = priceResult.value
-    const usdLiabilityResult = await this.wallet.getWalletUsdBalance()
+    const usdLiabilityResult = await this.wallet.getUsdWalletBalance()
     logger.debug(
       { usdLiabilityResult },
       "wallet.getWalletUsdBalance() returned: {usdLiabilityResult}",
@@ -423,7 +423,7 @@ export class Dealer {
   }
 
   public async getLiabilityInUsd(): Promise<number> {
-    const result = await this.wallet.getWalletUsdBalance()
+    const result = await this.wallet.getUsdWalletBalance()
     if (!result.ok) {
       return NaN
     }
@@ -431,7 +431,7 @@ export class Dealer {
   }
 
   public async getLiabilityInBtc(): Promise<number> {
-    const result = await this.wallet.getWalletBtcBalance()
+    const result = await this.wallet.getBtcWalletBalance()
     if (!result.ok) {
       return NaN
     }
