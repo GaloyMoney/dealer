@@ -151,7 +151,7 @@ export class Dealer {
     const usdLiabilityResult = await this.wallet.getUsdWalletBalance()
     logger.debug(
       { usdLiabilityResult },
-      "wallet.getWalletUsdBalance() returned: {usdLiabilityResult}",
+      "wallet.getUsdWalletBalance() returned: {usdLiabilityResult}",
     )
 
     // If liability is negative, treat as an asset and do not hedge
