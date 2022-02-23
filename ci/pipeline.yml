@@ -413,7 +413,7 @@ resources:
 - name: dealer-image
   type: registry-image
   source:
-    tag: dealer
+    tag: edge
     username: #@ data.values.docker_registry_user
     password: #@ data.values.docker_registry_password
     repository: #@ dealer_image()
@@ -421,7 +421,7 @@ resources:
 - name: fake-galoyapi-image
   type: registry-image
   source:
-    tag: fake-galoyapi
+    tag: edge
     username: #@ data.values.docker_registry_user
     password: #@ data.values.docker_registry_password
     repository: #@ fake_galoyapi_image()
