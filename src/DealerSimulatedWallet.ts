@@ -44,7 +44,7 @@ const IN_MEMORY_CACHE_CONFIG = {
 
 const WALLETS = gql`
   query wallets {
-    wallet @client {
+    wallets @client {
       id
       balance
       walletCurrency
@@ -141,6 +141,27 @@ export class DealerSimulatedWallet implements GaloyWallet {
       logger.error(
         { GET_ONCHAIN_ADDRESS, error },
         "{GET_ONCHAIN_ADDRESS} query to galoy graphql api failed with {error}",
+      )
+      return { ok: false, error }
+    }
+  }
+
+  public async getWalletOnChainTransactionFee(
+    address: string,
+    btcAmountInSats: number,
+  ): Promise<Result<number>> {
+    const logger = this.logger.child({ method: "getWalletOnChainTransactionFee()" })
+    try {
+      const fee = 0
+      logger.debug(
+        { address, btcAmountInSats, result: fee },
+        "{GET_ONCHAIN_FEE} query to galoy graphql api successful with {result}",
+      )
+      return { ok: true, value: fee }
+    } catch (error) {
+      logger.error(
+        { error },
+        "{GET_ONCHAIN_FEE} query to galoy graphql api failed with {error}",
       )
       return { ok: false, error }
     }

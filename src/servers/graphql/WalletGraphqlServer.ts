@@ -53,11 +53,14 @@ export async function startApolloServer() {
       BTC
     }
 
+    # An amount (of a currency) that can be negative (i.g. in a transaction)
+    scalar SignedAmount
+
     # ?: Account? Multiple wallets
     type Wallet {
       id: ID!
       walletCurrency: Currency!
-      balance: Int!
+      balance: SignedAmount!
     }
 
     type LastOnChainAddress {
@@ -68,7 +71,7 @@ export async function startApolloServer() {
     # clients can execute, along with the return type for each. In this
     # case, the "books" query returns an array of zero or more Books (defined above).
     type Query {
-      wallet: [Wallet]
+      wallets: [Wallet]
       getLastOnChainAddress: LastOnChainAddress
     }
 
@@ -103,7 +106,7 @@ export async function startApolloServer() {
 
   const resolvers = {
     Query: {
-      wallet: async (_, __, { logger }) => {
+      wallets: async (_, __, { logger }) => {
         const result = await database.graphql.getWallet()
         logger.debug({ result }, "wallet: database.getWallet() returned: {result}")
         if (result.ok && result.value && result.value.jsonData) {
