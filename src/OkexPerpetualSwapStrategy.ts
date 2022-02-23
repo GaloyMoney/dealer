@@ -432,13 +432,16 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
         await database.internalTransfers.insert(intTransferRecord)
 
         // then initiate the withdrawal which by default uses the funding account
+        const config = this.exchangeConfig as OkexExchangeConfiguration
+        const averageFee =
+          (config.minOnChainWithdrawalFee + config.maxOnChainWithdrawalFee) / 2
         const withdrawArgs = {
           currency: TradeCurrency.BTC,
           quantity: transferSizeInBtc,
           address: withdrawOnChainAddress,
           params: {
-            fee: "0", // probably need to fetch from galoy wallet api
-            dest: DestinationAddressType.OKEx, // TODO: fix this to external or get from api also
+            fee: averageFee,
+            dest: DestinationAddressType.External,
             pwd: this.exchange.fundingPassword,
           },
         }

@@ -45,6 +45,7 @@ export enum DestinationAddressType {
 }
 
 const hedgingBounds = yamlConfig.hedging
+const withdrawalFees = yamlConfig.withdrawal
 
 export class OkexExchangeConfiguration implements ExchangeConfiguration {
   exchangeId: SupportedExchange
@@ -53,6 +54,9 @@ export class OkexExchangeConfiguration implements ExchangeConfiguration {
   positionMode: PositionMode
   marginMode: MarginMode
   leverage: number
+  minOnChainWithdrawalAmount: number
+  minOnChainWithdrawalFee: number
+  maxOnChainWithdrawalFee: number
 
   constructor() {
     this.exchangeId = SupportedExchange.OKEX5
@@ -61,6 +65,9 @@ export class OkexExchangeConfiguration implements ExchangeConfiguration {
     this.positionMode = PositionMode.Net
     this.marginMode = MarginMode.Cross
     this.leverage = hedgingBounds.HIGH_BOUND_LEVERAGE
+    this.minOnChainWithdrawalAmount = withdrawalFees.MIN_ON_CHAIN_WITHDRAWAL_AMOUNT
+    this.minOnChainWithdrawalFee = withdrawalFees.MIN_ON_CHAIN_WITHDRAWAL_FEE
+    this.maxOnChainWithdrawalFee = withdrawalFees.MAX_ON_CHAIN_WITHDRAWAL_FEE
 
     if (process.env["NETWORK"] === "testnet") {
       this.headers["x-simulated-trading"] = 1
