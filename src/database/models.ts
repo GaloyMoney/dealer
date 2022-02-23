@@ -11,10 +11,8 @@ export interface InFlightTransfer {
 
 export interface WalletObject {
   id: string
-  balance: {
-    currency: string
-    amount: number
-  }
+  balance: number
+  walletCurrency: string
 }
 
 export interface Wallet {

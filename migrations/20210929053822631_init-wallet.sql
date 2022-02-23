@@ -7,7 +7,8 @@ VALUES
       "id": "dealer",
       "balance": {
         "currency": "USD",
-        "amount": -100
+        "amount": -100,
+        "quantityInBtc": -0.00265463
       }
     }
   ]'::json

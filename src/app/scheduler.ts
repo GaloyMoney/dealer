@@ -31,9 +31,10 @@ const scheduler = async () => {
   })
 }
 
-Promise.all([
-  exporter().catch((err) => logger.error(err)),
-  priceService().catch((err) => logger.error(err)),
-  scheduler().catch((err) => logger.error(err)),
-  nodePgMigrate(options).catch((err) => logger.error(err)),
-])
+Promise.all([nodePgMigrate(options).catch((err) => logger.error(err))]).then(() =>
+  Promise.all([
+    exporter().catch((err) => logger.error(err)),
+    priceService().catch((err) => logger.error(err)),
+    scheduler().catch((err) => logger.error(err)),
+  ]),
+)

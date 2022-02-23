@@ -1,5 +1,5 @@
 import { Result } from "./Result"
-import { GaloyWallet } from "./GaloyWalletTypes"
+import { GaloyWallet, WalletsBalances } from "./GaloyWalletTypes"
 import {
   ApolloClient,
   NormalizedCacheObject,
@@ -14,12 +14,20 @@ const IN_MEMORY_CACHE_CONFIG = {
   typePolicies: {
     Query: {
       fields: {
-        // wallet: {
+        // wallets: {
         //   read() {
-        //     return {
-        //       id: "dealer",
-        //       balance: { currency: "USD", amount: -100 },
-        //     }
+        //     return [
+        //       {
+        //         id: "USDWallet",
+        //         balance: 100,
+        //         walletCurrency: "USD",
+        //       },
+        //       {
+        //         id: "BTCWallet",
+        //         balance: 1_000_000, // 100 USD @ 10k USD/BTC
+        //         walletCurrency: "BTC",
+        //       },
+        //     ]
         //   },
         // },
         // getLastOnChainAddress: {
@@ -34,15 +42,12 @@ const IN_MEMORY_CACHE_CONFIG = {
   },
 }
 
-const WALLET = gql`
-  query wallet {
+const WALLETS = gql`
+  query wallets {
     wallet {
       id
-      balance {
-        currency
-        amount
-        quantityInBtc
-      }
+      balance
+      walletCurrency
     }
   }
 `
@@ -76,40 +81,51 @@ export class DealerRemoteWallet implements GaloyWallet {
     this.logger = logger.child({ class: DealerRemoteWallet.name })
   }
 
-  public async getWalletUsdBalance(): Promise<Result<number>> {
-    const logger = this.logger.child({ method: "getWalletUsdBalance()" })
+  public async getWalletsBalances(): Promise<Result<WalletsBalances>> {
+    const logger = this.logger.child({ method: "getWalletsBalances()" })
     try {
-      const result = await this.client.query({ query: WALLET })
+      const result = await this.client.query({ query: WALLETS })
       logger.debug(
-        { WALLET, result },
+        { WALLET: WALLETS, result },
         "{WALLET} query to galoy graphql api successful with {result}",
       )
-      return { ok: true, value: result.data.wallet[0].balance.amount }
+
+      const btcWallet = result.data.wallets?.find((wallet) => wallet?.id === "BTCWallet")
+      const btcWalletId = btcWallet?.id
+      const btcWalletBalance = btcWallet?.balance ?? NaN
+
+      const usdWallet = result.data.wallets?.find((wallet) => wallet?.id === "USDWallet")
+      const usdWalletId = usdWallet?.id
+      // TODO: figure out if the balance will always be positive or not in that new implementation
+      const usdWalletBalance = -usdWallet?.balance ?? NaN
+
+      return {
+        ok: true,
+        value: { btcWalletId, btcWalletBalance, usdWalletId, usdWalletBalance },
+      }
     } catch (error) {
       logger.error(
-        { WALLET, error },
+        { WALLET: WALLETS, error },
         "{WALLET} query to galoy graphql api failed with {error}",
       )
       return { ok: false, error }
     }
   }
 
-  public async getWalletBtcBalance(): Promise<Result<number>> {
-    const logger = this.logger.child({ method: "getWalletBtcBalance()" })
-    try {
-      const result = await this.client.query({ query: WALLET })
-      logger.debug(
-        { WALLET, result },
-        "{WALLET} query to galoy graphql api successful with {result}",
-      )
-      return { ok: true, value: result.data.wallet[0].balance.quantityInBtc }
-    } catch (error) {
-      logger.error(
-        { WALLET, error },
-        "{WALLET} query to galoy graphql api failed with {error}",
-      )
-      return { ok: false, error }
+  public async getUsdWalletBalance(): Promise<Result<number>> {
+    const result = await this.getWalletsBalances()
+    if (result.ok) {
+      return { ok: true, value: result.value.usdWalletBalance }
     }
+    return result
+  }
+
+  public async getBtcWalletBalance(): Promise<Result<number>> {
+    const result = await this.getWalletsBalances()
+    if (result.ok) {
+      return { ok: true, value: result.value.btcWalletBalance }
+    }
+    return result
   }
 
   public async getWalletOnChainDepositAddress(): Promise<Result<string>> {

@@ -78,7 +78,7 @@ export interface ExchangeMock {
 }
 
 export interface WalletMock {
-  getWalletUsdBalance: jest.Mock
+  getUsdWalletBalance: jest.Mock
   getWalletOnChainDepositAddress: jest.Mock
   payOnChain: jest.Mock
 }
@@ -97,7 +97,7 @@ export class ExchangeMockStats {
 }
 
 export class WalletMockStats {
-  public getWalletUsdBalance = 0
+  public getUsdWalletBalance = 0
   public getWalletOnChainDepositAddress = 0
   public payOnChain = 0
 }
@@ -139,7 +139,7 @@ export class OkexScenarioStepBuilder {
 
   public static getCleanWalletMock(): WalletMock {
     const walletMock = {
-      getWalletUsdBalance: jest.fn(),
+      getUsdWalletBalance: jest.fn(),
       getWalletOnChainDepositAddress: jest.fn(),
       payOnChain: jest.fn(),
     }
@@ -244,7 +244,7 @@ export class OkexScenarioStepBuilder {
     // Position Loop
     //
     // exchange.fetchTicker()
-    // wallet.getWalletUsdBalance()
+    // wallet.getUsdWalletBalance()
     //
     // If hasMinimalLiability
     //  exchange.fetchPosition()
@@ -324,8 +324,8 @@ export class OkexScenarioStepBuilder {
     exchangeMock.fetchTicker.mockImplementationOnce((instrumentId: string) => {
       return getValidFetchTickerResponse(instrumentId, lastPriceInUsd)
     })
-    expectedResult.walletMockStats.getWalletUsdBalance++
-    walletMock.getWalletUsdBalance.mockImplementationOnce((): Result<number> => {
+    expectedResult.walletMockStats.getUsdWalletBalance++
+    walletMock.getUsdWalletBalance.mockImplementationOnce((): Result<number> => {
       const amount = -liabilityInUsd
       return { ok: true, value: amount }
     })
@@ -562,14 +562,14 @@ export class OkexScenarioStepBuilder {
     )
     exchangeMock.fetchDepositAddress.mockClear()
 
-    // getWalletUsdBalance
+    // getUsdWalletBalance
     OkexScenarioStepBuilder.validateMockCalls(
-      "getWalletUsdBalance",
-      walletMock.getWalletUsdBalance.mock.calls.length,
-      walletMock.getWalletUsdBalance.mock,
-      expected.walletMockStats.getWalletUsdBalance,
+      "getUsdWalletBalance",
+      walletMock.getUsdWalletBalance.mock.calls.length,
+      walletMock.getUsdWalletBalance.mock,
+      expected.walletMockStats.getUsdWalletBalance,
     )
-    walletMock.getWalletUsdBalance.mockClear()
+    walletMock.getUsdWalletBalance.mockClear()
 
     // getWalletOnChainDepositAddress
     OkexScenarioStepBuilder.validateMockCalls(
