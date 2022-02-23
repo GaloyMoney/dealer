@@ -14,6 +14,10 @@ export interface GaloyWallet {
   getBtcWalletBalance(): Promise<Result<number>>
 
   getWalletOnChainDepositAddress(): Promise<Result<string>>
+  getWalletOnChainTransactionFee(
+    address: string,
+    btcAmountInSats: number,
+  ): Promise<Result<number>>
 
   payOnChain(
     address: string,

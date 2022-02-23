@@ -145,6 +145,40 @@ export class DealerRemoteWalletV2 implements GaloyWallet {
     }
   }
 
+  public async getWalletOnChainTransactionFee(
+    address: string,
+    btcAmountInSats: number,
+  ): Promise<Result<number>> {
+    const logger = this.logger.child({ method: "getWalletOnChainTransactionFee()" })
+    try {
+      const walletsResult = await this.getWalletsBalances()
+      if (!walletsResult.ok) {
+        return walletsResult
+      }
+      const variables = {
+        walletId: walletsResult.value.btcWalletId,
+        address: address,
+        amount: btcAmountInSats,
+      }
+      const result = await this.client.query({
+        query: QUERIES.onChainTxFee,
+        variables: variables,
+      })
+      logger.debug(
+        { query: QUERIES.onChainTxFee, variables, result },
+        "{query} with {variables} to galoy graphql api successful with {result}",
+      )
+      const btcAddress = result.data?.onChainTxFee?.amount ?? undefined
+      return { ok: true, value: btcAddress }
+    } catch (error) {
+      logger.error(
+        { query: QUERIES.onChainTxFee, address, btcAmountInSats, error },
+        "{query} to galoy graphql api failed with {error}",
+      )
+      return { ok: false, error }
+    }
+  }
+
   public async payOnChain(
     address: string,
     btcAmountInSats: number,
@@ -161,7 +195,6 @@ export class DealerRemoteWalletV2 implements GaloyWallet {
           address: address,
           amount: btcAmountInSats,
           memo: memo,
-          targetConfirmations: 1,
           walletId: walletsResult.value.btcWalletId,
         },
       }
