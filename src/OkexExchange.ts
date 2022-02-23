@@ -227,6 +227,31 @@ export class OkexExchange extends ExchangeBase {
     try {
       const config = this.exchangeConfig as OkexExchangeConfiguration
 
+      try {
+        const currencies = await this.exchange.privateGetAssetCurrencies()
+        const btcCurrency = currencies?.data?.find(
+          (currency) => currency?.chain === "BTC-Bitcoin",
+        )
+        if (btcCurrency) {
+          this.logger.debug(
+            { config, response: btcCurrency },
+            "exchange.privateGetAssetCurrencies() returned: {response}",
+          )
+          if (btcCurrency?.minWd) config.minOnChainWithdrawalAmount = btcCurrency?.minWd
+          if (btcCurrency?.minFee) config.minOnChainWithdrawalFee = btcCurrency?.minFee
+          if (btcCurrency?.maxFee) config.maxOnChainWithdrawalFee = btcCurrency?.maxFee
+          this.logger.debug(
+            { config, response: btcCurrency },
+            "ExchangeConfiguration after update: {config}",
+          )
+        }
+      } catch (error) {
+        this.logger.error(
+          { error },
+          "exchange.privateGetAssetCurrencies() failed: {error}",
+        )
+      }
+
       const args1 = { posMode: config.positionMode }
       const positionResponse = await this.exchange.privatePostAccountSetPositionMode(
         args1,
