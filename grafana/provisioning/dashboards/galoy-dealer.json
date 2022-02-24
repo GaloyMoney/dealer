@@ -804,6 +804,7 @@
     },
     {
       "datasource": null,
+      "description": "",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -867,6 +868,33 @@
                 }
               }
             ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "liability in btc"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "orange",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "custom.axisPlacement",
+                "value": "right"
+              },
+              {
+                "id": "unit",
+                "value": "currencyBTC"
+              },
+              {
+                "id": "decimals",
+                "value": 8
+              }
+            ]
           }
         ]
       },
@@ -895,9 +923,17 @@
           "interval": "",
           "legendFormat": "liability in usd",
           "refId": "A"
+        },
+        {
+          "exemplar": true,
+          "expr": "galoy_dealer_liabilityInBtc",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "liability in btc",
+          "refId": "B"
         }
       ],
-      "title": "Liability in USD",
+      "title": "Liability in USD & BTC",
       "type": "timeseries"
     },
     {
@@ -3051,12 +3087,12 @@
     "list": []
   },
   "time": {
-    "from": "now-13d",
-    "to": "now"
+    "from": "2022-02-24T02:40:21.249Z",
+    "to": "2022-02-24T04:39:33.250Z"
   },
   "timepicker": {},
   "timezone": "",
   "title": "Galoy Dealer",
   "uid": "pTEP9n47k",
-  "version": 17
+  "version": 19
 }
