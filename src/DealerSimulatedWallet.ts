@@ -9,6 +9,7 @@ import {
 } from "@apollo/client/core"
 import fetch from "node-fetch"
 import { pino } from "pino"
+import { cents2usd, sat2btc } from "./utils"
 
 const IN_MEMORY_CACHE_CONFIG = {
   typePolicies: {
@@ -18,14 +19,14 @@ const IN_MEMORY_CACHE_CONFIG = {
           read() {
             return [
               {
-                id: "USDWallet",
-                balance: 100,
-                walletCurrency: "USD",
+                id: "BTCWallet",
+                balance: 1_000_000, // 100 USD in sats @ 10k USD/BTC
+                walletCurrency: "BTC",
               },
               {
-                id: "BTCWallet",
-                balance: 1_000_000, // 100 USD @ 10k USD/BTC
-                walletCurrency: "BTC",
+                id: "USDWallet",
+                balance: -10000, // 100 USD in cents
+                walletCurrency: "USD",
               },
             ]
           },
@@ -96,12 +97,16 @@ export class DealerSimulatedWallet implements GaloyWallet {
 
       const usdWallet = result.data.wallets?.find((wallet) => wallet?.id === "USDWallet")
       const usdWalletId = usdWallet?.id
-      // TODO: figure out if the balance will always be positive or not in that new implementation
-      const usdWalletBalance = -usdWallet?.balance ?? NaN
+      const usdWalletBalance = usdWallet?.balance ?? NaN
 
       return {
         ok: true,
-        value: { btcWalletId, btcWalletBalance, usdWalletId, usdWalletBalance },
+        value: {
+          btcWalletId,
+          btcWalletBalance: sat2btc(btcWalletBalance),
+          usdWalletId,
+          usdWalletBalance: cents2usd(usdWalletBalance),
+        },
       }
     } catch (error) {
       logger.error(

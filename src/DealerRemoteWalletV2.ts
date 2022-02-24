@@ -8,6 +8,7 @@ import {
 } from "@apollo/client/core"
 import fetch from "node-fetch"
 import { pino } from "pino"
+import { cents2usd, sat2btc } from "./utils"
 
 import { QUERIES, MUTATIONS } from "@galoymoney/client"
 
@@ -78,12 +79,16 @@ export class DealerRemoteWalletV2 implements GaloyWallet {
         (wallet) => wallet?.__typename !== "BTCWallet",
       )
       const usdWalletId = usdWallet?.id
-      // TODO: figure out if the balance will always be positive or not in that new implementation
-      const usdWalletBalance = -usdWallet?.balance ?? NaN
+      const usdWalletBalance = usdWallet?.balance ?? NaN
 
       return {
         ok: true,
-        value: { btcWalletId, btcWalletBalance, usdWalletId, usdWalletBalance },
+        value: {
+          btcWalletId,
+          btcWalletBalance: sat2btc(btcWalletBalance),
+          usdWalletId,
+          usdWalletBalance: cents2usd(usdWalletBalance),
+        },
       }
     } catch (error) {
       logger.error(
