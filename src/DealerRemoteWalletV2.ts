@@ -5,7 +5,9 @@ import {
   NormalizedCacheObject,
   createHttpLink,
   InMemoryCache,
+  ApolloLink,
 } from "@apollo/client/core"
+import { setContext } from "@apollo/client/link/context"
 import fetch from "node-fetch"
 import { pino } from "pino"
 import { cents2usd, sat2btc } from "./utils"
@@ -14,6 +16,7 @@ import { QUERIES, MUTATIONS } from "@galoymoney/client"
 
 export class DealerRemoteWalletV2 implements GaloyWallet {
   client: ApolloClient<NormalizedCacheObject>
+  httpLink: ApolloLink
   phoneNumber: string
   authCode: string
   galoyJwtToken: string | undefined
@@ -21,9 +24,9 @@ export class DealerRemoteWalletV2 implements GaloyWallet {
 
   constructor(logger: pino.Logger) {
     const GRAPHQL_URI = process.env["GRAPHQL_URI"]
-    const httpLink = createHttpLink({ uri: GRAPHQL_URI, fetch })
+    this.httpLink = createHttpLink({ uri: GRAPHQL_URI, fetch })
     const cache = new InMemoryCache()
-    this.client = new ApolloClient({ link: httpLink, cache: cache })
+    this.client = new ApolloClient({ link: this.httpLink, cache: cache })
     this.logger = logger.child({ class: DealerRemoteWalletV2.name })
 
     if (!process.env["DEALER_PHONE"] || !process.env["DEALER_CODE"]) {
@@ -46,6 +49,19 @@ export class DealerRemoteWalletV2 implements GaloyWallet {
       }
 
       this.galoyJwtToken = data?.userLogin?.authToken
+    }
+
+    if (this.galoyJwtToken) {
+      const authLink = setContext((_, { headers }) => {
+        return {
+          headers: {
+            ...headers,
+            authorization: `Bearer ${this.galoyJwtToken}`,
+          },
+        }
+      })
+
+      this.client.setLink(authLink.concat(this.httpLink))
     }
     return
   }
@@ -130,7 +146,7 @@ export class DealerRemoteWalletV2 implements GaloyWallet {
       if (!walletsResult.ok) {
         return walletsResult
       }
-      const variables = { walletId: walletsResult.value.btcWalletId }
+      const variables = { input: { walletId: walletsResult.value.btcWalletId } }
       const result = await this.client.mutate({
         mutation: MUTATIONS.onChainAddressCurrent,
         variables: variables,

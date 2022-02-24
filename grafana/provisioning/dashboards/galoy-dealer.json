@@ -3087,12 +3087,12 @@
     "list": []
   },
   "time": {
-    "from": "2022-02-24T02:40:21.249Z",
-    "to": "2022-02-24T04:39:33.250Z"
+    "from": "now-7d",
+    "to": "now"
   },
   "timepicker": {},
   "timezone": "",
   "title": "Galoy Dealer",
   "uid": "pTEP9n47k",
-  "version": 19
+  "version": 21
 }
