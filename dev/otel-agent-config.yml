@@ -1,0 +1,44 @@
+receivers:
+  jaeger:
+    protocols:
+      thrift_compact: # on port 6831
+      thrift_binary: # on port 6832
+
+processors:
+  batch:
+  attributes:
+    actions:
+    - key: graphql.variables.input.code
+      action: update
+      value: "<redacted>"
+    - key: code.function.params.code
+      action: update
+      value: "<redacted>"
+    - key: code.function.params.twoFASecret
+      action: update
+      value: "<redacted>"
+    - key: code.function.params.twoFAToken
+      action: update
+      value: "<redacted>"
+
+exporters:
+  logging:
+    loglevel: debug
+  otlp:
+    endpoint: "api.honeycomb.io:443"
+    headers:
+      "x-honeycomb-team": ${HONEYCOMB_API_KEY}
+      "x-honeycomb-dataset": ${HONEYCOMB_DATASET}
+
+extensions:
+  health_check:
+  pprof:
+  zpages:
+
+service:
+  extensions: [health_check, pprof, zpages]
+  pipelines:
+    traces:
+      receivers: [jaeger]
+      processors: [attributes, batch]
+      exporters: [otlp, logging]
