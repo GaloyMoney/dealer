@@ -26,17 +26,37 @@ const LN_INVOICE_CREATE_ON_BEHALF_OF_RECIPIENT = gql`
   }
 `
 
-const INVOICE_STALE_CHECK_INTERVAL = 5 * 60 * 1000
+const LN_USD_INVOICE_CREATE_ON_BEHALF_OF_RECIPIENT = gql`
+  mutation lnUsdInvoiceCreateOnBehalfOfRecipient(
+    $walletId: WalletId!
+    $amount: CentAmount!
+  ) {
+    mutationData: lnUsdInvoiceCreateOnBehalfOfRecipient(
+      input: { recipientWalletId: $walletId, amount: $amount }
+    ) {
+      errors {
+        message
+      }
+      invoice {
+        paymentRequest
+      }
+    }
+  }
+`
+
+const INVOICE_STALE_CHECK_INTERVAL = 2 * 60 * 1000
 const INVOICE_EXPIRE_INTERVAL = 60 * 60 * 1000
 
 function GenerateInvoice({
   recipientWalletId,
-  amountInSats,
+  recipientWalletCurrency,
+  amountInBase,
   regenerate,
   currency,
 }: {
   recipientWalletId: string
-  amountInSats: number
+  recipientWalletCurrency: string
+  amountInBase: number
   regenerate: () => void
   currency: string
 }) {
@@ -44,6 +64,10 @@ function GenerateInvoice({
     "loading" | "new" | "need-update" | "expired"
   >("loading")
 
+  const INVOICE_CREATION_MUTATION =
+    recipientWalletCurrency === "USD"
+      ? LN_USD_INVOICE_CREATE_ON_BEHALF_OF_RECIPIENT
+      : LN_INVOICE_CREATE_ON_BEHALF_OF_RECIPIENT
   const timerIds = useRef<number[]>([])
 
   const [createInvoice, { loading, error, data }] = useMutation<{
@@ -51,7 +75,7 @@ function GenerateInvoice({
       errors: OperationError[]
       invoice?: LnInvoiceObject
     }
-  }>(LN_INVOICE_CREATE_ON_BEHALF_OF_RECIPIENT, {
+  }>(INVOICE_CREATION_MUTATION, {
     onError: console.error,
     onCompleted: () => setInvoiceStatus("new"),
   })
@@ -59,12 +83,11 @@ function GenerateInvoice({
   const clearAllTimers = () => {
     timerIds.current.forEach((timerId) => clearTimeout(timerId))
   }
-
   useEffect(() => {
     createInvoice({
-      variables: { walletId: recipientWalletId, amount: amountInSats },
+      variables: { walletId: recipientWalletId, amount: amountInBase },
     })
-    if (currency !== "SATS") {
+    if (currency !== "SATS" || recipientWalletCurrency === "USD") {
       timerIds.current.push(
         window.setTimeout(
           () => setInvoiceStatus("need-update"),
@@ -76,7 +99,7 @@ function GenerateInvoice({
       window.setTimeout(() => setInvoiceStatus("expired"), INVOICE_EXPIRE_INTERVAL),
     )
     return clearAllTimers
-  }, [recipientWalletId, amountInSats, currency, createInvoice])
+  }, [recipientWalletId, amountInBase, currency, createInvoice])
 
   let errorString: string | null = error?.message || null
   let invoice

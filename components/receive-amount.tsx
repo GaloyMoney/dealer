@@ -19,8 +19,10 @@ const satsFormatter = new Intl.NumberFormat("en-US", {
 
 export default function ReceiveAmount({
   recipientWalletId,
+  recipientWalletCurrency,
 }: {
   recipientWalletId: string
+  recipientWalletCurrency: string
 }) {
   const router = useRouter()
   const { satsToUsd, usdToSats } = useSatPrice()
@@ -41,13 +43,22 @@ export default function ReceiveAmount({
   const getSatsForInvoice = React.useCallback(() => {
     return Math.round(currency === "SATS" ? amount : Math.round(usdToSats(amount)))
   }, [amount, currency, usdToSats])
+  const [satsForInvoice, setSatsForInvoice] = useState(() => getSatsForInvoice())
 
-  function triggerRegenerateInvoice() {
+  const getCentsForInvoice = React.useCallback(() => {
+    return Math.round(currency === "USD" ? amount * 100 : satsToUsd(amount) * 100)
+  }, [amount, currency, satsToUsd])
+  const [centsForInvoice, setCentsForInvoice] = useState(() => getCentsForInvoice())
+
+  function triggerRegenerateUsdInvoice() {
+    setCentsForInvoice(0)
+    setTimeout(() => setCentsForInvoice(getCentsForInvoice()))
+  }
+
+  function triggerRegenerateBtcInvoice() {
     setSatsForInvoice(0)
     setTimeout(() => setSatsForInvoice(getSatsForInvoice()))
   }
-
-  const [satsForInvoice, setSatsForInvoice] = useState(() => getSatsForInvoice())
 
   const convertedValue =
     currency === "SATS"
@@ -57,8 +68,16 @@ export default function ReceiveAmount({
   useEffect(() => {
     const newSats = getSatsForInvoice()
     if (newSats !== satsForInvoice) setSatsForInvoice(newSats)
-  }, [amount, currency, getSatsForInvoice, satsForInvoice, usdToSats])
+    const newCents = getCentsForInvoice()
+    if (newCents !== centsForInvoice) setCentsForInvoice(newCents)
+  }, [getSatsForInvoice, satsForInvoice, centsForInvoice, getCentsForInvoice])
 
+  const amountInBase =
+    recipientWalletCurrency === "USD" ? centsForInvoice : satsForInvoice
+  const triggerRegenerateInvoice =
+    recipientWalletCurrency === "USD"
+      ? triggerRegenerateUsdInvoice
+      : triggerRegenerateBtcInvoice
   return (
     <>
       <div className="amount-input">
@@ -76,10 +95,11 @@ export default function ReceiveAmount({
       </div>
       <div>&#8776; {convertedValue}</div>
 
-      {satsForInvoice > 0 && (
+      {amountInBase > 0 && (
         <GenerateInvoice
           recipientWalletId={recipientWalletId}
-          amountInSats={satsForInvoice}
+          recipientWalletCurrency={recipientWalletCurrency}
+          amountInBase={amountInBase}
           regenerate={triggerRegenerateInvoice}
           currency={currency}
         />
