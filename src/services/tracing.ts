@@ -17,9 +17,13 @@ import {
   trace,
   context,
   propagation,
+  Span,
   SpanAttributes,
+  SpanStatusCode,
   TimeInput,
+  Exception,
 } from "@opentelemetry/api"
+import { ErrorLevel } from "../Result"
 import { tracingConfig } from "../config"
 
 propagation.setGlobalPropagator(new W3CTraceContextPropagator())
@@ -101,6 +105,35 @@ export const addEventToCurrentSpan = (
   if (span) {
     span.addEvent(name, attributesOrStartTime, startTime)
   }
+}
+
+export const recordException = (span: Span, exception: Exception, level?: ErrorLevel) => {
+  const errorLevel = level || exception["level"] || ErrorLevel.Warn
+  span.setAttribute("error.level", errorLevel)
+  span.recordException(exception)
+  span.setStatus({ code: SpanStatusCode.ERROR })
+}
+
+export const asyncRunInSpan = <F extends () => ReturnType<F>>(
+  spanName: string,
+  attributes: SpanAttributes,
+  fn: F,
+) => {
+  const ret = tracer.startActiveSpan(spanName, { attributes }, async (span) => {
+    try {
+      const ret = await Promise.resolve(fn())
+      if ((ret as unknown) instanceof Error) {
+        recordException(span, ret)
+      }
+      span.end()
+      return ret
+    } catch (error) {
+      recordException(span, error, ErrorLevel.Critical)
+      span.end()
+      throw error
+    }
+  })
+  return ret
 }
 
 export const shutdownTracing = async () => {
