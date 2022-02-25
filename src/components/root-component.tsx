@@ -17,7 +17,7 @@ type Props = {
 
 const RootComponent = ({ path, flowData, ...props }: Props) => {
   const { layout } = useAppState()
-  const appLayout = layout ?? "Small"
+  const appLayout = layout ?? "Large"
   const checkedRoutePath = checkRoute(path)
 
   if (!(checkedRoutePath instanceof Error)) {

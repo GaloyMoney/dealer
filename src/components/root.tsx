@@ -28,26 +28,26 @@ const Root = ({ GwwState }: RootProps) => {
       })
     })
 
-    const screenMediaQuery = window.matchMedia("(max-width: 500px)")
-    dispatch({
-      type: "update",
-      layout:
-        "ontouchstart" in document.documentElement || screenMediaQuery.matches
-          ? "Small"
-          : "Large",
-    })
+    // const screenMediaQuery = window.matchMedia("(max-width: 500px)")
+    // dispatch({
+    //   type: "update",
+    //   layout:
+    //     "ontouchstart" in document.documentElement || screenMediaQuery.matches
+    //       ? "Small"
+    //       : "Large",
+    // })
 
-    const screenMediaListener = (event: MediaQueryListEvent) => {
-      dispatch({
-        type: "update",
-        layout: event.matches ? "Small" : "Large",
-      })
-    }
-    screenMediaQuery.addEventListener("change", screenMediaListener)
+    // const screenMediaListener = (event: MediaQueryListEvent) => {
+    //   dispatch({
+    //     type: "update",
+    //     layout: event.matches ? "Small" : "Large",
+    //   })
+    // }
+    // screenMediaQuery.addEventListener("change", screenMediaListener)
 
     return () => {
       removeHistoryListener()
-      screenMediaQuery.removeEventListener("change", screenMediaListener)
+      // screenMediaQuery.removeEventListener("change", screenMediaListener)
     }
   }, [dispatch])
 
