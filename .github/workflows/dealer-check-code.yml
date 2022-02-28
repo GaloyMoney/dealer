@@ -1,14 +1,14 @@
-name: "Check code"
+name: "Dealer Check code"
 on:
   pull_request:
     branches: [ main ]
 jobs:
   check-code:
-    name: Check Code
+    name: Dealer Check Code
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-node@v2
     - run: yarn install
     - name: Run check code
-      run: make check-code
+      run: make dealer-check-code

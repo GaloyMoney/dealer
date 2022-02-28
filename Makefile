@@ -1,32 +1,20 @@
 BIN_DIR=node_modules/.bin
+clean-deps:
+	docker compose down
 
-test: unit integration
-
-unit:
-	yarn test:unit
-
-integration:
-	yarn test:integration
-
-test-in-ci:
+start-deps:
 	docker compose up -d
-	. ./.envrc && \
-		LOG_LEVEL=error node_modules/.bin/jest --bail --runInBand --ci --reporters=default --reporters=jest-junit
+	direnv reload
 
+reset-deps: clean-deps start-deps
 
-integration-in-ci:
-	docker compose up -d
-	. ./.envrc && \
-	sleep 10 && \
-	yarn migrate-ts up && \
-		LOG_LEVEL=error $(BIN_DIR)/jest --config ./test/jest-integration.config.js --bail --runInBand --ci --reporters=default --reporters=jest-junit
+dealer-integration-in-ci:
+	. ./.envrc && yarn dealer migrate-ts up && yarn dealer ci:test:integration
 
-unit-in-ci:
-	. ./.envrc && \
-		LOG_LEVEL=warn $(BIN_DIR)/jest --config ./test/jest-unit.config.js --ci --bail
+dealer-check-code:
+	yarn dealer tsc-check
+	yarn dealer eslint-check
+	yarn dealer build
 
-check-code:
-	yarn tsc-check
-	yarn eslint-check
-	yarn prettier-check
-	yarn build
+dealer-unit-in-ci:
+	. ./.envrc && yarn dealer ci:test:unit

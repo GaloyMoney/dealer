@@ -9,4 +9,4 @@ unpack_deps
 
 pushd repo
 
-make check-code
+make dealer-check-code

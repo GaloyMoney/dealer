@@ -1,4 +1,4 @@
-name: "Unit test"
+name: "Dealer Unit test"
 
 on:
   pull_request:
@@ -6,11 +6,11 @@ on:
 
 jobs:
   unit-test:
-    name: Unit test
+    name: Dealer Unit test
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-node@v2
     - run: yarn install
     - name: Run unit tests
-      run: make unit-in-ci
+      run: make dealer-unit-in-ci
