@@ -8,4 +8,4 @@ unpack_deps
 
 pushd repo
 
-make unit-in-ci
+make dealer-unit-in-ci

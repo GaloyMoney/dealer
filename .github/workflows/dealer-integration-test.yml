@@ -1,4 +1,4 @@
-name: "Integration test"
+name: "Dealer Integration test"
 
 on:
   pull_request:
@@ -6,7 +6,7 @@ on:
 
 jobs:
   integration:
-    name: Integration test
+    name: Dealer Integration test
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -14,4 +14,5 @@ jobs:
     - uses: actions/setup-node@v2
     - run: yarn install
     - name: Run integration tests
-      run: docker-compose up -d && make integration-in-ci
+      run: docker-compose up -d && sleep 10 && make dealer-integration-in-ci
+

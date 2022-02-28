@@ -48,7 +48,7 @@ services:
   galoy-dealer:
     build:
       context: .
-      dockerfile: src/app/Dockerfile
+      dockerfile: dealer/Dockerfile
     depends_on:
       postgres:
         condition: service_healthy      
@@ -69,7 +69,7 @@ services:
   graphql:
     build:
       context: .
-      dockerfile: src/servers/graphql/Dockerfile
+      dockerfile: dealer/src/servers/graphql/Dockerfile
     links:
       - postgres
     ports:
