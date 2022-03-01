@@ -5,7 +5,8 @@ import helmet from "helmet"
 import morgan from "morgan"
 import serialize from "serialize-javascript"
 
-import config from "../store/config"
+import config from "store/config"
+
 import apiRouter from "./api-router"
 import ssrRouter from "./ssr-router"
 

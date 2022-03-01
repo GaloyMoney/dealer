@@ -2,15 +2,15 @@ import { useEffect, useReducer } from "react"
 
 import { GaloyClient, setLocale } from "@galoymoney/client"
 
-import { GwwContext, history } from "../store"
-import mainReducer from "../store/reducer"
+import { GwwContext, history } from "store/index"
+import mainReducer from "store/reducer"
 
-import { AuthProvider } from "../components/auth-provider"
-import RootComponent from "../components/root-component"
+import { AuthProvider } from "components/auth-provider"
+import RootComponent from "components/root-component"
 
-type RootProps = { GwwState: GwwState }
+type RootFCT = React.FC<{ GwwState: GwwState }>
 
-const Root = ({ GwwState }: RootProps) => {
+const Root: RootFCT = ({ GwwState }) => {
   const [state, dispatch] = useReducer(mainReducer, GwwState, (initState) => {
     setLocale(initState.defaultLanguage)
     return initState
@@ -28,26 +28,8 @@ const Root = ({ GwwState }: RootProps) => {
       })
     })
 
-    // const screenMediaQuery = window.matchMedia("(max-width: 500px)")
-    // dispatch({
-    //   type: "update",
-    //   layout:
-    //     "ontouchstart" in document.documentElement || screenMediaQuery.matches
-    //       ? "Small"
-    //       : "Large",
-    // })
-
-    // const screenMediaListener = (event: MediaQueryListEvent) => {
-    //   dispatch({
-    //     type: "update",
-    //     layout: event.matches ? "Small" : "Large",
-    //   })
-    // }
-    // screenMediaQuery.addEventListener("change", screenMediaListener)
-
     return () => {
       removeHistoryListener()
-      // screenMediaQuery.removeEventListener("change", screenMediaListener)
     }
   }, [dispatch])
 
@@ -55,8 +37,8 @@ const Root = ({ GwwState }: RootProps) => {
     <AuthProvider>
       <GwwContext.Provider value={{ state, dispatch }}>
         <RootComponent
-          path={state.path}
           key={state.key}
+          path={state.path}
           flowData={state.flowData}
           {...state.props}
         />
@@ -65,14 +47,14 @@ const Root = ({ GwwState }: RootProps) => {
   )
 }
 
-type SSRootProps = {
+type SSRRootFCT = React.FC<{
   client: GaloyClient<unknown>
   galoyJwtToken?: string
   GwwState: GwwState
   flowData?: KratosFlowData
-}
+}>
 
-export const SSRRoot = ({ client, GwwState, galoyJwtToken }: SSRootProps) => {
+export const SSRRoot: SSRRootFCT = ({ client, GwwState, galoyJwtToken }) => {
   const [state, dispatch] = useReducer(mainReducer, GwwState, (initState) => {
     setLocale(initState.defaultLanguage)
     return initState

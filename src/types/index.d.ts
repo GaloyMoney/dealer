@@ -1,3 +1,6 @@
+type SelfServiceRegistrationFlow =
+  import("@ory/kratos-client").SelfServiceRegistrationFlow
+
 // Galoy Client
 type NormalizedCacheObject = import("@galoymoney/client").NormalizedCacheObject
 
@@ -18,7 +21,7 @@ type RoutePath = import("../server/routes").SupportedRoutes
 type RouteInfo = Record<string, string | (() => JSX.Element | null)>
 
 type KratosFlowData = { registrationData?: SelfServiceRegistrationFlow }
-type AuthRoutePath = typeof import("../server/routes").SupportedAuthRoutes
+type AuthRoutePath = import("../server/routes").SupportedAuthRoutes
 
 type HandleRegisterResponse =
   | {
@@ -27,17 +30,9 @@ type HandleRegisterResponse =
     }
   | { redirect: false; flowData: KratosFlowData }
 
-type Layout = "Small" | "Large"
-
-type LayoutComponent<P> = {
-  Small: React.FC<P & { layout?: Layout }>
-  Large: React.FC<P & { layout?: Layout }>
-}
-
 type GwwState = {
   key: number
   path: RoutePath | AuthRoutePath
-  layout?: Layout
   props?: Record<string, unknown>
   defaultLanguage?: string
   flowData?: KratosFlowData
@@ -75,6 +70,7 @@ declare interface Window {
     ssrData: NormalizedCacheObject
     GwwConfig: {
       walletName: string
+      walletTheme: string
       supportEmail: string
       shareUri: string
       graphqlUri: string
@@ -129,6 +125,8 @@ type InvoiceInput = {
 }
 
 // Components
+
+type NoPropsFCT = React.FC<Record<string, never>>
 
 type SendActionProps = InvoiceInput & {
   btcWalletId: string

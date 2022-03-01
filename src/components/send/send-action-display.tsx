@@ -3,9 +3,11 @@ import { MouseEvent } from "react"
 import { formatUsd, GaloyGQL, translate } from "@galoymoney/client"
 import { SatFormat, Spinner, SuccessCheckmark } from "@galoymoney/react"
 
-import useMyUpdates from "../../hooks/use-my-updates"
+import useMyUpdates from "hooks/use-my-updates"
 
-const FeeDisplay = ({ satAmount }: { satAmount: number | undefined }) => {
+type FeeDisplayFCT = React.FC<{ satAmount: number | undefined }>
+
+const FeeDisplay: FeeDisplayFCT = ({ satAmount }) => {
   const { satsToUsd } = useMyUpdates()
   if (satAmount === undefined) {
     return null
@@ -25,16 +27,9 @@ const FeeDisplay = ({ satAmount }: { satAmount: number | undefined }) => {
   )
 }
 
-type SendActionDisplayProps = {
-  loading: boolean
-  error: string | undefined
-  data: GaloyGQL.PaymentSendPayload | undefined
-  feeSatAmount: number | undefined
-  reset: () => void
-  handleSend: (event: MouseEvent<HTMLButtonElement>) => void
-}
+type StatusDisplayFCT = React.FC<{ status: GaloyGQL.PaymentSendResult }>
 
-const StatusDisplay = ({ status }: { status: GaloyGQL.PaymentSendResult }) => {
+const StatusDisplay: StatusDisplayFCT = ({ status }) => {
   switch (status) {
     case "ALREADY_PAID":
       return <div className="error">{translate("Invoice is already paid")}</div>
@@ -45,14 +40,23 @@ const StatusDisplay = ({ status }: { status: GaloyGQL.PaymentSendResult }) => {
   }
 }
 
-const SendActionDisplay = ({
+type SendActionDisplayFCT = React.FC<{
+  loading: boolean
+  error: string | undefined
+  data: GaloyGQL.PaymentSendPayload | undefined
+  feeSatAmount: number | undefined
+  reset: () => void
+  handleSend: (event: MouseEvent<HTMLButtonElement>) => void
+}>
+
+const SendActionDisplay: SendActionDisplayFCT = ({
   loading,
   error,
   data,
   feeSatAmount,
   reset,
   handleSend,
-}: SendActionDisplayProps) => {
+}) => {
   if (error) {
     return <div className="error">{error}</div>
   }

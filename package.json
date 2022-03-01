@@ -8,7 +8,7 @@
     "build:node": "rm -rf build && tsc --sourceMap false --skipLibCheck true",
     "build:webpack": "webpack --mode=production --env=prod",
     "code:check": "yarn tsc:check && yarn eslint:check && yarn prettier:check",
-    "dev:bundler": "webpack -w --mode=development --env=dev",
+    "dev:bundler": "cross-env-file webpack -w --mode=development --env=dev",
     "dev:server": "cross-env-file tsnd --files --respawn src/server/server.ts --ignore-watch node_modules,public",
     "eslint:check": "eslint . --ext ts --ext tsx",
     "eslint:fix": "eslint . --ext ts --ext tsx --fix",

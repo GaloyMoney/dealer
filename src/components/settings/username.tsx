@@ -1,13 +1,11 @@
 import { translate } from "@galoymoney/client"
 import { Icon } from "@galoymoney/react"
 
-import useMainQuery from "../../hooks/use-main-query"
+import useMainQuery from "hooks/use-main-query"
 
-type Props = {
-  guestView: boolean
-}
+type FCT = React.FC<{ guestView: boolean }>
 
-const UsernameSetting = ({ guestView }: Props) => {
+const UsernameSetting: FCT = ({ guestView }) => {
   const { username } = useMainQuery()
 
   return (

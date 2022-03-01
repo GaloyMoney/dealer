@@ -1,6 +1,8 @@
 import { translate } from "@galoymoney/client"
 
-const ErrorMessage = ({ message = "Not able to generate invoice." }) => (
+type FCT = React.FC<{ message?: string }>
+
+const ErrorMessage: FCT = ({ message = "Not able to generate invoice." }) => (
   <div className="error">
     {translate(message as never)}
     <br />

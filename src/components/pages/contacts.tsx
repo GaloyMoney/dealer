@@ -1,12 +1,12 @@
 import { translate, truncatedDisplay, useQuery } from "@galoymoney/client"
 import { Icon, Spinner } from "@galoymoney/react"
 
-import { history } from "../../store"
-import { useAuthContext } from "../../store/use-auth-context"
-import ErrorMessage from "../error-message"
-import Header from "../header"
+import { history } from "store/index"
+import { useAuthContext } from "store/use-auth-context"
+import ErrorMessage from "components/error-message"
+import Header from "components/header"
 
-const ContactsList = () => {
+const ContactsList: NoPropsFCT = () => {
   const { loading, errorsMessage, data } = useQuery.contacts()
 
   const handleSendBitcoin = (contactUsername: string) => {
@@ -53,21 +53,17 @@ const ContactsList = () => {
   )
 }
 
-const Contacts = {} as LayoutComponent<Record<string, never>>
-
-Contacts.Large = function Contacts() {
+const Contacts: NoPropsFCT = () => {
   const { isAuthenticated } = useAuthContext()
 
   return (
     <div className="contacts">
-      <Header.Large page="contacts" />
+      <Header page="contacts" />
 
       <div className="page-title">{translate("Contacts")}</div>
       {isAuthenticated ? <ContactsList /> : <div className="no-data">No Contacts</div>}
     </div>
   )
 }
-
-Contacts.Small = Contacts.Large
 
 export default Contacts

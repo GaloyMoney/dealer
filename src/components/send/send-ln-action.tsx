@@ -2,9 +2,11 @@ import { MouseEvent, useEffect } from "react"
 
 import { useMutation } from "@galoymoney/client"
 
-import SendActionDisplay from "./send-action-display"
+import SendActionDisplay from "components/send/send-action-display"
 
-export const SendLnInvoiceAction = (props: SendLnActionProps) => {
+type SendLnActionFCT = React.FC<SendLnActionProps>
+
+export const SendLnInvoiceAction: SendLnActionFCT = (props) => {
   const [sendPayment, { loading, data, errorsMessage: paymentError }] =
     useMutation.lnInvoicePaymentSend()
 
@@ -48,7 +50,9 @@ export const SendLnInvoiceAction = (props: SendLnActionProps) => {
   )
 }
 
-export const SendLnNoAmountInvoiceAction = (props: SendLnNoAmountActionProps) => {
+type SendLnNoAmountActionFCT = React.FC<SendLnNoAmountActionProps>
+
+export const SendLnNoAmountInvoiceAction: SendLnNoAmountActionFCT = (props) => {
   const [sendPayment, { loading, data, errorsMessage: paymentError }] =
     useMutation.lnNoAmountInvoicePaymentSend()
 

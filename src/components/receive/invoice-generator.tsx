@@ -3,12 +3,23 @@ import { useState, useEffect, useRef } from "react"
 import { formatUsd, GaloyGQL, translate, useMutation } from "@galoymoney/client"
 import { Spinner } from "@galoymoney/react"
 
-import { LightningInvoice, OnChainInvoice } from "./invoice"
-import ErrorMessage from "../error-message"
+import { LightningInvoice, OnChainInvoice } from "components/receive/invoice"
+import ErrorMessage from "components/error-message"
 
 const INVOICE_EXPIRE_INTERVAL = 60 * 60 * 1000
 
-type InvoiceProps = {
+type ExpiredMessageFCT = React.FC<{ onClick: () => void }>
+
+const ExpiredMessage: ExpiredMessageFCT = ({ onClick }) => (
+  <div className="invoice-message expired-invoice">
+    {translate("Invoice Expired...")}{" "}
+    <div className="link" onClick={onClick}>
+      {translate("Generate New Invoice")}
+    </div>
+  </div>
+)
+
+type AmountInvoiceFCT = React.FC<{
   layer: "lightning" | "onchain"
   btcWalletId: string
   btcAddress: GaloyGQL.Scalars["OnChainAddress"] | undefined
@@ -18,18 +29,9 @@ type InvoiceProps = {
   memo: string
   satAmount: number
   convertedUsdAmount: number
-}
+}>
 
-const ExpiredMessage = ({ onClick }: { onClick: () => void }) => (
-  <div className="invoice-message expired-invoice">
-    {translate("Invoice Expired...")}{" "}
-    <div className="link" onClick={onClick}>
-      {translate("Generate New Invoice")}
-    </div>
-  </div>
-)
-
-const AmountInvoiceGenerator = ({
+const AmountInvoiceGenerator: AmountInvoiceFCT = ({
   btcWalletId,
   regenerate,
   amount,
@@ -37,7 +39,7 @@ const AmountInvoiceGenerator = ({
   currency,
   satAmount,
   convertedUsdAmount,
-}: InvoiceProps) => {
+}) => {
   const [invoiceStatus, setInvoiceStatus] = useState<undefined | "new" | "expired">()
 
   const timerIds = useRef<number[]>([])
@@ -101,13 +103,17 @@ const AmountInvoiceGenerator = ({
   )
 }
 
-type NoInvoiceProps = {
+type NoAmountInvoiceFCT = React.FC<{
   btcWalletId: string
   regenerate: () => void
   memo: string
-}
+}>
 
-const NoAmountInvoiceGenerator = ({ btcWalletId, regenerate, memo }: NoInvoiceProps) => {
+const NoAmountInvoiceGenerator: NoAmountInvoiceFCT = ({
+  btcWalletId,
+  regenerate,
+  memo,
+}) => {
   const [invoiceStatus, setInvoiceStatus] = useState<undefined | "new" | "expired">()
 
   const timerIds = useRef<number[]>([])
@@ -152,7 +158,7 @@ const NoAmountInvoiceGenerator = ({ btcWalletId, regenerate, memo }: NoInvoicePr
   return <LightningInvoice invoice={invoice} onPaymentSuccess={clearTimers} />
 }
 
-const InvoiceGenerator = (props: InvoiceProps) => {
+const InvoiceGenerator: AmountInvoiceFCT = (props) => {
   if (props.layer === "onchain" && props.btcAddress) {
     return (
       <OnChainInvoice

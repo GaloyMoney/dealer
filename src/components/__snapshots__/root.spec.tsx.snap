@@ -3,7 +3,6 @@
 exports[`Root renders Contacts and matches snapshot 1`] = `
 <DocumentFragment>
   <div
-    class="layoutLarge"
     id="main-container"
   >
     <div
@@ -110,7 +109,6 @@ exports[`Root renders Contacts and matches snapshot 1`] = `
 exports[`Root renders Home and matches snapshot 1`] = `
 <DocumentFragment>
   <div
-    class="layoutLarge"
     id="main-container"
   >
     <div
@@ -333,7 +331,6 @@ exports[`Root renders Home and matches snapshot 1`] = `
 exports[`Root renders Login and matches snapshot 1`] = `
 <DocumentFragment>
   <div
-    class="layoutLarge"
     id="main-container"
   >
     <div
@@ -7048,7 +7045,6 @@ exports[`Root renders Login and matches snapshot 1`] = `
 exports[`Root renders Receive and matches snapshot 1`] = `
 <DocumentFragment>
   <div
-    class="layoutLarge"
     id="main-container"
   >
     <div
@@ -7325,7 +7321,6 @@ exports[`Root renders Receive and matches snapshot 1`] = `
 exports[`Root renders Send and matches snapshot 1`] = `
 <DocumentFragment>
   <div
-    class="layoutLarge"
     id="main-container"
   >
     <div
@@ -7622,7 +7617,6 @@ exports[`Root renders Send and matches snapshot 1`] = `
 exports[`Root renders Send with a destination and matches snapshot 1`] = `
 <DocumentFragment>
   <div
-    class="layoutLarge"
     id="main-container"
   >
     <div
@@ -7919,7 +7913,6 @@ exports[`Root renders Send with a destination and matches snapshot 1`] = `
 exports[`Root renders Settings and matches snapshot 1`] = `
 <DocumentFragment>
   <div
-    class="layoutLarge"
     id="main-container"
   >
     <div
@@ -8146,7 +8139,6 @@ exports[`Root renders Settings and matches snapshot 1`] = `
 exports[`Root renders Transactions and matches snapshot 1`] = `
 <DocumentFragment>
   <div
-    class="layoutLarge"
     id="main-container"
   >
     <div

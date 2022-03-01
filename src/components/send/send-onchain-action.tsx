@@ -1,9 +1,11 @@
 import { useMutation, useQuery } from "@galoymoney/client"
 import { MouseEvent } from "react"
 
-import SendActionDisplay from "./send-action-display"
+import SendActionDisplay from "components/send/send-action-display"
 
-const SendOnChainAction = (props: SendOnChainActionProps) => {
+type FCT = React.FC<SendOnChainActionProps>
+
+const SendOnChainAction: FCT = (props) => {
   const [sendPayment, { loading, data, errorsMessage: paymentError }] =
     useMutation.onChainPaymentSend()
 

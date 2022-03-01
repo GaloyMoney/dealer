@@ -19,21 +19,23 @@ import {
   SatFormat,
 } from "@galoymoney/react"
 
-import config from "../../store/config"
-import { useAppDispatcher } from "../../store"
-import useMainQuery from "../../hooks/use-main-query"
-import useMyUpdates from "../../hooks/use-my-updates"
+import config from "store/config"
+import { useAppDispatcher } from "store/index"
+import useMainQuery from "hooks/use-main-query"
+import useMyUpdates from "hooks/use-my-updates"
 
-import Header from "../header"
-import { ButtonLink } from "../link"
-import SendAction from "./send-action"
+import Link, { ButtonLink } from "components/link"
+import SendAction from "components/send/send-action"
 
-const Send: React.FC<{ to?: string }> = function Send({ to }) {
+type FCT = React.FC<{ to?: string }>
+
+const Send: FCT = ({ to }) => {
   const dispatch = useAppDispatcher()
   const { pubKey, btcWalletId, btcWalletBalance, username } = useMainQuery()
   const { satsToUsd, usdToSats } = useMyUpdates()
 
   const [input, setInput] = useState<InvoiceInput>({
+    view: "destination",
     currency: "USD",
     amount: "",
     destination: to ?? "",
@@ -128,27 +130,12 @@ const Send: React.FC<{ to?: string }> = function Send({ to }) {
     parseInput()
   }, [btcWalletId, input.destination, pubKey, setInputFromParsedDestination])
 
-  const handleAmountUpdate: OnNumberValueChange = useCallback(() => {
-    setInput((currInput) => ({ ...currInput, amount: undefined }))
+  const handleAmountUpdate: OnNumberValueChange = useCallback((newValue) => {
+    setInput((currInput) => ({ ...currInput, amount: newValue }))
   }, [])
 
-  const handleDebouncedAmountUpdate: OnNumberValueChange = useCallback(
-    (debouncedAmount) => {
-      setInput((currInput) => ({
-        ...currInput,
-        amount: debouncedAmount,
-        satAmount: undefined,
-      }))
-    },
-    [],
-  )
-
-  const handleMemoUpdate: OnTextValueChange = useCallback(() => {
-    setInput((currInput) => ({ ...currInput, memo: undefined }))
-  }, [])
-
-  const handleDebouncedMemoUpdate: OnTextValueChange = useCallback((debouncedMemo) => {
-    setInput((currInput) => ({ ...currInput, memo: debouncedMemo }))
+  const handleMemoUpdate: OnTextValueChange = useCallback((newValue) => {
+    setInput((currInput) => ({ ...currInput, memo: newValue }))
   }, [])
 
   const handleDestinationUpdate: OnTextValueChange = useCallback(() => {
@@ -191,45 +178,31 @@ const Send: React.FC<{ to?: string }> = function Send({ to }) {
     })
   }, [satsToUsd])
 
-  const convertedValues = useMemo(() => {
+  const conversionDisplay = useMemo(() => {
     if (!usdToSats || !satsToUsd || !input.amount) {
       return null
     }
 
     if (input.currency === "SATS") {
-      return {
-        usd: satsToUsd(input.amount),
-      }
-    }
-
-    const satsForConversion = input.satAmount || usdToSats(input.amount)
-
-    return {
-      sats: satsForConversion,
-      usd: satsToUsd(satsForConversion),
-    }
-  }, [input.amount, input.currency, input.satAmount, satsToUsd, usdToSats])
-
-  const conversionDisplay = useMemo(() => {
-    if (!convertedValues) {
-      return null
-    }
-
-    if (!convertedValues.sats) {
-      return <div className="converted-usd">&#8776; {formatUsd(convertedValues.usd)}</div>
+      return (
+        <div className="amount-display">
+          <div className="primary">
+            <SatFormat amount={input.satAmount || usdToSats(input.amount)} />
+          </div>
+          <div className="converted">&#8776; {formatUsd(satsToUsd(input.amount))}</div>
+        </div>
+      )
     }
 
     return (
-      <>
-        <div className="converted-sats">
-          <SatFormat amount={convertedValues.sats} />
+      <div className="amount-display">
+        <div className="primary">{formatUsd(input.amount)}</div>
+        <div className="converted">
+          &#8776; <SatFormat amount={input.satAmount || usdToSats(input.amount)} />
         </div>
-        <div className="converted-usd small">
-          &#8776; {formatUsd(convertedValues.usd)}
-        </div>
-      </>
+      </div>
     )
-  }, [convertedValues])
+  }, [input.amount, input.currency, input.satAmount, satsToUsd, usdToSats])
 
   const resetSendScreen = useCallback(() => {
     dispatch({ type: "update-with-key", path: "/send" })
@@ -296,65 +269,132 @@ const Send: React.FC<{ to?: string }> = function Send({ to }) {
   }
 
   return (
-    <div className="send-large">
-      <Header.Large page="send-bitcoin" />
-      <div className="send-input center-display">
-        <div className="input amount-input">
-          <div className="c1 currency-label">
-            {input.currency === "SATS" ? <SatSymbol /> : "$"}
-          </div>
-          <FormattedNumberInput
-            initValue={input.amount}
-            onChange={handleAmountUpdate}
-            onDebouncedChange={handleDebouncedAmountUpdate}
-            disabled={input.fixedAmount}
-            autoComplete="off"
-            placeholder={translate("Set value to send in %{currency}", {
-              currency: input.currency,
-            })}
-          />
-          {input.fixedAmount ? (
-            <div className="c1"></div>
-          ) : (
-            <div className="c3 toggle-currency link" onClick={toggleCurrency}>
-              &#8645;
+    <div className="send">
+      <div className="page-title">{translate("Send Bitcoin")}</div>
+
+      {input.view === "destination" && (
+        <>
+          <div className="destination-input center-display">
+            <div className="input-label">Sending bitcoin to</div>
+            <div className="destination">
+              <DebouncedInput
+                initValue={input.destination}
+                onChange={handleDestinationUpdate}
+                onDebouncedChange={handleDebouncedDestinationUpdate}
+                type="text"
+                name="destination"
+                autoComplete="off"
+                placeholder={translate("username or invoice")}
+              />
+              <QRCodeDetecor
+                startText=""
+                stopText={translate("Close")}
+                onCodeDetected={parseQRCode}
+                onValidCode={setInputFromParsedDestination}
+              />
             </div>
-          )}
-        </div>
-        <div className="input destination-input">
-          <div className="c1"></div>
-          <DebouncedInput
-            initValue={input.destination}
-            onChange={handleDestinationUpdate}
-            onDebouncedChange={handleDebouncedDestinationUpdate}
-            type="text"
-            name="destination"
-            autoComplete="off"
-            placeholder={translate("username or invoice")}
-          />
-          <div className="c3">
-            <QRCodeDetecor
-              autoStart={document.location.pathname === "/scan"}
-              startText=""
-              stopText={translate("Close")}
-              onCodeDetected={parseQRCode}
-              onValidCode={setInputFromParsedDestination}
+          </div>
+          <div className="note-input center-display">
+            <div className="input-label">What for</div>
+            <DebouncedTextarea
+              initValue={input.memo}
+              onChange={handleMemoUpdate}
+              name="memo"
+              rows={3}
+              placeholder={translate("Set a note for the receiver here (optional)")}
             />
           </div>
+
+          <div className="action-button center-display">
+            {input.errorMessage ? (
+              <div className="error">{input.errorMessage}</div>
+            ) : (
+              <button
+                onClick={() =>
+                  setInput((currInput) => ({ ...currInput, view: "amount" }))
+                }
+                disabled={!input.destination}
+              >
+                {translate("Next")}{" "}
+                {input.destination === undefined && <Spinner size="small" />}
+              </button>
+            )}
+          </div>
+        </>
+      )}
+
+      {input.view === "amount" && (
+        <div className="amount-input-container">
+          <div className="input-label">How much would you like to send?</div>
+          <div className="amount-input center-display">
+            <div className="currency-label">
+              {input.currency === "SATS" ? <SatSymbol /> : "$"}
+            </div>
+            <FormattedNumberInput
+              initValue={input.amount}
+              onChange={handleAmountUpdate}
+              disabled={input.fixedAmount}
+              autoComplete="off"
+              placeholder={translate("Set value to send in %{currency}", {
+                currency: input.currency,
+              })}
+            />
+            {!input.fixedAmount && (
+              <div className="toggle-currency link" onClick={toggleCurrency}>
+                &#8645;
+              </div>
+            )}
+          </div>
+
+          {conversionDisplay && (
+            <div className="amount-converted">{conversionDisplay}</div>
+          )}
+
+          <div className="action-button center-display">
+            {input.errorMessage ? (
+              <div className="error">{input.errorMessage}</div>
+            ) : (
+              <button
+                onClick={() =>
+                  setInput((currInput) => ({ ...currInput, view: "confirm" }))
+                }
+                disabled={!input.amount}
+              >
+                {translate("Next")}{" "}
+                {input.amount === undefined && <Spinner size="small" />}
+              </button>
+            )}
+          </div>
         </div>
-        <div className="input note-input">
-          <div className="c1"></div>
-          <DebouncedTextarea
-            initValue={input.memo}
-            onChange={handleMemoUpdate}
-            onDebouncedChange={handleDebouncedMemoUpdate}
-            name="memo"
-            rows={3}
-            placeholder={translate("Set a note for the receiver here (optional)")}
-          />
-        </div>
-        {conversionDisplay && <div className="amount-converted">{conversionDisplay}</div>}
-        <div className="action-container">{ActionDislapy()}</div>
+      )}
+
+      {input.view === "confirm" && (
+        <>
+          <div className="send-confirm center-display">
+            <div className="item">
+              <div className="label">Amount</div>
+              <div className="content">{conversionDisplay}</div>
+            </div>
+
+            <div className="item">
+              <div className="label">To</div>
+              <div className="content">{input.destination}</div>
+            </div>
+
+            {input.memo && (
+              <div className="item">
+                <div className="label">What for</div>
+                <div className="content">{input.memo}</div>
+              </div>
+            )}
+          </div>
+
+          <div className="action-container">{ActionDislapy()}</div>
+        </>
+      )}
+
+      <div className="action-button center-display">
+        <Link to="/">{translate("Cancel")}</Link>
       </div>
     </div>
   )

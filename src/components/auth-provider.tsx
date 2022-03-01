@@ -2,21 +2,18 @@ import React, { useMemo, useState, ReactNode } from "react"
 import { useErrorHandler } from "react-error-boundary"
 
 import { GaloyClient, GaloyProvider, postRequest } from "@galoymoney/client"
-import { createClient } from "../store"
-import { getPersistedSession, persistSession, clearSession } from "../store/auth-session"
-import { AuthContext } from "../store/use-auth-context"
 
-interface AuthContextProps {
+import { createClient } from "store/index"
+import { getPersistedSession, persistSession, clearSession } from "store/auth-session"
+import { AuthContext } from "store/use-auth-context"
+
+type FCT = React.FC<{
   children: ReactNode
   galoyClient?: GaloyClient<unknown>
   galoyJwtToken?: string
-}
+}>
 
-export const AuthProvider = ({
-  children,
-  galoyClient,
-  galoyJwtToken,
-}: AuthContextProps) => {
+export const AuthProvider: FCT = ({ children, galoyClient, galoyJwtToken }) => {
   const [authSession, setAuthSession] = useState<AuthSession>(() =>
     getPersistedSession(galoyJwtToken),
   )

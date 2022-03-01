@@ -1,13 +1,15 @@
-import Contacts from "../components/pages/contacts"
-import Home from "../components/pages/home"
-import Login from "../components/pages/login"
-import Receive from "../components/pages/receive"
-import Send from "../components/pages/send"
-import Settings from "../components/pages/settings"
-import Transactions from "../components/pages/transactions"
+import React from "react"
 
-import Register from "../components/pages/register"
-import config from "../store/config"
+import config from "store/config"
+
+import Contacts from "components/pages/contacts"
+import Home from "components/pages/home"
+import Login from "components/pages/login"
+import Receive from "components/pages/receive"
+import Register from "components/pages/register"
+import Send from "components/pages/send"
+import Settings from "components/pages/settings"
+import Transactions from "components/pages/transactions"
 
 // Note: The component property is skipped by the serialize function
 // It's only used on the front-end
@@ -47,7 +49,7 @@ const appRoutesDef = {
 }
 
 export type SupportedRoutes = keyof typeof appRoutesDef
-type AppRoutes = Record<RoutePath, { component: LayoutComponent<unknown>; title: string }>
+type AppRoutes = Record<RoutePath, { component: React.FC<unknown>; title: string }>
 
 export const appRoutes: AppRoutes = appRoutesDef as unknown as AppRoutes
 
@@ -77,7 +79,7 @@ export const checkAuthRoute = (path: string): AuthRoutePath | Error => {
 type AuthRoutes = Record<
   AuthRoutePath,
   {
-    component: (props: { flowData?: KratosFlowData }) => JSX.Element
+    component: React.FC<{ flowData?: KratosFlowData }>
     title: string
   }
 >

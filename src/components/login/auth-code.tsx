@@ -3,13 +3,13 @@ import React, { ChangeEvent, useState } from "react"
 import { translate } from "@galoymoney/client"
 import { Icon, Spinner } from "@galoymoney/react"
 
-import config from "../../store/config"
-import { history, useRequest } from "../../store"
-import { useAuthContext } from "../../store/use-auth-context"
+import config from "store/config"
+import { history, useRequest } from "store/index"
+import { useAuthContext } from "store/use-auth-context"
 
-type Props = { phoneNumber: string }
+type FCT = React.FC<{ phoneNumber: string }>
 
-const AuthCode = ({ phoneNumber }: Props) => {
+const AuthCode: FCT = ({ phoneNumber }) => {
   const request = useRequest()
   const [loading, setLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState("")

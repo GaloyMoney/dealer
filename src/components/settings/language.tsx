@@ -3,8 +3,8 @@ import { ChangeEvent } from "react"
 import { setLocale, translate, useMutation } from "@galoymoney/client"
 import { Icon } from "@galoymoney/react"
 
-import useMainQuery from "../../hooks/use-main-query"
-import { useAppState } from "../../store"
+import useMainQuery from "hooks/use-main-query"
+import { useAppState } from "store/index"
 
 const languageLabels = {
   "DEFAULT": "Default (OS)",
@@ -12,11 +12,9 @@ const languageLabels = {
   "es-SV": "Spanish",
 } as const
 
-type Props = {
-  guestView: boolean
-}
+type FCT = React.FC<{ guestView: boolean }>
 
-const LanguageSetting = ({ guestView }: Props) => {
+const LanguageSetting: FCT = ({ guestView }) => {
   const { language } = useMainQuery()
   const { defaultLanguage } = useAppState()
 

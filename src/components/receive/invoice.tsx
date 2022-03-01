@@ -5,15 +5,15 @@ import copy from "copy-to-clipboard"
 import { GaloyGQL, satsToBTC, translate } from "@galoymoney/client"
 import { SuccessCheckmark } from "@galoymoney/react"
 
-import { useAppDispatcher } from "../../store"
-import useMyUpdates from "../../hooks/use-my-updates"
+import { useAppDispatcher } from "store/index"
+import useMyUpdates from "hooks/use-my-updates"
 
-type LightningInvoiceProps = {
+type LightningInvoiceFCT = React.FC<{
   invoice: Pick<GaloyGQL.LnInvoice, "paymentHash" | "paymentRequest">
   onPaymentSuccess?: () => void
-}
+}>
 
-const LightningInvoice = ({ invoice, onPaymentSuccess }: LightningInvoiceProps) => {
+const LightningInvoice: LightningInvoiceFCT = ({ invoice, onPaymentSuccess }) => {
   const dispatch = useAppDispatcher()
   const { lnUpdate } = useMyUpdates()
   const [showCopied, setShowCopied] = useState(false)
@@ -75,14 +75,14 @@ const LightningInvoice = ({ invoice, onPaymentSuccess }: LightningInvoiceProps) 
   )
 }
 
-type OnChainInvoiceProps = {
+type OnChainInvoiceFCT = React.FC<{
   btcAddress?: GaloyGQL.Scalars["OnChainAddress"]
   satAmount?: number
   memo?: string
   onPaymentSuccess?: () => void
-}
+}>
 
-const OnChainInvoice = ({ btcAddress, satAmount, memo }: OnChainInvoiceProps) => {
+const OnChainInvoice: OnChainInvoiceFCT = ({ btcAddress, satAmount, memo }) => {
   const [showCopied, setShowCopied] = useState(false)
 
   const params = new URLSearchParams()

@@ -9,12 +9,12 @@ import {
 } from "@galoymoney/client"
 import { Icon, Spinner } from "@galoymoney/react"
 
-import useMainQuery from "../hooks/use-main-query"
-import { history } from "../store"
-import config from "../store/config"
-import { useAuthContext } from "../store/use-auth-context"
+import useMainQuery from "hooks/use-main-query"
+import { history } from "store/index"
+import config from "store/config"
+import { useAuthContext } from "store/use-auth-context"
 
-const ContactListForSending = () => {
+const ContactListForSending: NoPropsFCT = () => {
   const { isAuthenticated } = useAuthContext()
   const [showCopied, setShowCopied] = useState(false)
 

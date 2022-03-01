@@ -2,7 +2,7 @@ import express from "express"
 
 import { MUTATIONS } from "@galoymoney/client"
 
-import { createClient } from "../store"
+import { createClient } from "store/index"
 
 const apiRouter = express.Router({ caseSensitive: true })
 

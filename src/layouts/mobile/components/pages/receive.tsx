@@ -11,11 +11,11 @@ import {
   Spinner,
 } from "@galoymoney/react"
 
-import useMainQuery from "../../hooks/use-main-query"
-import useMyUpdates from "../../hooks/use-my-updates"
+import useMainQuery from "hooks/use-main-query"
+import useMyUpdates from "hooks/use-my-updates"
 
-import InvoiceGenerator from "./invoice-generator"
-import Link, { ButtonLink } from "../link"
+import InvoiceGenerator from "components/receive/invoice-generator"
+import Link, { ButtonLink } from "components/link"
 
 type InvoiceInputState = {
   layer: "lightning" | "onchain"
@@ -25,7 +25,7 @@ type InvoiceInputState = {
   satsForInvoice?: number
 }
 
-const Receive: React.FC<Record<string, never>> = function Receive() {
+const Receive: NoPropsFCT = () => {
   const { btcWalletId } = useMainQuery()
   const { satsToUsd, usdToSats } = useMyUpdates()
 

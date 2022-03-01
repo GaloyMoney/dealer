@@ -3,13 +3,11 @@ import { memo, useCallback, useEffect, useState } from "react"
 import { translate, useMutation } from "@galoymoney/client"
 import { Spinner } from "@galoymoney/react"
 
-import AuthCode from "./auth-code"
+import AuthCode from "components/login/auth-code"
 
-type CaptchaChallengeProps = {
-  phoneNumber: string
-}
+type FCT = React.FC<{ phoneNumber: string }>
 
-const CaptchaChallengeComponent = ({ phoneNumber }: CaptchaChallengeProps) => {
+const CaptchaChallengeComponent: FCT = ({ phoneNumber }) => {
   const [createCaptchaChallenge, { loading: createLoading }] =
     useMutation.captchaCreateChallenge()
   const [requestCaptchaAuthCode, { loading: requestLoading }] =

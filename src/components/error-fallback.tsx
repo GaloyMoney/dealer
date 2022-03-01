@@ -1,10 +1,11 @@
 import { translate } from "@galoymoney/client"
+import { FallbackProps } from "react-error-boundary"
 
-import config from "../store/config"
+import config from "store/config"
 
-type Props = { error: string | Error }
+type FCT = React.FC<FallbackProps>
 
-const ErrorFallback = ({ error }: Props) => {
+const ErrorFallback: FCT = ({ error }) => {
   const { message, stack } = error instanceof Error ? error : new Error(error)
 
   return (

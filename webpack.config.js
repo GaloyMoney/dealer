@@ -4,10 +4,20 @@ const webpack = require("webpack")
 
 const MiniCssExtractPlugin = require("mini-css-extract-plugin")
 
+const walletLayout = process.env.WALLET_LAYOUT
+
+if (!walletLayout) {
+  throw new Error("ENV variable WALLET_LAYOUT must be set")
+}
+
 const config = (env) => ({
   devtool: env.dev ? "inline-source-map" : false,
   resolve: {
-    modules: [path.resolve("./src"), "node_modules"],
+    modules: [
+      path.resolve("./src/layouts/" + walletLayout),
+      path.resolve("./src"),
+      "node_modules",
+    ],
     extensions: [".ts", ".tsx", ".js", ".json"],
     fallback: {
       buffer: require.resolve("buffer/"),

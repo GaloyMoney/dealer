@@ -3,6 +3,7 @@
     "target": "es2021",
     "module": "commonjs",
     "lib": ["dom", "es2021", "scripthost"],
+    "baseUrl": "src",
     "outDir": "build",
     "jsx": "react-jsx",
     "strict": true,

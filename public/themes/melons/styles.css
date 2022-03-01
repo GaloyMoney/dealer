@@ -1,0 +1,12 @@
+#root a svg {
+  display: none;
+}
+
+#root button,
+#root a.button {
+  border-radius: 20px;
+}
+
+#root .contact-list-for-sending .contact .icon {
+  border: thin solid var(--color-links);
+}

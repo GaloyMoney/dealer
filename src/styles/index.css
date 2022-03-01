@@ -1,4 +1,6 @@
 /*! purgecss start ignore */
 @import "@galoymoney/react/styles";
+@import "./general";
 @import "./main";
+@import "./responsive";
 /*! purgecss end ignore */

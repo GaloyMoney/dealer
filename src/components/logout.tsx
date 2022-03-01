@@ -1,10 +1,10 @@
 import { useResetClient, translate } from "@galoymoney/client"
 import { Icon } from "@galoymoney/react"
 
-import { history, useRequest } from "../store"
-import { useAuthContext } from "../store/use-auth-context"
+import { history, useRequest } from "store/index"
+import { useAuthContext } from "store/use-auth-context"
 
-const Logout = () => {
+const Logout: NoPropsFCT = () => {
   const request = useRequest()
   const { setAuthSession } = useAuthContext()
 

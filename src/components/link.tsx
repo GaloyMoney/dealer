@@ -1,12 +1,11 @@
-import { history } from "../store"
+import { history } from "store/index"
 
-type Props = {
+type FCT = React.FC<{
   to: RoutePath | AuthRoutePath
   className?: string
-  children: React.ReactNode
-}
+}>
 
-const Link = ({ to, className, children }: Props) => {
+const Link: FCT = ({ to, className, children }) => {
   const navigate: React.MouseEventHandler<HTMLAnchorElement> = (event) => {
     if (!event.ctrlKey && !event.metaKey) {
       event.preventDefault()
@@ -20,7 +19,7 @@ const Link = ({ to, className, children }: Props) => {
   )
 }
 
-export const ButtonLink = ({ to, className, children }: Props) => {
+export const ButtonLink: FCT = ({ to, className, children }) => {
   const navigate: React.MouseEventHandler<HTMLButtonElement> = (event) => {
     if (!event.ctrlKey && !event.metaKey) {
       event.preventDefault()

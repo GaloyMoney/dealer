@@ -1,9 +1,15 @@
 import { translate } from "@galoymoney/client"
-import SendIntraLedgerAction from "./send-intra-ledger-action"
-import { SendLnInvoiceAction, SendLnNoAmountInvoiceAction } from "./send-ln-action"
-import SendOnChainAction from "./send-onchain-action"
 
-const SendAction = (props: SendActionProps) => {
+import SendIntraLedgerAction from "components/send/send-intra-ledger-action"
+import {
+  SendLnInvoiceAction,
+  SendLnNoAmountInvoiceAction,
+} from "components/send/send-ln-action"
+import SendOnChainAction from "components/send/send-onchain-action"
+
+type FCT = React.FC<SendActionProps>
+
+const SendAction: FCT = (props) => {
   let { errorMessage } = props
 
   if (props.satAmount && props.satAmount > props.btcWalletBalance) {

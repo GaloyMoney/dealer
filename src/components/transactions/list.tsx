@@ -1,9 +1,10 @@
-import { GaloyGQL, translate, useDelayedQuery } from "@galoymoney/client"
-import { Spinner } from "@galoymoney/react"
 import { useRef } from "react"
 
-import useMainQuery from "../../hooks/use-main-query"
-import TransactionItem from "./item"
+import { GaloyGQL, translate, useDelayedQuery } from "@galoymoney/client"
+import { Spinner } from "@galoymoney/react"
+
+import useMainQuery from "hooks/use-main-query"
+import TransactionItem from "components/transactions/item"
 
 const TRANSACTIONS_PER_PAGE = 25
 const EMPTY_CONNECTION = {
@@ -11,7 +12,7 @@ const EMPTY_CONNECTION = {
   pageInfo: { hasNextPage: false, hasPreviousPage: false },
 } as const
 
-const TransactionList = () => {
+const TransactionList: NoPropsFCT = () => {
   const { transactions } = useMainQuery()
   const [fetchTransactions, { loading }] = useDelayedQuery.transactionList()
 

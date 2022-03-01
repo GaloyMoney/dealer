@@ -1,9 +1,11 @@
 import { useMutation } from "@galoymoney/client"
 import { MouseEvent } from "react"
 
-import SendActionDisplay from "./send-action-display"
+import SendActionDisplay from "components/send/send-action-display"
 
-const SendIntraLedgerAction = (props: SendIntraLedgerActionProps) => {
+type FCT = React.FC<SendIntraLedgerActionProps>
+
+const SendIntraLedgerAction: FCT = (props) => {
   const [sendPayment, { loading, errorsMessage, data }] =
     useMutation.intraLedgerPaymentSend()
 
