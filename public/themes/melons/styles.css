@@ -10,3 +10,9 @@
 #root .contact-list-for-sending .contact .icon {
   border: thin solid var(--color-links);
 }
+
+#root .transaction-list .transaction-item {
+  border-bottom: thin solid var(--color-borders);
+  padding: unset;
+  padding-bottom: 0.75rem;
+}

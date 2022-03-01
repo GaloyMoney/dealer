@@ -1,6 +1,13 @@
 import { useCallback, useRef } from "react"
 
-import { GaloyGQL, translate, useQuery } from "@galoymoney/client"
+import {
+  GaloyGQL,
+  isThisMonth,
+  isToday,
+  isYesterday,
+  translate,
+  useQuery,
+} from "@galoymoney/client"
 import { Spinner } from "@galoymoney/react"
 
 import Header from "components/header"
@@ -58,6 +65,44 @@ const Transactions: FCT = ({ username }) => {
 
   const { edges, pageInfo } = transactionsRef.current
 
+  const sections = []
+
+  if (edges) {
+    const today = []
+    const yesterday = []
+    const thisMonth = []
+    const prevMonths = []
+
+    for (const txEdge of edges) {
+      const tx = txEdge.node
+      if (isToday(tx.createdAt)) {
+        today.push(tx)
+      } else if (isYesterday(tx.createdAt)) {
+        yesterday.push(tx)
+      } else if (isThisMonth(tx.createdAt)) {
+        thisMonth.push(tx)
+      } else {
+        prevMonths.push(tx)
+      }
+    }
+
+    if (today.length > 0) {
+      sections.push({ title: translate("Today"), data: today })
+    }
+
+    if (yesterday.length > 0) {
+      sections.push({ title: translate("Yesterday"), data: yesterday })
+    }
+
+    if (thisMonth.length > 0) {
+      sections.push({ title: translate("This month"), data: thisMonth })
+    }
+
+    if (prevMonths.length > 0) {
+      sections.push({ title: translate("Previous months"), data: prevMonths })
+    }
+  }
+
   return (
     <div className="transaction-list">
       <Header page="transactions" />
@@ -67,13 +112,20 @@ const Transactions: FCT = ({ username }) => {
       {edges?.length === 0 && (
         <div className="no-data">{translate("No transactions")}</div>
       )}
-      {edges?.map((edge) => {
-        const node = edge?.node
-        if (!node) {
-          return null
-        }
-        return <TransactionItem key={node.id} tx={node} />
+
+      {sections.map((section) => {
+        return (
+          <div key="section.title">
+            <div className="section-title">{section.title}</div>
+            <div className="content">
+              {section.data.map((tx) => {
+                return <TransactionItem key={tx.id} tx={tx} />
+              })}
+            </div>
+          </div>
+        )
       })}
+
       {loading ? (
         <div className="load-more">
           <Spinner />

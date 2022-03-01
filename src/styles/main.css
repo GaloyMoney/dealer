@@ -68,13 +68,10 @@
 }
 
 #main-container {
-  height: 92%;
-  width: 90%;
   margin: 0 auto;
   max-width: 1024px;
   display: flex;
   flex-direction: column;
-  padding-top: 1.5rem;
 }
 
 #powered-by {
@@ -269,13 +266,14 @@ button {
   margin: 1rem auto;
   width: 95%;
   max-width: 750px;
+  .section-title {
+    font-size: 1.25rem;
+    font-weight: bold;
+  }
   .transaction-item {
     padding: 0.5rem;
     margin: 0.75rem;
-    background-color: var(--color-light-bg);
-    border: thin solid var(--color-borders);
   }
-
   .transaction-summary {
     display: flex;
     align-items: center;

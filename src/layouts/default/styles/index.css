@@ -1,5 +1,11 @@
 @import "../../../styles";
 
+#main-container {
+  height: 92%;
+  width: 90%;
+  padding-top: 1.5rem;
+}
+
 .header-container {
   margin-bottom: 2rem;
   .header {
@@ -82,5 +88,12 @@
   }
   .fee-usd-amount {
     text-align: left;
+  }
+}
+
+.transaction-list {
+  .transaction-item {
+    background-color: var(--color-light-bg);
+    border: thin solid var(--color-borders);
   }
 }
