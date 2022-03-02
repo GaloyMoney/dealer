@@ -1,12 +1,17 @@
 version: v0.8.2-alpha.1
 
 dsn: memory
+session:
+  cookie:
+    domain: localhost:3000
 
 serve:
   public:
     base_url: http://localhost:4433/
     cors:
       enabled: true
+      allowed_origins:
+        - http://localhost:3000
   admin:
     base_url: http://kratos:4434/
 

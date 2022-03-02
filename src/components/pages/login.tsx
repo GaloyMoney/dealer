@@ -29,9 +29,9 @@ const Login: NoPropsFCT = () => {
       />
       {errorMessage && <div className="error">{errorMessage}</div>}
       {config.kratosFeatureFlag && (
-        <Link to="/register/email">
+        <Link to="/register/email" className="register">
           <i aria-hidden className="fas fa-sign-in-alt" />
-          <span className="register">{"register via email"}</span>
+          Register via email
         </Link>
       )}
     </div>

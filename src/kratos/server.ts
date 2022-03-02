@@ -27,8 +27,7 @@ export const handleRegister = async (
     const { data }: { data: SelfServiceRegistrationFlow } =
       await KratosSdk().getSelfServiceRegistrationFlow(flow, req.header("Cookie"))
     return { redirect: false, flowData: { registrationData: data } }
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (error: any) {
+  } catch (error) {
     switch (error?.response?.status) {
       case 410:
       case 404:

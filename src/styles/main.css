@@ -106,8 +106,7 @@
     width: unset;
   }
   .register {
-    margin-bottom: 1.5rem;
-    text-align: center;
+    margin-top: 1rem;
   }
 }
 
@@ -449,4 +448,30 @@ button {
   margin: 0.5rem auto;
   background-color: var(--color-bg);
   color: var(--color-primary);
+}
+
+.register-form {
+  margin-top: 1.5rem;
+  padding: 0.5rem;
+  display: flex;
+  justify-content: center;
+  .alert-error {
+    color: var(--color-error);
+    margin: 2rem auto;
+    text-align: center;
+  }
+  form {
+    width: 100%;
+    max-width: 350px;
+    .input-container {
+      margin-bottom: 1.5rem;
+      .error-state {
+        color: var(--color-error);
+        font-size: 0.9rem;
+      }
+    }
+    button {
+      margin-top: 1rem;
+    }
+  }
 }
