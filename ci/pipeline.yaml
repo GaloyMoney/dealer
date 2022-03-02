@@ -8,6 +8,10 @@
 #@   return data.values.docker_registry + "/web-wallet"
 #@ end
 
+#@ def web_wallet_mobile_layout_image():
+#@   return data.values.docker_registry + "/web-wallet-mobile-layout"
+#@ end
+
 #@ def release_pipeline_image():
 #@   return data.values.docker_registry + "/release-pipeline"
 #@ end
@@ -87,7 +91,7 @@ jobs:
             path: pipeline-tasks/ci/tasks/test.sh
     on_failure: #@ slack_failure_notification()
 
-  - name: build-edge-image
+  - name: build-edge-images
     serial: true
     plan:
       - in_parallel:
@@ -104,25 +108,50 @@ jobs:
             - name: repo
           run:
             path: pipeline-tasks/ci/tasks/prepare-docker-build.sh
-      - task: build
-        privileged: true
-        config:
-          platform: linux
-          image_resource:
-            type: registry-image
-            source:
-              repository: vito/oci-build-task
-          inputs:
-            - name: repo
-          outputs:
-            - name: image
-          params:
-            CONTEXT: repo
-          run:
-            path: build
-      - put: edge-image
-        params:
-          image: image/image.tar
+      - in_parallel:
+        - do:
+          - task: build-default-layout-image
+            privileged: true
+            config:
+              platform: linux
+              image_resource:
+                type: registry-image
+                source:
+                  repository: vito/oci-build-task
+              inputs:
+                - name: repo
+              outputs:
+                - name: default-layout-image
+              params:
+                CONTEXT: repo
+                BUILD_ARG_WALLET_LAYOUT: default
+              run:
+                path: build
+          - put: edge-image
+            params:
+              image: default-layout-image/image.tar
+        - do:
+          - task: build-mobile-layout-image
+            privileged: true
+            config:
+              platform: linux
+              image_resource:
+                type: registry-image
+                source:
+                  repository: vito/oci-build-task
+              inputs:
+                - name: repo
+              outputs:
+                - name: mobile-layout-image
+              params:
+                CONTEXT: repo
+                BUILD_ARG_WALLET_LAYOUT: mobile
+              run:
+                path: build
+          - put: mobile-layout-edge-image
+            params:
+              image: mobile-layout-image/image.tar
+
 
   - name: release
     serial: true
@@ -289,6 +318,14 @@ resources:
       username: #@ data.values.docker_registry_user
       password: #@ data.values.docker_registry_password
       repository: #@ web_wallet_image()
+
+  - name: mobile-layout-edge-image
+    type: registry-image
+    source:
+      tag: edge
+      username: #@ data.values.docker_registry_user
+      password: #@ data.values.docker_registry_password
+      repository: #@ web_wallet_mobile_layout_image()
 
   - name: versioned-image
     type: registry-image

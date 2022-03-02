@@ -1,5 +1,7 @@
 FROM node:16-alpine AS BUILD_IMAGE
 
+ARG WALLET_LAYOUT
+
 WORKDIR /app
 
 RUN apk update && apk add git
@@ -11,7 +13,7 @@ RUN yarn install --frozen-lockfile --production
 COPY ./src ./src
 COPY ./*.js ./
 
-RUN yarn build:node && yarn build:files && yarn build:webpack
+RUN WALLET_LAYOUT=${WALLET_LAYOUT} yarn build:node && yarn build:files && yarn build:webpack
 
 
 # FROM gcr.io/distroless/nodejs:16
