@@ -47,7 +47,7 @@ groups:
     jobs:
       - check-code
       - test
-      - build-edge-image
+      - build-edge-images
       - release
       - bump-image-in-chart
       - install-deps
@@ -121,7 +121,7 @@ jobs:
               inputs:
                 - name: repo
               outputs:
-                - name: default-layout-image
+                - name: image
               params:
                 CONTEXT: repo
                 BUILD_ARG_WALLET_LAYOUT: default
@@ -129,7 +129,7 @@ jobs:
                 path: build
           - put: edge-image
             params:
-              image: default-layout-image/image.tar
+              image: image/image.tar
         - do:
           - task: build-mobile-layout-image
             privileged: true
@@ -142,7 +142,7 @@ jobs:
               inputs:
                 - name: repo
               outputs:
-                - name: mobile-layout-image
+                - name: image
               params:
                 CONTEXT: repo
                 BUILD_ARG_WALLET_LAYOUT: mobile
@@ -150,7 +150,7 @@ jobs:
                 path: build
           - put: mobile-layout-edge-image
             params:
-              image: mobile-layout-image/image.tar
+              image: image/image.tar
 
 
   - name: release
@@ -160,11 +160,11 @@ jobs:
       - get: repo
         trigger: true
         passed:
-          - build-edge-image
+          - build-edge-images
           - test
           - check-code
       - get: edge-image
-        passed: [ build-edge-image ]
+        passed: [ build-edge-images ]
         params:
           format: oci
       - get: pipeline-tasks
