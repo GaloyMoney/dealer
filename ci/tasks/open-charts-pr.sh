@@ -15,14 +15,14 @@ cat <<EOF >> ../body.md
 # Bump web-wallet image
 
 The web-wallet image will be bumped to digest:
-```
+\`\`\`
 ${digest}
-```
+\`\`\`
 
 The web-wallet-mobile-layout image will be bumped to digest:
-```
+\`\`\`
 ${mobileLayoutImageDigest}
-```
+\`\`\`
 
 Code diff contained in this image:
 
