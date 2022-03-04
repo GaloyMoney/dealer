@@ -3,6 +3,7 @@
 set -eu
 
 export digest=$(cat ./edge-image/digest)
+export mobileLayoutImageDigest=$(cat ./mobile-layout-edge-image/digest)
 
 pushd charts-repo
 
@@ -16,6 +17,11 @@ cat <<EOF >> ../body.md
 The web-wallet image will be bumped to digest:
 ```
 ${digest}
+```
+
+The web-wallet-mobile-layout image will be bumped to digest:
+```
+${mobileLayoutImageDigest}
 ```
 
 Code diff contained in this image:

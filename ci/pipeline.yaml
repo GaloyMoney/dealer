@@ -167,6 +167,10 @@ jobs:
         passed: [ build-edge-images ]
         params:
           format: oci
+      - get: mobile-layout-edge-image
+        passed: [ build-edge-images ]
+        params:
+          format: oci
       - get: pipeline-tasks
       - get: version
       - get: charts-repo
@@ -178,6 +182,7 @@ jobs:
         - name: repo
         - name: pipeline-tasks
         - name: edge-image
+        - name: mobile-layout-edge-image
         - name: version
         - name: charts-repo
         outputs:
@@ -189,6 +194,10 @@ jobs:
       - put: versioned-image
         params:
           image: edge-image/image.tar
+          additional_tags: artifacts/gh-release-tag
+      - put: mobile-layout-versioned-image
+        params:
+          image: mobile-layout-edge-image/image.tar
           additional_tags: artifacts/gh-release-tag
       - put: gh-release
         params:
@@ -203,6 +212,9 @@ jobs:
     plan:
       - in_parallel:
           - get: edge-image
+            passed: [ release ]
+            params: { skip_download: true }
+          - get: mobile-layout-edge-image
             passed: [ release ]
             params: { skip_download: true }
           - get: repo
@@ -220,6 +232,7 @@ jobs:
           inputs:
             - name: repo
             - name: edge-image
+            - name: mobile-layout-edge-image
             - name: pipeline-tasks
             - name: charts-repo
             - name: version
@@ -240,6 +253,7 @@ jobs:
           inputs:
             - name: pipeline-tasks
             - name: edge-image
+            - name: mobile-layout-edge-image
             - name: charts-repo
           params:
             GH_TOKEN: #@ data.values.github_token
@@ -319,6 +333,13 @@ resources:
       password: #@ data.values.docker_registry_password
       repository: #@ web_wallet_image()
 
+  - name: versioned-image
+    type: registry-image
+    source:
+      username: #@ data.values.docker_registry_user
+      password: #@ data.values.docker_registry_password
+      repository: #@ web_wallet_image()
+
   - name: mobile-layout-edge-image
     type: registry-image
     source:
@@ -327,12 +348,12 @@ resources:
       password: #@ data.values.docker_registry_password
       repository: #@ web_wallet_mobile_layout_image()
 
-  - name: versioned-image
+  - name: mobile-layout-versioned-image
     type: registry-image
     source:
       username: #@ data.values.docker_registry_user
       password: #@ data.values.docker_registry_password
-      repository: #@ web_wallet_image()
+      repository: #@ web_wallet_mobile_layout_image()
 
   - name: pipeline-tasks
     type: git
