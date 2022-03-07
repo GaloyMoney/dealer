@@ -1,63 +1,83 @@
 syntax = "proto3";
-
 package services.price.v1;
 
 service PriceService {
-  rpc GetExchangeRateForImmediateUsdBuy(GetExchangeRateForImmediateUsdBuyRequest) returns (GetExchangeRateForImmediateUsdBuyResponse) {}
-  rpc GetExchangeRateForImmediateUsdBuyFromCents(GetExchangeRateForImmediateUsdBuyFromCentsRequest) returns (GetExchangeRateForImmediateUsdBuyFromCentsResponse) {}
-  rpc GetExchangeRateForImmediateUsdSell(GetExchangeRateForImmediateUsdSellRequest) returns (GetExchangeRateForImmediateUsdSellResponse) {}
-  rpc GetExchangeRateForImmediateUsdSellFromSatoshis(GetExchangeRateForImmediateUsdSellFromSatoshisRequest) returns (GetExchangeRateForImmediateUsdSellFromSatoshisResponse) {}
-  
-  rpc GetQuoteRateForFutureUsdBuy(GetQuoteRateForFutureUsdBuyRequest) returns (GetQuoteRateForFutureUsdBuyResponse) {}
-  rpc GetQuoteRateForFutureUsdSell(GetQuoteRateForFutureUsdSellRequest) returns (GetQuoteRateForFutureUsdSellResponse) {}
+  rpc GetCentsFromSatsForImmediateBuy(GetCentsFromSatsForImmediateBuyRequest) returns (GetCentsFromSatsForImmediateBuyResponse) {}
+  rpc GetCentsFromSatsForImmediateSell(GetCentsFromSatsForImmediateSellRequest) returns (GetCentsFromSatsForImmediateSellResponse) {}
+
+  rpc GetCentsFromSatsForFutureBuy(GetCentsFromSatsForFutureBuyRequest) returns (GetCentsFromSatsForFutureBuyResponse) {}
+  rpc GetCentsFromSatsForFutureSell(GetCentsFromSatsForFutureSellRequest) returns (GetCentsFromSatsForFutureSellResponse) {}
+
+  rpc GetSatsFromCentsForImmediateBuy(GetSatsFromCentsForImmediateBuyRequest) returns (GetSatsFromCentsForImmediateBuyResponse) {}
+  rpc GetSatsFromCentsForImmediateSell(GetSatsFromCentsForImmediateSellRequest) returns (GetSatsFromCentsForImmediateSellResponse) {}
+
+  rpc GetSatsFromCentsForFutureBuy(GetSatsFromCentsForFutureBuyRequest) returns (GetSatsFromCentsForFutureBuyResponse) {}
+  rpc GetSatsFromCentsForFutureSell(GetSatsFromCentsForFutureSellRequest) returns (GetSatsFromCentsForFutureSellResponse) {}
+
+  rpc GetCentsPerSatsExchangeMidRate(GetCentsPerSatsExchangeMidRateRequest) returns (GetCentsPerSatsExchangeMidRateResponse) {}
 }
 
-message GetExchangeRateForImmediateUsdBuyRequest {
-  float amount_in_satoshis = 1;
+message GetCentsFromSatsForImmediateBuyRequest {
+  uint64 amount_in_satoshis = 1;
+}
+message GetCentsFromSatsForImmediateBuyResponse {
+  uint64 amount_in_cents = 1;
 }
 
-message GetExchangeRateForImmediateUsdBuyFromCentsRequest {
-  float amount_in_satoshis = 1;
+message GetCentsFromSatsForImmediateSellRequest {
+  uint64 amount_in_satoshis = 1;
+}
+message GetCentsFromSatsForImmediateSellResponse {
+  uint64 amount_in_cents = 1;
 }
 
-message GetExchangeRateForImmediateUsdSellRequest {
-  float amount_in_usd = 1;
+message GetCentsFromSatsForFutureBuyRequest {
+  uint64 amount_in_satoshis = 1;
+  uint64 time_in_seconds = 2;
+}
+message GetCentsFromSatsForFutureBuyResponse {
+  uint64 amount_in_cents = 1;
 }
 
-message GetExchangeRateForImmediateUsdSellFromSatoshisRequest {
-  float amount_in_usd = 1;
+message GetCentsFromSatsForFutureSellRequest {
+  uint64 amount_in_satoshis = 1;
+  uint64 time_in_seconds = 2;
+}
+message GetCentsFromSatsForFutureSellResponse {
+  uint64 amount_in_cents = 1;
 }
 
-message GetQuoteRateForFutureUsdBuyRequest {
-  float amount_in_satoshis = 1;
-  float time_in_seconds = 2;
+message GetSatsFromCentsForImmediateBuyRequest {
+  uint64 amount_in_cents = 1;
+}
+message GetSatsFromCentsForImmediateBuyResponse {
+  uint64 amount_in_satoshis = 1;
 }
 
-message GetQuoteRateForFutureUsdSellRequest {
-  float amount_in_usd = 1;
-  float time_in_seconds = 2;
+message GetSatsFromCentsForImmediateSellRequest {
+  uint64 amount_in_cents = 1;
+}
+message GetSatsFromCentsForImmediateSellResponse {
+  uint64 amount_in_satoshis = 1;
 }
 
-message GetExchangeRateForImmediateUsdBuyResponse {
-  float price_in_usd = 1;
+message GetSatsFromCentsForFutureBuyRequest {
+  uint64 amount_in_cents = 1;
+  uint64 time_in_seconds = 2;
 }
-  
-message GetExchangeRateForImmediateUsdBuyFromCentsResponse {
-  float price_in_usd = 1;
+message GetSatsFromCentsForFutureBuyResponse {
+  uint64 amount_in_satoshis = 1;
 }
-  
-message GetExchangeRateForImmediateUsdSellResponse {
-  float price_in_satoshis = 1;
+
+message GetSatsFromCentsForFutureSellRequest {
+  uint64 amount_in_cents = 1;
+  uint64 time_in_seconds = 2;
 }
-  
-message GetExchangeRateForImmediateUsdSellFromSatoshisResponse {
-  float price_in_satoshis = 1;
+message GetSatsFromCentsForFutureSellResponse {
+  uint64 amount_in_satoshis = 1;
 }
-  
-message GetQuoteRateForFutureUsdBuyResponse {
-  float price_in_usd = 1;
-}
-  
-message GetQuoteRateForFutureUsdSellResponse {
-  float price_in_satoshis = 1;
+
+message GetCentsPerSatsExchangeMidRateRequest {}
+message GetCentsPerSatsExchangeMidRateResponse {
+  double ratio_in_cents_per_satoshis = 1;
 }
