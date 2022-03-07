@@ -1,5 +1,4 @@
 syntax = "proto3";
-
 package services.price.v1;
 
 service PriceService {
