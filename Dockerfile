@@ -19,6 +19,10 @@ RUN WALLET_LAYOUT=${WALLET_LAYOUT} yarn build:node && yarn build:files && yarn b
 # FROM gcr.io/distroless/nodejs:16
 FROM node:16-alpine
 
+ARG WALLET_LAYOUT
+
+ENV NODE_PATH="build/layouts/${WALLET_LAYOUT}:build/"
+
 COPY --from=BUILD_IMAGE /app/.gvars.json /app/.gvars.json
 COPY --from=BUILD_IMAGE /app/build /app/build
 COPY ./public /app/public
