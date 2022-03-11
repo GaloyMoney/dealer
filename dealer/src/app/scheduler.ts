@@ -10,7 +10,7 @@ const logger = baseLogger.child({ module: "cron" })
 
 const options = {
   migrationsTable: "pgmigrations",
-  dir: "migrations",
+  dir: "dealer/migrations",
   createSchema: true,
   schema: "dealer",
   direction: "up",
