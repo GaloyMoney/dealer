@@ -11,7 +11,7 @@ const useMainQuery = () => {
   const { defaultLanguage } = useAppState()
 
   const { data } = useQuery.main({
-    variables: { hasToken: isAuthenticated, recentTransactions: 5 },
+    variables: { isAuthenticated, recentTransactions: 5 },
     onCompleted: (completed) => {
       setLocale(completed?.me?.language ?? defaultLanguage)
     },

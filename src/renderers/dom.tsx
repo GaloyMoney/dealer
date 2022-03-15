@@ -1,6 +1,6 @@
 import "styles/index.css"
 
-import * as ReactDOM from "react-dom"
+import * as ReactDOM from "react-dom/client"
 import { ErrorBoundary } from "react-error-boundary"
 
 import Root from "components/root"

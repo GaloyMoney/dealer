@@ -10,7 +10,7 @@ export const handleFlowError = ({
   resetFlow: () => void
 }) => {
   return async (err: AxiosError) => {
-    console.debug("[Kratos error]", err)
+    console.debug("[Kratos error]", err, err.response?.data.error)
 
     switch (err.response?.data.error?.id) {
       case "session_aal2_required":

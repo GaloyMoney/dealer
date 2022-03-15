@@ -4,6 +4,7 @@ import express from "express"
 import helmet from "helmet"
 import morgan from "morgan"
 import serialize from "serialize-javascript"
+import rateLimit from "express-rate-limit"
 
 import config from "store/config"
 
@@ -58,6 +59,13 @@ if (config.isDev) {
     console.error("Webpack generated assets file is missing")
   }
 }
+
+const limiter = rateLimit({
+  windowMs: 1 * 60 * 1000,
+  max: 21,
+})
+
+app.use(limiter)
 
 app.use("/api", apiRouter)
 app.use("/", ssrRouter)

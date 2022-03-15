@@ -17,12 +17,13 @@ export const serverRenderer =
     flowData?: KratosFlowData
   }) => {
     try {
-      const galoyJwtToken = req.session?.galoyJwtToken
+      const galoyJwtToken = req.session?.authSession?.galoyJwtToken
 
       const GwwState: GwwState = {
         path,
         props: req.query,
         key: 0,
+        sessionUserId: req.session?.authSession?.identity?.userId,
         defaultLanguage: req.acceptsLanguages()?.[0],
         flowData,
       }
@@ -54,6 +55,7 @@ export const serverRenderer =
         authEndpoint,
         kratosFeatureFlag,
         kratosBrowserUrl,
+        kratosAuthEndpoint,
       } = config
 
       return Promise.resolve({
@@ -69,6 +71,7 @@ export const serverRenderer =
           authEndpoint,
           kratosFeatureFlag,
           kratosBrowserUrl,
+          kratosAuthEndpoint,
         },
         initialMarkup,
         ssrData,

@@ -47,7 +47,7 @@ const CaptchaChallengeComponent: FCT = ({ phoneNumber }) => {
           console.debug("[Captcha error]:", err)
           setCaptchaState({
             status: "error",
-            errorsMessage: translate("Invaild verification. Please try again"),
+            errorsMessage: translate("Invalid verification. Please try again"),
           })
         })
     },

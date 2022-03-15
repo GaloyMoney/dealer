@@ -1,5 +1,8 @@
 type SelfServiceRegistrationFlow =
   import("@ory/kratos-client").SelfServiceRegistrationFlow
+type KratosSession = import("@ory/kratos-client").Session
+type SelfServiceLoginFlow = import("@ory/kratos-client").SelfServiceLoginFlow
+type SelfServiceRecoveryFlow = import("@ory/kratos-client").SelfServiceRecoveryFlow
 
 // Galoy Client
 type NormalizedCacheObject = import("@galoymoney/client").NormalizedCacheObject
@@ -20,20 +23,23 @@ type AtLeast<T, K extends keyof T> = Partial<T> & Pick<T, K>
 type RoutePath = import("../server/routes").SupportedRoutes
 type RouteInfo = Record<string, string | (() => JSX.Element | null)>
 
-type KratosFlowData = { registrationData?: SelfServiceRegistrationFlow }
 type AuthRoutePath = import("../server/routes").SupportedAuthRoutes
 
-type HandleRegisterResponse =
-  | {
-      redirect: true
-      redirectTo: string
-    }
+type KratosFlowData = {
+  registrationData?: SelfServiceRegistrationFlow
+  loginData?: SelfServiceLoginFlow
+  recoveryData?: SelfServiceRecoveryFlow
+}
+
+type HandleKratosResponse =
+  | { redirect: true; redirectTo: string }
   | { redirect: false; flowData: KratosFlowData }
 
 type GwwState = {
   key: number
   path: RoutePath | AuthRoutePath
   props?: Record<string, unknown>
+  sessionUserId?: string
   defaultLanguage?: string
   flowData?: KratosFlowData
 }
@@ -50,6 +56,13 @@ type GwwContextType = {
 
 type AuthSession = {
   galoyJwtToken: string
+  identity?: {
+    userId: string
+    phoneNumber?: string
+    emailAddress?: string
+    firstName?: string
+    lastName?: string
+  }
 } | null
 
 type AuthContextType = {
@@ -79,6 +92,7 @@ declare interface Window {
       authEndpoint: string
       kratosFeatureFlag: boolean
       kratosBrowserUrl: string
+      kratosAuthEndpoint: string
     }
   }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

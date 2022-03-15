@@ -11,23 +11,8 @@ const navigateToHome = () => {
 
 type FCT = React.FC<{ balance: number }>
 
-const Balance: FCT = ({ balance }) => {
-  const { isAuthenticated } = useAuthContext()
+const BalanceMain: FCT = ({ balance }) => {
   const { satsToUsd } = useMyUpdates()
-
-  if (!isAuthenticated) {
-    return (
-      <div className="balance" onClick={navigateToHome}>
-        <div className="title">{translate("Current Balance")}</div>
-        <div className="value">
-          <div className="primary">
-            <SatSymbol />0
-          </div>
-          <div className="secondary">{formatUsd(0)}</div>
-        </div>
-      </div>
-    )
-  }
 
   return (
     <div className="balance" onClick={navigateToHome}>
@@ -48,6 +33,26 @@ const Balance: FCT = ({ balance }) => {
       </div>
     </div>
   )
+}
+
+const Balance: FCT = ({ balance }) => {
+  const { isAuthenticated } = useAuthContext()
+
+  if (!isAuthenticated) {
+    return (
+      <div className="balance" onClick={navigateToHome}>
+        <div className="title">{translate("Current Balance")}</div>
+        <div className="value">
+          <div className="primary">
+            <SatSymbol />0
+          </div>
+          <div className="secondary">{formatUsd(0)}</div>
+        </div>
+      </div>
+    )
+  }
+
+  return <BalanceMain balance={balance} />
 }
 
 export default Balance

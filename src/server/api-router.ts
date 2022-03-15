@@ -1,14 +1,46 @@
 import express from "express"
+import * as jwt from "jsonwebtoken"
 
 import { MUTATIONS } from "@galoymoney/client"
 
 import { createClient } from "store/index"
+import { handleWhoAmI } from "kratos"
 
 const apiRouter = express.Router({ caseSensitive: true })
 
+type GalowyJwtToken = null | (jwt.JwtPayload & { kratosUserId?: string })
+
 apiRouter.post("/login", async (req, res) => {
   try {
-    const { phoneNumber, authCode } = req.body
+    const { authToken, phoneNumber, authCode } = req.body
+
+    if (authToken) {
+      const token = jwt.decode(authToken) as GalowyJwtToken
+      const kratosSession = await handleWhoAmI(req)
+
+      if (
+        !token ||
+        !token.kratosUserId ||
+        !kratosSession ||
+        kratosSession.identity.id !== token.kratosUserId
+      ) {
+        return res.send(404).send("Invalid login request")
+      }
+
+      const authSession = {
+        galoyJwtToken: authToken,
+        identity: {
+          userId: kratosSession.identity.id,
+          emailAddress: kratosSession.identity.traits.email,
+          firstName: kratosSession.identity.traits.name?.first,
+          lastName: kratosSession.identity.traits.name?.last,
+        },
+      }
+
+      req.session = req.session || {}
+      req.session.authSession = authSession
+      return res.send(authSession)
+    }
 
     if (!phoneNumber || !authCode) {
       throw new Error("INVALID_LOGIN_REQUEST")
@@ -26,23 +58,26 @@ apiRouter.post("/login", async (req, res) => {
     }
 
     const galoyJwtToken = data?.userLogin?.authToken
+    const token = jwt.decode(galoyJwtToken) as GalowyJwtToken
+
+    if (!token || !token.uid) {
+      return res.send(404).send("Invalid login request")
+    }
+
+    const authSession = {
+      identity: { userId: token.uid, phoneNumber },
+      galoyJwtToken,
+    }
 
     req.session = req.session || {}
-    req.session.galoyJwtToken = galoyJwtToken
-
-    return res.send({ galoyJwtToken })
+    req.session.authSession = authSession
+    return res.send(authSession)
   } catch (err) {
     console.error(err)
     return res
       .status(500)
       .send({ error: err instanceof Error ? err.message : "Something went wrong" })
   }
-})
-
-apiRouter.post("/logout", async (req, res) => {
-  req.session = req.session || {}
-  req.session.galoyJwtToken = null
-  return res.send({ galoyJwtToken: null })
 })
 
 export default apiRouter

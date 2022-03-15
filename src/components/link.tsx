@@ -1,4 +1,14 @@
+import { checkAuthRoute } from "server/routes"
 import { history } from "store/index"
+
+const navigateTo = (to: string) => {
+  const authRoute = checkAuthRoute(to)
+  if (authRoute instanceof Error) {
+    history.push(to)
+  } else {
+    window.location.href = to
+  }
+}
 
 type FCT = React.FC<{
   to: RoutePath | AuthRoutePath
@@ -6,28 +16,26 @@ type FCT = React.FC<{
 }>
 
 const Link: FCT = ({ to, className, children }) => {
-  const navigate: React.MouseEventHandler<HTMLAnchorElement> = (event) => {
+  const handleClick: React.MouseEventHandler<HTMLAnchorElement> = (event) => {
     if (!event.ctrlKey && !event.metaKey) {
       event.preventDefault()
     }
-    history.push(to)
+    navigateTo(to)
   }
   return (
-    <a href={to} onClick={navigate} className={className}>
+    <a href={to} onClick={handleClick} className={className}>
       {children}
     </a>
   )
 }
 
 export const ButtonLink: FCT = ({ to, className, children }) => {
-  const navigate: React.MouseEventHandler<HTMLButtonElement> = (event) => {
-    if (!event.ctrlKey && !event.metaKey) {
-      event.preventDefault()
-    }
-    history.push(to)
+  const handleClick: React.MouseEventHandler<HTMLButtonElement> = (event) => {
+    event.preventDefault()
+    navigateTo(to)
   }
   return (
-    <button onClick={navigate} className={className}>
+    <button onClick={handleClick} className={className}>
       {children}
     </button>
   )

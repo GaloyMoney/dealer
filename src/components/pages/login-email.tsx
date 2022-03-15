@@ -1,34 +1,30 @@
-import {
-  SelfServiceRegistrationFlow,
-  SubmitSelfServiceRegistrationFlowBody,
-} from "@ory/kratos-client"
-
-import axios, { AxiosError } from "axios"
-import { history } from "../../store/history"
 import { useState, useEffect, useCallback } from "react"
+import { SelfServiceLoginFlow, SubmitSelfServiceLoginFlowBody } from "@ory/kratos-client"
+import axios, { AxiosError } from "axios"
+
+import { history } from "../../store/history"
 import { KratosSdk, handleFlowError } from "../../kratos"
 import { Flow } from "../kratos"
-import { useAuthContext } from "store/use-auth-context"
 
 import config from "store/config"
 import Link from "components/link"
 import { useRequest } from "store"
+import { useAuthContext } from "store/use-auth-context"
 
 type FCT = React.FC<{
   flowData?: KratosFlowData
 }>
 
-const Register: FCT = ({ flowData: flowDataProp }) => {
+const LoginEmail: FCT = ({ flowData: flowDataProp }) => {
   const request = useRequest()
   const { setAuthSession } = useAuthContext()
-
-  const [flowData, setFlowData] = useState<SelfServiceRegistrationFlow | undefined>(
-    flowDataProp?.registrationData,
+  const [flowData, setFlowData] = useState<SelfServiceLoginFlow | undefined>(
+    flowDataProp?.loginData,
   )
 
   const resetFlow = useCallback(() => {
     setFlowData(undefined)
-    document.location.href = "/register"
+    document.location.href = "/login"
   }, [])
 
   useEffect(() => {
@@ -39,13 +35,14 @@ const Register: FCT = ({ flowData: flowDataProp }) => {
     const kratos = KratosSdk(config.kratosBrowserUrl)
     const params = new URLSearchParams(window.location.search)
     const flowId = params.get("flow")
+    const returnTo = params.get("return_to")
+    const refresh = params.get("refresh")
+    const aal = params.get("all")
 
     // flow id exists, we can fetch the flow data
     if (flowId) {
       kratos
-        .getSelfServiceRegistrationFlow(String(flowId), undefined, {
-          withCredentials: true,
-        })
+        .getSelfServiceLoginFlow(String(flowId), undefined, { withCredentials: true })
         .then(({ data }) => {
           setFlowData(data)
         })
@@ -55,9 +52,10 @@ const Register: FCT = ({ flowData: flowDataProp }) => {
 
     // need to initialize the flow
     kratos
-      .initializeSelfServiceRegistrationFlowForBrowsers(
-        params.get("return_to") || undefined,
-        { withCredentials: true },
+      .initializeSelfServiceLoginFlowForBrowsers(
+        Boolean(refresh),
+        aal ? String(aal) : undefined,
+        returnTo ? String(returnTo) : undefined,
       )
       .then(({ data }) => {
         setFlowData(data)
@@ -65,17 +63,14 @@ const Register: FCT = ({ flowData: flowDataProp }) => {
       .catch(handleFlowError({ history, resetFlow }))
   }, [flowData, resetFlow])
 
-  const onSubmit = async (values: SubmitSelfServiceRegistrationFlowBody) => {
+  const onSubmit = async (values: SubmitSelfServiceLoginFlowBody) => {
     const kratos = KratosSdk(config.kratosBrowserUrl)
     kratos
-      .submitSelfServiceRegistrationFlow(String(flowData?.id), values, {
+      .submitSelfServiceLoginFlow(String(flowData?.id), undefined, values, {
         withCredentials: true,
       })
-      .then(async ({ data }) => {
+      .then(async () => {
         try {
-          if (!data.session) {
-            throw new Error("Invalid session")
-          }
           const resp = await axios.post(
             config.kratosAuthEndpoint,
             {},
@@ -100,7 +95,7 @@ const Register: FCT = ({ flowData: flowDataProp }) => {
         // If the previous handler did not catch the error it's most likely a form validation error
         if (err.response?.status === 400) {
           setFlowData(err.response?.data)
-          document.location.replace(`/register?flow=${flowData?.id}`)
+          document.location.replace(`/login?flow=${flowData?.id}`)
           return
         }
 
@@ -110,17 +105,22 @@ const Register: FCT = ({ flowData: flowDataProp }) => {
 
   return (
     <>
-      <div className="register-form auth-form">
+      <div className="login-form auth-form">
         <Flow onSubmit={onSubmit} flow={flowData} />
       </div>
       <div className="form-links">
-        <Link to="/login">
+        <Link to="/register">
           <i aria-hidden className="fas fa-sign-in-alt" />
-          Login
+          Create new account
+        </Link>
+        <div className="separator">|</div>
+        <Link to="/recovery">
+          <i aria-hidden className="fas fa-key" />
+          Recover your account
         </Link>
       </div>
     </>
   )
 }
 
-export default Register
+export default LoginEmail

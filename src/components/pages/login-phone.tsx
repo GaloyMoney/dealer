@@ -3,12 +3,11 @@ import { useCallback, useState } from "react"
 import { translate } from "@galoymoney/client"
 import { PhoneNumberInput } from "@galoymoney/react"
 
-import config from "store/config"
-
-import Link from "components/link"
 import { CaptchaChallenge } from "components/login/captcha-callenge"
 
-const Login: NoPropsFCT = () => {
+type FCT = React.FC<unknown>
+
+const LoginPhone: FCT = () => {
   const [phoneNumber, setPhoneNumber] = useState<string>("")
   const [errorMessage, setErrorMessage] = useState<string | number>("")
 
@@ -28,14 +27,8 @@ const Login: NoPropsFCT = () => {
         onInvalidNumber={handleInvalidNumber}
       />
       {errorMessage && <div className="error">{errorMessage}</div>}
-      {config.kratosFeatureFlag && (
-        <Link to="/register/email" className="register">
-          <i aria-hidden className="fas fa-sign-in-alt" />
-          Register via email
-        </Link>
-      )}
     </div>
   )
 }
 
-export default Login
+export default LoginPhone

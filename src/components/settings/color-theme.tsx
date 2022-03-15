@@ -3,7 +3,7 @@ import { ChangeEvent, useEffect, useState } from "react"
 import { translate } from "@galoymoney/client"
 import { Icon } from "@galoymoney/react"
 
-import localStorage from "store/local-storage"
+import storage from "store/local-storage"
 import { ColorTheme, colorThemeLabels, setColorTheme } from "store/theme"
 
 const ColorThemeSetting: NoPropsFCT = () => {
@@ -20,7 +20,7 @@ const ColorThemeSetting: NoPropsFCT = () => {
   }
 
   useEffect(() => {
-    const colorThemeInStorage = localStorage.get("colorTheme")
+    const colorThemeInStorage = storage.get("colorTheme")
     setColorThemeState(
       colorThemeInStorage && colorThemeInStorage in colorThemeLabels
         ? (colorThemeInStorage as ColorTheme)

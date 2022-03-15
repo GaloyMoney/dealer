@@ -105,9 +105,6 @@
   input.auth-code {
     width: unset;
   }
-  .register {
-    margin-top: 1rem;
-  }
 }
 
 .captcha-challenge {
@@ -450,7 +447,7 @@ button {
   color: var(--color-primary);
 }
 
-.register-form {
+.auth-form {
   margin-top: 1.5rem;
   padding: 0.5rem;
   display: flex;
@@ -474,4 +471,8 @@ button {
       margin-top: 1rem;
     }
   }
+}
+
+.form-links {
+  margin: 2.5rem auto;
 }

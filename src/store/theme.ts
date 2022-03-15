@@ -1,4 +1,4 @@
-import localStorage from "./local-storage"
+import storage from "./local-storage"
 
 export const colorThemeLabels = {
   DEFAULT: "Default (OS)",
@@ -25,7 +25,7 @@ export const setDefaultColorTheme = () => {
 }
 
 export const setColorThemeFromStorage = () => {
-  const colorThemeInStorage = localStorage.get("colorTheme")
+  const colorThemeInStorage = storage.get("colorTheme")
   const colorTheme =
     colorThemeInStorage && ["dark", "light"].includes(colorThemeInStorage)
       ? (colorThemeInStorage as StorageColorTheme)
@@ -36,10 +36,10 @@ export const setColorThemeFromStorage = () => {
 
 export const setColorTheme = (colorTheme: ColorTheme) => {
   if (colorTheme === "DEFAULT") {
-    localStorage.set("colorTheme", undefined)
+    storage.set("colorTheme", undefined)
     setDefaultColorTheme()
   } else {
-    localStorage.set("colorTheme", colorTheme)
+    storage.set("colorTheme", colorTheme)
     setColorThemeClass(colorTheme)
   }
 }

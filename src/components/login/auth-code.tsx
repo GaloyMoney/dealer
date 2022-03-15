@@ -30,9 +30,12 @@ const AuthCode: FCT = ({ phoneNumber }) => {
       return
     }
 
-    const session = { galoyJwtToken: data?.galoyJwtToken }
+    const session = {
+      galoyJwtToken: data?.galoyJwtToken,
+      identity: { userId: phoneNumber, phoneNumber },
+    }
     setAuthSession(session.galoyJwtToken ? session : null)
-    history.push("/", { galoyJwtToken: data?.galoyJwtToken })
+    history.push("/")
   }
 
   const handleAuthCodeSubmit: React.FormEventHandler<HTMLFormElement> = async (event) => {
