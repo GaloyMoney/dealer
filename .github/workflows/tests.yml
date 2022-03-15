@@ -14,4 +14,4 @@ jobs:
       - uses: actions/setup-node@v2
       - run: yarn install
       - name: Run all tests
-        run: yarn test
+        run: . ./.envrc && yarn code:check
