@@ -17,7 +17,7 @@
     "prettier:fix": "prettier --write .",
     "prod:start": "node build/server/server.js",
     "test:verify": "jest --coverage",
-    "test": "cross-env-file -p .env.local jest",
+    "test": ". .envrc && jest",
     "tsc:check": "tsc --pretty --noEmit --skipLibCheck"
   },
   "dependencies": {
