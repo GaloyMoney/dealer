@@ -1,9 +1,10 @@
 import { checkAuthRoute } from "server/routes"
+import config from "store/config"
 import { history } from "store/index"
 
 const navigateTo = (to: string) => {
   const authRoute = checkAuthRoute(to)
-  if (authRoute instanceof Error) {
+  if (authRoute instanceof Error || !config.kratosFeatureFlag) {
     history.push(to)
   } else {
     window.location.href = to

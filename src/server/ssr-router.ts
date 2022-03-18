@@ -11,11 +11,28 @@ ssrRouter.get("/*", async (req, res) => {
   try {
     const routePath = req.path
     const checkedRoutePath = checkRoute(routePath)
+
     if (!(checkedRoutePath instanceof Error)) {
-      const vars = await serverRenderer(req)({
+      const ssrVars = await serverRenderer(req)({
         path: checkedRoutePath,
       })
-      return res.render("index", vars)
+
+      if (ssrVars instanceof Error) {
+        return res.status(500).send("Server error")
+      }
+
+      const { GwwConfig, GwwState, pageData, ssrData, initialMarkup } = ssrVars
+
+      if (!GwwConfig || !GwwState || !pageData || !ssrData || !initialMarkup) {
+        return res.status(500).send("Server error")
+      }
+      return res.render("index", {
+        GwwConfig,
+        GwwState,
+        pageData,
+        ssrData,
+        initialMarkup,
+      })
     }
 
     let flowData = undefined
