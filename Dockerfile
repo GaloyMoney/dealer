@@ -39,4 +39,4 @@ ARG COMMITHASH
 ENV BUILDTIME ${BUILDTIME}
 ENV COMMITHASH ${COMMITHASH}
 
-CMD ["build/server/server.js", "--require './build/server/tracing.js'"]
+CMD ["-r", "./build/server/tracing.js", "./build/server/server.js"]
