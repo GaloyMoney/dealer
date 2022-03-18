@@ -8,8 +8,8 @@
     "build:node": "rm -rf build && tsc --sourceMap false --skipLibCheck true",
     "build:webpack": "webpack --mode=production --env=prod",
     "code:check": "yarn tsc:check && yarn eslint:check && yarn prettier:check",
-    "dev:bundler": ". .envrc && webpack -w --mode=development --env=dev",
-    "dev:server": ". .envrc && tsnd --files --respawn src/server/server.ts --ignore-watch node_modules,public",
+    "dev:bundler": ". ./.envrc && webpack -w --mode=development --env=dev",
+    "dev:server": ". ./.envrc && tsnd --files --respawn src/server/server.ts --ignore-watch node_modules,public",
     "dev:docker": "docker-compose --env-file /dev/null up",
     "eslint:check": "eslint . --ext ts --ext tsx",
     "eslint:fix": "eslint . --ext ts --ext tsx --fix",
@@ -17,7 +17,7 @@
     "prettier:fix": "prettier --write .",
     "prod:start": "node build/server/server.js",
     "test:verify": "jest --coverage",
-    "test": ". .envrc && jest",
+    "test": ". ./.envrc && jest",
     "tsc:check": "tsc --pretty --noEmit --skipLibCheck"
   },
   "dependencies": {
