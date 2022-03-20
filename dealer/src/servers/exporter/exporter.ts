@@ -4,6 +4,11 @@ import client, { register } from "prom-client"
 import { baseLogger } from "../../services/logger"
 import { Dealer } from "../../Dealer"
 import { PositionSide } from "../../ExchangeTradingType"
+import {
+  addAttributesToCurrentSpan,
+  asyncRunInSpan,
+  SemanticAttributes,
+} from "../../services/tracing"
 
 dotenv.config()
 
@@ -13,326 +18,522 @@ const server = express()
 
 const prefix = "galoy_dealer"
 
-const nextFundingRate_g = new client.Gauge({
-  name: `${prefix}_nextFundingRate`,
-  help: "forecasted funding rate for the next period",
-})
+interface IMetricData {
+  value: number
+  gauge: client.Gauge<string>
+}
 
-const btcSpotPriceInUsd_g = new client.Gauge({
-  name: `${prefix}_btcSpotPriceInUsd`,
-  help: "btc spot price from exchange, in usd",
-})
-const btcMarkPriceInUsd_g = new client.Gauge({
-  name: `${prefix}_btcMarkPriceInUsd`,
-  help: "btc mark price from exchange, in usd",
-})
-const btcDerivativePriceInUsd_g = new client.Gauge({
-  name: `${prefix}_btcDerivativePriceInUsd`,
-  help: "btc derivative instrument price from exchange, in usd",
-})
+class Metrics {
+  public static set(obj: IMetricData, metric: number) {
+    obj.value = metric
+    obj.gauge.set(metric)
+  }
+}
 
-const liabilityInUsd_g = new client.Gauge({
-  name: `${prefix}_liabilityInUsd`,
-  help: "liability being hedged, in usd",
-})
+const metrics: { [key: string]: IMetricData } = {
+  nextFundingRate: {
+    value: NaN,
+    gauge: new client.Gauge({
+      name: `${prefix}_nextFundingRate`,
+      help: "forecasted funding rate for the next period",
+    }),
+  },
 
-const liabilityInBtc_g = new client.Gauge({
-  name: `${prefix}_liabilityInBtc`,
-  help: "liability being hedged, in btc",
-})
+  btcSpotPriceInUsd: {
+    value: NaN,
+    gauge: new client.Gauge({
+      name: `${prefix}_btcSpotPriceInUsd`,
+      help: "btc spot price from exchange, in usd",
+    }),
+  },
+  btcMarkPriceInUsd: {
+    value: NaN,
+    gauge: new client.Gauge({
+      name: `${prefix}_btcMarkPriceInUsd`,
+      help: "btc mark price from exchange, in usd",
+    }),
+  },
+  btcDerivativePriceInUsd: {
+    value: NaN,
+    gauge: new client.Gauge({
+      name: `${prefix}_btcDerivativePriceInUsd`,
+      help: "btc derivative instrument price from exchange, in usd",
+    }),
+  },
 
-const spotUPnlInUsd_g = new client.Gauge({
-  name: `${prefix}_spotUPnlInUsd`,
-  help: "spot unrealized profit and loss in USD",
-})
-const swapUPnlInUsd_g = new client.Gauge({
-  name: `${prefix}_swapUPnlInUsd`,
-  help: "swap unrealized profit and loss in USD",
-})
-const strategyUPnlInUsd_g = new client.Gauge({
-  name: `${prefix}_strategyUPnlInUsd`,
-  help: "strategy unrealized profit and loss in USD",
-})
-const strategyRPnlInSats_g = new client.Gauge({
-  name: `${prefix}_strategyRPnlInSats`,
-  help: "strategy realized profit and loss in sats",
-})
-const tradingFeesTotalInSats_g = new client.Gauge({
-  name: `${prefix}_tradingFeesTotalInSats`,
-  help: "trading fees total in sats",
-})
-const tradingFeesBuyInSats_g = new client.Gauge({
-  name: `${prefix}_tradingFeesBuyInSats`,
-  help: "trading fees buy in sats",
-})
-const tradingFeesBuyCount_g = new client.Gauge({
-  name: `${prefix}_tradingFeesBuyCount`,
-  help: "trading fees buy count",
-})
-const tradingFeesSellInSats_g = new client.Gauge({
-  name: `${prefix}_tradingFeesSellInSats`,
-  help: "trading fees sell in sats",
-})
-const tradingFeesSellCount_g = new client.Gauge({
-  name: `${prefix}_tradingFeesSellCount`,
-  help: "trading fees sell count",
-})
-const fundingFeesTotalInSats_g = new client.Gauge({
-  name: `${prefix}_fundingFeesTotalInSats`,
-  help: "total funding fees in sats",
-})
-const fundingFeesExpenseInSats_g = new client.Gauge({
-  name: `${prefix}_fundingFeesExpenseInSats`,
-  help: "expense funding fees in sats",
-})
-const fundingFeesExpenseCount_g = new client.Gauge({
-  name: `${prefix}_fundingFeesExpenseCount`,
-  help: "# expense funding fees",
-})
-const fundingFeesIncomeInSats_g = new client.Gauge({
-  name: `${prefix}_fundingFeesIncomeInSats`,
-  help: "income funding fees in sats",
-})
-const fundingFeesIncomeCount_g = new client.Gauge({
-  name: `${prefix}_fundingFeesIncomeCount`,
-  help: "# income funding fees",
-})
+  liabilityInUsd: {
+    value: NaN,
+    gauge: new client.Gauge({
+      name: `${prefix}_liabilityInUsd`,
+      help: "liability being hedged, in usd",
+    }),
+  },
 
-const lastBtcPriceInUsd_g = new client.Gauge({
-  name: `${prefix}_lastBtcPriceInUsd`,
-  help: "btc price used to calculate last risk figures, in usd",
-})
-const leverage_g = new client.Gauge({
-  name: `${prefix}_leverage`,
-  help: "position leverage, i.e. notional / posted collateral",
-})
-const leverageRatio_g = new client.Gauge({
-  name: `${prefix}_leverageRatio`,
-  help: "rebalance leverageRatio, i.e. liability / posted collateral",
-})
-const collateralInUsd_g = new client.Gauge({
-  name: `${prefix}_collateralInUsd`,
-  help: "position collateral, in usd",
-})
-const usedCollateralInUsd_g = new client.Gauge({
-  name: `${prefix}_usedCollateralInUsd`,
-  help: "used collateral, in usd",
-})
-const exposureInUsd_g = new client.Gauge({
-  name: `${prefix}_exposureInUsd`,
-  help: "position exposure or notional, in usd",
-})
-const totalAccountValueInUsd_g = new client.Gauge({
-  name: `${prefix}_totalAccountValueInUsd`,
-  help: "total exchange account value, in usd",
-})
+  liabilityInBtc: {
+    value: NaN,
+    gauge: new client.Gauge({
+      name: `${prefix}_liabilityInBtc`,
+      help: "liability being hedged, in btc",
+    }),
+  },
 
-const autoDeleveragingIndicator_g = new client.Gauge({
-  name: `${prefix}_autoDeleveragingIndicator`,
-  help: "auto-deleveraging indicator, 1-5, low => low risk",
-})
-const liquidationPrice_g = new client.Gauge({
-  name: `${prefix}_liquidationPrice`,
-  help: "estimated liquidation price",
-})
-const positionQuantity_g = new client.Gauge({
-  name: `${prefix}_positionQuantity`,
-  help: "number of contract(s)",
-})
-const positionSide_g = new client.Gauge({
-  name: `${prefix}_positionSide`,
-  help: "position side: long / short",
-})
-const averageOpenPrice_g = new client.Gauge({
-  name: `${prefix}_averageOpenPrice`,
-  help: "average price when position was open",
-})
-const unrealizedPnL_g = new client.Gauge({
-  name: `${prefix}_unrealizedPnL`,
-  help: "unrealized profit and loss",
-})
-const unrealizedPnLRatio_g = new client.Gauge({
-  name: `${prefix}_unrealizedPnLRatio`,
-  help: "unrealized profit and loss ratio to margin",
-})
-const marginRatio_g = new client.Gauge({
-  name: `${prefix}_marginRatio`,
-  help: "margin ratio",
-})
-const margin_g = new client.Gauge({
-  name: `${prefix}_margin`,
-  help: "margin",
-})
-const maintenanceMarginRequirement_g = new client.Gauge({
-  name: `${prefix}_maintenanceMarginRequirement`,
-  help: "maintenance margin requirement",
-})
-const exchangeLeverage_g = new client.Gauge({
-  name: `${prefix}_exchangeLeverage`,
-  help: "leverage used when opening position, liquidating, etc.",
-})
+  spotUPnlInUsd: {
+    value: NaN,
+    gauge: new client.Gauge({
+      name: `${prefix}_spotUPnlInUsd`,
+      help: "spot unrealized profit and loss in USD",
+    }),
+  },
+  swapUPnlInUsd: {
+    value: NaN,
+    gauge: new client.Gauge({
+      name: `${prefix}_swapUPnlInUsd`,
+      help: "swap unrealized profit and loss in USD",
+    }),
+  },
+  strategyUPnlInUsd: {
+    value: NaN,
+    gauge: new client.Gauge({
+      name: `${prefix}_strategyUPnlInUsd`,
+      help: "strategy unrealized profit and loss in USD",
+    }),
+  },
+  strategyRPnlInSats: {
+    value: NaN,
+    gauge: new client.Gauge({
+      name: `${prefix}_strategyRPnlInSats`,
+      help: "strategy realized profit and loss in sats",
+    }),
+  },
+  tradingFeesTotalInSats: {
+    value: NaN,
+    gauge: new client.Gauge({
+      name: `${prefix}_tradingFeesTotalInSats`,
+      help: "trading fees total in sats",
+    }),
+  },
+  tradingFeesBuyInSats: {
+    value: NaN,
+    gauge: new client.Gauge({
+      name: `${prefix}_tradingFeesBuyInSats`,
+      help: "trading fees buy in sats",
+    }),
+  },
+  tradingFeesBuyCount: {
+    value: NaN,
+    gauge: new client.Gauge({
+      name: `${prefix}_tradingFeesBuyCount`,
+      help: "trading fees buy count",
+    }),
+  },
+  tradingFeesSellInSats: {
+    value: NaN,
+    gauge: new client.Gauge({
+      name: `${prefix}_tradingFeesSellInSats`,
+      help: "trading fees sell in sats",
+    }),
+  },
+  tradingFeesSellCount: {
+    value: NaN,
+    gauge: new client.Gauge({
+      name: `${prefix}_tradingFeesSellCount`,
+      help: "trading fees sell count",
+    }),
+  },
+  fundingFeesTotalInSats: {
+    value: NaN,
+    gauge: new client.Gauge({
+      name: `${prefix}_fundingFeesTotalInSats`,
+      help: "total funding fees in sats",
+    }),
+  },
+  fundingFeesExpenseInSats: {
+    value: NaN,
+    gauge: new client.Gauge({
+      name: `${prefix}_fundingFeesExpenseInSats`,
+      help: "expense funding fees in sats",
+    }),
+  },
+  fundingFeesExpenseCount: {
+    value: NaN,
+    gauge: new client.Gauge({
+      name: `${prefix}_fundingFeesExpenseCount`,
+      help: "# expense funding fees",
+    }),
+  },
+  fundingFeesIncomeInSats: {
+    value: NaN,
+    gauge: new client.Gauge({
+      name: `${prefix}_fundingFeesIncomeInSats`,
+      help: "income funding fees in sats",
+    }),
+  },
+  fundingFeesIncomeCount: {
+    value: NaN,
+    gauge: new client.Gauge({
+      name: `${prefix}_fundingFeesIncomeCount`,
+      help: "# income funding fees",
+    }),
+  },
 
-const notionalLever_g = new client.Gauge({
-  name: `${prefix}_notionalLever`,
-  help: "notional lever",
-})
+  lastBtcPriceInUsd: {
+    value: NaN,
+    gauge: new client.Gauge({
+      name: `${prefix}_lastBtcPriceInUsd`,
+      help: "btc price used to calculate last risk figures, in usd",
+    }),
+  },
+  leverage: {
+    value: NaN,
+    gauge: new client.Gauge({
+      name: `${prefix}_leverage`,
+      help: "position leverage, i.e. notional / posted collateral",
+    }),
+  },
+  leverageRatio: {
+    value: NaN,
+    gauge: new client.Gauge({
+      name: `${prefix}_leverageRatio`,
+      help: "rebalance leverageRatio, i.e. liability / posted collateral",
+    }),
+  },
+  collateralInUsd: {
+    value: NaN,
+    gauge: new client.Gauge({
+      name: `${prefix}_collateralInUsd`,
+      help: "position collateral, in usd",
+    }),
+  },
+  usedCollateralInUsd: {
+    value: NaN,
+    gauge: new client.Gauge({
+      name: `${prefix}_usedCollateralInUsd`,
+      help: "used collateral, in usd",
+    }),
+  },
+  exposureInUsd: {
+    value: NaN,
+    gauge: new client.Gauge({
+      name: `${prefix}_exposureInUsd`,
+      help: "position exposure or notional, in usd",
+    }),
+  },
+  totalAccountValueInUsd: {
+    value: NaN,
+    gauge: new client.Gauge({
+      name: `${prefix}_totalAccountValueInUsd`,
+      help: "total exchange account value, in usd",
+    }),
+  },
 
-const btcFreeBalance_g = new client.Gauge({
-  name: `${prefix}_btcFreeBalance`,
-  help: "BTC balance not used as collateral",
-})
-const btcUsedBalance_g = new client.Gauge({
-  name: `${prefix}_btcUsedBalance`,
-  help: "BTC balance used as collateral",
-})
-const btcTotalBalance_g = new client.Gauge({
-  name: `${prefix}_btcTotalBalance`,
-  help: "total BTC balance",
-})
+  autoDeleveragingIndicator: {
+    value: NaN,
+    gauge: new client.Gauge({
+      name: `${prefix}_autoDeleveragingIndicator`,
+      help: "auto-deleveraging indicator, 1-5, low => low risk",
+    }),
+  },
+  liquidationPrice: {
+    value: NaN,
+    gauge: new client.Gauge({
+      name: `${prefix}_liquidationPrice`,
+      help: "estimated liquidation price",
+    }),
+  },
+  positionQuantity: {
+    value: NaN,
+    gauge: new client.Gauge({
+      name: `${prefix}_positionQuantity`,
+      help: "number of contract(s)",
+    }),
+  },
+  positionSide: {
+    value: NaN,
+    gauge: new client.Gauge({
+      name: `${prefix}_positionSide`,
+      help: "position side: long / short",
+    }),
+  },
+  averageOpenPrice: {
+    value: NaN,
+    gauge: new client.Gauge({
+      name: `${prefix}_averageOpenPrice`,
+      help: "average price when position was open",
+    }),
+  },
+  unrealizedPnL: {
+    value: NaN,
+    gauge: new client.Gauge({
+      name: `${prefix}_unrealizedPnL`,
+      help: "unrealized profit and loss",
+    }),
+  },
+  unrealizedPnLRatio: {
+    value: NaN,
+    gauge: new client.Gauge({
+      name: `${prefix}_unrealizedPnLRatio`,
+      help: "unrealized profit and loss ratio to margin",
+    }),
+  },
+  marginRatio: {
+    value: NaN,
+    gauge: new client.Gauge({
+      name: `${prefix}_marginRatio`,
+      help: "margin ratio",
+    }),
+  },
+  margin: {
+    value: NaN,
+    gauge: new client.Gauge({
+      name: `${prefix}_margin`,
+      help: "margin",
+    }),
+  },
+  maintenanceMarginRequirement: {
+    value: NaN,
+    gauge: new client.Gauge({
+      name: `${prefix}_maintenanceMarginRequirement`,
+      help: "maintenance margin requirement",
+    }),
+  },
+  exchangeLeverage: {
+    value: NaN,
+    gauge: new client.Gauge({
+      name: `${prefix}_exchangeLeverage`,
+      help: "leverage used when opening position, liquidating, etc.",
+    }),
+  },
 
-export const exporter = async () => {
+  notionalLever: {
+    value: NaN,
+    gauge: new client.Gauge({
+      name: `${prefix}_notionalLever`,
+      help: "notional lever",
+    }),
+  },
+
+  btcFreeBalance: {
+    value: NaN,
+    gauge: new client.Gauge({
+      name: `${prefix}_btcFreeBalance`,
+      help: "BTC balance not used as collateral",
+    }),
+  },
+  btcUsedBalance: {
+    value: NaN,
+    gauge: new client.Gauge({
+      name: `${prefix}_btcUsedBalance`,
+      help: "BTC balance used as collateral",
+    }),
+  },
+  btcTotalBalance: {
+    value: NaN,
+    gauge: new client.Gauge({
+      name: `${prefix}_btcTotalBalance`,
+      help: "total BTC balance",
+    }),
+  },
+}
+
+export async function exporter() {
   server.get("/metrics", async (req, res) => {
-    const dealer = new Dealer(logger)
+    asyncRunInSpan(
+      "app.exporter.metrics",
+      {
+        [SemanticAttributes.CODE_FUNCTION]: "metrics",
+        [SemanticAttributes.CODE_NAMESPACE]: "app.exporter",
+      },
+      async () => {
+        for (const metricName in metrics) {
+          addAttributesToCurrentSpan({
+            [`${SemanticAttributes.CODE_FUNCTION}.results.${metricName}`]: NaN,
+          })
+        }
 
-    try {
-      // load transaction to be up-to-date
-      await dealer.fetchAndLoadTransactions()
+        try {
+          const dealer = new Dealer(logger)
 
-      let averageOpenPrice = 0
-      let swapPositionInContracts = 0
-      const liabilityInUsd = await dealer.getLiabilityInUsd()
-      const liabilityInBtc = await dealer.getLiabilityInBtc()
-      const result = await dealer.getAccountAndPositionRisk()
-      if (result.ok) {
-        const {
-          originalPosition,
-          originalBalance,
-          lastBtcPriceInUsd,
-          leverage,
-          usedCollateralInUsd,
-          totalCollateralInUsd,
-          exposureInUsd,
-          totalAccountValueInUsd,
-        } = result.value
+          // load transaction to be up-to-date
+          await dealer.fetchAndLoadTransactions()
 
-        lastBtcPriceInUsd_g.set(lastBtcPriceInUsd)
-        leverage_g.set(leverage)
-        const leverageRatio = exposureInUsd / totalCollateralInUsd
-        leverageRatio_g.set(leverageRatio)
-        usedCollateralInUsd_g.set(usedCollateralInUsd)
-        collateralInUsd_g.set(totalCollateralInUsd)
-        exposureInUsd_g.set(exposureInUsd)
-        totalAccountValueInUsd_g.set(totalAccountValueInUsd)
+          let averageOpenPrice = 0
+          let swapPosInCt = 0
+          const liabilityInUsd = await dealer.getLiabilityInUsd()
+          const liabilityInBtc = await dealer.getLiabilityInBtc()
+          const result = await dealer.getAccountAndPositionRisk()
+          if (result.ok) {
+            const {
+              originalPosition: ogPos,
+              originalBalance: ogBal,
+              lastBtcPriceInUsd,
+              leverage,
+              usedCollateralInUsd,
+              totalCollateralInUsd,
+              exposureInUsd,
+              totalAccountValueInUsd,
+            } = result.value
 
-        if (originalPosition) {
-          autoDeleveragingIndicator_g.set(originalPosition.autoDeleveragingIndicator)
-          liquidationPrice_g.set(originalPosition.liquidationPrice)
-          swapPositionInContracts = originalPosition.positionQuantity
-          positionQuantity_g.set(swapPositionInContracts)
-          if (originalPosition.positionSide == PositionSide.Long) {
-            positionSide_g.set(1)
-          } else if (originalPosition.positionSide == PositionSide.Short) {
-            positionSide_g.set(-1)
-          } else {
-            positionSide_g.set(0)
+            Metrics.set(metrics["lastBtcPriceInUsd"], lastBtcPriceInUsd)
+            Metrics.set(metrics["leverage"], leverage)
+            const leverageRatio = exposureInUsd / totalCollateralInUsd
+            Metrics.set(metrics["leverageRatio"], leverageRatio)
+            Metrics.set(metrics["usedCollateralInUsd"], usedCollateralInUsd)
+            Metrics.set(metrics["collateralInUsd"], totalCollateralInUsd)
+            Metrics.set(metrics["exposureInUsd"], exposureInUsd)
+            Metrics.set(metrics["totalAccountValueInUsd"], totalAccountValueInUsd)
+
+            if (ogPos) {
+              Metrics.set(
+                metrics["autoDeleveragingIndicator"],
+                ogPos.autoDeleveragingIndicator,
+              )
+              Metrics.set(metrics["liquidationPrice"], ogPos.liquidationPrice)
+              swapPosInCt = ogPos.positionQuantity
+              Metrics.set(metrics["positionQuantity"], swapPosInCt)
+              if (ogPos.positionSide == PositionSide.Long) {
+                Metrics.set(metrics["positionSide"], 1)
+              } else if (ogPos.positionSide == PositionSide.Short) {
+                Metrics.set(metrics["positionSide"], -1)
+              } else {
+                Metrics.set(metrics["positionSide"], 0)
+              }
+              averageOpenPrice = ogPos.averageOpenPrice
+              Metrics.set(metrics["averageOpenPrice"], averageOpenPrice)
+              Metrics.set(metrics["unrealizedPnL"], ogPos.unrealizedPnL)
+              Metrics.set(metrics["unrealizedPnLRatio"], ogPos.unrealizedPnLRatio)
+              Metrics.set(metrics["margin"], ogPos.margin)
+              Metrics.set(metrics["marginRatio"], ogPos.marginRatio)
+              Metrics.set(
+                metrics["maintenanceMarginRequirement"],
+                ogPos.maintenanceMarginRequirement,
+              )
+              Metrics.set(metrics["exchangeLeverage"], ogPos.exchangeLeverage)
+            } else {
+              Metrics.set(metrics["autoDeleveragingIndicator"], 0)
+              Metrics.set(metrics["liquidationPrice"], 0)
+              Metrics.set(metrics["positionQuantity"], 0)
+              Metrics.set(metrics["positionSide"], 0)
+              Metrics.set(metrics["averageOpenPrice"], 0)
+              Metrics.set(metrics["unrealizedPnL"], 0)
+              Metrics.set(metrics["unrealizedPnLRatio"], 0)
+              Metrics.set(metrics["margin"], 0)
+              Metrics.set(metrics["marginRatio"], 0)
+              Metrics.set(metrics["maintenanceMarginRequirement"], 0)
+              Metrics.set(metrics["exchangeLeverage"], 0)
+            }
+            if (ogBal) {
+              if (ogBal.notionalLever) {
+                Metrics.set(metrics["notionalLever"], ogBal.notionalLever)
+              }
+              if (ogBal.btcFreeBalance) {
+                Metrics.set(metrics["btcFreeBalance"], ogBal.btcFreeBalance)
+              }
+              if (ogBal.btcUsedBalance) {
+                Metrics.set(metrics["btcUsedBalance"], ogBal.btcUsedBalance)
+              }
+              if (ogBal.btcTotalBalance) {
+                Metrics.set(metrics["btcTotalBalance"], ogBal.btcTotalBalance)
+              }
+            } else {
+              Metrics.set(metrics["notionalLever"], 0)
+              Metrics.set(metrics["btcFreeBalance"], 0)
+              Metrics.set(metrics["btcUsedBalance"], 0)
+              Metrics.set(metrics["btcTotalBalance"], 0)
+            }
           }
-          averageOpenPrice = originalPosition.averageOpenPrice
-          averageOpenPrice_g.set(averageOpenPrice)
-          unrealizedPnL_g.set(originalPosition.unrealizedPnL)
-          unrealizedPnLRatio_g.set(originalPosition.unrealizedPnLRatio)
-          margin_g.set(originalPosition.margin)
-          marginRatio_g.set(originalPosition.marginRatio)
-          maintenanceMarginRequirement_g.set(
-            originalPosition.maintenanceMarginRequirement,
+          Metrics.set(metrics["nextFundingRate"], await dealer.getNextFundingRateInBtc())
+          const spotPrice = await dealer.getSpotPriceInUsd()
+          Metrics.set(metrics["btcSpotPriceInUsd"], spotPrice)
+          Metrics.set(metrics["btcMarkPriceInUsd"], await dealer.getMarkPriceInUsd())
+          const swapPrice = await dealer.getDerivativePriceInUsd()
+          Metrics.set(metrics["btcDerivativePriceInUsd"], swapPrice)
+          Metrics.set(metrics["liabilityInUsd"], liabilityInUsd)
+          Metrics.set(metrics["liabilityInBtc"], liabilityInBtc)
+
+          // Spot uPnl
+          const openSpotQuantityInBtc = Math.abs(liabilityInBtc)
+          const spotOpenPrice = Math.abs(liabilityInUsd / liabilityInBtc)
+          const spotUPnlInUsd = (spotPrice - spotOpenPrice) * openSpotQuantityInBtc
+          Metrics.set(metrics["spotUPnlInUsd"], spotUPnlInUsd)
+
+          // Swap uPnl
+          const swapOpenPrice = averageOpenPrice
+          // TODO use contract face value
+          const swapUPnlInUsd = 100.0 * swapPosInCt * (swapPrice / swapOpenPrice - 1.0)
+          Metrics.set(metrics["swapUPnlInUsd"], swapUPnlInUsd)
+
+          // Strategy uPnl
+          const strategyUPnlInUsd = spotUPnlInUsd + swapUPnlInUsd
+          Metrics.set(metrics["strategyUPnlInUsd"], strategyUPnlInUsd)
+
+          // Trading Fees
+          const tradingFeesMetrics = await dealer.getTradingFeesMetrics()
+          Metrics.set(
+            metrics["tradingFeesTotalInSats"],
+            tradingFeesMetrics.tradingFeesTotalInSats,
           )
-          exchangeLeverage_g.set(originalPosition.exchangeLeverage)
-        } else {
-          autoDeleveragingIndicator_g.set(0)
-          liquidationPrice_g.set(0)
-          positionQuantity_g.set(0)
-          positionSide_g.set(0)
-          averageOpenPrice_g.set(0)
-          unrealizedPnL_g.set(0)
-          unrealizedPnLRatio_g.set(0)
-          margin_g.set(0)
-          marginRatio_g.set(0)
-          maintenanceMarginRequirement_g.set(0)
-          exchangeLeverage_g.set(0)
+          Metrics.set(
+            metrics["tradingFeesBuyInSats"],
+            tradingFeesMetrics.tradingFeesBuyInSats,
+          )
+          Metrics.set(
+            metrics["tradingFeesBuyCount"],
+            tradingFeesMetrics.tradingFeesBuyCount,
+          )
+          Metrics.set(
+            metrics["tradingFeesSellInSats"],
+            tradingFeesMetrics.tradingFeesSellInSats,
+          )
+          Metrics.set(
+            metrics["tradingFeesSellCount"],
+            tradingFeesMetrics.tradingFeesSellCount,
+          )
+
+          // Funding Fees
+          const fundingFeesMetrics = await dealer.getFundingFeesMetrics()
+          Metrics.set(
+            metrics["fundingFeesTotalInSats"],
+            fundingFeesMetrics.fundingFeesTotalInSats,
+          )
+          Metrics.set(
+            metrics["fundingFeesExpenseInSats"],
+            fundingFeesMetrics.fundingFeesExpenseInSats,
+          )
+          Metrics.set(
+            metrics["fundingFeesExpenseCount"],
+            fundingFeesMetrics.fundingFeesExpenseCount,
+          )
+          Metrics.set(
+            metrics["fundingFeesIncomeInSats"],
+            fundingFeesMetrics.fundingFeesIncomeInSats,
+          )
+          Metrics.set(
+            metrics["fundingFeesIncomeCount"],
+            fundingFeesMetrics.fundingFeesIncomeCount,
+          )
+
+          // Realized Profit And Loss
+          const strategyRPnlInSats =
+            tradingFeesMetrics.tradingFeesTotalInSats +
+            fundingFeesMetrics.fundingFeesTotalInSats
+          Metrics.set(metrics["strategyRPnlInSats"], strategyRPnlInSats)
+        } catch (error) {
+          console.log(error)
+          logger.error("Couldn't set dealer wallet metrics")
         }
-        if (originalBalance) {
-          if (originalBalance.notionalLever) {
-            notionalLever_g.set(originalBalance.notionalLever)
-          }
-          if (originalBalance.btcFreeBalance) {
-            btcFreeBalance_g.set(originalBalance.btcFreeBalance)
-          }
-          if (originalBalance.btcUsedBalance) {
-            btcUsedBalance_g.set(originalBalance.btcUsedBalance)
-          }
-          if (originalBalance.btcTotalBalance) {
-            btcTotalBalance_g.set(originalBalance.btcTotalBalance)
-          }
-        } else {
-          notionalLever_g.set(0)
-          btcFreeBalance_g.set(0)
-          btcUsedBalance_g.set(0)
-          btcTotalBalance_g.set(0)
+
+        for (const metricName in metrics) {
+          addAttributesToCurrentSpan({
+            [`${SemanticAttributes.CODE_FUNCTION}.results.${metricName}`]: String(
+              metrics[metricName].value,
+            ),
+          })
         }
-      }
-      nextFundingRate_g.set(await dealer.getNextFundingRateInBtc())
-      const spotPrice = await dealer.getSpotPriceInUsd()
-      btcSpotPriceInUsd_g.set(spotPrice)
-      btcMarkPriceInUsd_g.set(await dealer.getMarkPriceInUsd())
-      const swapPrice = await dealer.getDerivativePriceInUsd()
-      btcDerivativePriceInUsd_g.set(swapPrice)
-      liabilityInUsd_g.set(liabilityInUsd)
-      liabilityInBtc_g.set(liabilityInBtc)
 
-      // Spot uPnl
-      const openSpotQuantityInBtc = Math.abs(liabilityInBtc)
-      const spotOpenPrice = Math.abs(liabilityInUsd / liabilityInBtc)
-      const spotUPnlInUsd = (spotPrice - spotOpenPrice) * openSpotQuantityInBtc
-      spotUPnlInUsd_g.set(spotUPnlInUsd)
-
-      // Swap uPnl
-      const swapOpenPrice = averageOpenPrice
-      // TODO use contract face value
-      const swapUPnlInUsd =
-        100.0 * swapPositionInContracts * (swapPrice / swapOpenPrice - 1.0)
-      swapUPnlInUsd_g.set(swapUPnlInUsd)
-
-      // Strategy uPnl
-      const strategyUPnlInUsd = spotUPnlInUsd + swapUPnlInUsd
-      strategyUPnlInUsd_g.set(strategyUPnlInUsd)
-
-      // Trading Fees
-      const tradingFeesMetrics = await dealer.getTradingFeesMetrics()
-      tradingFeesTotalInSats_g.set(tradingFeesMetrics.tradingFeesTotalInSats)
-      tradingFeesBuyInSats_g.set(tradingFeesMetrics.tradingFeesBuyInSats)
-      tradingFeesBuyCount_g.set(tradingFeesMetrics.tradingFeesBuyCount)
-      tradingFeesSellInSats_g.set(tradingFeesMetrics.tradingFeesSellInSats)
-      tradingFeesSellCount_g.set(tradingFeesMetrics.tradingFeesSellCount)
-
-      // Funding Fees
-      const fundingFeesMetrics = await dealer.getFundingFeesMetrics()
-      fundingFeesTotalInSats_g.set(fundingFeesMetrics.fundingFeesTotalInSats)
-      fundingFeesExpenseInSats_g.set(fundingFeesMetrics.fundingFeesExpenseInSats)
-      fundingFeesExpenseCount_g.set(fundingFeesMetrics.fundingFeesExpenseCount)
-      fundingFeesIncomeInSats_g.set(fundingFeesMetrics.fundingFeesIncomeInSats)
-      fundingFeesIncomeCount_g.set(fundingFeesMetrics.fundingFeesIncomeCount)
-
-      // Realized Profit And Loss
-      const strategyRPnlInSats =
-        tradingFeesMetrics.tradingFeesTotalInSats +
-        fundingFeesMetrics.fundingFeesTotalInSats
-      strategyRPnlInSats_g.set(strategyRPnlInSats)
-    } catch (error) {
-      console.log(error)
-      logger.error("Couldn't set dealer wallet metrics")
-    }
-
-    res.set("Content-Type", register.contentType)
-    res.end(await register.metrics())
+        res.set("Content-Type", register.contentType)
+        res.end(await register.metrics())
+      },
+    )
   })
 
   server.get("/healthz", async (req, res) => {
