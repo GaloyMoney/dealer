@@ -39,6 +39,11 @@ import {
 } from "../../utils"
 
 import { yamlConfig } from "../../config"
+import {
+  addAttributesToCurrentSpan,
+  SemanticAttributes,
+  wrapToRunInSpan,
+} from "../../services/tracing"
 const fees = yamlConfig.fees
 
 const logger = baseLogger.child({ module: "price-service" })
@@ -74,6 +79,18 @@ function getCentsFromSatsForImmediateBuy(
     "Responding to GetCentsFromSatsForImmediateBuy({amountInSats}) call with {amountInCents}",
   )
 
+  addAttributesToCurrentSpan({
+    [`${SemanticAttributes.CODE_FUNCTION}.results.base_fee`]: String(fees.BASE_FEE),
+    [`${SemanticAttributes.CODE_FUNCTION}.results.immediate_conversion_spread`]: String(
+      fees.IMMEDIATE_CONVERSION_SPREAD,
+    ),
+    [`${SemanticAttributes.CODE_FUNCTION}.results.lastAsk`]: String(lastAskInUsdPerBtc),
+    [`${SemanticAttributes.CODE_FUNCTION}.results.lastBid`]: String(lastBidInUsdPerBtc),
+    [`${SemanticAttributes.CODE_FUNCTION}.results.fx`]: String(lastBidInUsdPerBtc),
+    [`${SemanticAttributes.CODE_FUNCTION}.results.amountInSats`]: String(amountInSats),
+    [`${SemanticAttributes.CODE_FUNCTION}.results.amountInCents`]: String(amountInCents),
+  })
+
   response.setAmountInCents(amountInCents)
   callback(null, response)
 }
@@ -104,6 +121,18 @@ function getCentsFromSatsForImmediateSell(
     { amountInSats, amountInCents },
     "Responding to GetCentsFromSatsForImmediateSell({amountInSats}) call with {amountInCents}",
   )
+
+  addAttributesToCurrentSpan({
+    [`${SemanticAttributes.CODE_FUNCTION}.results.base_fee`]: String(fees.BASE_FEE),
+    [`${SemanticAttributes.CODE_FUNCTION}.results.immediate_conversion_spread`]: String(
+      fees.IMMEDIATE_CONVERSION_SPREAD,
+    ),
+    [`${SemanticAttributes.CODE_FUNCTION}.results.lastAsk`]: String(lastAskInUsdPerBtc),
+    [`${SemanticAttributes.CODE_FUNCTION}.results.lastBid`]: String(lastBidInUsdPerBtc),
+    [`${SemanticAttributes.CODE_FUNCTION}.results.fx`]: String(lastAskInUsdPerBtc),
+    [`${SemanticAttributes.CODE_FUNCTION}.results.amountInSats`]: String(amountInSats),
+    [`${SemanticAttributes.CODE_FUNCTION}.results.amountInCents`]: String(amountInCents),
+  })
 
   response.setAmountInCents(amountInCents)
   callback(null, response)
@@ -138,6 +167,19 @@ function getCentsFromSatsForFutureBuy(
     "Responding to GetCentsFromSatsForFutureBuy({amountInSats}, {timeInSeconds}) call with {amountInCents}",
   )
 
+  addAttributesToCurrentSpan({
+    [`${SemanticAttributes.CODE_FUNCTION}.results.base_fee`]: String(fees.BASE_FEE),
+    [`${SemanticAttributes.CODE_FUNCTION}.results.delayed_conversion_spread`]: String(
+      fees.DELAYED_CONVERSION_SPREAD,
+    ),
+    [`${SemanticAttributes.CODE_FUNCTION}.results.lastAsk`]: String(lastAskInUsdPerBtc),
+    [`${SemanticAttributes.CODE_FUNCTION}.results.lastBid`]: String(lastBidInUsdPerBtc),
+    [`${SemanticAttributes.CODE_FUNCTION}.results.fx`]: String(lastBidInUsdPerBtc),
+    [`${SemanticAttributes.CODE_FUNCTION}.results.amountInSats`]: String(amountInSats),
+    [`${SemanticAttributes.CODE_FUNCTION}.results.timeInSeconds`]: String(timeInSeconds),
+    [`${SemanticAttributes.CODE_FUNCTION}.results.amountInCents`]: String(amountInCents),
+  })
+
   response.setAmountInCents(amountInCents)
   callback(null, response)
 }
@@ -171,6 +213,19 @@ function getCentsFromSatsForFutureSell(
     "Responding to GetCentsFromSatsForFutureSell({amountInSats}, {timeInSeconds}) call with {amountInCents}",
   )
 
+  addAttributesToCurrentSpan({
+    [`${SemanticAttributes.CODE_FUNCTION}.results.base_fee`]: String(fees.BASE_FEE),
+    [`${SemanticAttributes.CODE_FUNCTION}.results.delayed_conversion_spread`]: String(
+      fees.DELAYED_CONVERSION_SPREAD,
+    ),
+    [`${SemanticAttributes.CODE_FUNCTION}.results.lastAsk`]: String(lastAskInUsdPerBtc),
+    [`${SemanticAttributes.CODE_FUNCTION}.results.lastBid`]: String(lastBidInUsdPerBtc),
+    [`${SemanticAttributes.CODE_FUNCTION}.results.fx`]: String(lastAskInUsdPerBtc),
+    [`${SemanticAttributes.CODE_FUNCTION}.results.amountInSats`]: String(amountInSats),
+    [`${SemanticAttributes.CODE_FUNCTION}.results.timeInSeconds`]: String(timeInSeconds),
+    [`${SemanticAttributes.CODE_FUNCTION}.results.amountInCents`]: String(amountInCents),
+  })
+
   response.setAmountInCents(amountInCents)
   callback(null, response)
 }
@@ -195,14 +250,26 @@ function getSatsFromCentsForImmediateBuy(
   // use the ask as the maximum conversion rate
   // preferably higher by a % fee
   const currentFee = 1 + (fees.BASE_FEE + fees.IMMEDIATE_CONVERSION_SPREAD)
-  const amountInSatoshis = btc2sat(amountInUsd / (lastAskInUsdPerBtc * currentFee))
+  const amountInSats = btc2sat(amountInUsd / (lastAskInUsdPerBtc * currentFee))
 
   logger.info(
-    { amountInCents, amountInSatoshis },
-    "Responding to GetSatsFromCentsForImmediateBuy({amountInCents}) call with {amountInSatoshis}",
+    { amountInCents, amountInSats },
+    "Responding to GetSatsFromCentsForImmediateBuy({amountInCents}) call with {amountInSats}",
   )
 
-  response.setAmountInSatoshis(amountInSatoshis)
+  addAttributesToCurrentSpan({
+    [`${SemanticAttributes.CODE_FUNCTION}.results.base_fee`]: String(fees.BASE_FEE),
+    [`${SemanticAttributes.CODE_FUNCTION}.results.immediate_conversion_spread`]: String(
+      fees.IMMEDIATE_CONVERSION_SPREAD,
+    ),
+    [`${SemanticAttributes.CODE_FUNCTION}.results.lastAsk`]: String(lastAskInUsdPerBtc),
+    [`${SemanticAttributes.CODE_FUNCTION}.results.lastBid`]: String(lastBidInUsdPerBtc),
+    [`${SemanticAttributes.CODE_FUNCTION}.results.fx`]: String(lastAskInUsdPerBtc),
+    [`${SemanticAttributes.CODE_FUNCTION}.results.amountInSats`]: String(amountInSats),
+    [`${SemanticAttributes.CODE_FUNCTION}.results.amountInCents`]: String(amountInCents),
+  })
+
+  response.setAmountInSatoshis(amountInSats)
   callback(null, response)
 }
 
@@ -226,14 +293,26 @@ function getSatsFromCentsForImmediateSell(
   // use the bid as the maximum conversion rate
   // preferably lower by a % fee
   const currentFee = 1 - (fees.BASE_FEE + fees.IMMEDIATE_CONVERSION_SPREAD)
-  const amountInSatoshis = btc2sat(amountInUsd / (lastBidInUsdPerBtc * currentFee))
+  const amountInSats = btc2sat(amountInUsd / (lastBidInUsdPerBtc * currentFee))
 
   logger.info(
-    { amountInCents, amountInSatoshis },
-    "Responding to GetSatsFromCentsForImmediateSell({amountInCents}) call with {amountInSatoshis}",
+    { amountInCents, amountInSats },
+    "Responding to GetSatsFromCentsForImmediateSell({amountInCents}) call with {amountInSats}",
   )
 
-  response.setAmountInSatoshis(amountInSatoshis)
+  addAttributesToCurrentSpan({
+    [`${SemanticAttributes.CODE_FUNCTION}.results.base_fee`]: String(fees.BASE_FEE),
+    [`${SemanticAttributes.CODE_FUNCTION}.results.immediate_conversion_spread`]: String(
+      fees.IMMEDIATE_CONVERSION_SPREAD,
+    ),
+    [`${SemanticAttributes.CODE_FUNCTION}.results.lastAsk`]: String(lastAskInUsdPerBtc),
+    [`${SemanticAttributes.CODE_FUNCTION}.results.lastBid`]: String(lastBidInUsdPerBtc),
+    [`${SemanticAttributes.CODE_FUNCTION}.results.fx`]: String(lastBidInUsdPerBtc),
+    [`${SemanticAttributes.CODE_FUNCTION}.results.amountInSats`]: String(amountInSats),
+    [`${SemanticAttributes.CODE_FUNCTION}.results.amountInCents`]: String(amountInCents),
+  })
+
+  response.setAmountInSatoshis(amountInSats)
   callback(null, response)
 }
 
@@ -259,14 +338,27 @@ function getSatsFromCentsForFutureBuy(
   // use the ask as the maximum conversion rate
   // preferably higher by a % fee
   const currentFee = 1 + (fees.BASE_FEE + fees.DELAYED_CONVERSION_SPREAD)
-  const amountInSatoshis = btc2sat(amountInUsd / (lastAskInUsdPerBtc * currentFee))
+  const amountInSats = btc2sat(amountInUsd / (lastAskInUsdPerBtc * currentFee))
 
   logger.info(
-    { amountInCents, timeInSeconds, amountInSatoshis },
-    "Responding to GetSatsFromCentsForFutureBuy({amountInCents}, {timeInSeconds}) call with {amountInSatoshis}",
+    { amountInCents, timeInSeconds, amountInSats },
+    "Responding to GetSatsFromCentsForFutureBuy({amountInCents}, {timeInSeconds}) call with {amountInSats}",
   )
 
-  response.setAmountInSatoshis(amountInSatoshis)
+  addAttributesToCurrentSpan({
+    [`${SemanticAttributes.CODE_FUNCTION}.results.base_fee`]: String(fees.BASE_FEE),
+    [`${SemanticAttributes.CODE_FUNCTION}.results.delayed_conversion_spread`]: String(
+      fees.DELAYED_CONVERSION_SPREAD,
+    ),
+    [`${SemanticAttributes.CODE_FUNCTION}.results.lastAsk`]: String(lastAskInUsdPerBtc),
+    [`${SemanticAttributes.CODE_FUNCTION}.results.lastBid`]: String(lastBidInUsdPerBtc),
+    [`${SemanticAttributes.CODE_FUNCTION}.results.fx`]: String(lastAskInUsdPerBtc),
+    [`${SemanticAttributes.CODE_FUNCTION}.results.amountInSats`]: String(amountInSats),
+    [`${SemanticAttributes.CODE_FUNCTION}.results.timeInSeconds`]: String(timeInSeconds),
+    [`${SemanticAttributes.CODE_FUNCTION}.results.amountInCents`]: String(amountInCents),
+  })
+
+  response.setAmountInSatoshis(amountInSats)
   callback(null, response)
 }
 
@@ -292,14 +384,27 @@ function getSatsFromCentsForFutureSell(
   // use the bid as the maximum conversion rate
   // preferably lower by a % fee
   const currentFee = 1 - (fees.BASE_FEE + fees.DELAYED_CONVERSION_SPREAD)
-  const amountInSatoshis = btc2sat(amountInUsd / (lastBidInUsdPerBtc * currentFee))
+  const amountInSats = btc2sat(amountInUsd / (lastBidInUsdPerBtc * currentFee))
 
   logger.info(
-    { amountInCents, timeInSeconds, amountInSatoshis },
-    "Responding to GetSatsFromCentsForFutureSell({amountInCents}, {timeInSeconds}) call with {amountInSatoshis}",
+    { amountInCents, timeInSeconds, amountInSats },
+    "Responding to GetSatsFromCentsForFutureSell({amountInCents}, {timeInSeconds}) call with {amountInSats}",
   )
 
-  response.setAmountInSatoshis(amountInSatoshis)
+  addAttributesToCurrentSpan({
+    [`${SemanticAttributes.CODE_FUNCTION}.results.base_fee`]: String(fees.BASE_FEE),
+    [`${SemanticAttributes.CODE_FUNCTION}.results.delayed_conversion_spread`]: String(
+      fees.DELAYED_CONVERSION_SPREAD,
+    ),
+    [`${SemanticAttributes.CODE_FUNCTION}.results.lastAsk`]: String(lastAskInUsdPerBtc),
+    [`${SemanticAttributes.CODE_FUNCTION}.results.lastBid`]: String(lastBidInUsdPerBtc),
+    [`${SemanticAttributes.CODE_FUNCTION}.results.fx`]: String(lastBidInUsdPerBtc),
+    [`${SemanticAttributes.CODE_FUNCTION}.results.amountInSats`]: String(amountInSats),
+    [`${SemanticAttributes.CODE_FUNCTION}.results.timeInSeconds`]: String(timeInSeconds),
+    [`${SemanticAttributes.CODE_FUNCTION}.results.amountInCents`]: String(amountInCents),
+  })
+
+  response.setAmountInSatoshis(amountInSats)
   callback(null, response)
 }
 
@@ -320,25 +425,58 @@ function getCentsPerSatsExchangeMidRate(
     toCentsPerSatsRatio((lastMid * CENTS_PER_USD) / SATS_PER_BTC),
   )
 
+  addAttributesToCurrentSpan({
+    [`${SemanticAttributes.CODE_FUNCTION}.results.lastAsk`]: String(lastAskInUsdPerBtc),
+    [`${SemanticAttributes.CODE_FUNCTION}.results.lastBid`]: String(lastBidInUsdPerBtc),
+    [`${SemanticAttributes.CODE_FUNCTION}.results.lastMid`]: String(lastMid),
+  })
+
   callback(null, response)
 }
 
 function getServer() {
   const server = new Server()
   server.addService(PriceServiceService, {
-    getCentsFromSatsForImmediateBuy,
-    getCentsFromSatsForImmediateSell,
+    getCentsFromSatsForImmediateBuy: wrapToRunInSpan({
+      namespace: "app.getCentsFromSatsForImmediateBuy",
+      fn: getCentsFromSatsForImmediateBuy,
+    }),
+    getCentsFromSatsForImmediateSell: wrapToRunInSpan({
+      namespace: "app.getCentsFromSatsForImmediateSell",
+      fn: getCentsFromSatsForImmediateSell,
+    }),
 
-    getCentsFromSatsForFutureBuy,
-    getCentsFromSatsForFutureSell,
+    getCentsFromSatsForFutureBuy: wrapToRunInSpan({
+      namespace: "app.getCentsFromSatsForFutureBuy",
+      fn: getCentsFromSatsForFutureBuy,
+    }),
+    getCentsFromSatsForFutureSell: wrapToRunInSpan({
+      namespace: "app.getCentsFromSatsForFutureSell",
+      fn: getCentsFromSatsForFutureSell,
+    }),
 
-    getSatsFromCentsForImmediateBuy,
-    getSatsFromCentsForImmediateSell,
+    getSatsFromCentsForImmediateBuy: wrapToRunInSpan({
+      namespace: "app.getSatsFromCentsForImmediateBuy",
+      fn: getSatsFromCentsForImmediateBuy,
+    }),
+    getSatsFromCentsForImmediateSell: wrapToRunInSpan({
+      namespace: "app.getSatsFromCentsForImmediateSell",
+      fn: getSatsFromCentsForImmediateSell,
+    }),
 
-    getSatsFromCentsForFutureBuy,
-    getSatsFromCentsForFutureSell,
+    getSatsFromCentsForFutureBuy: wrapToRunInSpan({
+      namespace: "app.getSatsFromCentsForFutureBuy",
+      fn: getSatsFromCentsForFutureBuy,
+    }),
+    getSatsFromCentsForFutureSell: wrapToRunInSpan({
+      namespace: "app.getSatsFromCentsForFutureSell",
+      fn: getSatsFromCentsForFutureSell,
+    }),
 
-    getCentsPerSatsExchangeMidRate,
+    getCentsPerSatsExchangeMidRate: wrapToRunInSpan({
+      namespace: "app.getCentsPerSatsExchangeMidRate",
+      fn: getCentsPerSatsExchangeMidRate,
+    }),
   })
   return server
 }
