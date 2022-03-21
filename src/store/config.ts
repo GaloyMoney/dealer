@@ -16,7 +16,7 @@ if (!isBrowser) {
     "AUTH_ENDPOINT",
   ]
 
-  if (process.env.KRATOS_FEATURE_FLAG) {
+  if (process.env.KRATOS_FEATURE_FLAG === "true") {
     requiredEnvVars.push("KRATOS_API_URL", "KRATOS_BROWSER_URL", "KRATOS_AUTH_ENDPOINT")
   }
 
@@ -78,7 +78,7 @@ const config = isBrowser
       graphqlSubscriptionUri: process.env.GRAPHQL_SUBSCRIPTION_URI as string,
 
       authEndpoint: process.env.AUTH_ENDPOINT as string,
-      kratosFeatureFlag: Boolean(process.env.KRATOS_FEATURE_FLAG || false),
+      kratosFeatureFlag: Boolean(process.env.KRATOS_FEATURE_FLAG === "true" || false),
       kratosBrowserUrl: process.env.KRATOS_BROWSER_URL as string,
       kratosAuthEndpoint: process.env.KRATOS_AUTH_ENDPOINT as string,
     }

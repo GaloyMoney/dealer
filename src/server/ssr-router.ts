@@ -18,12 +18,14 @@ ssrRouter.get("/*", async (req, res) => {
       })
 
       if (ssrVars instanceof Error) {
+        console.error(ssrVars)
         return res.status(500).send("Server error")
       }
 
       const { GwwConfig, GwwState, pageData, ssrData, initialMarkup } = ssrVars
 
       if (!GwwConfig || !GwwState || !pageData || !ssrData || !initialMarkup) {
+        console.error("SSR variable(s) missing")
         return res.status(500).send("Server error")
       }
       return res.render("index", {
@@ -33,6 +35,18 @@ ssrRouter.get("/*", async (req, res) => {
         ssrData,
         initialMarkup,
       })
+    }
+
+    if (routePath === "/logout") {
+      req.session = req.session || {}
+      req.session.authSession = undefined
+      const logoutResult = await handleLogout(req)
+
+      return res.redirect(logoutResult.redirectTo)
+    }
+
+    if (!config.kratosFeatureFlag) {
+      return res.status(404).send("Resource not found")
     }
 
     let flowData = undefined
@@ -62,14 +76,6 @@ ssrRouter.get("/*", async (req, res) => {
         }
         flowData = recoveryResult.flowData
         break
-      }
-
-      case "/logout": {
-        req.session = req.session || {}
-        req.session.authSession = undefined
-        const logoutResult = await handleLogout(req)
-
-        return res.redirect(logoutResult.redirectTo)
       }
 
       default:

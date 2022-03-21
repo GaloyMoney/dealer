@@ -45,6 +45,16 @@ const appRoutesDef = {
     title: "Settings",
   },
 }
+
+// Allow SMS login without kratos
+if (!config.kratosFeatureFlag) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  ;(appRoutesDef as any)["/login"] = {
+    component: LoginPhone,
+    title: `Login to ${config.walletName} Web Wallet`,
+  }
+}
+
 export type SupportedRoutes = keyof typeof appRoutesDef
 export const checkRoute = (path: string): RoutePath | Error => {
   if (appRoutesDef[path as never]) {
@@ -57,11 +67,11 @@ export const appRoutes: AppRoutes = appRoutesDef as unknown as AppRoutes
 
 const authRoutesDef = {
   "/register": {
-    component: config.kratosFeatureFlag ? Register : LoginPhone,
+    component: Register,
     title: `Create new account for ${config.walletName} Web Wallet`,
   },
   "/login": {
-    component: config.kratosFeatureFlag ? LoginEmail : LoginPhone,
+    component: LoginEmail,
     title: `Login to ${config.walletName} Web Wallet`,
   },
   "/recovery": {
@@ -69,6 +79,7 @@ const authRoutesDef = {
     title: `Recover your ${config.walletName} Web Wallet`,
   },
 }
+
 export type SupportedAuthRoutes = keyof typeof authRoutesDef
 export const checkAuthRoute = (path: string): AuthRoutePath | Error => {
   if (authRoutesDef[path as never]) {
