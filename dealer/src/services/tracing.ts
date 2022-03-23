@@ -136,6 +136,28 @@ const recordException = (span: Span, exception: Exception, level?: ErrorLevel) =
   span.setStatus({ code: SpanStatusCode.ERROR })
 }
 
+export const syncRunInSpan = <F extends () => ReturnType<F>>(
+  spanName: string,
+  attributes: SpanAttributes,
+  fn: F,
+) => {
+  const ret = tracer.startActiveSpan(spanName, { attributes }, (span) => {
+    try {
+      const ret = fn()
+      if ((ret as unknown) instanceof Error) {
+        recordException(span, ret)
+      }
+      span.end()
+      return ret
+    } catch (error) {
+      recordException(span, error, ErrorLevel.Critical)
+      span.end()
+      throw error
+    }
+  })
+  return ret
+}
+
 export const asyncRunInSpan = <F extends () => ReturnType<F>>(
   spanName: string,
   attributes: SpanAttributes,
