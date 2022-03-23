@@ -1,7 +1,8 @@
 import { baseLogger } from "../services/logger"
 import cron from "node-cron"
 import { Dealer } from "../Dealer"
-import { wrapAsyncToRunInSpan } from "../services/tracing"
+import { recordExceptionInCurrentSpan, wrapAsyncToRunInSpan } from "../services/tracing"
+import { ErrorLevel } from "../Result"
 
 const logger = baseLogger.child({ module: "cron" })
 
@@ -21,6 +22,7 @@ export async function scheduler() {
         `dealer.updatePositionAndLeverage() returned: ${result}`,
       )
     } catch (error) {
+      recordExceptionInCurrentSpan({ error, level: ErrorLevel.Warn })
       baseLogger.warn(`Error in Scheduler job: ${error}`)
     }
   })
