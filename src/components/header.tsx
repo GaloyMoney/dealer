@@ -9,6 +9,8 @@ import { useAuthContext } from "store/use-auth-context"
 import Balance from "components/balance"
 import Link from "components/link"
 import Logout from "components/logout"
+import { useAppState } from "store"
+import DiscardableMessage from "./discardable-message"
 
 const LoginLink = () => (
   <Link to="/login">
@@ -25,6 +27,7 @@ type FCT = React.FC<{ page: Page }>
 
 const Header: FCT = ({ page }) => {
   const { isAuthenticated } = useAuthContext()
+  const { emailVerified } = useAppState()
   const { btcWalletBalance } = useMainQuery()
   const [showMenu, setShowMenu] = useState(false)
 
@@ -39,6 +42,8 @@ const Header: FCT = ({ page }) => {
   }
 
   const showHeaderNav = page && headerNavPages.includes(page)
+
+  const showVerifiedConfirmation = page === "home" && emailVerified
 
   return (
     <div className={`header-container ${page}-header`}>
@@ -61,6 +66,8 @@ const Header: FCT = ({ page }) => {
           </div>
         </div>
       </div>
+
+      {showVerifiedConfirmation && <DiscardableMessage type="emailVerified" />}
 
       {showHeaderNav && (
         <div className="header-nav">

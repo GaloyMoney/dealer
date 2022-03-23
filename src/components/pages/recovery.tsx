@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import { useState, useEffect, useCallback } from "react"
 import {
   SelfServiceRecoveryFlow,
@@ -6,10 +7,11 @@ import {
 import { AxiosError } from "axios"
 
 import { history } from "../../store/history"
-import { KratosSdk, handleFlowError } from "../../kratos"
-import { Flow } from "../kratos"
+import { KratosSdk, handleFlowError, getNodesForFlow } from "../../kratos"
+import { Messages } from "../kratos"
 
 import config from "store/config"
+import { translate } from "@galoymoney/client"
 
 type FCT = React.FC<{
   flowData?: KratosFlowData
@@ -54,7 +56,7 @@ const Recovery: FCT = ({ flowData: flowDataProp }) => {
       .catch(handleFlowError({ history, resetFlow }))
   }, [flowData, resetFlow])
 
-  const onSubmit = async (values: SubmitSelfServiceRecoveryFlowBody) => {
+  const handleKratossRecovery = async (values: SubmitSelfServiceRecoveryFlowBody) => {
     const kratos = KratosSdk(config.kratosBrowserUrl)
     kratos
       .submitSelfServiceRecoveryFlow(String(flowData?.id), undefined, values, {
@@ -68,7 +70,6 @@ const Recovery: FCT = ({ flowData: flowDataProp }) => {
         // If the previous handler did not catch the error it's most likely a form validation error
         if (err.response?.status === 400) {
           setFlowData(err.response?.data)
-          document.location.replace(`/recovery?flow=${flowData?.id}`)
           return
         }
 
@@ -76,9 +77,41 @@ const Recovery: FCT = ({ flowData: flowDataProp }) => {
       })
   }
 
+  const onSubmit: React.FormEventHandler<HTMLFormElement> = async (event) => {
+    event.stopPropagation()
+    event.preventDefault()
+
+    const values = {
+      method: "link",
+      csrf_token: event.currentTarget.csrf_token.value,
+      email: event.currentTarget.email.value,
+    }
+
+    handleKratossRecovery(values)
+  }
+
+  const nodes = getNodesForFlow(flowData)
+
   return (
     <div className="recovery-form auth-form">
-      <Flow onSubmit={onSubmit} flow={flowData} />
+      <form action={flowData?.ui.action} method="POST" onSubmit={onSubmit}>
+        <input
+          type="hidden"
+          name="csrf_token"
+          value={nodes?.csrf_token.attributes.value}
+        />
+        <div className="input-container">
+          <div className="">{translate("Email")}</div>
+          <input name="email" type="email" required />
+          <Messages messages={nodes?.email.messages} />
+        </div>
+        <Messages messages={flowData?.ui?.messages} />
+        <div className="button-container">
+          <button className="button" name="method" value="link">
+            {translate("Recover Account")}
+          </button>
+        </div>
+      </form>
     </div>
   )
 }

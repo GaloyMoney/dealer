@@ -1,23 +1,23 @@
+/* eslint-disable camelcase */
 import { useState, useEffect, useCallback } from "react"
 import { SelfServiceLoginFlow, SubmitSelfServiceLoginFlowBody } from "@ory/kratos-client"
-import axios, { AxiosError } from "axios"
+import { AxiosError } from "axios"
 
 import { history } from "../../store/history"
-import { KratosSdk, handleFlowError } from "../../kratos"
-import { Flow } from "../kratos"
+import { KratosSdk, handleFlowError, getNodesForFlow } from "../../kratos"
 
 import config from "store/config"
 import Link from "components/link"
-import { useRequest } from "store"
 import { useAuthContext } from "store/use-auth-context"
+import { Messages } from "components/kratos"
+import { translate } from "@galoymoney/client"
 
 type FCT = React.FC<{
   flowData?: KratosFlowData
 }>
 
 const LoginEmail: FCT = ({ flowData: flowDataProp }) => {
-  const request = useRequest()
-  const { setAuthSession } = useAuthContext()
+  const { syncSession } = useAuthContext()
   const [flowData, setFlowData] = useState<SelfServiceLoginFlow | undefined>(
     flowDataProp?.loginData,
   )
@@ -63,7 +63,7 @@ const LoginEmail: FCT = ({ flowData: flowDataProp }) => {
       .catch(handleFlowError({ history, resetFlow }))
   }, [flowData, resetFlow])
 
-  const onSubmit = async (values: SubmitSelfServiceLoginFlowBody) => {
+  const handlesyncSession = async (values: SubmitSelfServiceLoginFlowBody) => {
     const kratos = KratosSdk(config.kratosBrowserUrl)
     kratos
       .submitSelfServiceLoginFlow(String(flowData?.id), undefined, values, {
@@ -71,20 +71,7 @@ const LoginEmail: FCT = ({ flowData: flowDataProp }) => {
       })
       .then(async () => {
         try {
-          const resp = await axios.post(
-            config.kratosAuthEndpoint,
-            {},
-            { withCredentials: true },
-          )
-          if (!resp.data.authToken) {
-            throw new Error("Invalid auth token respose")
-          }
-          const authToken = resp.data.authToken
-          const session = await request.post(config.authEndpoint, { authToken })
-          if (!session || !session.galoyJwtToken) {
-            throw new Error("Invalid auth token respose")
-          }
-          setAuthSession(session.galoyJwtToken ? session : null)
+          await syncSession()
           history.push("/")
         } catch (err) {
           console.error(err)
@@ -95,7 +82,6 @@ const LoginEmail: FCT = ({ flowData: flowDataProp }) => {
         // If the previous handler did not catch the error it's most likely a form validation error
         if (err.response?.status === 400) {
           setFlowData(err.response?.data)
-          document.location.replace(`/login?flow=${flowData?.id}`)
           return
         }
 
@@ -103,20 +89,63 @@ const LoginEmail: FCT = ({ flowData: flowDataProp }) => {
       })
   }
 
+  const onSubmit: React.FormEventHandler<HTMLFormElement> = async (event) => {
+    event.stopPropagation()
+    event.preventDefault()
+
+    const values = {
+      method: "password",
+      csrf_token: event.currentTarget.csrf_token.value,
+      password_identifier: event.currentTarget.password_identifier.value,
+      password: event.currentTarget.password.value,
+    }
+
+    handlesyncSession(values)
+  }
+
+  const nodes = getNodesForFlow(flowData)
+
   return (
     <>
       <div className="login-form auth-form">
-        <Flow onSubmit={onSubmit} flow={flowData} />
+        <form action={flowData?.ui.action} method="POST" onSubmit={onSubmit}>
+          <input
+            type="hidden"
+            name="csrf_token"
+            value={nodes?.csrf_token.attributes.value}
+          />
+          <div className="input-container">
+            <div className="">{translate("Email")}</div>
+            <input
+              name="password_identifier"
+              type="email"
+              defaultValue={nodes?.password_identifier.attributes.value}
+              required
+            />
+            <Messages messages={nodes?.password_identifier.messages} />
+          </div>
+          <div className="input-container">
+            <div className="">{translate("Password")}</div>
+            <input name="password" type="password" required />
+            <Messages messages={nodes?.password.messages} />
+          </div>
+          <Messages messages={flowData?.ui?.messages} />
+          <div className="button-container">
+            <button className="button" name="method" value="password">
+              {translate("Login")}
+            </button>
+          </div>
+        </form>
       </div>
       <div className="form-links">
         <Link to="/register">
           <i aria-hidden className="fas fa-sign-in-alt" />
-          Create new account
+          {translate("Create new account")}
         </Link>
         <div className="separator">|</div>
         <Link to="/recovery">
           <i aria-hidden className="fas fa-key" />
-          Recover your account
+          {translate("Recover your account")}
         </Link>
       </div>
     </>

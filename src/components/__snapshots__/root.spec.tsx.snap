@@ -1538,7 +1538,57 @@ exports[`Root authRoutes renders Login and matches snapshot 1`] = `
   >
     <div
       class="login-form auth-form"
-    />
+    >
+      <form
+        method="POST"
+      >
+        <input
+          name="csrf_token"
+          type="hidden"
+          value=""
+        />
+        <div
+          class="input-container"
+        >
+          <div
+            class=""
+          >
+            Email
+          </div>
+          <input
+            name="password_identifier"
+            required=""
+            type="email"
+            value=""
+          />
+        </div>
+        <div
+          class="input-container"
+        >
+          <div
+            class=""
+          >
+            Password
+          </div>
+          <input
+            name="password"
+            required=""
+            type="password"
+          />
+        </div>
+        <div
+          class="button-container"
+        >
+          <button
+            class="button"
+            name="method"
+            value="password"
+          >
+            Login
+          </button>
+        </div>
+      </form>
+    </div>
     <div
       class="form-links"
     >
@@ -1577,7 +1627,42 @@ exports[`Root authRoutes renders Recorver and matches snapshot 1`] = `
   >
     <div
       class="recovery-form auth-form"
-    />
+    >
+      <form
+        method="POST"
+      >
+        <input
+          name="csrf_token"
+          type="hidden"
+          value=""
+        />
+        <div
+          class="input-container"
+        >
+          <div
+            class=""
+          >
+            Email
+          </div>
+          <input
+            name="email"
+            required=""
+            type="email"
+          />
+        </div>
+        <div
+          class="button-container"
+        >
+          <button
+            class="button"
+            name="method"
+            value="link"
+          >
+            Recover Account
+          </button>
+        </div>
+      </form>
+    </div>
   </div>
 </DocumentFragment>
 `;
@@ -1589,7 +1674,57 @@ exports[`Root authRoutes renders Register and matches snapshot 1`] = `
   >
     <div
       class="register-form auth-form"
-    />
+    >
+      <form
+        method="POST"
+      >
+        <input
+          name="csrf_token"
+          type="hidden"
+          value=""
+        />
+        <div
+          class="input-container"
+        >
+          <div
+            class=""
+          >
+            Email
+          </div>
+          <input
+            name="traits.email"
+            required=""
+            type="email"
+            value=""
+          />
+        </div>
+        <div
+          class="input-container"
+        >
+          <div
+            class=""
+          >
+            Password
+          </div>
+          <input
+            name="password"
+            required=""
+            type="password"
+          />
+        </div>
+        <div
+          class="button-container"
+        >
+          <button
+            class="button"
+            name="method"
+            value="password"
+          >
+            Create Account
+          </button>
+        </div>
+      </form>
+    </div>
     <div
       class="form-links"
     >

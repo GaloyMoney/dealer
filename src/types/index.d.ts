@@ -3,6 +3,7 @@ type SelfServiceRegistrationFlow =
 type KratosSession = import("@ory/kratos-client").Session
 type SelfServiceLoginFlow = import("@ory/kratos-client").SelfServiceLoginFlow
 type SelfServiceRecoveryFlow = import("@ory/kratos-client").SelfServiceRecoveryFlow
+type SelfServiceSettingsFlow = import("@ory/kratos-client").SelfServiceSettingsFlow
 
 // Galoy Client
 type NormalizedCacheObject = import("@galoymoney/client").NormalizedCacheObject
@@ -29,23 +30,34 @@ type KratosFlowData = {
   registrationData?: SelfServiceRegistrationFlow
   loginData?: SelfServiceLoginFlow
   recoveryData?: SelfServiceRecoveryFlow
+  settingsData?: SelfServiceSettingsFlow
 }
 
 type HandleKratosResponse =
   | { redirect: true; redirectTo: string }
   | { redirect: false; flowData: KratosFlowData }
 
+type AuthIdentity = {
+  userId: string
+  phoneNumber?: string
+  emailAddress?: string
+  firstName?: string
+  lastName?: string
+}
+
 type GwwState = {
   key: number
   path: RoutePath | AuthRoutePath
   props?: Record<string, unknown>
-  sessionUserId?: string
+  authIdentity?: AuthIdentity
   defaultLanguage?: string
+  emailVerified?: boolean
   flowData?: KratosFlowData
 }
 
 type GwwAction = {
-  type: "update" | "update-with-key"
+  type: "update" | "update-with-key" | "kratos-login"
+  authIdentity?: AuthIdentity
   [payloadKey: string]: string | Record<string, string> | undefined
 }
 
@@ -56,19 +68,15 @@ type GwwContextType = {
 
 type AuthSession = {
   galoyJwtToken: string
-  identity?: {
-    userId: string
-    phoneNumber?: string
-    emailAddress?: string
-    firstName?: string
-    lastName?: string
-  }
+  identity: AuthIdentity
 } | null
 
 type AuthContextType = {
-  galoyJwtToken?: string
   isAuthenticated: boolean
+  galoyJwtToken?: string
+  authIdentity?: AuthIdentity
   setAuthSession: (session: AuthSession) => void
+  syncSession: () => Promise<void>
 }
 
 type ServerRendererFunction = (path: RoutePath) => Promise<{
@@ -92,7 +100,7 @@ declare interface Window {
       authEndpoint: string
       kratosFeatureFlag: boolean
       kratosBrowserUrl: string
-      kratosAuthEndpoint: string
+      galoyAuthEndpoint: string
     }
   }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

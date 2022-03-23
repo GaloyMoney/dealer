@@ -17,7 +17,7 @@ if (!isBrowser) {
   ]
 
   if (process.env.KRATOS_FEATURE_FLAG === "true") {
-    requiredEnvVars.push("KRATOS_API_URL", "KRATOS_BROWSER_URL", "KRATOS_AUTH_ENDPOINT")
+    requiredEnvVars.push("KRATOS_API_URL", "KRATOS_BROWSER_URL", "GALOY_AUTH_ENDPOINT")
   }
 
   requiredEnvVars.forEach((envVar) => {
@@ -59,7 +59,7 @@ const config = isBrowser
       authEndpoint: window.__G_DATA.GwwConfig.authEndpoint,
       kratosFeatureFlag: window.__G_DATA.GwwConfig.kratosFeatureFlag,
       kratosBrowserUrl: window.__G_DATA.GwwConfig.kratosBrowserUrl,
-      kratosAuthEndpoint: window.__G_DATA.GwwConfig.kratosAuthEndpoint,
+      galoyAuthEndpoint: window.__G_DATA.GwwConfig.galoyAuthEndpoint,
       sessionKeys: "",
     }
   : {
@@ -80,7 +80,7 @@ const config = isBrowser
       authEndpoint: process.env.AUTH_ENDPOINT as string,
       kratosFeatureFlag: Boolean(process.env.KRATOS_FEATURE_FLAG === "true" || false),
       kratosBrowserUrl: process.env.KRATOS_BROWSER_URL as string,
-      kratosAuthEndpoint: process.env.KRATOS_AUTH_ENDPOINT as string,
+      galoyAuthEndpoint: process.env.GALOY_AUTH_ENDPOINT as string,
     }
 
 export default config

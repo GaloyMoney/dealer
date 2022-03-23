@@ -4,7 +4,6 @@ import { GaloyClient, setLocale } from "@galoymoney/client"
 
 import { GwwContext, history } from "store/index"
 import mainReducer from "store/reducer"
-import { clearSession, getPersistedSession } from "store/auth-session"
 
 import { AuthProvider } from "components/auth-provider"
 import RootComponent from "components/root-component"
@@ -13,14 +12,6 @@ type RootFCT = React.FC<{ GwwState: GwwState }>
 
 const Root: RootFCT = ({ GwwState }) => {
   const [state, dispatch] = useReducer(mainReducer, GwwState, (initState) => {
-    const persistedSession = getPersistedSession()
-    if (
-      (initState.sessionUserId || persistedSession) &&
-      persistedSession?.identity?.userId !== initState.sessionUserId
-    ) {
-      clearSession()
-      document.location.href = "/logout"
-    }
     setLocale(initState.defaultLanguage)
     return initState
   })
@@ -43,7 +34,7 @@ const Root: RootFCT = ({ GwwState }) => {
   }, [dispatch])
 
   return (
-    <AuthProvider>
+    <AuthProvider authIdentity={state.authIdentity}>
       <GwwContext.Provider value={{ state, dispatch }}>
         <RootComponent
           key={state.key}
@@ -70,7 +61,11 @@ export const SSRRoot: SSRRootFCT = ({ client, GwwState, galoyJwtToken }) => {
   })
 
   return (
-    <AuthProvider galoyClient={client} galoyJwtToken={galoyJwtToken}>
+    <AuthProvider
+      galoyClient={client}
+      galoyJwtToken={galoyJwtToken}
+      authIdentity={state.authIdentity}
+    >
       <GwwContext.Provider value={{ state, dispatch }}>
         <RootComponent path={state.path} flowData={state.flowData} {...state.props} />
       </GwwContext.Provider>

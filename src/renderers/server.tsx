@@ -58,8 +58,9 @@ export const serverRenderer =
         path,
         props: extractAllowedProps({ path, props: req.query }),
         key: 0,
-        sessionUserId: req.session?.authSession?.identity?.userId,
+        authIdentity: req.session?.authSession?.identity,
         defaultLanguage: req.acceptsLanguages()?.[0],
+        emailVerified: req.session?.emailVerified,
         flowData,
       }
 
@@ -79,6 +80,10 @@ export const serverRenderer =
       const initialMarkup = await renderToStringWithData(App)
       const ssrData = galoyClient.extract()
 
+      if (req.session?.emailVerified) {
+        req.session.emailVerified = undefined
+      }
+
       const {
         walletName,
         walletTheme,
@@ -90,7 +95,7 @@ export const serverRenderer =
         authEndpoint,
         kratosFeatureFlag,
         kratosBrowserUrl,
-        kratosAuthEndpoint,
+        galoyAuthEndpoint,
       } = config
 
       return Promise.resolve({
@@ -106,7 +111,7 @@ export const serverRenderer =
           authEndpoint,
           kratosFeatureFlag,
           kratosBrowserUrl,
-          kratosAuthEndpoint,
+          galoyAuthEndpoint,
         },
         initialMarkup,
         ssrData,

@@ -40,7 +40,7 @@ selfservice:
       enabled: true
       ui_url: http://localhost:3000/verification
       after:
-        default_browser_return_url: http://localhost:3000/
+        default_browser_return_url: http://localhost:3000/verified
 
     logout:
       after:

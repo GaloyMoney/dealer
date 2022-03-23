@@ -7,6 +7,12 @@ import config from "../store/config"
 
 const ssrRouter = express.Router({ caseSensitive: true })
 
+ssrRouter.get("/verified", (req, res) => {
+  req.session = req.session || {}
+  req.session.emailVerified = true
+  res.redirect("/")
+})
+
 ssrRouter.get("/*", async (req, res) => {
   try {
     const routePath = req.path

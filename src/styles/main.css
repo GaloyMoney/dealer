@@ -462,7 +462,9 @@ button {
     max-width: 350px;
     .input-container {
       margin-bottom: 1.5rem;
-      .error-state {
+    }
+    .form-messages {
+      .error-message {
         color: var(--color-error);
         font-size: 0.9rem;
       }
@@ -475,4 +477,23 @@ button {
 
 .form-links {
   margin: 2.5rem auto;
+}
+
+.discardable-message {
+  border: thin solid var(--color-borders);
+  padding: 0.5rem 1rem;
+  margin: 1rem auto;
+  position: relative;
+  background-color: var(--color-active-bg);
+  max-width: 500px;
+  .close {
+    position: absolute;
+    top: 5px;
+    right: 10px;
+  }
+
+  .message {
+    width: 90%;
+    padding: 0.5rem;
+  }
 }

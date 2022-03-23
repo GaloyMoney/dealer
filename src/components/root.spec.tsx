@@ -6,13 +6,15 @@ import { MockedProvider } from "@galoymoney/client"
 import RootComponent from "./root-component"
 
 const mockDataPromise = () => Promise.resolve({ data: undefined })
+
 jest.mock("../kratos", () => ({
+  ...jest.requireActual("../kratos"),
   KratosSdk: () => ({
     initializeSelfServiceRegistrationFlowForBrowsers: mockDataPromise,
     initializeSelfServiceLoginFlowForBrowsers: mockDataPromise,
     initializeSelfServiceRecoveryFlowForBrowsers: mockDataPromise,
+    initializeSelfServiceSettingsFlowForBrowsers: mockDataPromise,
   }),
-  handleFlowError: () => ({}),
 }))
 
 describe("Root appRoutes", () => {

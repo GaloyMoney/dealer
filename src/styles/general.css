@@ -78,6 +78,7 @@ body {
     transition: all 0.2s;
     color: var(--color-button-fg);
     background-color: var(--color-button-bg);
+    cursor: pointer;
   }
   button:disabled,
   button[disabled] {

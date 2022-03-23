@@ -23,3 +23,11 @@ export const getUrlForFlow = ({
   `${removeTrailingSlash(kratosBrowserUrl)}/self-service/${flow}/browser${
     query ? `?${query.toString()}` : ""
   }`
+
+export const getNodesForFlow = (flowData: KratosFlowData[keyof KratosFlowData]) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return flowData?.ui?.nodes.reduce((acc: Record<string, any>, curr: any) => {
+    acc[curr.attributes.name] = curr
+    return acc
+  }, {})
+}
