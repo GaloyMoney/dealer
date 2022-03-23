@@ -23,6 +23,11 @@ import {
   GetAccountAndPositionRiskResult,
   GetTransactionHistoryParameters,
 } from "./ExchangeTradingType"
+import {
+  addAttributesToCurrentSpan,
+  asyncRunInSpan,
+  SemanticAttributes,
+} from "./services/tracing"
 
 const hedgingBounds = yamlConfig.hedging
 
@@ -60,235 +65,302 @@ export class Dealer {
   }
 
   private async updateInFlightTransfer(): Promise<Result<void>> {
-    const logger = this.logger.child({ method: "updateInFlightTransfer()" })
+    await asyncRunInSpan(
+      "app.dealer.updateInFlightTransfer",
+      {
+        [SemanticAttributes.CODE_FUNCTION]: "updateInFlightTransfer",
+        [SemanticAttributes.CODE_NAMESPACE]: "app.dealer",
+      },
+      async () => {
+        const logger = this.logger.child({ method: "updateInFlightTransfer()" })
 
-    // Check and Update persisted in-flight fund transfer
-    let result = await database.inFlightTransfers.getPendingDeposit()
-    logger.debug({ result }, "database.getPendingDeposit() returned: {result}")
-    if (result.ok && result.value.size !== 0) {
-      // Check if the funds arrived
-      const transfersMap = result.value
+        // Check and Update persisted in-flight fund transfer
+        let result = await database.inFlightTransfers.getPendingDeposit()
+        logger.debug({ result }, "database.getPendingDeposit() returned: {result}")
+        if (result.ok && result.value.size !== 0) {
+          // Check if the funds arrived
+          const transfersMap = result.value
 
-      for (const [address, transfers] of transfersMap) {
-        for (const transfer of transfers) {
-          const result = await this.strategy.isDepositCompleted(
-            address,
-            transfer.transferSizeInSats,
-          )
-          logger.debug(
-            { address, transfer, result },
-            "strategy.isDepositCompleted({address}, {transferSizeInSats}) returned: {result}",
-          )
-          if (result.ok && result.value) {
-            const result = await database.inFlightTransfers.completed(address)
-            logger.debug(
-              { address, result },
-              "database.completedInFlightTransfer({address}) returned: {result}",
-            )
-            if (!result.ok) {
-              const message = "Failed to update database on completed deposit to exchange"
-              logger.debug({ result, transfer }, message)
+          for (const [address, transfers] of transfersMap) {
+            for (const transfer of transfers) {
+              const result = await this.strategy.isDepositCompleted(
+                address,
+                transfer.transferSizeInSats,
+              )
+              logger.debug(
+                { address, transfer, result },
+                "strategy.isDepositCompleted({address}, {transferSizeInSats}) returned: {result}",
+              )
+              if (result.ok && result.value) {
+                const result = await database.inFlightTransfers.completed(address)
+                logger.debug(
+                  { address, result },
+                  "database.completedInFlightTransfer({address}) returned: {result}",
+                )
+                if (!result.ok) {
+                  const message =
+                    "Failed to update database on completed deposit to exchange"
+                  logger.debug({ result, transfer }, message)
+                }
+              }
             }
           }
         }
-      }
-    }
 
-    result = await database.inFlightTransfers.getPendingWithdraw()
-    logger.debug({ result }, "database.getPendingWithdraw() returned: {result}")
-    if (result.ok && result.value.size !== 0) {
-      // Check if the funds arrived
-      const transfersMap = result.value
-      for (const [address, transfers] of transfersMap) {
-        for (const transfer of transfers) {
-          const result = await this.strategy.isWithdrawalCompleted(
-            address,
-            transfer.transferSizeInSats,
-          )
-          logger.debug(
-            { address, transfer, result },
-            "strategy.isWithdrawalCompleted({address}, {transferSizeInSats}) returned: {result}",
-          )
-          if (result.ok && result.value) {
-            const result = await database.inFlightTransfers.completed(address)
-            logger.debug(
-              { address, result },
-              "database.completedInFlightTransfer({address}) returned: {result}",
-            )
-            if (!result.ok) {
-              const message =
-                "Failed to update database on completed withdrawal from exchange"
-              logger.debug({ result, transfer }, message)
+        result = await database.inFlightTransfers.getPendingWithdraw()
+        logger.debug({ result }, "database.getPendingWithdraw() returned: {result}")
+        if (result.ok && result.value.size !== 0) {
+          // Check if the funds arrived
+          const transfersMap = result.value
+          for (const [address, transfers] of transfersMap) {
+            for (const transfer of transfers) {
+              const result = await this.strategy.isWithdrawalCompleted(
+                address,
+                transfer.transferSizeInSats,
+              )
+              logger.debug(
+                { address, transfer, result },
+                "strategy.isWithdrawalCompleted({address}, {transferSizeInSats}) returned: {result}",
+              )
+              if (result.ok && result.value) {
+                const result = await database.inFlightTransfers.completed(address)
+                logger.debug(
+                  { address, result },
+                  "database.completedInFlightTransfer({address}) returned: {result}",
+                )
+                if (!result.ok) {
+                  const message =
+                    "Failed to update database on completed withdrawal from exchange"
+                  logger.debug({ result, transfer }, message)
+                }
+              }
             }
           }
         }
-      }
-    }
-
+      },
+    )
     return { ok: true, value: undefined }
   }
 
   public async updatePositionAndLeverage(): Promise<
     Result<UpdatedPositionAndLeverageResult>
   > {
-    const logger = this.logger.child({ method: "updatePositionAndLeverage()" })
+    const ret = await asyncRunInSpan(
+      "app.dealer.updatePositionAndLeverage",
+      {
+        [SemanticAttributes.CODE_FUNCTION]: "updatePositionAndLeverage",
+        [SemanticAttributes.CODE_NAMESPACE]: "app.dealer",
+      },
+      async () => {
+        const logger = this.logger.child({ method: "updatePositionAndLeverage()" })
 
-    const updateResult = await this.updateInFlightTransfer()
-    if (!updateResult.ok) {
-      logger.error(
-        { error: updateResult.error },
-        "Error while updating in-flight fund transfer.",
-      )
-      return updateResult
-    }
-
-    const priceResult = await this.strategy.getBtcSpotPriceInUsd()
-    if (!priceResult.ok) {
-      logger.error({ error: priceResult.error }, "Cannot get BTC spot price.")
-      return { ok: false, error: priceResult.error }
-    }
-    const btcPriceInUsd = priceResult.value
-    const usdLiabilityResult = await this.wallet.getUsdWalletBalance()
-    logger.debug(
-      { usdLiabilityResult },
-      "wallet.getUsdWalletBalance() returned: {usdLiabilityResult}",
-    )
-
-    // If liability is negative, treat as an asset and do not hedge
-    // If liability is below threshold, do not hedge
-    if (!usdLiabilityResult.ok || Number.isNaN(usdLiabilityResult.value)) {
-      const message = "Liabilities is unavailable or NaN."
-      logger.debug({ usdLiabilityResult }, message)
-      return { ok: false, error: new Error(message) }
-    }
-
-    // Wallet usd balance is negative if actual liability,
-    // return additive inverse to deal with positive liability onward
-    const usdLiability = -usdLiabilityResult.value
-
-    const result = {} as UpdatedPositionAndLeverageResult
-
-    if (usdLiability < hedgingBounds.MINIMUM_POSITIVE_LIABILITY_USD) {
-      logger.debug({ usdLiability }, "No liabilities to hedge, skipping the order loop")
-      result.updatePositionSkipped = true
-    } else {
-      logger.debug("starting with order loop")
-
-      const updatedPositionResult = await this.strategy.updatePosition(
-        usdLiability,
-        btcPriceInUsd,
-      )
-      result.updatedPositionResult = updatedPositionResult
-      if (updatedPositionResult.ok) {
-        const originalPosition = updatedPositionResult.value.originalPosition
-        const updatedPosition = updatedPositionResult.value.updatedPosition
-
-        logger.info(
-          {
-            usdLiability,
-            btcPriceInUsd,
-            activeStrategy: this.strategy.name,
-            originalPosition,
-            updatedPosition,
-          },
-          "The {activeStrategy} was successful at UpdatePosition({usdLiability}, {btcPriceInUsd})",
-        )
-      } else {
-        logger.error(
-          {
-            usdLiability,
-            btcPriceInUsd,
-            activeStrategy: this.strategy.name,
-            updatedPosition: updatedPositionResult,
-          },
-          "The {activeStrategy} failed during the UpdatePosition({usdLiability}, {btcPriceInUsd}) execution",
-        )
-      }
-    }
-
-    // Check for any in-flight fund transfer, and skip if not all completed
-    const dbCallResult = await database.inFlightTransfers.getPendingCount()
-    if (dbCallResult.ok && dbCallResult.value === 0) {
-      logger.debug("starting with rebalance loop")
-
-      const withdrawOnChainAddressResult =
-        await this.wallet.getWalletOnChainDepositAddress()
-      logger.debug(
-        { withdrawOnChainAddressResult },
-        "wallet.getWalletOnChainDepositAddress() returned: {withdrawOnChainAddressResult}",
-      )
-      if (!withdrawOnChainAddressResult.ok || !withdrawOnChainAddressResult.value) {
-        const message = "WalletOnChainAddress is unavailable or invalid."
-        logger.debug({ withdrawOnChainAddressResult }, message)
-        return { ok: false, error: new Error(message) }
-      }
-      const withdrawOnChainAddress = withdrawOnChainAddressResult.value
-
-      const updatedLeverageResult = await this.strategy.updateLeverage(
-        usdLiability,
-        btcPriceInUsd,
-        withdrawOnChainAddress,
-        this.withdrawBookKeeping.bind(this),
-        this.depositOnExchangeCallback.bind(this),
-      )
-      result.updatedLeverageResult = updatedLeverageResult
-      if (updatedLeverageResult.ok) {
-        const updatedLeverage = updatedLeverageResult.value
-        logger.info(
-          {
-            usdLiability,
-            btcPriceInUsd,
-            withdrawOnChainAddress,
-            activeStrategy: this.strategy.name,
-            updatedLeverage,
-          },
-          "The active {activeStrategy} was successful at UpdateLeverage({usdLiability}, {exposureInUsd}, {btcPriceInUsd}, {withdrawOnChainAddress})",
-        )
-      } else {
-        logger.error(
-          {
-            usdLiability,
-            btcPriceInUsd,
-            withdrawOnChainAddress,
-            activeStrategy: this.strategy.name,
-            updatedLeverageResult,
-          },
-          "The active {activeStrategy} failed during the UpdateLeverage({usdLiability}, {exposureInUsd}, {btcPriceInUsd}, {withdrawOnChainAddress}) execution",
-        )
-      }
-    } else {
-      result.updateLeverageSkipped = true
-      if (dbCallResult.ok) {
-        const pending = dbCallResult.value
-        const message =
-          "Some funds are in-flight, skipping the rebalance until settlement"
-        logger.debug({ pending }, message)
-      } else {
-        const message = "Error getting in-flight fund transfer data"
-        logger.error({ dbCallResult }, message)
-      }
-    }
-
-    if (
-      (result.updatePositionSkipped || result.updatedPositionResult.ok) &&
-      (result.updateLeverageSkipped || result.updatedLeverageResult.ok)
-    ) {
-      return { ok: true, value: result }
-    } else {
-      const errors: Error[] = []
-      if (!result.updatePositionSkipped && !result.updatedPositionResult.ok) {
-        errors.push(result.updatedPositionResult.error)
-        return { ok: false, error: result.updatedPositionResult.error }
-      } else if (!result.updateLeverageSkipped && !result.updatedLeverageResult.ok) {
-        errors.push(result.updatedLeverageResult.error)
-        return { ok: false, error: result.updatedLeverageResult.error }
-      } else {
-        return {
-          ok: false,
-          error: new Error(`Unknown error: ${errors}`),
+        const updateResult = await this.updateInFlightTransfer()
+        if (!updateResult.ok) {
+          logger.error(
+            { error: updateResult.error },
+            "Error while updating in-flight fund transfer.",
+          )
+          return updateResult
         }
-      }
-    }
+
+        const priceResult = await this.strategy.getBtcSpotPriceInUsd()
+        if (!priceResult.ok) {
+          logger.error({ error: priceResult.error }, "Cannot get BTC spot price.")
+          return { ok: false, error: priceResult.error }
+        }
+        const btcPriceInUsd = priceResult.value
+        const usdLiabilityResult = await this.wallet.getUsdWalletBalance()
+        logger.debug(
+          { usdLiabilityResult },
+          "wallet.getUsdWalletBalance() returned: {usdLiabilityResult}",
+        )
+
+        // If liability is negative, treat as an asset and do not hedge
+        // If liability is below threshold, do not hedge
+        if (!usdLiabilityResult.ok || Number.isNaN(usdLiabilityResult.value)) {
+          const message = "Liabilities is unavailable or NaN."
+          logger.debug({ usdLiabilityResult }, message)
+          return { ok: false, error: new Error(message) }
+        }
+
+        // Wallet usd balance is negative if actual liability,
+        // return additive inverse to deal with positive liability onward
+        const usdLiability = -usdLiabilityResult.value
+
+        addAttributesToCurrentSpan({
+          [`${SemanticAttributes.CODE_FUNCTION}.results.usdLiability`]: usdLiability,
+          [`${SemanticAttributes.CODE_FUNCTION}.results.btcPriceInUsd`]: btcPriceInUsd,
+          [`${SemanticAttributes.CODE_FUNCTION}.results.activeStrategy`]:
+            this.strategy.name,
+        })
+
+        const result = {} as UpdatedPositionAndLeverageResult
+
+        if (usdLiability < hedgingBounds.MINIMUM_POSITIVE_LIABILITY_USD) {
+          logger.debug(
+            { usdLiability },
+            "No liabilities to hedge, skipping the order loop",
+          )
+
+          addAttributesToCurrentSpan({
+            [`${SemanticAttributes.CODE_FUNCTION}.results.orderLoopSkipped`]: true,
+          })
+
+          result.updatePositionSkipped = true
+        } else {
+          logger.debug("starting with order loop")
+
+          const updatedPositionResult = await this.strategy.updatePosition(
+            usdLiability,
+            btcPriceInUsd,
+          )
+          result.updatedPositionResult = updatedPositionResult
+          if (updatedPositionResult.ok) {
+            const originalPosition = updatedPositionResult.value.originalPosition
+            const updatedPosition = updatedPositionResult.value.updatedPosition
+
+            addAttributesToCurrentSpan({
+              [`${SemanticAttributes.CODE_FUNCTION}.results.updatePosition.success`]:
+                true,
+              [`${SemanticAttributes.CODE_FUNCTION}.results.updatePosition.originalPosition`]:
+                JSON.stringify(originalPosition),
+              [`${SemanticAttributes.CODE_FUNCTION}.results.updatePosition.updatedPosition`]:
+                JSON.stringify(updatedPosition),
+            })
+
+            logger.info(
+              {
+                usdLiability,
+                btcPriceInUsd,
+                activeStrategy: this.strategy.name,
+                originalPosition,
+                updatedPosition,
+              },
+              "The {activeStrategy} was successful at UpdatePosition({usdLiability}, {btcPriceInUsd})",
+            )
+          } else {
+            addAttributesToCurrentSpan({
+              [`${SemanticAttributes.CODE_FUNCTION}.results.updatePosition.success`]:
+                false,
+              [`${SemanticAttributes.CODE_FUNCTION}.results.updatePosition.error`]:
+                JSON.stringify(updatedPositionResult.error),
+            })
+            logger.error(
+              {
+                usdLiability,
+                btcPriceInUsd,
+                activeStrategy: this.strategy.name,
+                updatedPosition: updatedPositionResult,
+              },
+              "The {activeStrategy} failed during the UpdatePosition({usdLiability}, {btcPriceInUsd}) execution",
+            )
+          }
+        }
+
+        // Check for any in-flight fund transfer, and skip if not all completed
+        const dbCallResult = await database.inFlightTransfers.getPendingCount()
+        if (dbCallResult.ok && dbCallResult.value === 0) {
+          logger.debug("starting with rebalance loop")
+
+          const withdrawOnChainAddressResult =
+            await this.wallet.getWalletOnChainDepositAddress()
+          logger.debug(
+            { withdrawOnChainAddressResult },
+            "wallet.getWalletOnChainDepositAddress() returned: {withdrawOnChainAddressResult}",
+          )
+          if (!withdrawOnChainAddressResult.ok || !withdrawOnChainAddressResult.value) {
+            const message = "WalletOnChainAddress is unavailable or invalid."
+            logger.debug({ withdrawOnChainAddressResult }, message)
+            return { ok: false, error: new Error(message) }
+          }
+          const withdrawOnChainAddress = withdrawOnChainAddressResult.value
+
+          const updatedLeverageResult = await this.strategy.updateLeverage(
+            usdLiability,
+            btcPriceInUsd,
+            withdrawOnChainAddress,
+            this.withdrawBookKeeping.bind(this),
+            this.depositOnExchangeCallback.bind(this),
+          )
+          result.updatedLeverageResult = updatedLeverageResult
+          if (updatedLeverageResult.ok) {
+            const updatedLeverage = updatedLeverageResult.value
+
+            addAttributesToCurrentSpan({
+              [`${SemanticAttributes.CODE_FUNCTION}.results.updateLeverage.success`]:
+                true,
+              [`${SemanticAttributes.CODE_FUNCTION}.results.updateLeverage.updatedLeverage`]:
+                JSON.stringify(updatedLeverage),
+            })
+
+            logger.info(
+              {
+                usdLiability,
+                btcPriceInUsd,
+                withdrawOnChainAddress,
+                activeStrategy: this.strategy.name,
+                updatedLeverage,
+              },
+              "The active {activeStrategy} was successful at UpdateLeverage({usdLiability}, {exposureInUsd}, {btcPriceInUsd}, {withdrawOnChainAddress})",
+            )
+          } else {
+            addAttributesToCurrentSpan({
+              [`${SemanticAttributes.CODE_FUNCTION}.results.updateLeverage.success`]:
+                false,
+              [`${SemanticAttributes.CODE_FUNCTION}.results.updateLeverage.error`]:
+                JSON.stringify(updatedLeverageResult.error),
+            })
+            logger.error(
+              {
+                usdLiability,
+                btcPriceInUsd,
+                withdrawOnChainAddress,
+                activeStrategy: this.strategy.name,
+                updatedLeverageResult,
+              },
+              "The active {activeStrategy} failed during the UpdateLeverage({usdLiability}, {exposureInUsd}, {btcPriceInUsd}, {withdrawOnChainAddress}) execution",
+            )
+          }
+        } else {
+          addAttributesToCurrentSpan({
+            [`${SemanticAttributes.CODE_FUNCTION}.results.rebalanceLoopSkipped`]: true,
+          })
+
+          result.updateLeverageSkipped = true
+          if (dbCallResult.ok) {
+            const pending = dbCallResult.value
+            const message =
+              "Some funds are in-flight, skipping the rebalance until settlement"
+            logger.debug({ pending }, message)
+          } else {
+            const message = "Error getting in-flight fund transfer data"
+            logger.error({ dbCallResult }, message)
+          }
+        }
+
+        if (
+          (result.updatePositionSkipped || result.updatedPositionResult.ok) &&
+          (result.updateLeverageSkipped || result.updatedLeverageResult.ok)
+        ) {
+          return { ok: true, value: result }
+        } else {
+          const errors: Error[] = []
+          if (!result.updatePositionSkipped && !result.updatedPositionResult.ok) {
+            errors.push(result.updatedPositionResult.error)
+            return { ok: false, error: result.updatedPositionResult.error }
+          } else if (!result.updateLeverageSkipped && !result.updatedLeverageResult.ok) {
+            errors.push(result.updatedLeverageResult.error)
+            return { ok: false, error: result.updatedLeverageResult.error }
+          } else {
+            return {
+              ok: false,
+              error: new Error(`Unknown error: ${errors}`),
+            }
+          }
+        }
+      },
+    )
+    return ret as Result<UpdatedPositionAndLeverageResult>
   }
 
   private async depositOnExchangeCallback(

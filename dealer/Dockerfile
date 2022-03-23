@@ -39,4 +39,4 @@ ARG COMMITHASH
 ENV BUILDTIME ${BUILDTIME}
 ENV COMMITHASH ${COMMITHASH}
 
-CMD ["dealer/lib/app/scheduler.js"]
+CMD ["dealer/lib/app/start.js"]

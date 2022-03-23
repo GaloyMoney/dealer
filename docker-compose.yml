@@ -52,6 +52,8 @@ services:
     depends_on:
       postgres:
         condition: service_healthy      
+    extra_hosts:
+    - "host.docker.internal:host-gateway"
     links:
       - postgres
       - graphql
@@ -64,12 +66,15 @@ services:
     networks:
       - monitoring
     environment:
-      GRAPHQL_URI: http://graphql:4000/graphql
-      DATABASE_URL: postgres://postgres:postgres@postgres:5432/galoy
+      GRAPHQL_URI: ${GRAPHQL_URI}
+      DATABASE_URL: ${DATABASE_URL}
+      JAEGER_HOST: ${JAEGER_HOST}
   graphql:
     build:
       context: .
       dockerfile: dealer/src/servers/graphql/Dockerfile
+    extra_hosts:
+    - "host.docker.internal:host-gateway"
     links:
       - postgres
     ports:
@@ -79,7 +84,8 @@ services:
     networks:
       - monitoring
     environment:
-      DATABASE_URL: postgres://postgres:postgres@postgres:5432/galoy
+      DATABASE_URL: ${DATABASE_URL}
+      JAEGER_HOST: ${JAEGER_HOST}
   postgres:
     container_name: postgres
     image: postgres:13.4

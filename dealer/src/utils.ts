@@ -6,6 +6,10 @@ export const roundBtc = (btc: number) => {
   return sat2btc(btc2sat(btc))
 }
 
+export const floorBtc = (btc: number) => {
+  return sat2btc(Math.floor(btc * SATS_PER_BTC))
+}
+
 export const SATS_PER_BTC = 10 ** 8
 
 export const btc2sat = (btc: number) => {
@@ -30,7 +34,7 @@ export const usd2cents = (usd: number): UsdCents => {
   return toCents(Math.round(usd * CENTS_PER_USD))
 }
 
-export const cents2usd = (cents: UsdCents): number => {
+export const cents2usd = (cents: UsdCents | number): number => {
   return cents / CENTS_PER_USD
 }
 
