@@ -1,4 +1,4 @@
-import { Result } from "./Result"
+import { ErrorLevel, Result } from "./Result"
 import { GaloyWallet, WalletsBalances } from "./GaloyWalletTypes"
 import {
   ApolloClient,
@@ -13,6 +13,12 @@ import { pino } from "pino"
 import { cents2usd, sat2btc } from "./utils"
 
 import { QUERIES, MUTATIONS } from "@galoymoney/client"
+import {
+  addAttributesToCurrentSpan,
+  asyncRunInSpan,
+  recordExceptionInCurrentSpan,
+  SemanticAttributes,
+} from "./services/tracing"
 
 export class DealerRemoteWalletV2 implements GaloyWallet {
   client: ApolloClient<NormalizedCacheObject>
@@ -71,48 +77,74 @@ export class DealerRemoteWalletV2 implements GaloyWallet {
   }
 
   public async getWalletsBalances(): Promise<Result<WalletsBalances>> {
-    const logger = this.logger.child({ method: "getWalletsBalances()" })
-    const variables = { hasToken: this.isAuthenticated(), recentTransactions: 0 }
-    try {
-      const result = await this.client.query({
-        query: QUERIES.main,
-        variables: variables,
-      })
-      logger.debug(
-        { query: QUERIES.main, variables, result },
-        "{query} with {variables} to galoy graphql api successful with {result}",
-      )
+    const ret = await asyncRunInSpan(
+      "app.dealerRemoteWalletV2.getWalletsBalances",
+      {
+        [SemanticAttributes.CODE_FUNCTION]: "getWalletsBalances",
+        [SemanticAttributes.CODE_NAMESPACE]: "app.dealerRemoteWalletV2",
+      },
+      async () => {
+        const btcBalanceOffset = Number(process.env["DEALER_BTC_BAL_OFFSET"] ?? 0)
+        const usdBalanceOffset = Number(process.env["DEALER_USD_BAL_OFFSET"] ?? 0)
 
-      const me = result.data?.me
-      const btcWallet = me?.defaultAccount?.wallets?.find(
-        (wallet) => wallet?.__typename === "BTCWallet",
-      )
-      const btcWalletId = btcWallet?.id
-      const btcWalletBalance = btcWallet?.balance ?? NaN
+        const logger = this.logger.child({ method: "getWalletsBalances()" })
+        const variables = { hasToken: this.isAuthenticated(), recentTransactions: 0 }
+        try {
+          const result = await this.client.query({
+            query: QUERIES.main,
+            variables: variables,
+          })
+          logger.debug(
+            { query: QUERIES.main, variables, result },
+            "{query} with {variables} to galoy graphql api successful with {result}",
+          )
 
-      // TODO upgrade to USDWallet when the Galoy-Client does
-      const usdWallet = me?.defaultAccount?.wallets?.find(
-        (wallet) => wallet?.__typename !== "BTCWallet",
-      )
-      const usdWalletId = usdWallet?.id
-      const usdWalletBalance = usdWallet?.balance ?? NaN
+          const me = result.data?.me
+          const btcWallet = me?.defaultAccount?.wallets?.find(
+            (wallet) => wallet?.__typename === "BTCWallet",
+          )
+          const btcWalletId = btcWallet?.id
+          const btcWalletBalance = (btcWallet?.balance ?? NaN) - btcBalanceOffset
 
-      return {
-        ok: true,
-        value: {
-          btcWalletId,
-          btcWalletBalance: sat2btc(btcWalletBalance),
-          usdWalletId,
-          usdWalletBalance: cents2usd(usdWalletBalance),
-        },
-      }
-    } catch (error) {
-      logger.error(
-        { query: QUERIES.main, variables, error },
-        "{query} with {variables} to galoy graphql api failed with {error}",
-      )
-      return { ok: false, error }
-    }
+          const usdWallet = me?.defaultAccount?.wallets?.find(
+            (wallet) => wallet?.__typename === "UsdWallet",
+          )
+          const usdWalletId = usdWallet?.id
+          const usdWalletBalance = (usdWallet?.balance ?? NaN) - usdBalanceOffset
+
+          addAttributesToCurrentSpan({
+            [`${SemanticAttributes.CODE_FUNCTION}.results.btcWalletId`]: btcWalletId,
+            [`${SemanticAttributes.CODE_FUNCTION}.results.btcWalletBalance`]:
+              btcWalletBalance,
+            [`${SemanticAttributes.CODE_FUNCTION}.results.btcBalanceOffset`]:
+              btcBalanceOffset,
+            [`${SemanticAttributes.CODE_FUNCTION}.results.usdWalletId`]: usdWalletId,
+            [`${SemanticAttributes.CODE_FUNCTION}.results.usdWalletBalance`]:
+              usdWalletBalance,
+            [`${SemanticAttributes.CODE_FUNCTION}.results.usdBalanceOffset`]:
+              usdBalanceOffset,
+          })
+
+          return {
+            ok: true,
+            value: {
+              btcWalletId,
+              btcWalletBalance: sat2btc(btcWalletBalance),
+              usdWalletId,
+              usdWalletBalance: cents2usd(usdWalletBalance),
+            },
+          }
+        } catch (error) {
+          recordExceptionInCurrentSpan({ error, level: ErrorLevel.Warn })
+          logger.error(
+            { query: QUERIES.main, variables, error },
+            "{query} with {variables} to galoy graphql api failed with {error}",
+          )
+          return { ok: false, error }
+        }
+      },
+    )
+    return ret as Result<WalletsBalances>
   }
 
   public async getUsdWalletBalance(): Promise<Result<number>> {
@@ -140,64 +172,98 @@ export class DealerRemoteWalletV2 implements GaloyWallet {
   }
 
   public async getWalletOnChainDepositAddress(): Promise<Result<string>> {
-    const logger = this.logger.child({ method: "getWalletOnChainDepositAddress()" })
-    try {
-      const walletsResult = await this.getWalletsBalances()
-      if (!walletsResult.ok) {
-        return walletsResult
-      }
-      const variables = { input: { walletId: walletsResult.value.btcWalletId } }
-      const result = await this.client.mutate({
-        mutation: MUTATIONS.onChainAddressCurrent,
-        variables: variables,
-      })
-      logger.debug(
-        { mutation: MUTATIONS.onChainAddressCurrent, variables, result },
-        "{mutation} with {variables} to galoy graphql api successful with {result}",
-      )
-      const btcAddress = result.data?.onChainAddressCurrent?.address ?? undefined
-      return { ok: true, value: btcAddress }
-    } catch (error) {
-      logger.error(
-        { mutation: MUTATIONS.onChainAddressCurrent, error },
-        "{mutation} to galoy graphql api failed with {error}",
-      )
-      return { ok: false, error }
-    }
+    const ret = await asyncRunInSpan(
+      "app.dealerRemoteWalletV2.getWalletOnChainDepositAddress",
+      {
+        [SemanticAttributes.CODE_FUNCTION]: "getWalletOnChainDepositAddress",
+        [SemanticAttributes.CODE_NAMESPACE]: "app.dealerRemoteWalletV2",
+      },
+      async () => {
+        const logger = this.logger.child({ method: "getWalletOnChainDepositAddress()" })
+        try {
+          const walletsResult = await this.getWalletsBalances()
+          if (!walletsResult.ok) {
+            return walletsResult
+          }
+          const variables = { input: { walletId: walletsResult.value.btcWalletId } }
+          const result = await this.client.mutate({
+            mutation: MUTATIONS.onChainAddressCurrent,
+            variables: variables,
+          })
+          logger.debug(
+            { mutation: MUTATIONS.onChainAddressCurrent, variables, result },
+            "{mutation} with {variables} to galoy graphql api successful with {result}",
+          )
+          const btcAddress = result.data?.onChainAddressCurrent?.address ?? undefined
+
+          addAttributesToCurrentSpan({
+            [`${SemanticAttributes.CODE_FUNCTION}.results.btcAddress`]: btcAddress,
+          })
+
+          return { ok: true, value: btcAddress }
+        } catch (error) {
+          recordExceptionInCurrentSpan({ error, level: ErrorLevel.Warn })
+          logger.error(
+            { mutation: MUTATIONS.onChainAddressCurrent, error },
+            "{mutation} to galoy graphql api failed with {error}",
+          )
+          return { ok: false, error }
+        }
+      },
+    )
+    return ret as Result<string>
   }
 
   public async getWalletOnChainTransactionFee(
     address: string,
     btcAmountInSats: number,
   ): Promise<Result<number>> {
-    const logger = this.logger.child({ method: "getWalletOnChainTransactionFee()" })
-    try {
-      const walletsResult = await this.getWalletsBalances()
-      if (!walletsResult.ok) {
-        return walletsResult
-      }
-      const variables = {
-        walletId: walletsResult.value.btcWalletId,
-        address: address,
-        amount: btcAmountInSats,
-      }
-      const result = await this.client.query({
-        query: QUERIES.onChainTxFee,
-        variables: variables,
-      })
-      logger.debug(
-        { query: QUERIES.onChainTxFee, variables, result },
-        "{query} with {variables} to galoy graphql api successful with {result}",
-      )
-      const btcAddress = result.data?.onChainTxFee?.amount ?? undefined
-      return { ok: true, value: btcAddress }
-    } catch (error) {
-      logger.error(
-        { query: QUERIES.onChainTxFee, address, btcAmountInSats, error },
-        "{query} to galoy graphql api failed with {error}",
-      )
-      return { ok: false, error }
-    }
+    const ret = await asyncRunInSpan(
+      "app.dealerRemoteWalletV2.getWalletOnChainTransactionFee",
+      {
+        [SemanticAttributes.CODE_FUNCTION]: "getWalletOnChainTransactionFee",
+        [SemanticAttributes.CODE_NAMESPACE]: "app.dealerRemoteWalletV2",
+        [`${SemanticAttributes.CODE_FUNCTION}.params.address`]: address,
+        [`${SemanticAttributes.CODE_FUNCTION}.params.btcAmountInSats`]: btcAmountInSats,
+      },
+      async () => {
+        const logger = this.logger.child({ method: "getWalletOnChainTransactionFee()" })
+        try {
+          const walletsResult = await this.getWalletsBalances()
+          if (!walletsResult.ok) {
+            return walletsResult
+          }
+          const variables = {
+            walletId: walletsResult.value.btcWalletId,
+            address: address,
+            amount: btcAmountInSats,
+          }
+          const result = await this.client.query({
+            query: QUERIES.onChainTxFee,
+            variables: variables,
+          })
+          logger.debug(
+            { query: QUERIES.onChainTxFee, variables, result },
+            "{query} with {variables} to galoy graphql api successful with {result}",
+          )
+          const feeAmount = result.data?.onChainTxFee?.amount ?? undefined
+
+          addAttributesToCurrentSpan({
+            [`${SemanticAttributes.CODE_FUNCTION}.results.feeAmount`]: feeAmount,
+          })
+
+          return { ok: true, value: feeAmount }
+        } catch (error) {
+          recordExceptionInCurrentSpan({ error, level: ErrorLevel.Warn })
+          logger.error(
+            { query: QUERIES.onChainTxFee, address, btcAmountInSats, error },
+            "{query} to galoy graphql api failed with {error}",
+          )
+          return { ok: false, error }
+        }
+      },
+    )
+    return ret as Result<number>
   }
 
   public async payOnChain(
@@ -205,35 +271,49 @@ export class DealerRemoteWalletV2 implements GaloyWallet {
     btcAmountInSats: number,
     memo: string,
   ): Promise<Result<void>> {
-    const logger = this.logger.child({ method: "payOnChain()" })
-    try {
-      const walletsResult = await this.getWalletsBalances()
-      if (!walletsResult.ok) {
-        return walletsResult
-      }
-      const variables = {
-        input: {
-          address: address,
-          amount: btcAmountInSats,
-          memo: memo,
-          walletId: walletsResult.value.btcWalletId,
-        },
-      }
-      const result = await this.client.mutate({
-        mutation: MUTATIONS.onChainPaymentSend,
-        variables: variables,
-      })
-      logger.debug(
-        { mutation: MUTATIONS.onChainAddressCurrent, variables, result },
-        "{mutation} with {variables} to galoy graphql api successful with {result}",
-      )
-      return { ok: true, value: undefined }
-    } catch (error) {
-      logger.error(
-        { mutation: MUTATIONS.onChainAddressCurrent, error },
-        "{mutation} to galoy graphql api failed with {error}",
-      )
-      return { ok: false, error }
-    }
+    const ret = await asyncRunInSpan(
+      "app.dealerRemoteWalletV2.payOnChain",
+      {
+        [SemanticAttributes.CODE_FUNCTION]: "payOnChain",
+        [SemanticAttributes.CODE_NAMESPACE]: "app.dealerRemoteWalletV2",
+        [`${SemanticAttributes.CODE_FUNCTION}.params.address`]: address,
+        [`${SemanticAttributes.CODE_FUNCTION}.params.btcAmountInSats`]: btcAmountInSats,
+        [`${SemanticAttributes.CODE_FUNCTION}.params.memo`]: memo,
+      },
+      async () => {
+        const logger = this.logger.child({ method: "payOnChain()" })
+        try {
+          const walletsResult = await this.getWalletsBalances()
+          if (!walletsResult.ok) {
+            return walletsResult
+          }
+          const variables = {
+            input: {
+              address: address,
+              amount: btcAmountInSats,
+              memo: memo,
+              walletId: walletsResult.value.btcWalletId,
+            },
+          }
+          const result = await this.client.mutate({
+            mutation: MUTATIONS.onChainPaymentSend,
+            variables: variables,
+          })
+          logger.debug(
+            { mutation: MUTATIONS.onChainAddressCurrent, variables, result },
+            "{mutation} with {variables} to galoy graphql api successful with {result}",
+          )
+          return { ok: true, value: undefined }
+        } catch (error) {
+          recordExceptionInCurrentSpan({ error, level: ErrorLevel.Warn })
+          logger.error(
+            { mutation: MUTATIONS.onChainAddressCurrent, error },
+            "{mutation} to galoy graphql api failed with {error}",
+          )
+          return { ok: false, error }
+        }
+      },
+    )
+    return ret as Result<void>
   }
 }
