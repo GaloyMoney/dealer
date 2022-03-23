@@ -7,8 +7,10 @@ import { PositionSide } from "../../ExchangeTradingType"
 import {
   addAttributesToCurrentSpan,
   asyncRunInSpan,
+  recordExceptionInCurrentSpan,
   SemanticAttributes,
 } from "../../services/tracing"
+import { ErrorLevel } from "../../Result"
 
 dotenv.config()
 
@@ -518,6 +520,7 @@ export async function exporter() {
             fundingFeesMetrics.fundingFeesTotalInSats
           Metrics.set(metrics["strategyRPnlInSats"], strategyRPnlInSats)
         } catch (error) {
+          recordExceptionInCurrentSpan({ error, level: ErrorLevel.Warn })
           console.log(error)
           logger.error("Couldn't set dealer wallet metrics")
         }
