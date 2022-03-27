@@ -27,13 +27,9 @@ const Footer: FCT = ({ page }) => {
           <Icon name="bitcoin" />
         </div>
         <div className="tab disabled">
-          {isAuthenticated ? (
+          <Link to={isAuthenticated ? "/settings" : "/login"}>
             <Icon name="person" />
-          ) : (
-            <Link to="/login">
-              <Icon name="person" />
-            </Link>
-          )}
+          </Link>
         </div>
       </div>
     </div>
