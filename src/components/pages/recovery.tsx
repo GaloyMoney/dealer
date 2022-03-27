@@ -6,12 +6,13 @@ import {
 } from "@ory/kratos-client"
 import { AxiosError } from "axios"
 
-import { history } from "../../store/history"
-import { KratosSdk, handleFlowError, getNodesForFlow } from "../../kratos"
-import { Messages } from "../kratos"
+import { history } from "store/history"
+import { KratosSdk, handleFlowError, getNodesForFlow } from "kratos"
+import { Messages } from "components/kratos"
 
 import config from "store/config"
 import { translate } from "@galoymoney/client"
+import Link from "components/link"
 
 type FCT = React.FC<{
   flowData?: KratosFlowData
@@ -102,7 +103,7 @@ const Recovery: FCT = ({ flowData: flowDataProp }) => {
         />
         <div className="input-container">
           <div className="">{translate("Email")}</div>
-          <input name="email" type="email" required />
+          <input name="email" type="email" autoComplete="email" required />
           <Messages messages={nodes?.email.messages} />
         </div>
         <Messages messages={flowData?.ui?.messages} />
@@ -110,6 +111,7 @@ const Recovery: FCT = ({ flowData: flowDataProp }) => {
           <button className="button" name="method" value="link">
             {translate("Recover Account")}
           </button>
+          <Link to="/">{translate("Cancel")}</Link>
         </div>
       </form>
     </div>

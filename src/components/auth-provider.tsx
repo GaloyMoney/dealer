@@ -7,8 +7,8 @@ import { createClient, useAppDispatcher, useRequest } from "store/index"
 import { AuthContext } from "store/use-auth-context"
 import axios from "axios"
 
-import config from "../store/config"
-import storage from "../store/local-storage"
+import config from "store/config"
+import storage from "store/local-storage"
 
 const galoySessionName = "galoy-session"
 

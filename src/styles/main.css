@@ -463,15 +463,22 @@ button {
     .input-container {
       margin-bottom: 1.5rem;
     }
-    .form-messages {
-      .error-message {
-        color: var(--color-error);
-        font-size: 0.9rem;
-      }
-    }
     button {
       margin-top: 1rem;
     }
+  }
+}
+
+.form-messages {
+  .error-message {
+    color: var(--color-error);
+    font-size: 0.9rem;
+  }
+  .info-message {
+    margin: 1rem auto;
+    padding: 0.5rem;
+    font-weight: bold;
+    text-align: center;
   }
 }
 
@@ -495,5 +502,11 @@ button {
   .message {
     width: 90%;
     padding: 0.5rem;
+  }
+}
+
+.button-container {
+  a {
+    margin: 0 1rem;
   }
 }

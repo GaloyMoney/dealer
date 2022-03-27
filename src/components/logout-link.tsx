@@ -3,7 +3,7 @@ import { Icon } from "@galoymoney/react"
 
 import { useAuthContext } from "store/use-auth-context"
 
-const Logout: NoPropsFCT = () => {
+const LogoutLink: NoPropsFCT = () => {
   const { setAuthSession } = useAuthContext()
 
   const resetClient = useResetClient()
@@ -22,4 +22,4 @@ const Logout: NoPropsFCT = () => {
   )
 }
 
-export default Logout
+export default LogoutLink

@@ -1,19 +1,20 @@
 /* eslint-disable camelcase */
+import { useState, useEffect, useCallback } from "react"
 import {
   SelfServiceRegistrationFlow,
   SubmitSelfServiceRegistrationFlowBody,
 } from "@ory/kratos-client"
-
 import { AxiosError } from "axios"
-import { history } from "../../store/history"
-import { useState, useEffect, useCallback } from "react"
-import { KratosSdk, handleFlowError, getNodesForFlow } from "../../kratos"
+
+import { translate } from "@galoymoney/client"
+
+import { KratosSdk, handleFlowError, getNodesForFlow } from "kratos"
+import { history } from "store/history"
 import { useAuthContext } from "store/use-auth-context"
 
 import config from "store/config"
 import Link from "components/link"
 import { Messages } from "components/kratos"
-import { translate } from "@galoymoney/client"
 
 type FCT = React.FC<{
   flowData?: KratosFlowData
@@ -127,13 +128,19 @@ const Register: FCT = ({ flowData: flowDataProp }) => {
               name="traits.email"
               type="email"
               defaultValue={nodes?.["traits.email"].value}
+              autoComplete="email"
               required
             />
             <Messages messages={nodes?.["traits.email"].messages} />
           </div>
           <div className="input-container">
             <div className="">{translate("Password")}</div>
-            <input name="password" type="password" required />
+            <input
+              name="password"
+              type="password"
+              autoComplete="current-password"
+              required
+            />
             <Messages messages={nodes?.password.messages} />
           </div>
           <Messages messages={flowData?.ui?.messages} />
@@ -141,6 +148,7 @@ const Register: FCT = ({ flowData: flowDataProp }) => {
             <button className="button" name="method" value="password">
               {translate("Create Account")}
             </button>
+            <Link to="/">{translate("Cancel")}</Link>
           </div>
         </form>
       </div>

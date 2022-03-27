@@ -8,16 +8,10 @@ import { useAuthContext } from "store/use-auth-context"
 
 import Balance from "components/balance"
 import Link from "components/link"
-import Logout from "components/logout"
+import LoginLink from "components/login-link"
+import LogoutLink from "components/logout-link"
 import { useAppState } from "store"
-import DiscardableMessage from "./discardable-message"
-
-const LoginLink = () => (
-  <Link to="/login">
-    <Icon name="login" />
-    <span className="name">{translate("Login")}</span>
-  </Link>
-)
+import DiscardableMessage from "components/discardable-message"
 
 const headerNavPages = ["home", "send-bitcoin", "receive-bitcoin"] as const
 
@@ -59,7 +53,7 @@ const Header: FCT = ({ page }) => {
               <div className="separator">|</div>
             </>
           )}
-          {isAuthenticated ? <Logout /> : <LoginLink />}
+          {isAuthenticated ? <LogoutLink /> : <LoginLink />}
           <div className="separator">|</div>
           <div className="menu-icon" onClick={handleMenuClick}>
             <Icon name="menu" />
@@ -110,7 +104,7 @@ const Header: FCT = ({ page }) => {
             {translate("Settings")}
           </Link>
 
-          {isAuthenticated ? <Logout /> : <LoginLink />}
+          {isAuthenticated ? <LogoutLink /> : <LoginLink />}
         </div>
       )}
     </div>

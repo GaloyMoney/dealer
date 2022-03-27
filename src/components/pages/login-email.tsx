@@ -3,14 +3,15 @@ import { useState, useEffect, useCallback } from "react"
 import { SelfServiceLoginFlow, SubmitSelfServiceLoginFlowBody } from "@ory/kratos-client"
 import { AxiosError } from "axios"
 
-import { history } from "../../store/history"
-import { KratosSdk, handleFlowError, getNodesForFlow } from "../../kratos"
-
-import config from "store/config"
-import Link from "components/link"
-import { useAuthContext } from "store/use-auth-context"
-import { Messages } from "components/kratos"
 import { translate } from "@galoymoney/client"
+
+import { KratosSdk, handleFlowError, getNodesForFlow } from "kratos"
+import { history } from "store/history"
+import config from "store/config"
+import { useAuthContext } from "store/use-auth-context"
+
+import Link from "components/link"
+import { Messages } from "components/kratos"
 
 type FCT = React.FC<{
   flowData?: KratosFlowData
@@ -120,13 +121,19 @@ const LoginEmail: FCT = ({ flowData: flowDataProp }) => {
               name="password_identifier"
               type="email"
               defaultValue={nodes?.password_identifier.attributes.value}
+              autoComplete="email"
               required
             />
             <Messages messages={nodes?.password_identifier.messages} />
           </div>
           <div className="input-container">
             <div className="">{translate("Password")}</div>
-            <input name="password" type="password" required />
+            <input
+              name="password"
+              type="password"
+              autoComplete="current-password"
+              required
+            />
             <Messages messages={nodes?.password.messages} />
           </div>
           <Messages messages={flowData?.ui?.messages} />
@@ -134,6 +141,7 @@ const LoginEmail: FCT = ({ flowData: flowDataProp }) => {
             <button className="button" name="method" value="password">
               {translate("Login")}
             </button>
+            <Link to="/">{translate("Cancel")}</Link>
           </div>
         </form>
       </div>

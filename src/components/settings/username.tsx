@@ -8,6 +8,10 @@ type FCT = React.FC<{ guestView: boolean }>
 const UsernameSetting: FCT = ({ guestView }) => {
   const { username } = useMainQuery()
 
+  if (!username) {
+    return null
+  }
+
   return (
     <div className="setting">
       <div className="icon">

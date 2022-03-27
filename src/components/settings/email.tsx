@@ -7,10 +7,6 @@ type FCT = React.FC<{ guestView: boolean }>
 const EmailSetting: FCT = ({ guestView }) => {
   const { authIdentity } = useAuthContext()
 
-  if (!authIdentity || !authIdentity?.emailAddress) {
-    return null
-  }
-
   const emailAddress = authIdentity?.emailAddress
 
   return (

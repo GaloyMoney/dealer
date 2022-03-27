@@ -1288,11 +1288,6 @@ exports[`Root appRoutes renders Settings and matches snapshot 1`] = `
         </div>
       </div>
       <div
-        class="page-title"
-      >
-        Settings
-      </div>
-      <div
         class="list"
       >
         <div
@@ -1303,13 +1298,13 @@ exports[`Root appRoutes renders Settings and matches snapshot 1`] = `
           >
             <i
               aria-hidden="true"
-              class="fa-solid fa-user-alt"
+              class="fa-solid fa-at"
             />
           </div>
           <div
             class="name"
           >
-            Username
+            Email
             <div
               class="sub"
             >
@@ -1415,6 +1410,23 @@ exports[`Root appRoutes renders Settings and matches snapshot 1`] = `
               </option>
             </select>
           </div>
+        </div>
+        <div
+          class="setting"
+        >
+          <a
+            href="/login"
+          >
+            <i
+              aria-hidden="true"
+              class="fa-solid fa-sign-in-alt"
+            />
+            <span
+              class="name"
+            >
+              Login
+            </span>
+          </a>
         </div>
       </div>
     </div>
@@ -1556,6 +1568,7 @@ exports[`Root authRoutes renders Login and matches snapshot 1`] = `
             Email
           </div>
           <input
+            autocomplete="email"
             name="password_identifier"
             required=""
             type="email"
@@ -1571,6 +1584,7 @@ exports[`Root authRoutes renders Login and matches snapshot 1`] = `
             Password
           </div>
           <input
+            autocomplete="current-password"
             name="password"
             required=""
             type="password"
@@ -1586,6 +1600,11 @@ exports[`Root authRoutes renders Login and matches snapshot 1`] = `
           >
             Login
           </button>
+          <a
+            href="/"
+          >
+            Cancel
+          </a>
         </div>
       </form>
     </div>
@@ -1645,6 +1664,7 @@ exports[`Root authRoutes renders Recorver and matches snapshot 1`] = `
             Email
           </div>
           <input
+            autocomplete="email"
             name="email"
             required=""
             type="email"
@@ -1660,6 +1680,11 @@ exports[`Root authRoutes renders Recorver and matches snapshot 1`] = `
           >
             Recover Account
           </button>
+          <a
+            href="/"
+          >
+            Cancel
+          </a>
         </div>
       </form>
     </div>
@@ -1692,6 +1717,7 @@ exports[`Root authRoutes renders Register and matches snapshot 1`] = `
             Email
           </div>
           <input
+            autocomplete="email"
             name="traits.email"
             required=""
             type="email"
@@ -1707,6 +1733,7 @@ exports[`Root authRoutes renders Register and matches snapshot 1`] = `
             Password
           </div>
           <input
+            autocomplete="current-password"
             name="password"
             required=""
             type="password"
@@ -1722,6 +1749,11 @@ exports[`Root authRoutes renders Register and matches snapshot 1`] = `
           >
             Create Account
           </button>
+          <a
+            href="/"
+          >
+            Cancel
+          </a>
         </div>
       </form>
     </div>
