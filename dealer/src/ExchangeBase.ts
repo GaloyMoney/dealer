@@ -158,7 +158,7 @@ export abstract class ExchangeBase {
   }
 
   private async fetchDepositsAllPages(args: FetchDepositsParameters) {
-    await asyncRunInSpan(
+    return await asyncRunInSpan(
       "app.exchangeBase.fetchDepositsAllPages",
       {
         [SemanticAttributes.CODE_FUNCTION]: "fetchDepositsAllPages",
@@ -340,7 +340,7 @@ export abstract class ExchangeBase {
   }
 
   private async fetchWithdrawalsAllPages(args: FetchWithdrawalsParameters) {
-    await asyncRunInSpan(
+    return await asyncRunInSpan(
       "app.exchangeBase.fetchWithdrawalsAllPages",
       {
         [SemanticAttributes.CODE_FUNCTION]: "fetchWithdrawalsAllPages",
