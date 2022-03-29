@@ -79,10 +79,10 @@ export class OkexExchangeConfiguration implements ExchangeConfiguration {
   }
   fetchDepositAddressProcessApiResponse(response): FetchDepositAddressResult {
     assert(response, ApiError.UNSUPPORTED_API_RESPONSE)
-    assert(response.data, ApiError.UNSUPPORTED_API_RESPONSE)
-    const { ccy, addr, chain } = _.find(response.data, {
-      chain: SupportedChain.BTC_Bitcoin,
-    })
+    assert(response.info, ApiError.UNSUPPORTED_API_RESPONSE)
+
+    const { ccy, addr, chain } = response.info
+
     assert(ccy === TradeCurrency.BTC, ApiError.UNSUPPORTED_CURRENCY)
     assert(addr, ApiError.UNSUPPORTED_ADDRESS)
     assert(chain === SupportedChain.BTC_Bitcoin, ApiError.UNSUPPORTED_CURRENCY)

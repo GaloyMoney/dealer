@@ -400,7 +400,7 @@ describe("OkexExchangeConfiguration", () => {
       })
     })
 
-    it("should throw when response has no data property", async () => {
+    it("should throw when response has no info property", async () => {
       const configuration = new OkexExchangeConfiguration()
       const response = {}
       expect(() =>
@@ -408,48 +408,42 @@ describe("OkexExchangeConfiguration", () => {
       ).toThrowError(ApiError.UNSUPPORTED_API_RESPONSE)
     })
 
-    it("should throw when response has no data[].ccy property", async () => {
+    it("should throw when response has no info.ccy property", async () => {
       const configuration = new OkexExchangeConfiguration()
       const response = {
-        data: [
-          {
-            chain: "BTC-Bitcoin",
-            // ccy: "BTC",
-            addr: "anything",
-          },
-        ],
+        info: {
+          chain: "BTC-Bitcoin",
+          // ccy: "BTC",
+          addr: "anything",
+        },
       }
       expect(() =>
         configuration.fetchDepositAddressProcessApiResponse(response),
       ).toThrowError(ApiError.UNSUPPORTED_CURRENCY)
     })
 
-    it("should throw when response has no data[].addr property", async () => {
+    it("should throw when response has no info.addr property", async () => {
       const configuration = new OkexExchangeConfiguration()
       const response = {
-        data: [
-          {
-            chain: "BTC-Bitcoin",
-            ccy: "BTC",
-            // addr: "anything",
-          },
-        ],
+        info: {
+          chain: "BTC-Bitcoin",
+          ccy: "BTC",
+          // addr: "anything",
+        },
       }
       expect(() =>
         configuration.fetchDepositAddressProcessApiResponse(response),
       ).toThrowError(ApiError.UNSUPPORTED_ADDRESS)
     })
 
-    it("should throw when response has no data[].chain property", async () => {
+    it("should throw when response has no info.chain property", async () => {
       const configuration = new OkexExchangeConfiguration()
       const response = {
-        data: [
-          {
-            // chain: "BTC-Bitcoin",
-            ccy: "BTC",
-            addr: "anything",
-          },
-        ],
+        info: {
+          // chain: "BTC-Bitcoin",
+          ccy: "BTC",
+          addr: "anything",
+        },
       }
       expect(() =>
         configuration.fetchDepositAddressProcessApiResponse(response),
@@ -459,13 +453,11 @@ describe("OkexExchangeConfiguration", () => {
     it(`should throw when response has no ${SupportedChain.BTC_Bitcoin} data[].chain property`, async () => {
       const configuration = new OkexExchangeConfiguration()
       const response = {
-        data: [
-          {
-            chain: "wrong",
-            ccy: "BTC",
-            addr: "anything",
-          },
-        ],
+        info: {
+          chain: "wrong",
+          ccy: "BTC",
+          addr: "anything",
+        },
       }
       expect(() =>
         configuration.fetchDepositAddressProcessApiResponse(response),
@@ -477,13 +469,11 @@ describe("OkexExchangeConfiguration", () => {
     it(`should throw when response has no ${TradeCurrency.BTC} data[].ccy property`, async () => {
       const configuration = new OkexExchangeConfiguration()
       const response = {
-        data: [
-          {
-            chain: "BTC-Bitcoin",
-            ccy: "wrong",
-            addr: "anything",
-          },
-        ],
+        info: {
+          chain: "BTC-Bitcoin",
+          ccy: "wrong",
+          addr: "anything",
+        },
       }
       expect(() =>
         configuration.fetchDepositAddressProcessApiResponse(response),
@@ -493,13 +483,11 @@ describe("OkexExchangeConfiguration", () => {
     it("should throw when response has no valid data[].addr property", async () => {
       const configuration = new OkexExchangeConfiguration()
       const response = {
-        data: [
-          {
-            chain: "BTC-Bitcoin",
-            ccy: "BTC",
-            addr: "",
-          },
-        ],
+        info: {
+          chain: "BTC-Bitcoin",
+          ccy: "BTC",
+          addr: "",
+        },
       }
       expect(() =>
         configuration.fetchDepositAddressProcessApiResponse(response),
