@@ -10,17 +10,15 @@ export function getValidFetchDepositAddressResponse() {
   const address = `bc1q00exchange00000000000000000000000000datetime${datetime}`
   return {
     code: "0",
-    data: [
-      {
-        chain: "BTC-Bitcoin",
-        ctAddr: "",
-        ccy: "BTC",
-        to: "18",
-        addr: address,
-        // addr: addr,
-        selected: true,
-      },
-    ],
+    info: {
+      chain: "BTC-Bitcoin",
+      ctAddr: "",
+      ccy: "BTC",
+      to: "18",
+      addr: address,
+      // addr: addr,
+      selected: true,
+    },
     msg: "",
   }
 }
