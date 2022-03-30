@@ -88,7 +88,7 @@ export class DealerRemoteWalletV2 implements GaloyWallet {
         const usdBalanceOffset = Number(process.env["DEALER_USD_BAL_OFFSET"] ?? 0)
 
         const logger = this.logger.child({ method: "getWalletsBalances()" })
-        const variables = { hasToken: this.isAuthenticated(), recentTransactions: 0 }
+        const variables = { isAuthenticated: this.isAuthenticated(), recentTransactions: 0 }
         try {
           const result = await this.client.query({
             query: QUERIES.main,
