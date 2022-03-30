@@ -24,64 +24,14 @@ import { sat2btc } from "src/utils"
 function getValidFetchDepositAddressResponse() {
   return {
     code: "0",
-    data: [
-      {
-        chain: "BTC-Bitcoin",
-        ctAddr: "",
-        ccy: "BTC",
-        to: "6",
-        addr: "32Cx7VgPAFkSDBNJYf1m3WrTHHCLhBXhRN",
-        selected: true,
-      },
-      {
-        chain: "BTC-Bitcoin",
-        ctAddr: "",
-        ccy: "BTC",
-        to: "18",
-        addr: "bc1qsd8nldvfc6k6xrx4z604wtldfkpskah77l43jwjexe2uc37zvevqaku65g",
-        selected: true,
-      },
-      {
-        chain: "BTC-Bitcoin",
-        ctAddr: "",
-        ccy: "BTC",
-        to: "18",
-        addr: "3JtDQUOy3vTmtJfg83nXYqRQBb99iW72qi",
-        selected: false,
-      },
-      {
-        chain: "BTC-Lightning",
-        ctAddr: "",
-        ccy: "BTC",
-        to: "18",
-        addr: "lnbc10u1pss2790pp5rcw5a03tqvm5zkwyjl5tul50edd2qv66hek",
-        selected: false,
-      },
-      {
-        chain: "BTC-OKExChain_KIP10",
-        ctAddr: "",
-        ccy: "BTC",
-        to: "6",
-        addr: "0x81d0b07d45659f333207632dc113a",
-        selected: false,
-      },
-      {
-        chain: "BTC-OKExChain",
-        ctAddr: "",
-        ccy: "BTC",
-        to: "6",
-        addr: "0x81d0b07d45659f333207632dc113a",
-        selected: false,
-      },
-      {
-        chain: "BTC-ERC20",
-        ctAddr: "5807cf",
-        ccy: "BTC",
-        to: "6",
-        addr: "0x81d0b07d45659f333207632dc113a",
-        selected: false,
-      },
-    ],
+    info: {
+      chain: "BTC-Bitcoin",
+      ctAddr: "",
+      ccy: "BTC",
+      to: "18",
+      addr: "bc1qsd8nldvfc6k6xrx4z604wtldfkpskah77l43jwjexe2uc37zvevqaku65g",
+      selected: true,
+    },
     msg: "",
   }
 }
@@ -146,9 +96,9 @@ function getValidFetchWithdrawalsResponse(args) {
 
 function getProcessedFetchDepositAddressResponse() {
   const response = getValidFetchDepositAddressResponse()
-  const chain = response.data[0].chain
-  const currency = response.data[0].ccy
-  const address = response.data[0].addr
+  const chain = response.info.chain
+  const currency = response.info.ccy
+  const address = response.info.addr
   return {
     originalResponseAsIs: response,
     chain: chain,
@@ -389,8 +339,6 @@ describe("OkexExchangeConfiguration", () => {
   })
 
   describe("fetchDepositAddressProcessApiResponse", () => {
-    const API_ERROR_CANNOT_DESTRUCTURE = "Cannot destructure"
-
     it("should throw when response is falsy", async () => {
       const configuration = new OkexExchangeConfiguration()
       falsyArgs.forEach((response) => {
@@ -400,7 +348,7 @@ describe("OkexExchangeConfiguration", () => {
       })
     })
 
-    it("should throw when response has no data property", async () => {
+    it("should throw when response has no info property", async () => {
       const configuration = new OkexExchangeConfiguration()
       const response = {}
       expect(() =>
@@ -408,98 +356,56 @@ describe("OkexExchangeConfiguration", () => {
       ).toThrowError(ApiError.UNSUPPORTED_API_RESPONSE)
     })
 
-    it("should throw when response has no data[].ccy property", async () => {
+    it("should throw when response has no info.ccy property", async () => {
       const configuration = new OkexExchangeConfiguration()
       const response = {
-        data: [
-          {
-            chain: "BTC-Bitcoin",
-            // ccy: "BTC",
-            addr: "anything",
-          },
-        ],
+        info: {
+          chain: "BTC-Bitcoin",
+          // ccy: "BTC",
+          addr: "anything",
+        },
       }
       expect(() =>
         configuration.fetchDepositAddressProcessApiResponse(response),
       ).toThrowError(ApiError.UNSUPPORTED_CURRENCY)
     })
 
-    it("should throw when response has no data[].addr property", async () => {
+    it("should throw when response has no info.addr property", async () => {
       const configuration = new OkexExchangeConfiguration()
       const response = {
-        data: [
-          {
-            chain: "BTC-Bitcoin",
-            ccy: "BTC",
-            // addr: "anything",
-          },
-        ],
+        info: {
+          chain: "BTC-Bitcoin",
+          ccy: "BTC",
+          // addr: "anything",
+        },
       }
       expect(() =>
         configuration.fetchDepositAddressProcessApiResponse(response),
       ).toThrowError(ApiError.UNSUPPORTED_ADDRESS)
     })
 
-    it("should throw when response has no data[].chain property", async () => {
+    it(`should throw when response has no ${TradeCurrency.BTC} info.ccy property`, async () => {
       const configuration = new OkexExchangeConfiguration()
       const response = {
-        data: [
-          {
-            // chain: "BTC-Bitcoin",
-            ccy: "BTC",
-            addr: "anything",
-          },
-        ],
-      }
-      expect(() =>
-        configuration.fetchDepositAddressProcessApiResponse(response),
-      ).toThrowError(API_ERROR_CANNOT_DESTRUCTURE) // TODO figure out the exception
-    })
-
-    it(`should throw when response has no ${SupportedChain.BTC_Bitcoin} data[].chain property`, async () => {
-      const configuration = new OkexExchangeConfiguration()
-      const response = {
-        data: [
-          {
-            chain: "wrong",
-            ccy: "BTC",
-            addr: "anything",
-          },
-        ],
-      }
-      expect(() =>
-        configuration.fetchDepositAddressProcessApiResponse(response),
-      ).toThrowError(API_ERROR_CANNOT_DESTRUCTURE)
-      // the de-structure fails due to it relying on the chain prop
-      // ).toThrowError(ApiError.UNSUPPORTED_CURRENCY)
-    })
-
-    it(`should throw when response has no ${TradeCurrency.BTC} data[].ccy property`, async () => {
-      const configuration = new OkexExchangeConfiguration()
-      const response = {
-        data: [
-          {
-            chain: "BTC-Bitcoin",
-            ccy: "wrong",
-            addr: "anything",
-          },
-        ],
+        info: {
+          chain: "BTC-Bitcoin",
+          ccy: "wrong",
+          addr: "anything",
+        },
       }
       expect(() =>
         configuration.fetchDepositAddressProcessApiResponse(response),
       ).toThrowError(ApiError.UNSUPPORTED_CURRENCY)
     })
 
-    it("should throw when response has no valid data[].addr property", async () => {
+    it("should throw when response has no valid info.addr property", async () => {
       const configuration = new OkexExchangeConfiguration()
       const response = {
-        data: [
-          {
-            chain: "BTC-Bitcoin",
-            ccy: "BTC",
-            addr: "",
-          },
-        ],
+        info: {
+          chain: "BTC-Bitcoin",
+          ccy: "BTC",
+          addr: "",
+        },
       }
       expect(() =>
         configuration.fetchDepositAddressProcessApiResponse(response),

@@ -1,7 +1,7 @@
 import pino from "pino"
 import { yamlConfig } from "./config"
 import { Result } from "./Result"
-import { btc2sat } from "./utils"
+import { btc2sat, roundBtc } from "./utils"
 import {
   HedgingStrategies,
   HedgingStrategy,
@@ -405,7 +405,12 @@ export class Dealer {
         return { ok: true, value: undefined }
       } else {
         this.logger.debug({ payOnChainResult }, "WalletOnChainPay failed.")
-        return { ok: false, error: payOnChainResult.error }
+
+        // try again with 50% amount in case we can work around fund limit
+        return this.depositOnExchangeCallback(
+          onChainAddress,
+          roundBtc(transferSizeInBtc / 2),
+        )
       }
     } catch (error) {
       return { ok: false, error: error }

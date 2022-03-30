@@ -88,7 +88,7 @@ export class DealerRemoteWalletV2 implements GaloyWallet {
         const usdBalanceOffset = Number(process.env["DEALER_USD_BAL_OFFSET"] ?? 0)
 
         const logger = this.logger.child({ method: "getWalletsBalances()" })
-        const variables = { hasToken: this.isAuthenticated(), recentTransactions: 0 }
+        const variables = { isAuthenticated: this.isAuthenticated(), recentTransactions: 0 }
         try {
           const result = await this.client.query({
             query: QUERIES.main,
@@ -295,14 +295,30 @@ export class DealerRemoteWalletV2 implements GaloyWallet {
               walletId: walletsResult.value.btcWalletId,
             },
           }
-          const result = await this.client.mutate({
+          const { data } = await this.client.mutate({
             mutation: MUTATIONS.onChainPaymentSend,
             variables: variables,
           })
+
           logger.debug(
-            { mutation: MUTATIONS.onChainAddressCurrent, variables, result },
+            { mutation: MUTATIONS.onChainAddressCurrent, variables, result: data },
             "{mutation} with {variables} to galoy graphql api successful with {result}",
           )
+
+          if (
+            data?.onChainPaymentSend?.errors?.length > 0 ||
+            !data?.onChainPaymentSend?.status ||
+            data?.onChainPaymentSend?.status === "FAILURE"
+          ) {
+            return {
+              ok: false,
+              error: new Error(
+                data?.userLogin?.errors?.[0].message ||
+                  "MUTATIONS.onChainAddressCurrent failed",
+              ),
+            }
+          }
+
           return { ok: true, value: undefined }
         } catch (error) {
           recordExceptionInCurrentSpan({ error, level: ErrorLevel.Warn })
