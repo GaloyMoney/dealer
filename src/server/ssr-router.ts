@@ -46,9 +46,12 @@ ssrRouter.get("/*", async (req, res) => {
     if (routePath === "/logout") {
       req.session = req.session || {}
       req.session.authSession = undefined
-      const logoutResult = await handleLogout(req)
+      if (config.kratosFeatureFlag) {
+        const logoutResult = await handleLogout(req)
+        return res.redirect(logoutResult.redirectTo)
+      }
 
-      return res.redirect(logoutResult.redirectTo)
+      return res.redirect("/")
     }
 
     if (!config.kratosFeatureFlag) {

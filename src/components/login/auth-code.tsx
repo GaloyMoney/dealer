@@ -32,7 +32,7 @@ const AuthCode: FCT = ({ phoneNumber }) => {
 
     const session = {
       galoyJwtToken: data?.galoyJwtToken,
-      identity: { userId: phoneNumber, phoneNumber },
+      identity: data?.identity,
     }
     setAuthSession(session.galoyJwtToken ? session : null)
     history.push("/")

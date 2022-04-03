@@ -19,7 +19,7 @@ const messageText = (message: UiText): string => {
     return translate(text)
   }
 
-  return translateUnknown(message.text)
+  return translateUnknown(message.text) as string
 }
 
 export const Message = ({ message }: MessageProps) => {

@@ -143,7 +143,7 @@ const Settings: FCT = ({ flowData: flowDataProp }) => {
     <SettingsLayout>
       {flowData?.ui?.messages && <Messages messages={flowData?.ui?.messages} />}
       <div className="list">
-        <EmailSetting guestView={!isAuthenticated} />
+        {config.kratosFeatureFlag && <EmailSetting guestView={!isAuthenticated} />}
         <UsernameSetting guestView={!isAuthenticated} />
         <LanguageSetting guestView={!isAuthenticated} />
         <ColorThemeSetting />
