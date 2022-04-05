@@ -52,7 +52,6 @@ export interface HedgingStrategy {
   getFundingAccountBalance(): Promise<Result<FetchFundingAccountBalanceResult>>
   getAccountAndPositionRisk(): Promise<Result<GetAccountAndPositionRiskResult>>
 
-
   fetchTransactionHistory(
     args: GetTransactionHistoryParameters,
   ): Promise<Result<Transaction[]>>
