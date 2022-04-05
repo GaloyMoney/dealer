@@ -2,7 +2,9 @@
   "name": "galoy-dealer",
   "version": "1.0.0",
   "private": true,
-  "workspaces": ["dealer"],
+  "workspaces": [
+    "dealer"
+  ],
   "scripts": {
     "clean": "rm -rf dealer/dist",
     "dealer": "yarn workspace dealer"

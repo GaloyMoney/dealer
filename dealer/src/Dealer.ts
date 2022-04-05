@@ -20,6 +20,7 @@ import { GaloyWallet } from "./GaloyWalletTypes"
 import { createDealerWallet, WalletType } from "./DealerWalletFactory"
 import { createHedgingStrategy } from "./HedgingStrategyFactory"
 import {
+  FetchFundingAccountBalanceResult,
   GetAccountAndPositionRiskResult,
   GetTransactionHistoryParameters,
 } from "./ExchangeTradingType"
@@ -527,6 +528,18 @@ export class Dealer {
     const result = await database.transactions.getFundingFeesMetrics()
     if (!result.ok) {
       return {} as FundingFeesMetrics
+    }
+    return result.value
+  }
+
+  public async getFundingAccountBalance(): Promise<FetchFundingAccountBalanceResult> {
+    const result = await this.strategy.getFundingAccountBalance()
+    if (!result.ok) {
+      return {
+        btcFreeBalance: 0,
+        btcUsedBalance: 0,
+        btcTotalBalance: 0,
+      } as FetchFundingAccountBalanceResult
     }
     return result.value
   }

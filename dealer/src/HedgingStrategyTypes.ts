@@ -1,5 +1,6 @@
 import { Transaction } from "./database/models"
 import {
+  FetchFundingAccountBalanceResult,
   FetchTickerResult,
   GetAccountAndPositionRiskResult,
   GetTransactionHistoryParameters,
@@ -48,6 +49,7 @@ export interface HedgingStrategy {
   getDerivativePriceInUsd(): Promise<Result<number>>
   getDerivativeMarketInfo(): Promise<Result<FetchTickerResult>>
   getNextFundingRateInBtc(): Promise<Result<number>>
+  getFundingAccountBalance(): Promise<Result<FetchFundingAccountBalanceResult>>
   getAccountAndPositionRisk(): Promise<Result<GetAccountAndPositionRiskResult>>
 
   fetchTransactionHistory(
