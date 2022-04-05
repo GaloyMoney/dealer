@@ -196,6 +196,13 @@ export interface FetchBalanceResult {
   totalEq: number
 }
 
+export interface FetchFundingAccountBalanceResult {
+  originalResponseAsIs
+  btcFreeBalance: number
+  btcUsedBalance: number
+  btcTotalBalance: number
+}
+
 export interface FetchPositionResult {
   originalResponseAsIs
   last: number

@@ -15,6 +15,7 @@ import {
   PositionSide,
   GetTransactionHistoryParameters,
   FetchTickerResult,
+  FetchFundingAccountBalanceResult,
 } from "./ExchangeTradingType"
 import {
   HedgingStrategy,
@@ -142,6 +143,12 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
 
   public async getDerivativeMarketInfo(): Promise<Result<FetchTickerResult>> {
     return await this.exchange.fetchTicker(SupportedInstrument.OKEX_PERPETUAL_SWAP)
+  }
+
+  public async getFundingAccountBalance(): Promise<
+    Result<FetchFundingAccountBalanceResult>
+  > {
+    return await this.exchange.fetchFundingAccountBalance()
   }
 
   public async fetchTransactionHistory(
