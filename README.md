@@ -10,11 +10,11 @@ With a default installation, this web application can be accessed with `wallet.d
 
 ## Config
 
-The project depends on a few environment variables to be set. The `.env.local` root file has a list of them. Copy that file to a `.env` root file and modify that copy as needed.
+The project depends on a few environment variables to be set. The `.envrc` root file has a list of them.
 
 ## How to run this repo locally?
 
-In the project directory, modify the `.env` file as needed, then you can run:
+In the project directory:
 
 ```sh
 yarn install
@@ -30,7 +30,7 @@ Open [http://localhost:1234](http://localhost:1234) to view it in the browser.
 
 ## How to run this repo for production?
 
-In the project directory, export the env vars, then you can run:
+In the project directory:
 
 ```sh
 yarn install
