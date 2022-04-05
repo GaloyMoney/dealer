@@ -1268,6 +1268,22 @@
           "interval": "",
           "legendFormat": "total",
           "refId": "C"
+        },
+        {
+          "exemplar": true,
+          "expr": "galoy_dealer_btcTotalBalance + galoy_dealer_fundingAccountBtcTotalBalance",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "trading & funding total",
+          "refId": "E"
+        },
+        {
+          "exemplar": true,
+          "expr": "galoy_dealer_fundingAccountBtcTotalBalance",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "funding total",
+          "refId": "D"
         }
       ],
       "title": "BTC Free/Used/Total Balance on Exchange",
@@ -3079,7 +3095,7 @@
       "type": "timeseries"
     }
   ],
-  "refresh": false,
+  "refresh": "",
   "schemaVersion": 30,
   "style": "dark",
   "tags": [],
@@ -3094,5 +3110,5 @@
   "timezone": "",
   "title": "Galoy Dealer",
   "uid": "pTEP9n47k",
-  "version": 21
+  "version": 27
 }
