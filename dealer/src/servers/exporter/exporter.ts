@@ -335,6 +335,28 @@ const metrics: { [key: string]: IMetricData } = {
       help: "total BTC balance",
     }),
   },
+
+  fundingAccountBtcFreeBalance: {
+    value: NaN,
+    gauge: new client.Gauge({
+      name: `${prefix}_fundingAccountBtcFreeBalance`,
+      help: "exchange funding account BTC balance not used as collateral",
+    }),
+  },
+  fundingAccountBtcUsedBalance: {
+    value: NaN,
+    gauge: new client.Gauge({
+      name: `${prefix}_fundingAccountBtcUsedBalance`,
+      help: "exchange funding account BTC balance used as collateral",
+    }),
+  },
+  fundingAccountBtcTotalBalance: {
+    value: NaN,
+    gauge: new client.Gauge({
+      name: `${prefix}_fundingAccountBtcTotalBalance`,
+      help: "exchange funding account total BTC balance",
+    }),
+  },
 }
 
 export async function exporter() {
@@ -514,6 +536,21 @@ export async function exporter() {
             fundingFeesMetrics.fundingFeesIncomeCount,
           )
 
+          // Funding Account Balance
+          const fundingAccountBalance = await dealer.getFundingAccountBalance()
+          Metrics.set(
+            metrics["fundingAccountBtcFreeBalance"],
+            fundingAccountBalance.btcFreeBalance,
+          )
+          Metrics.set(
+            metrics["fundingAccountBtcUsedBalance"],
+            fundingAccountBalance.btcUsedBalance,
+          )
+          Metrics.set(
+            metrics["fundingAccountBtcTotalBalance"],
+            fundingAccountBalance.btcTotalBalance,
+          )
+
           // Realized Profit And Loss
           const strategyRPnlInSats =
             tradingFeesMetrics.tradingFeesTotalInSats +
@@ -548,4 +585,4 @@ export async function exporter() {
   server.listen(port)
 }
 
-// exporter().catch((err) => logger.error(err))
+exporter().catch((err) => logger.error(err))

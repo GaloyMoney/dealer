@@ -28,6 +28,7 @@ import {
   DepositOnLightningParameters,
   GetTransactionHistoryParameters,
   GetTransactionHistoryResult,
+  FetchFundingAccountBalanceResult,
 } from "./ExchangeTradingType"
 import { ErrorLevel, Result } from "./Result"
 import ccxt, { ExchangeId } from "ccxt"
@@ -561,6 +562,50 @@ export abstract class ExchangeBase {
       },
     )
     return ret as Result<FetchBalanceResult>
+  }
+
+  public async fetchFundingAccountBalance(): Promise<
+    Result<FetchFundingAccountBalanceResult>
+  > {
+    const ret = await asyncRunInSpan(
+      "app.exchangeBase.fetchFundingAccountBalance",
+      {
+        [SemanticAttributes.CODE_FUNCTION]: "fetchFundingAccountBalance",
+        [SemanticAttributes.CODE_NAMESPACE]: "app.exchangeBase",
+      },
+      async () => {
+        try {
+          const response = await this.exchange.fetchBalance({ instType: "funding" })
+          this.logger.debug({ response }, "exchange.fetchBalance() returned: {response}")
+
+          const btcFreeBalance = Number(response?.BTC?.free) || 0
+          const btcUsedBalance = Number(response?.BTC?.used) || 0
+          const btcTotalBalance = Number(response?.BTC?.total) || 0
+
+          addAttributesToCurrentSpan({
+            [`${SemanticAttributes.CODE_FUNCTION}.results.result`]: JSON.stringify({
+              btcFreeBalance,
+              btcUsedBalance,
+              btcTotalBalance,
+            }),
+          })
+
+          return {
+            ok: true,
+            value: {
+              originalResponseAsIs: response,
+              btcFreeBalance: btcFreeBalance,
+              btcUsedBalance: btcUsedBalance,
+              btcTotalBalance: btcTotalBalance,
+            },
+          }
+        } catch (error) {
+          recordExceptionInCurrentSpan({ error, level: ErrorLevel.Warn })
+          return { ok: false, error: error }
+        }
+      },
+    )
+    return ret as Result<FetchFundingAccountBalanceResult>
   }
 
   public async fetchPosition(instrumentId: string): Promise<Result<FetchPositionResult>> {
