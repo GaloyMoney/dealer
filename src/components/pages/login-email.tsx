@@ -97,7 +97,7 @@ const LoginEmail: FCT = ({ flowData: flowDataProp }) => {
     const values = {
       method: "password",
       csrf_token: event.currentTarget.csrf_token.value,
-      password_identifier: event.currentTarget.password_identifier.value,
+      identifier: event.currentTarget.identifier.value,
       password: event.currentTarget.password.value,
     }
 
@@ -118,13 +118,13 @@ const LoginEmail: FCT = ({ flowData: flowDataProp }) => {
           <div className="input-container">
             <div className="">{translate("Email")}</div>
             <input
-              name="password_identifier"
+              name="identifier"
               type="email"
-              defaultValue={nodes?.password_identifier.attributes.value}
+              defaultValue={nodes?.identifier.attributes.value}
               autoComplete="email"
               required
             />
-            <Messages messages={nodes?.password_identifier.messages} />
+            <Messages messages={nodes?.identifier.messages} />
           </div>
           <div className="input-container">
             <div className="">{translate("Password")}</div>

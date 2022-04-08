@@ -843,12 +843,12 @@
     set-cookie-parser "^2.4.8"
     tldjs "^2.3.1"
 
-"@ory/kratos-client@^0.8.2-alpha.1":
-  version "0.8.2-alpha.1"
-  resolved "https://registry.yarnpkg.com/@ory/kratos-client/-/kratos-client-0.8.2-alpha.1.tgz#35d9fba198c768bb7e1a39587494d1e2b3fe4780"
-  integrity sha512-Mh5MiZb0nLt1+SvhgbOLVSSzksgunX5PC2kQX8D8viGwa7yfp3l4gt73NHo0P66t91Vmou3yryyxJGA6HKx9Zw==
+"@ory/kratos-client@^0.9.0-alpha.3":
+  version "0.9.0-alpha.3"
+  resolved "https://registry.yarnpkg.com/@ory/kratos-client/-/kratos-client-0.9.0-alpha.3.tgz#2464139501f25169c5311bc0d5a0b15d0131be01"
+  integrity sha512-AyfNz1P+6G/vS752BqvrRhLYJC1KtukuBUGGQdiMKXJjy+wGTt7Y3wvEIASbD/QyoGEyhIBCYtLbunpVE7VOaA==
   dependencies:
-    axios "^0.21.1"
+    axios "^0.21.4"
 
 "@ory/themes@^0.0.101":
   version "0.0.101"
@@ -1782,7 +1782,7 @@ aws4@^1.8.0:
   resolved "https://registry.yarnpkg.com/aws4/-/aws4-1.11.0.tgz#d61f46d83b2519250e2784daf5b09479a8b41c59"
   integrity sha512-xh1Rl34h6Fi1DC2WWKfxUTVqRsNnr6LsKz2+hfwDxQJWmrx8+c7ylaqBMcHfl1U1r2dsifOvKX3LQuLNZ+XSvA==
 
-axios@^0.21.1, axios@^0.21.4, axios@^0.26.0, axios@^0.26.1:
+axios@^0.21.4, axios@^0.26.0, axios@^0.26.1:
   version "0.26.1"
   resolved "https://registry.yarnpkg.com/axios/-/axios-0.26.1.tgz#1ede41c51fcf51bbbd6fd43669caaa4f0495aaa9"
   integrity sha512-fPwcX4EvnSHuInCMItEhAGnaSEXRBjtzh9fOtsE6E1G6p7vl7edEeZe11QHf18+6+9gR5PbKV/sGKNaD8YaMeA==
