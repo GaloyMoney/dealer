@@ -13,7 +13,7 @@ RUN yarn install --frozen-lockfile --production
 COPY ./src ./src
 COPY ./*.js ./
 
-RUN WALLET_LAYOUT=${WALLET_LAYOUT} yarn build:node && yarn build:files && yarn build:webpack
+RUN WALLET_LAYOUT=${WALLET_LAYOUT} yarn build:node && yarn build:files && yarn build:bundler
 
 
 # FROM gcr.io/distroless/nodejs:16
