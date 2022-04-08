@@ -380,6 +380,9 @@ export async function exporter() {
           // load transaction to be up-to-date
           await dealer.fetchAndLoadTransactions()
 
+          // load funding rates to be up-to-date
+          await dealer.fetchAndLoadTransactions()
+
           let averageOpenPrice = 0
           let swapPosInCt = 0
           const liabilityInUsd = await dealer.getLiabilityInUsd()
@@ -584,5 +587,3 @@ export async function exporter() {
   logger.info(`Server listening to ${port}, metrics exposed on /metrics endpoint`)
   server.listen(port)
 }
-
-exporter().catch((err) => logger.error(err))
