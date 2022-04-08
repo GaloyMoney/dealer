@@ -1569,7 +1569,7 @@ exports[`Root authRoutes renders Login and matches snapshot 1`] = `
           </div>
           <input
             autocomplete="email"
-            name="password_identifier"
+            name="identifier"
             required=""
             type="email"
             value=""
