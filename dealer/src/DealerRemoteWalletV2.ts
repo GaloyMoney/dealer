@@ -68,6 +68,8 @@ export class DealerRemoteWalletV2 implements GaloyWallet {
       })
 
       this.client.setLink(authLink.concat(this.httpLink))
+
+      process.env["DEALER_TOKEN"] = this.galoyJwtToken
     }
     return
   }
