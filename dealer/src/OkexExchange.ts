@@ -51,6 +51,14 @@ export class OkexExchange extends ExchangeBase {
   constructor(exchangeConfiguration: ExchangeConfiguration, logger: pino.Logger) {
     super(exchangeConfiguration, logger)
     this.instrumentId = exchangeConfiguration.instrumentId
+
+    // TODO: remove this code once okx /api/v5/asset/convert/currencies endpoint is fixed in demo mode
+    if (
+      process.env["NETWORK"] === "testnet" &&
+      this.exchange.has.fetchCurrencies === true
+    ) {
+      this.exchange.has.fetchCurrencies = false
+    }
   }
 
   public async getAccountAndPositionRisk(
