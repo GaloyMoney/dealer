@@ -66,9 +66,28 @@ services:
     networks:
       - monitoring
     environment:
+      # HEDGING_NOT_IN_SIMULATION: ${HEDGING_NOT_IN_SIMULATION}
+      NETWORK: ${NETWORK}
+      LOG_LEVEL: ${LOG_LEVEL}
+      # 
+      ACTIVE_STRATEGY: ${ACTIVE_STRATEGY}
+      ACTIVE_WALLET: ${ACTIVE_WALLET}
+      # 
+      OKEX5_KEY: ${OKEX5_KEY}
+      OKEX5_SECRET: ${OKEX5_SECRET}
+      OKEX5_PASSWORD: ${OKEX5_PASSWORD}
+      OKEX5_FUND_PASSWORD: ${OKEX5_FUND_PASSWORD}
+      # 
       GRAPHQL_URI: ${GRAPHQL_URI}
       DATABASE_URL: ${DATABASE_URL}
       JAEGER_HOST: ${JAEGER_HOST}
+      # 
+      DEALER_PHONE: ${DEALER_PHONE}
+      DEALER_CODE: ${DEALER_CODE}
+      DEALER_TOKEN: ${DEALER_TOKEN}
+      # 
+      DEALER_BTC_BAL_OFFSET: ${DEALER_BTC_BAL_OFFSET}
+      DEALER_USD_BAL_OFFSET: ${DEALER_USD_BAL_OFFSET}
   graphql:
     build:
       context: .
