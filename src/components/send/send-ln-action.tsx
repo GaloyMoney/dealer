@@ -3,6 +3,11 @@ import { MouseEvent, useEffect } from "react"
 import { useMutation } from "@galoymoney/client"
 
 import SendActionDisplay from "components/send/send-action-display"
+import { SendActionProps } from "./send-action"
+
+export type SendLnActionProps = SendActionProps & {
+  paymentRequest: string
+}
 
 type SendLnActionFCT = React.FC<SendLnActionProps>
 
@@ -48,6 +53,10 @@ export const SendLnInvoiceAction: SendLnActionFCT = (props) => {
       handleSend={handleSend}
     />
   )
+}
+
+export type SendLnNoAmountActionProps = SendLnActionProps & {
+  satAmount: number
 }
 
 type SendLnNoAmountActionFCT = React.FC<SendLnNoAmountActionProps>

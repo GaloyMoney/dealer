@@ -251,10 +251,11 @@ button {
 }
 
 .no-data {
+  width: 75%;
   text-align: center;
   border: thin solid var(--color-borders);
   padding: 1rem;
-  margin: 1rem;
+  margin: 1rem auto;
   background-color: var(--color-light-bg);
 }
 

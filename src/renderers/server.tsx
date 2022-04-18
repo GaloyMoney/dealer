@@ -3,12 +3,14 @@ import { renderToStringWithData } from "@galoymoney/client"
 
 import config from "store/config"
 import { createClient } from "store/index"
-import { appRoutes, authRoutes } from "server/routes"
+import { appRoutes, AuthRoutePath, authRoutes, RoutePath } from "server/routes"
 
 import { SSRRoot } from "components/root"
+import { GwwStateType } from "store/reducer"
+import { KratosFlowData } from "kratos/index"
 
 type ServerRenderResponse = {
-  GwwState: GwwState
+  GwwState: GwwStateType
   GwwConfig: Record<string, string | boolean | number>
   initialMarkup: string
   ssrData: unknown
@@ -54,7 +56,7 @@ export const serverRenderer =
     try {
       const galoyJwtToken = req.session?.authSession?.galoyJwtToken
 
-      const GwwState: GwwState = {
+      const GwwState: GwwStateType = {
         path,
         props: extractAllowedProps({ path, props: req.query }),
         key: 0,

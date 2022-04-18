@@ -1,3 +1,5 @@
+import { Network } from "@galoymoney/client"
+
 const isBrowser = typeof window !== "undefined"
 
 if (!isBrowser) {

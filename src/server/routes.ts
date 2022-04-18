@@ -1,5 +1,3 @@
-import React from "react"
-
 import config from "store/config"
 
 import Contacts from "components/pages/contacts"
@@ -12,6 +10,7 @@ import Register from "components/pages/register"
 import Send from "components/pages/send"
 import Settings from "components/pages/settings"
 import Transactions from "components/pages/transactions"
+import { KratosFlowData } from "kratos/index"
 
 // Note: The component property is skipped by the serialize function
 // It's only used on the front-end
@@ -56,6 +55,8 @@ if (!config.kratosFeatureFlag) {
 }
 
 export type SupportedRoutes = keyof typeof appRoutesDef
+export type RoutePath = SupportedRoutes
+
 export const checkRoute = (path: string): RoutePath | Error => {
   if (appRoutesDef[path as never]) {
     return path as RoutePath
@@ -81,6 +82,8 @@ const authRoutesDef = {
 }
 
 export type SupportedAuthRoutes = keyof typeof authRoutesDef
+export type AuthRoutePath = SupportedAuthRoutes
+
 export const checkAuthRoute = (path: string): AuthRoutePath | Error => {
   if (authRoutesDef[path as never]) {
     return path as AuthRoutePath

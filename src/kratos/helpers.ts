@@ -1,3 +1,5 @@
+import { KratosFlowData } from "./server"
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const isQuerySet = (query: any): query is string =>
   typeof query === "string" && query.length > 0

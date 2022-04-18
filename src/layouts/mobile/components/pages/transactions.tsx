@@ -13,6 +13,7 @@ import { Spinner } from "@galoymoney/react"
 import TransactionItem from "components/transactions/item"
 import useMainQuery from "hooks/use-main-query"
 import Footer from "components/footer"
+import { NoPropsFCT } from "store/types"
 
 const TRANSACTIONS_PER_PAGE = 25
 const EMPTY_CONNECTION = {

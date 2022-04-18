@@ -4,11 +4,24 @@ import {
   SelfServiceLoginFlow,
   SelfServiceRecoveryFlow,
   SelfServiceRegistrationFlow,
+  SelfServiceSettingsFlow,
+  Session as KratosSession,
 } from "@ory/kratos-client"
 import { Request } from "express"
 
 import { getUrlForFlow, isQuerySet, KratosFlow } from "./helpers"
 import { KratosSdk } from "./sdk"
+
+export type KratosFlowData = {
+  registrationData?: SelfServiceRegistrationFlow
+  loginData?: SelfServiceLoginFlow
+  recoveryData?: SelfServiceRecoveryFlow
+  settingsData?: SelfServiceSettingsFlow
+}
+
+type HandleKratosResponse =
+  | { redirect: true; redirectTo: string }
+  | { redirect: false; flowData: KratosFlowData }
 
 export const handleRegister = async (
   req: Request,

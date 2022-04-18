@@ -1,10 +1,10 @@
-import React, { useMemo, useState, ReactNode, useEffect, useCallback } from "react"
+import { useMemo, useState, ReactNode, useEffect, useCallback } from "react"
 import { useErrorHandler } from "react-error-boundary"
 
 import { GaloyClient, GaloyProvider, postRequest } from "@galoymoney/client"
 
 import { createClient, useAppDispatcher, useRequest } from "store/index"
-import { AuthContext } from "store/use-auth-context"
+import { AuthContext, AuthIdentity, AuthSession } from "store/use-auth-context"
 import axios from "axios"
 
 import config from "store/config"

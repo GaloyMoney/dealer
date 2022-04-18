@@ -1,11 +1,24 @@
 import { translate } from "@galoymoney/client"
+import { InvoiceInput } from "components/pages/send"
 
-import SendIntraLedgerAction from "components/send/send-intra-ledger-action"
+import SendIntraLedgerAction, {
+  SendIntraLedgerActionProps,
+} from "components/send/send-intra-ledger-action"
 import {
+  SendLnActionProps,
   SendLnInvoiceAction,
+  SendLnNoAmountActionProps,
   SendLnNoAmountInvoiceAction,
 } from "components/send/send-ln-action"
-import SendOnChainAction from "components/send/send-onchain-action"
+import SendOnChainAction, {
+  SendOnChainActionProps,
+} from "components/send/send-onchain-action"
+
+export type SendActionProps = InvoiceInput & {
+  btcWalletId: string
+  btcWalletBalance: number
+  reset: () => void
+}
 
 type FCT = React.FC<SendActionProps>
 

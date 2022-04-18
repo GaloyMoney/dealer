@@ -1,13 +1,16 @@
 /* eslint-disable camelcase */
 import { useCallback, useEffect, useState } from "react"
-import { SubmitSelfServiceSettingsFlowBody } from "@ory/kratos-client"
+import {
+  SelfServiceSettingsFlow,
+  SubmitSelfServiceSettingsFlowBody,
+} from "@ory/kratos-client"
 import { AxiosError } from "axios"
 
 import { translate } from "@galoymoney/client"
 
 import { useAuthContext } from "store/use-auth-context"
 import { history } from "store/history"
-import { KratosSdk, handleFlowError, getNodesForFlow } from "../../kratos"
+import { KratosSdk, handleFlowError, getNodesForFlow, KratosFlowData } from "kratos/index"
 import config from "store/config"
 
 import SettingsLayout from "components/settings/layout"

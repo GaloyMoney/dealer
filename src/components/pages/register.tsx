@@ -8,7 +8,7 @@ import { AxiosError } from "axios"
 
 import { translate } from "@galoymoney/client"
 
-import { KratosSdk, handleFlowError, getNodesForFlow } from "kratos"
+import { KratosSdk, handleFlowError, getNodesForFlow, KratosFlowData } from "kratos/index"
 import { history } from "store/history"
 import { useAuthContext } from "store/use-auth-context"
 

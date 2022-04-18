@@ -14,7 +14,7 @@ import config from "store/config"
 
 export const BLOCKCHAIN_EXPLORER_URL = "https://mempool.space/tx/"
 
-const typeDisplay = (type: SettlementType) => {
+const typeDisplay = (type: GaloyGQL.SettlementVia["__typename"]) => {
   switch (type) {
     case "SettlementViaOnChain":
       return "OnChain Payment"

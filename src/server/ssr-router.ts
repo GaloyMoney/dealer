@@ -1,9 +1,9 @@
 import express from "express"
 
-import { serverRenderer } from "../renderers/server"
-import { checkRoute } from "./routes"
-import { handleRegister, handleLogin, handleRecovery, handleLogout } from "../kratos"
-import config from "../store/config"
+import { serverRenderer } from "renderers/server"
+import { checkRoute } from "server/routes"
+import { handleRegister, handleLogin, handleRecovery, handleLogout } from "kratos/index"
+import config from "store/config"
 
 const ssrRouter = express.Router({ caseSensitive: true })
 

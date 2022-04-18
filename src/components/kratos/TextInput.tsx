@@ -1,7 +1,7 @@
-import React, { ReactNode } from "react"
+import * as React from "react"
 
 export interface TextInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
-  subtitle?: ReactNode
+  subtitle?: React.ReactNode
   state?: "success" | "error" | "disabled"
 }
 

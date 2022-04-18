@@ -1,8 +1,9 @@
 import { translate } from "@galoymoney/client"
 
 import Footer from "components/footer"
+import { ChildrenFCT } from "store/types"
 
-const SettingsLayout: React.FC = ({ children }) => {
+const SettingsLayout: ChildrenFCT = ({ children }) => {
   return (
     <>
       <div className="settings">

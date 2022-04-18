@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useState } from "react"
+import { ChangeEvent, useState } from "react"
 
 import { translate } from "@galoymoney/client"
 import { Icon, Spinner } from "@galoymoney/react"

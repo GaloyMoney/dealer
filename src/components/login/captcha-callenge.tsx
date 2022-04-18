@@ -5,9 +5,9 @@ import { Spinner } from "@galoymoney/react"
 
 import AuthCode from "components/login/auth-code"
 
-type FCT = React.FC<{ phoneNumber: string }>
-
-const CaptchaChallengeComponent: FCT = ({ phoneNumber }) => {
+const CaptchaChallengeComponent: React.FC<{ phoneNumber: string }> = ({
+  phoneNumber,
+}) => {
   const [createCaptchaChallenge, { loading: createLoading }] =
     useMutation.captchaCreateChallenge()
   const [requestCaptchaAuthCode, { loading: requestLoading }] =
@@ -19,7 +19,8 @@ const CaptchaChallengeComponent: FCT = ({ phoneNumber }) => {
   }>({ status: "loading" })
 
   const captchaHandler = useCallback(
-    (captchaObj) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (captchaObj: any) => {
       const onSuccess = async () => {
         const result = captchaObj.getValidate()
         const { errorsMessage } = await requestCaptchaAuthCode({

@@ -5,6 +5,7 @@ import { history } from "store/index"
 import { useAuthContext } from "store/use-auth-context"
 import ErrorMessage from "components/error-message"
 import Header from "components/header"
+import { NoPropsFCT } from "store/types"
 
 const ContactsList: NoPropsFCT = () => {
   const { loading, errorsMessage, data } = useQuery.contacts()

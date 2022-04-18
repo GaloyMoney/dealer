@@ -4,7 +4,7 @@ import * as jwt from "jsonwebtoken"
 import { MUTATIONS } from "@galoymoney/client"
 
 import { createClient } from "store/index"
-import { handleWhoAmI } from "kratos"
+import { handleWhoAmI } from "kratos/index"
 
 const apiRouter = express.Router({ caseSensitive: true })
 

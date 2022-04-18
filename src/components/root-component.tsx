@@ -3,9 +3,17 @@ import { ErrorBoundary } from "react-error-boundary"
 
 import { Spinner } from "@galoymoney/react"
 
-import { appRoutes, checkRoute, authRoutes, checkAuthRoute } from "server/routes"
+import {
+  appRoutes,
+  checkRoute,
+  authRoutes,
+  checkAuthRoute,
+  RoutePath,
+  AuthRoutePath,
+} from "server/routes"
 
 import ErrorFallback from "components/error-fallback"
+import { KratosFlowData } from "kratos/index"
 
 type FCT = React.FC<{
   path: RoutePath | AuthRoutePath

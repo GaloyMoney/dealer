@@ -1,4 +1,5 @@
-import { checkAuthRoute } from "server/routes"
+import * as React from "react"
+import { AuthRoutePath, checkAuthRoute, RoutePath } from "server/routes"
 import config from "store/config"
 import { history } from "store/index"
 
@@ -14,6 +15,7 @@ const navigateTo = (to: string) => {
 type FCT = React.FC<{
   to: RoutePath | AuthRoutePath
   className?: string
+  children: React.ReactNode
 }>
 
 const Link: FCT = ({ to, className, children }) => {

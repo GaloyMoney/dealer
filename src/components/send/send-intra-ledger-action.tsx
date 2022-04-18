@@ -2,6 +2,12 @@ import { useMutation } from "@galoymoney/client"
 import { MouseEvent } from "react"
 
 import SendActionDisplay from "components/send/send-action-display"
+import { SendActionProps } from "./send-action"
+
+export type SendIntraLedgerActionProps = SendActionProps & {
+  recipientWalletId: string
+  satAmount: number
+}
 
 type FCT = React.FC<SendIntraLedgerActionProps>
 

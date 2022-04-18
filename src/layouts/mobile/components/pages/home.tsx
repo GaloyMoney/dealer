@@ -5,6 +5,7 @@ import ContactListForSending from "components/contact-list-for-sending"
 import Footer from "components/footer"
 import Header from "components/header"
 import Link from "components/link"
+import { NoPropsFCT } from "store/types"
 
 const Home: NoPropsFCT = () => {
   return (

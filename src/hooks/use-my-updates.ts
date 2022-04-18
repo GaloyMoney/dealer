@@ -18,6 +18,15 @@ const satPriceInCents = (update: PriceData | undefined) => {
   return base / 10 ** offset
 }
 
+type UseMyUpdates = {
+  satsToUsd: ((sats: number) => number) | null
+  usdToSats: ((usd: number) => number) | null
+  currentBalance: number | null
+  intraLedgerUpdate: Partial<GaloyGQL.IntraLedgerUpdate> | null
+  lnUpdate: Partial<GaloyGQL.LnUpdate> | null
+  onChainUpdate: Partial<GaloyGQL.OnChainUpdate> | null
+}
+
 const useMyUpdates = (): UseMyUpdates => {
   const intraLedgerUpdate = useRef<Partial<GaloyGQL.IntraLedgerUpdate> | null>(null)
   const lnUpdate = useRef<Partial<GaloyGQL.LnUpdate> | null>(null)

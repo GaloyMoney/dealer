@@ -8,10 +8,11 @@ import {
 
 import { useAuthContext } from "./use-auth-context"
 import config from "./config"
+import { GwwActionType, GwwContextType } from "./reducer"
 
 export const GwwContext = createContext<GwwContextType>({
   state: { key: 0, path: "/" },
-  dispatch: (_action: GwwAction) => {
+  dispatch: (_action: GwwActionType) => {
     // Do nothing
   },
 })

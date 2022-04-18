@@ -6,6 +6,7 @@ import {
   ValidPaymentReponse,
   useDelayedQuery,
   formatUsd,
+  PaymentType,
 } from "@galoymoney/client"
 import {
   FormattedNumberInput,
@@ -26,6 +27,30 @@ import useMyUpdates from "hooks/use-my-updates"
 
 import Link, { ButtonLink } from "components/link"
 import SendAction from "components/send/send-action"
+
+export type InvoiceInput = {
+  view?: "destination" | "amount" | "confirm"
+  currency: "USD" | "SATS"
+
+  // undefined in input is used to indicate their changing state
+  amount?: number | ""
+  destination?: string
+  memo?: string
+
+  satAmount?: number // from price conversion
+
+  valid?: boolean // from parsing
+  errorMessage?: string
+  paymentType?: PaymentType
+
+  sameNode?: boolean
+  fixedAmount?: boolean // if the invoice has amount
+  paymentRequest?: string // if payment is lightning
+  address?: string // if payment is onchain
+  recipientWalletId?: string // if payment is intraledger
+
+  newDestination?: string // for scanned codes
+}
 
 type FCT = React.FC<{ to?: string }>
 

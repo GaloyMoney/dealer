@@ -3,12 +3,13 @@ import { useEffect, useReducer } from "react"
 import { GaloyClient, setLocale } from "@galoymoney/client"
 
 import { GwwContext, history } from "store/index"
-import mainReducer from "store/reducer"
+import mainReducer, { GwwStateType } from "store/reducer"
 
 import { AuthProvider } from "components/auth-provider"
 import RootComponent from "components/root-component"
+import { KratosFlowData } from "kratos/index"
 
-type RootFCT = React.FC<{ GwwState: GwwState }>
+type RootFCT = React.FC<{ GwwState: GwwStateType }>
 
 const Root: RootFCT = ({ GwwState }) => {
   const [state, dispatch] = useReducer(mainReducer, GwwState, (initState) => {
@@ -50,7 +51,7 @@ const Root: RootFCT = ({ GwwState }) => {
 type SSRRootFCT = React.FC<{
   client: GaloyClient<unknown>
   galoyJwtToken?: string
-  GwwState: GwwState
+  GwwState: GwwStateType
   flowData?: KratosFlowData
 }>
 

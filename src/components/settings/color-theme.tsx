@@ -5,6 +5,7 @@ import { Icon } from "@galoymoney/react"
 
 import storage from "store/local-storage"
 import { ColorTheme, colorThemeLabels, setColorTheme } from "store/theme"
+import { NoPropsFCT } from "store/types"
 
 const ColorThemeSetting: NoPropsFCT = () => {
   const [colorTheme, setColorThemeState] = useState<ColorTheme>("DEFAULT")

@@ -1,4 +1,29 @@
-const mainReducer = (state: GwwState, action: GwwAction): GwwState => {
+import { KratosFlowData } from "kratos/index"
+import { AuthRoutePath, RoutePath } from "server/routes"
+import { AuthIdentity } from "./use-auth-context"
+
+export type GwwStateType = {
+  key: number
+  path: RoutePath | AuthRoutePath
+  props?: Record<string, unknown>
+  authIdentity?: AuthIdentity
+  defaultLanguage?: string
+  emailVerified?: boolean
+  flowData?: KratosFlowData
+}
+
+export type GwwActionType = {
+  type: "update" | "update-with-key" | "kratos-login"
+  authIdentity?: AuthIdentity
+  [payloadKey: string]: string | Record<string, string> | undefined
+}
+
+export type GwwContextType = {
+  state: GwwStateType
+  dispatch: React.Dispatch<GwwActionType>
+}
+
+const mainReducer = (state: GwwStateType, action: GwwActionType): GwwStateType => {
   const { type, ...newState } = action
 
   switch (type) {

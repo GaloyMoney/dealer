@@ -7,7 +7,7 @@ import {
 import { AxiosError } from "axios"
 
 import { history } from "store/history"
-import { KratosSdk, handleFlowError, getNodesForFlow } from "kratos"
+import { KratosSdk, handleFlowError, getNodesForFlow, KratosFlowData } from "kratos/index"
 import { Messages } from "components/kratos"
 
 import config from "store/config"
