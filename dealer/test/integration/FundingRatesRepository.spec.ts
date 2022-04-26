@@ -186,18 +186,18 @@ describe("FundingRatesRepository", () => {
 
       for (const test of tests) {
         // test functionality
-        const countResult = await database.fundingRates.getFundingYield(
+        const yieldResult = await database.fundingRates.getFundingYield(
           ExchangeNames.Okex,
           test.numberOfDays,
         )
-        expect(countResult).toBeTruthy()
-        expect(countResult.ok).toBeTruthy()
-        if (!countResult.ok) {
+        expect(yieldResult).toBeTruthy()
+        expect(yieldResult.ok).toBeTruthy()
+        if (!yieldResult.ok) {
           return
         }
 
         // validate
-        expect(Number(countResult.value)).toBe(test.expectedYield)
+        expect(Number(yieldResult.value)).toBe(test.expectedYield)
       }
     })
   })
