@@ -166,9 +166,14 @@ describe("FundingRatesRepository", () => {
       expect(clearResult.ok).toBeTruthy()
 
       let countResult = await database.fundingRates.getCount()
-      logger.warn(
+      logger.error(
         { countResult },
         "database.fundingRates.getCount() BEFORE returned: {countResult}.",
+      )
+      console.error(
+        `database.fundingRates.getCount() BEFORE returned: ${JSON.stringify(
+          countResult,
+        )}.`,
       )
 
       // insert data
@@ -181,9 +186,14 @@ describe("FundingRatesRepository", () => {
       }
 
       countResult = await database.fundingRates.getCount()
-      logger.warn(
+      logger.error(
         { countResult },
         "database.fundingRates.getCount() AFTER returned: {countResult}.",
+      )
+      console.error(
+        `database.fundingRates.getCount() AFTER returned: ${JSON.stringify(
+          countResult,
+        )}.`,
       )
 
       const tests = [
@@ -200,9 +210,14 @@ describe("FundingRatesRepository", () => {
           ExchangeNames.Okex,
           test.numberOfDays,
         )
-        logger.warn(
+        logger.error(
           { yieldResult },
           "database.fundingRates.getFundingYield() returned: {yieldResult}.",
+        )
+        console.error(
+          `database.fundingRates.getFundingYield() returned: ${JSON.stringify(
+            yieldResult,
+          )}.`,
         )
         expect(yieldResult).toBeTruthy()
         expect(yieldResult.ok).toBeTruthy()
