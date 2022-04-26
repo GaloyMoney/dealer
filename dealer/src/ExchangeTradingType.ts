@@ -1,5 +1,5 @@
 import { Params } from "ccxt"
-import { Transaction } from "./database/models"
+import { FundingRate, Transaction } from "./database/models"
 
 export enum TradeCurrency {
   BTC = "BTC",
@@ -100,6 +100,18 @@ export interface GetTransactionHistoryParameters {
 export interface GetTransactionHistoryResult {
   originalResponseAsIs
   transactions: Transaction[]
+}
+
+export interface GetFundingRateHistoryParameters {
+  instrumentId?: string
+  afterFundingTime?: number
+  beforeFundingTime?: number
+  limit?: number
+}
+
+export interface GetFundingRateHistoryResult {
+  originalResponseAsIs
+  fundingRates: FundingRate[]
 }
 
 export interface DepositOnLightningParameters {
