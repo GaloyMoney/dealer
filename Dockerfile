@@ -1,6 +1,6 @@
 FROM node:16-alpine AS BUILD_IMAGE
 
-ARG CUSTOM_MODULES
+ARG CUSTOM_MODULES="default"
 
 WORKDIR /app
 
@@ -19,7 +19,7 @@ RUN CUSTOM_MODULES=${CUSTOM_MODULES} yarn build:node && yarn build:files && yarn
 # FROM gcr.io/distroless/nodejs:16
 FROM node:16-alpine
 
-ARG CUSTOM_MODULES
+ARG CUSTOM_MODULES="default"
 
 ENV NODE_PATH="build/modules/${CUSTOM_MODULES}:build/"
 
