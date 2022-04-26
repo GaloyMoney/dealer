@@ -4,6 +4,7 @@ import { TransactionsRepository } from "./TransactionsRepository"
 import { OrdersRepository } from "./OrdersRepository"
 import { InternalTransfersRepository } from "./InternalTransfersRepository"
 import { ExternalTransfersRepository } from "./ExternalTransfersRepository"
+import { FundingRatesRepository } from "./FundingRatesRepository"
 
 interface Extensions {
   inFlightTransfers: InFlightTransfersRepository
@@ -12,6 +13,7 @@ interface Extensions {
   orders: OrdersRepository
   internalTransfers: InternalTransfersRepository
   externalTransfers: ExternalTransfersRepository
+  fundingRates: FundingRatesRepository
 }
 
 export {
@@ -22,4 +24,5 @@ export {
   OrdersRepository,
   InternalTransfersRepository,
   ExternalTransfersRepository,
+  FundingRatesRepository,
 }

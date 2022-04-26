@@ -64,6 +64,17 @@ export const externalTransfersQueries = {
   clear: sql("external_transfers/clear.sql"),
 }
 
+export const fundingRatesQueries = {
+  insert: sql("funding_rates/insert.sql"),
+
+  get_count: sql("funding_rates/get_count.sql"),
+  get_last_funding_time: sql("funding_rates/get_last_funding_time.sql"),
+
+  get_funding_yield: sql("funding_rates/get_funding_yield.sql"),
+
+  clear: sql("funding_rates/clear.sql"),
+}
+
 function sql(file: string): QueryFile {
   const fullPath: string = joinPath(__dirname, file)
 

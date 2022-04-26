@@ -9,7 +9,10 @@ import {
   UpdatedPosition,
 } from "./HedgingStrategyTypes"
 import {
+  ExchangeNames,
   FundingFeesMetrics,
+  FundingRate,
+  FundingYieldMetrics,
   InFlightTransfer,
   TradingFeesMetrics,
   Transaction,
@@ -22,6 +25,7 @@ import { createHedgingStrategy } from "./HedgingStrategyFactory"
 import {
   FetchFundingAccountBalanceResult,
   GetAccountAndPositionRiskResult,
+  GetFundingRateHistoryParameters,
   GetTransactionHistoryParameters,
 } from "./ExchangeTradingType"
 import {
@@ -532,6 +536,48 @@ export class Dealer {
     return result.value
   }
 
+  public async getFundingYieldMetrics(): Promise<FundingYieldMetrics> {
+    const ret: FundingYieldMetrics = {
+      fundingYield1d: NaN,
+      fundingYield1W: NaN,
+      fundingYield2W: NaN,
+      fundingYield3W: NaN,
+      fundingYield1M: NaN,
+      fundingYield2M: NaN,
+      fundingYield3M: NaN,
+      fundingYield6M: NaN,
+      fundingYield1Y: NaN,
+      fundingYield2Y: NaN,
+      fundingYield3Y: NaN,
+      fundingYield5Y: NaN,
+    }
+    const tenors = [
+      { tenor: "1d", numberOfDays: 1 },
+      { tenor: "1W", numberOfDays: 7 },
+      { tenor: "2W", numberOfDays: 2 * 7 },
+      { tenor: "3W", numberOfDays: 3 * 7 },
+      { tenor: "1M", numberOfDays: 30 },
+      { tenor: "2M", numberOfDays: 2 * 30 },
+      { tenor: "3M", numberOfDays: 3 * 30 },
+      { tenor: "6M", numberOfDays: 6 * 30 },
+      { tenor: "1Y", numberOfDays: 365 },
+      { tenor: "2Y", numberOfDays: 2 * 365 },
+      { tenor: "3Y", numberOfDays: 3 * 365 },
+      { tenor: "5Y", numberOfDays: 5 * 365 },
+    ]
+    for (const tenor of tenors) {
+      const result = await database.fundingRates.getFundingYield(
+        ExchangeNames.Okex,
+        tenor.numberOfDays,
+      )
+      if (!result.ok) {
+        return ret
+      }
+      ret[`fundingYield${tenor.tenor}`] = Number(result.value)
+    }
+    return ret
+  }
+
   public async getFundingAccountBalance(): Promise<FetchFundingAccountBalanceResult> {
     const result = await this.strategy.getFundingAccountBalance()
     if (!result.ok) {
@@ -573,6 +619,38 @@ export class Dealer {
     const transactions = await this.fetchTransactionHistory(args)
     for (const transaction of transactions) {
       await database.transactions.insert(transaction)
+    }
+  }
+
+  private async fetchFundingRateHistory(
+    args: GetFundingRateHistoryParameters,
+  ): Promise<FundingRate[]> {
+    const result = await this.strategy.fetchFundingRateHistory(args)
+    if (!result.ok) {
+      return []
+    }
+    return result.value
+  }
+
+  public async fetchAndLoadFundingRates() {
+    // get latest id we saved in db
+    let lastFundingTime
+    const result = await database.fundingRates.getLastFundingTime()
+    if (!result.ok) {
+      this.logger.error(
+        "Couldn't get last fundingTime from database, continuing with blank id...",
+      )
+    } else if (result.value) {
+      lastFundingTime = result.value
+    }
+
+    // fetch and insert fundingRates since last
+    const args: GetFundingRateHistoryParameters = {
+      beforeFundingTime: lastFundingTime,
+    }
+    const fundingRates = await this.fetchFundingRateHistory(args)
+    for (const fundingRate of fundingRates) {
+      await database.fundingRates.insert(fundingRate)
     }
   }
 }

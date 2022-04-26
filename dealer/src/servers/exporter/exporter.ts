@@ -357,6 +357,91 @@ const metrics: { [key: string]: IMetricData } = {
       help: "exchange funding account total BTC balance",
     }),
   },
+
+  fundingYield1d: {
+    value: NaN,
+    gauge: new client.Gauge({
+      name: `${prefix}_fundingYield1d`,
+      help: "1d funding yield",
+    }),
+  },
+  fundingYield1W: {
+    value: NaN,
+    gauge: new client.Gauge({
+      name: `${prefix}_fundingYield1W`,
+      help: "1W funding yield",
+    }),
+  },
+  fundingYield2W: {
+    value: NaN,
+    gauge: new client.Gauge({
+      name: `${prefix}_fundingYield2W`,
+      help: "2W funding yield",
+    }),
+  },
+  fundingYield3W: {
+    value: NaN,
+    gauge: new client.Gauge({
+      name: `${prefix}_fundingYield3W`,
+      help: "3W funding yield",
+    }),
+  },
+  fundingYield1M: {
+    value: NaN,
+    gauge: new client.Gauge({
+      name: `${prefix}_fundingYield1M`,
+      help: "1M funding yield",
+    }),
+  },
+  fundingYield2M: {
+    value: NaN,
+    gauge: new client.Gauge({
+      name: `${prefix}_fundingYield2M`,
+      help: "2M funding yield",
+    }),
+  },
+  fundingYield3M: {
+    value: NaN,
+    gauge: new client.Gauge({
+      name: `${prefix}_fundingYield3M`,
+      help: "3M funding yield",
+    }),
+  },
+  fundingYield6M: {
+    value: NaN,
+    gauge: new client.Gauge({
+      name: `${prefix}_fundingYield6M`,
+      help: "6M funding yield",
+    }),
+  },
+  fundingYield1Y: {
+    value: NaN,
+    gauge: new client.Gauge({
+      name: `${prefix}_fundingYield1Y`,
+      help: "1Y funding yield",
+    }),
+  },
+  fundingYield2Y: {
+    value: NaN,
+    gauge: new client.Gauge({
+      name: `${prefix}_fundingYield2Y`,
+      help: "2Y funding yield",
+    }),
+  },
+  fundingYield3Y: {
+    value: NaN,
+    gauge: new client.Gauge({
+      name: `${prefix}_fundingYield3Y`,
+      help: "3Y funding yield",
+    }),
+  },
+  fundingYield5Y: {
+    value: NaN,
+    gauge: new client.Gauge({
+      name: `${prefix}_fundingYield5Y`,
+      help: "5Y funding yield",
+    }),
+  },
 }
 
 export async function exporter() {
@@ -379,6 +464,9 @@ export async function exporter() {
 
           // load transaction to be up-to-date
           await dealer.fetchAndLoadTransactions()
+
+          // load funding rates to be up-to-date
+          await dealer.fetchAndLoadFundingRates()
 
           let averageOpenPrice = 0
           let swapPosInCt = 0
@@ -550,6 +638,21 @@ export async function exporter() {
             metrics["fundingAccountBtcTotalBalance"],
             fundingAccountBalance.btcTotalBalance,
           )
+
+          // Funding Yields
+          const fundingYieldMetrics = await dealer.getFundingYieldMetrics()
+          Metrics.set(metrics["fundingYield1d"], fundingYieldMetrics.fundingYield1d)
+          Metrics.set(metrics["fundingYield1W"], fundingYieldMetrics.fundingYield1W)
+          Metrics.set(metrics["fundingYield2W"], fundingYieldMetrics.fundingYield2W)
+          Metrics.set(metrics["fundingYield3W"], fundingYieldMetrics.fundingYield3W)
+          Metrics.set(metrics["fundingYield1M"], fundingYieldMetrics.fundingYield1M)
+          Metrics.set(metrics["fundingYield2M"], fundingYieldMetrics.fundingYield2M)
+          Metrics.set(metrics["fundingYield3M"], fundingYieldMetrics.fundingYield3M)
+          Metrics.set(metrics["fundingYield6M"], fundingYieldMetrics.fundingYield6M)
+          Metrics.set(metrics["fundingYield1Y"], fundingYieldMetrics.fundingYield1Y)
+          Metrics.set(metrics["fundingYield2Y"], fundingYieldMetrics.fundingYield2Y)
+          Metrics.set(metrics["fundingYield3Y"], fundingYieldMetrics.fundingYield3Y)
+          Metrics.set(metrics["fundingYield5Y"], fundingYieldMetrics.fundingYield5Y)
 
           // Realized Profit And Loss
           const strategyRPnlInSats =

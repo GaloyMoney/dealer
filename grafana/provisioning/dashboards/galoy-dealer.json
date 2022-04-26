@@ -3093,6 +3093,183 @@
       ],
       "title": "Margin Ratio",
       "type": "timeseries"
+    },
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "max": 1,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "dark-red",
+                "value": null
+              },
+              {
+                "color": "light-orange",
+                "value": 0
+              },
+              {
+                "color": "semi-dark-orange",
+                "value": 0.1
+              },
+              {
+                "color": "dark-orange",
+                "value": 0.2
+              },
+              {
+                "color": "semi-dark-green",
+                "value": 0.3
+              },
+              {
+                "color": "dark-green",
+                "value": 0.4
+              },
+              {
+                "color": "semi-dark-blue",
+                "value": 0.5
+              },
+              {
+                "color": "dark-blue",
+                "value": 0.6
+              },
+              {
+                "color": "semi-dark-purple",
+                "value": 0.7
+              },
+              {
+                "color": "dark-purple",
+                "value": 0.8
+              }
+            ]
+          },
+          "unit": "percentunit"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 0,
+        "y": 42
+      },
+      "id": 62,
+      "options": {
+        "displayMode": "lcd",
+        "orientation": "vertical",
+        "reduceOptions": {
+          "calcs": ["lastNotNull"],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true,
+        "text": {}
+      },
+      "pluginVersion": "8.1.1",
+      "targets": [
+        {
+          "exemplar": true,
+          "expr": "galoy_dealer_fundingYield1d",
+          "interval": "",
+          "legendFormat": "1d",
+          "refId": "A"
+        },
+        {
+          "exemplar": true,
+          "expr": "galoy_dealer_fundingYield1W",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "1W",
+          "refId": "B"
+        },
+        {
+          "exemplar": true,
+          "expr": "galoy_dealer_fundingYield2W",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "2W",
+          "refId": "C"
+        },
+        {
+          "exemplar": true,
+          "expr": "galoy_dealer_fundingYield3W",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "3W",
+          "refId": "D"
+        },
+        {
+          "exemplar": true,
+          "expr": "galoy_dealer_fundingYield1M",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "1M",
+          "refId": "E"
+        },
+        {
+          "exemplar": true,
+          "expr": "galoy_dealer_fundingYield2M",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "2M",
+          "refId": "F"
+        },
+        {
+          "exemplar": true,
+          "expr": "galoy_dealer_fundingYield3M",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "3M",
+          "refId": "G"
+        },
+        {
+          "exemplar": true,
+          "expr": "galoy_dealer_fundingYield6M",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "6M",
+          "refId": "H"
+        },
+        {
+          "exemplar": true,
+          "expr": "galoy_dealer_fundingYield1Y",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "1Y",
+          "refId": "I"
+        },
+        {
+          "exemplar": true,
+          "expr": "galoy_dealer_fundingYield2Y",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "2Y",
+          "refId": "J"
+        },
+        {
+          "exemplar": true,
+          "expr": "galoy_dealer_fundingYield3Y",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "3Y",
+          "refId": "K"
+        },
+        {
+          "exemplar": true,
+          "expr": "galoy_dealer_fundingYield5Y",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "5Y",
+          "refId": "L"
+        }
+      ],
+      "title": "Funding Yield",
+      "type": "bargauge"
     }
   ],
   "refresh": "",
@@ -3110,5 +3287,5 @@
   "timezone": "",
   "title": "Galoy Dealer",
   "uid": "pTEP9n47k",
-  "version": 27
+  "version": 32
 }

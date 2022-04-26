@@ -29,6 +29,8 @@ import {
   GetTransactionHistoryParameters,
   GetTransactionHistoryResult,
   FetchFundingAccountBalanceResult,
+  GetFundingRateHistoryParameters,
+  GetFundingRateHistoryResult,
 } from "./ExchangeTradingType"
 import { ErrorLevel, Result } from "./Result"
 import ccxt, { ExchangeId } from "ccxt"
@@ -709,4 +711,8 @@ export abstract class ExchangeBase {
   abstract fetchTransactionHistory(
     args: GetTransactionHistoryParameters,
   ): Promise<Result<GetTransactionHistoryResult>>
+
+  abstract fetchFundingRateHistory(
+    args: GetFundingRateHistoryParameters,
+  ): Promise<Result<GetFundingRateHistoryResult>>
 }

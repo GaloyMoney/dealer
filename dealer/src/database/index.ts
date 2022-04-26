@@ -7,6 +7,7 @@ import {
   OrdersRepository,
   InternalTransfersRepository,
   ExternalTransfersRepository,
+  FundingRatesRepository,
 } from "./repositories"
 import { baseLogger } from "../services/logger"
 import humps from "humps"
@@ -30,6 +31,7 @@ const initOptions: IInitOptions<Extensions> = {
     obj.orders = new OrdersRepository(baseLogger, obj, pgp)
     obj.internalTransfers = new InternalTransfersRepository(baseLogger, obj, pgp)
     obj.externalTransfers = new ExternalTransfersRepository(baseLogger, obj, pgp)
+    obj.fundingRates = new FundingRatesRepository(baseLogger, obj, pgp)
   },
   /* eslint-disable */
   receive: function (data, result, e) {
