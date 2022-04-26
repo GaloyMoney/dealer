@@ -170,7 +170,7 @@ describe("FundingRatesRepository", () => {
         { countResult },
         "database.fundingRates.getCount() BEFORE returned: {countResult}.",
       )
-      console.error(
+      console.log(
         `database.fundingRates.getCount() BEFORE returned: ${JSON.stringify(
           countResult,
         )}.`,
@@ -190,7 +190,7 @@ describe("FundingRatesRepository", () => {
         { countResult },
         "database.fundingRates.getCount() AFTER returned: {countResult}.",
       )
-      console.error(
+      console.log(
         `database.fundingRates.getCount() AFTER returned: ${JSON.stringify(
           countResult,
         )}.`,
@@ -214,7 +214,7 @@ describe("FundingRatesRepository", () => {
           { yieldResult },
           "database.fundingRates.getFundingYield() returned: {yieldResult}.",
         )
-        console.error(
+        console.log(
           `database.fundingRates.getFundingYield() returned: ${JSON.stringify(
             yieldResult,
           )}.`,
