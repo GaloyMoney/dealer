@@ -1,9 +1,5 @@
-import {
-  ExchangeNames,
-  FundingFeesMetrics,
-  FundingRate,
-  TradingFeesMetrics,
-} from "src/database/models"
+import { baseLogger } from "src/services/logger"
+import { ExchangeNames, FundingRate } from "src/database/models"
 import { db as database } from "src/database"
 
 function getValidFundingRateApiResponse() {
@@ -162,10 +158,18 @@ describe("FundingRatesRepository", () => {
   })
   describe("getFundingYield", () => {
     it("should return exact yield from the database table", async () => {
+      const logger = baseLogger.child({ module: "getFundingYield" })
+
       // clear db
       const clearResult = await database.fundingRates.clearAll()
       expect(clearResult).toBeTruthy()
       expect(clearResult.ok).toBeTruthy()
+
+      let countResult = await database.fundingRates.getCount()
+      logger.warn(
+        { countResult },
+        "database.fundingRates.getCount() BEFORE returned: {countResult}.",
+      )
 
       // insert data
       const apiResponse = getValidFundingRateApiResponse()
@@ -175,6 +179,12 @@ describe("FundingRatesRepository", () => {
         expect(insertResult).toBeTruthy()
         expect(insertResult.ok).toBeTruthy()
       }
+
+      countResult = await database.fundingRates.getCount()
+      logger.warn(
+        { countResult },
+        "database.fundingRates.getCount() AFTER returned: {countResult}.",
+      )
 
       const tests = [
         { numberOfDays: 0, expectedYield: 0.0 },
@@ -189,6 +199,10 @@ describe("FundingRatesRepository", () => {
         const yieldResult = await database.fundingRates.getFundingYield(
           ExchangeNames.Okex,
           test.numberOfDays,
+        )
+        logger.warn(
+          { yieldResult },
+          "database.fundingRates.getFundingYield() returned: {yieldResult}.",
         )
         expect(yieldResult).toBeTruthy()
         expect(yieldResult.ok).toBeTruthy()
