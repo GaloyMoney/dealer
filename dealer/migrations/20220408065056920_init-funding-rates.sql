@@ -1,4 +1,5 @@
 -- Up Migration
+TRUNCATE TABLE "dealer"."funding_rates";
 INSERT INTO "dealer"."funding_rates"
 ("timestamp", "funding_time", "instrument_id", "exchange_id", "funding_rate")
 VALUES
