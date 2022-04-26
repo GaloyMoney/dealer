@@ -147,3 +147,36 @@ export interface ExternalTransfer {
   updatedTimestamp?: string
   createdTimestamp?: string
 }
+
+export interface FundingRate {
+  id?: number
+
+  fundingRate: number
+  instrumentId: string
+  exchangeName: string
+
+  timestamp: string
+  fundingTime: number
+
+  updatedTimestamp?: string
+  createdTimestamp?: string
+}
+
+export enum ExchangeNames {
+  Okex = "okex",
+}
+
+export type FundingYieldMetrics = {
+  fundingYield1d: number
+  fundingYield1W: number
+  fundingYield2W: number
+  fundingYield3W: number
+  fundingYield1M: number
+  fundingYield2M: number
+  fundingYield3M: number
+  fundingYield6M: number
+  fundingYield1Y: number
+  fundingYield2Y: number
+  fundingYield3Y: number
+  fundingYield5Y: number
+}
