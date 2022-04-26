@@ -74,29 +74,42 @@ export const AuthProvider: FCT = ({
 
   const syncSession = useCallback(async () => {
     const resp = await axios.post(config.galoyAuthEndpoint, {}, { withCredentials: true })
-    if (!resp.data.authToken) {
-      throw new Error("Invalid auth token respose")
+
+    if (resp.data.error) {
+      // TODO: logout?
+      return new Error(resp.data.error?.message || "INVALID_AUTH_TOKEN_RESPONSE")
     }
+
     const authToken = resp.data.authToken
     const session = await request.post(config.authEndpoint, { authToken })
-    if (!session || !session.galoyJwtToken) {
-      throw new Error("Invalid auth token respose")
+
+    session.identity.accountStatus = resp.data.accountStatus
+
+    if (
+      !session ||
+      !session.galoyJwtToken ||
+      session.identity.id !== resp.data.kratosUserId
+    ) {
+      // TODO: logout?
+      return new Error("INVALID_AUTH_TOKEN_RESPONSE")
     }
+
     setAuth(session.galoyJwtToken ? session : null)
     dispatch({ type: "kratos-login", authIdentity: session.identity })
+    return true
   }, [dispatch, request, setAuth])
 
   useEffect(() => {
     const persistedSession = getPersistedSession()
 
     if (
-      (authIdentity?.userId || persistedSession) &&
-      persistedSession?.identity?.userId !== authIdentity?.userId
+      (authIdentity?.uid || persistedSession) &&
+      persistedSession?.identity?.uid !== authIdentity?.uid
     ) {
       setAuth(null)
-      document.location.href = "/logout"
+      window.location.href = "/logout"
     }
-  }, [authIdentity?.userId, setAuth])
+  }, [authIdentity?.uid, setAuth])
 
   const handleError = useErrorHandler()
   const client = useMemo(() => {

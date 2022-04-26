@@ -2,13 +2,14 @@ import { createContext, useContext } from "react"
 
 import {
   createGaloyClient,
+  createGaloyServerAdminClient,
   createGaloyServerClient,
   postRequest,
 } from "@galoymoney/client"
 
-import { useAuthContext } from "./use-auth-context"
-import config from "./config"
-import { GwwActionType, GwwContextType } from "./reducer"
+import { useAuthContext } from "store/use-auth-context"
+import config from "store/config"
+import { GwwActionType, GwwContextType } from "store/reducer"
 
 export const GwwContext = createContext<GwwContextType>({
   state: { key: 0, path: "/" },
@@ -40,3 +41,5 @@ export const useRequest = () => {
 export const createClient = config.isBrowser
   ? createGaloyClient({ config, initData: window.__G_DATA.ssrData })
   : createGaloyServerClient({ config })
+
+export const createAdminClient = createGaloyServerAdminClient({ config })

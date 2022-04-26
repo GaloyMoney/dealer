@@ -12,7 +12,7 @@ const LogoutLink: NoPropsFCT = () => {
     event.preventDefault()
     resetClient()
     setAuthSession(null)
-    document.location.href = "/logout"
+    window.location.href = "/logout"
   }
 
   return (

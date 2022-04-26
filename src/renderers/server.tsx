@@ -1,13 +1,14 @@
 import { Request } from "express"
 import { renderToStringWithData } from "@galoymoney/client"
 
-import config from "store/config"
-import { createClient } from "store/index"
-import { appRoutes, AuthRoutePath, authRoutes, RoutePath } from "server/routes"
+import { appRoutes, AuthRoutePath, authRoutes, RoutePath, ValidPath } from "server/routes"
+import { KratosFlowData } from "kratos/index"
 
 import { SSRRoot } from "components/root"
+
+import { publicConfig } from "store/config"
+import { createClient } from "store/index"
 import { GwwStateType } from "store/reducer"
-import { KratosFlowData } from "kratos/index"
 
 type ServerRenderResponse = {
   GwwState: GwwStateType
@@ -50,7 +51,7 @@ export const serverRenderer =
     path,
     flowData,
   }: {
-    path: RoutePath | AuthRoutePath
+    path: ValidPath
     flowData?: KratosFlowData
   }): Promise<Error | ServerRenderResponse> => {
     try {
@@ -86,35 +87,9 @@ export const serverRenderer =
         req.session.emailVerified = undefined
       }
 
-      const {
-        walletName,
-        walletTheme,
-        supportEmail,
-        shareUri,
-        graphqlUri,
-        graphqlSubscriptionUri,
-        network,
-        authEndpoint,
-        kratosFeatureFlag,
-        kratosBrowserUrl,
-        galoyAuthEndpoint,
-      } = config
-
       return Promise.resolve({
         GwwState,
-        GwwConfig: {
-          walletName,
-          walletTheme,
-          supportEmail,
-          shareUri,
-          graphqlUri,
-          graphqlSubscriptionUri,
-          network,
-          authEndpoint,
-          kratosFeatureFlag,
-          kratosBrowserUrl,
-          galoyAuthEndpoint,
-        },
+        GwwConfig: publicConfig,
         initialMarkup,
         ssrData,
         pageData:

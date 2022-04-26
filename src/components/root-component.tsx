@@ -8,15 +8,14 @@ import {
   checkRoute,
   authRoutes,
   checkAuthRoute,
-  RoutePath,
-  AuthRoutePath,
+  ValidPath,
 } from "server/routes"
 
 import ErrorFallback from "components/error-fallback"
 import { KratosFlowData } from "kratos/index"
 
 type FCT = React.FC<{
-  path: RoutePath | AuthRoutePath
+  path: ValidPath
   flowData?: KratosFlowData
   [name: string]: unknown
 }>

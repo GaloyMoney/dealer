@@ -8,7 +8,7 @@ import { handleWhoAmI } from "kratos/index"
 
 const apiRouter = express.Router({ caseSensitive: true })
 
-type GalowyJwtToken = null | (jwt.JwtPayload & { kratosUserId?: string })
+export type GalowyJwtToken = null | (jwt.JwtPayload & { kratosUserId?: string })
 
 apiRouter.post("/login", async (req, res) => {
   try {
@@ -18,19 +18,15 @@ apiRouter.post("/login", async (req, res) => {
       const token = jwt.decode(authToken) as GalowyJwtToken
       const kratosSession = await handleWhoAmI(req)
 
-      if (
-        !token ||
-        !token.kratosUserId ||
-        !kratosSession ||
-        kratosSession.identity.id !== token.kratosUserId
-      ) {
-        return res.send(404).send("Invalid login request")
+      if (!token || !token.uid || !kratosSession) {
+        throw new Error("INVALID_LOGIN_REQUEST")
       }
 
       const authSession = {
         galoyJwtToken: authToken,
         identity: {
-          userId: kratosSession.identity.id,
+          id: kratosSession.identity.id,
+          uid: token.uid,
           emailAddress: kratosSession.identity.traits.email,
           firstName: kratosSession.identity.traits.name?.first,
           lastName: kratosSession.identity.traits.name?.last,
@@ -61,7 +57,7 @@ apiRouter.post("/login", async (req, res) => {
     const token = jwt.decode(galoyJwtToken) as GalowyJwtToken
 
     if (!token || !token.uid) {
-      return res.send(404).send("Invalid login request")
+      return res.status(404).send("Invalid login request")
     }
 
     const authSession = {

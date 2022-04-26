@@ -4,17 +4,17 @@ const webpack = require("webpack")
 
 const MiniCssExtractPlugin = require("mini-css-extract-plugin")
 
-const walletLayout = process.env.WALLET_LAYOUT
+const customModules = process.env.CUSTOM_MODULES
 
-if (!walletLayout) {
-  throw new Error("ENV variable WALLET_LAYOUT must be set")
+if (!customModules) {
+  throw new Error("ENV variable CUSTOM_MODULES must be set")
 }
 
 const config = (env) => ({
   devtool: env.dev ? "inline-source-map" : false,
   resolve: {
     modules: [
-      path.resolve("./src/layouts/" + walletLayout),
+      path.resolve("./src/modules/" + customModules),
       path.resolve("./src"),
       "node_modules",
     ],

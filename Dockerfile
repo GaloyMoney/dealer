@@ -1,6 +1,6 @@
 FROM node:16-alpine AS BUILD_IMAGE
 
-ARG WALLET_LAYOUT
+ARG CUSTOM_MODULES
 
 WORKDIR /app
 
@@ -13,15 +13,15 @@ RUN yarn install --frozen-lockfile --production
 COPY ./src ./src
 COPY ./*.js ./
 
-RUN WALLET_LAYOUT=${WALLET_LAYOUT} yarn build:node && yarn build:files && yarn build:bundler
+RUN CUSTOM_MODULES=${CUSTOM_MODULES} yarn build:node && yarn build:files && yarn build:bundler
 
 
 # FROM gcr.io/distroless/nodejs:16
 FROM node:16-alpine
 
-ARG WALLET_LAYOUT
+ARG CUSTOM_MODULES
 
-ENV NODE_PATH="build/layouts/${WALLET_LAYOUT}:build/"
+ENV NODE_PATH="build/modules/${CUSTOM_MODULES}:build/"
 
 COPY --from=BUILD_IMAGE /app/.gvars.json /app/.gvars.json
 COPY --from=BUILD_IMAGE /app/build /app/build

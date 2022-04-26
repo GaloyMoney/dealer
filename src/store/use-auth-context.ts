@@ -1,11 +1,13 @@
 import { useContext, createContext } from "react"
 
 export type AuthIdentity = {
-  userId: string
+  id: string
+  uid: string
   phoneNumber?: string
   emailAddress?: string
   firstName?: string
   lastName?: string
+  accountStatus?: string
 }
 
 export type AuthSession = {
@@ -18,13 +20,13 @@ type AuthContextType = {
   galoyJwtToken?: string
   authIdentity?: AuthIdentity
   setAuthSession: (session: AuthSession) => void
-  syncSession: () => Promise<void>
+  syncSession: () => Promise<true | Error>
 }
 
 export const AuthContext = createContext<AuthContextType>({
   isAuthenticated: false,
   setAuthSession: () => {},
-  syncSession: () => Promise.resolve(),
+  syncSession: () => Promise.resolve(true),
 })
 
 export const useAuthContext: () => AuthContextType = () => {

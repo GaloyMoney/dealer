@@ -1,5 +1,5 @@
 import * as React from "react"
-import { AuthRoutePath, checkAuthRoute, RoutePath } from "server/routes"
+import { checkAuthRoute, ValidPath } from "server/routes"
 import config from "store/config"
 import { history } from "store/index"
 
@@ -13,7 +13,7 @@ const navigateTo = (to: string) => {
 }
 
 type FCT = React.FC<{
-  to: RoutePath | AuthRoutePath
+  to: ValidPath
   className?: string
   children: React.ReactNode
 }>

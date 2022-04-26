@@ -2,6 +2,7 @@ import { useEffect, useReducer } from "react"
 
 import { GaloyClient, setLocale } from "@galoymoney/client"
 
+import { ValidPath } from "server/routes"
 import { GwwContext, history } from "store/index"
 import mainReducer, { GwwStateType } from "store/reducer"
 
@@ -22,8 +23,8 @@ const Root: RootFCT = ({ GwwState }) => {
       const props = Object.fromEntries(new URLSearchParams(location.search))
 
       dispatch({
-        type: "update-with-key",
-        path: location.pathname,
+        type: "update",
+        path: location.pathname as ValidPath,
         props,
         ...(location.state as Record<string, unknown> | null),
       })

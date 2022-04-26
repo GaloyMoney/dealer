@@ -28,18 +28,18 @@ const ContactListForSending: NoPropsFCT = () => {
     history.push(`/send?to=${contactUsername}`)
   }
 
-  const shareUri = `${config.shareUri}${username ?? ""}`
+  const shareUrl = `${config.shareUrl}${username ?? ""}`
 
   const handleInvite = () => {
     if (!navigator.share) {
-      copy(shareUri)
+      copy(shareUrl)
       setShowCopied(true)
       setTimeout(() => setShowCopied(false), 3000)
       return
     }
 
     navigator
-      .share({ title: `${config.walletName} Wallet`, url: shareUri })
+      .share({ title: `${config.walletName} Wallet`, url: shareUrl })
       .catch(console.error)
   }
 

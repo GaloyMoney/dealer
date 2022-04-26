@@ -8,8 +8,8 @@ import rateLimit from "express-rate-limit"
 
 import config from "store/config"
 
-import apiRouter from "./api-router"
-import ssrRouter from "./ssr-router"
+import apiRouter from "server/api-router"
+import ssrRouter from "server/ssr-router"
 
 const app = express()
 app.enable("trust proxy")
@@ -36,7 +36,7 @@ if (!config.isDev) {
 app.use(
   cookieSession({
     name: "session",
-    keys: [config.sessionKeys],
+    keys: [config.sessionKeys as string],
     secure: !config.isDev,
     maxAge: 7 * 24 * 60 * 60 * 1000,
   }),

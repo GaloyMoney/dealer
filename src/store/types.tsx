@@ -6,6 +6,19 @@ import { GwwStateType } from "./reducer"
 
 // Glabol
 
+export type GwwConfigType = {
+  walletName: string
+  supportEmail: string
+  shareUrl: string
+  graphqlUrl: string
+  graphqlSubscriptionUrl: string
+  network: Network
+  authEndpoint: string
+  kratosFeatureFlag: boolean
+  kratosBrowserUrl: string
+  galoyAuthEndpoint: string
+}
+
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   interface ReadonlyArray<T> {
@@ -20,19 +33,7 @@ declare global {
     __G_DATA: {
       GwwState: GwwStateType
       ssrData: NormalizedCacheObject
-      GwwConfig: {
-        walletName: string
-        walletTheme: string
-        supportEmail: string
-        shareUri: string
-        graphqlUri: string
-        graphqlSubscriptionUri: string
-        network: Network
-        authEndpoint: string
-        kratosFeatureFlag: boolean
-        kratosBrowserUrl: string
-        galoyAuthEndpoint: string
-      }
+      GwwConfig: GwwConfigType
     }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     initGeetest: (...args: any[]) => void

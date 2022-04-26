@@ -124,7 +124,7 @@ jobs:
                 - name: image
               params:
                 CONTEXT: repo
-                BUILD_ARG_WALLET_LAYOUT: default
+                BUILD_ARG_CUSTOM_MODULES: default
               run:
                 path: build
           - put: edge-image
@@ -145,7 +145,7 @@ jobs:
                 - name: image
               params:
                 CONTEXT: repo
-                BUILD_ARG_WALLET_LAYOUT: mobile
+                BUILD_ARG_CUSTOM_MODULES: mobile
               run:
                 path: build
           - put: mobile-layout-edge-image

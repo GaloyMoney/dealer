@@ -25,7 +25,7 @@ const Recovery: FCT = ({ flowData: flowDataProp }) => {
 
   const resetFlow = useCallback(() => {
     setFlowData(undefined)
-    document.location.href = "/recovery"
+    window.location.href = "/recovery"
   }, [])
 
   useEffect(() => {

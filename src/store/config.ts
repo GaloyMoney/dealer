@@ -1,4 +1,5 @@
 import { Network } from "@galoymoney/client"
+import { GwwConfigType } from "./types"
 
 const isBrowser = typeof window !== "undefined"
 
@@ -8,13 +9,12 @@ if (!isBrowser) {
     "NODE_PATH",
     "SESSION_KEYS",
     "WALLET_NAME",
-    "WALLET_THEME",
-    "SHARE_URI",
+    "SHARE_URL",
     "HOST",
     "PORT",
     "SUPPORT_EMAIL",
-    "GRAPHQL_URI",
-    "GRAPHQL_SUBSCRIPTION_URI",
+    "GRAPHQL_URL",
+    "GRAPHQL_SUBSCRIPTION_URL",
     "AUTH_ENDPOINT",
   ]
 
@@ -36,53 +36,63 @@ if (!isBrowser) {
   }
 }
 
-const networkMap = (graphqlUri: string): Network => {
-  if (graphqlUri.match("mainnet")) {
+const networkMap = (graphqlUrl: string): Network => {
+  if (graphqlUrl.match("mainnet")) {
     return "mainnet"
   }
 
-  if (graphqlUri.match("testnet")) {
+  if (graphqlUrl.match("testnet")) {
     return "testnet"
   }
 
   return "regtest"
 }
 
-const config = isBrowser
-  ? {
-      isBrowser,
-      walletName: window.__G_DATA.GwwConfig.walletName,
-      walletTheme: window.__G_DATA.GwwConfig.walletTheme,
-      shareUri: window.__G_DATA.GwwConfig.shareUri,
-      supportEmail: window.__G_DATA.GwwConfig.supportEmail,
-      network: window.__G_DATA.GwwConfig.network,
-      graphqlUri: window.__G_DATA.GwwConfig.graphqlUri,
-      graphqlSubscriptionUri: window.__G_DATA.GwwConfig.graphqlSubscriptionUri,
-      authEndpoint: window.__G_DATA.GwwConfig.authEndpoint,
-      kratosFeatureFlag: window.__G_DATA.GwwConfig.kratosFeatureFlag,
-      kratosBrowserUrl: window.__G_DATA.GwwConfig.kratosBrowserUrl,
-      galoyAuthEndpoint: window.__G_DATA.GwwConfig.galoyAuthEndpoint,
-      sessionKeys: "",
-    }
+export type configType = GwwConfigType & {
+  isBrowser?: boolean
+  isDev?: boolean
+  sessionKeys?: string
+  host?: string
+  port?: number
+}
+
+const config: configType = isBrowser
+  ? { isBrowser, ...window.__G_DATA.GwwConfig }
   : {
       isDev: process.env.NODE_ENV !== "production",
       isBrowser,
       walletName: process.env.WALLET_NAME as string,
-      walletTheme: process.env.WALLET_THEME as string,
-      shareUri: process.env.SHARE_URI as string,
+      shareUrl: process.env.SHARE_URL as string,
       sessionKeys: process.env.SESSION_KEYS as string,
       host: process.env.HOST as string,
       port: Number(process.env.PORT),
       supportEmail: process.env.SUPPORT_EMAIL as string,
       network:
-        (process.env.NETWORK as Network) ?? networkMap(process.env.GRAPHQL_URI as string),
-      graphqlUri: process.env.GRAPHQL_URI as string,
-      graphqlSubscriptionUri: process.env.GRAPHQL_SUBSCRIPTION_URI as string,
+        (process.env.NETWORK as Network) ?? networkMap(process.env.GRAPHQL_URL as string),
+      graphqlUrl: process.env.GRAPHQL_URL as string,
+      graphqlSubscriptionUrl: process.env.GRAPHQL_SUBSCRIPTION_URL as string,
 
       authEndpoint: process.env.AUTH_ENDPOINT as string,
       kratosFeatureFlag: Boolean(process.env.KRATOS_FEATURE_FLAG === "true" || false),
       kratosBrowserUrl: process.env.KRATOS_BROWSER_URL as string,
       galoyAuthEndpoint: process.env.GALOY_AUTH_ENDPOINT as string,
     }
+
+const publicConfigKeys = [
+  "walletName",
+  "supportEmail",
+  "shareUrl",
+  "graphqlUrl",
+  "graphqlSubscriptionUrl",
+  "network",
+  "authEndpoint",
+  "kratosFeatureFlag",
+  "kratosBrowserUrl",
+  "galoyAuthEndpoint",
+] as const
+
+export const publicConfig = Object.fromEntries(
+  publicConfigKeys.map((key) => [key, config[key]]),
+)
 
 export default config

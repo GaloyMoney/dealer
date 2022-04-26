@@ -35,7 +35,7 @@ const Settings: FCT = ({ flowData: flowDataProp }) => {
 
   const resetFlow = useCallback(() => {
     setFlowData(undefined)
-    document.location.href = "/login"
+    window.location.href = "/login"
   }, [])
 
   useEffect(() => {

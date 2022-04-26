@@ -1,5 +1,6 @@
 /* eslint-disable camelcase */
 import { useState, useEffect, useCallback } from "react"
+import { useErrorHandler } from "react-error-boundary"
 import { SelfServiceLoginFlow, SubmitSelfServiceLoginFlowBody } from "@ory/kratos-client"
 import { AxiosError } from "axios"
 
@@ -18,6 +19,7 @@ type FCT = React.FC<{
 }>
 
 const LoginEmail: FCT = ({ flowData: flowDataProp }) => {
+  const handleError = useErrorHandler()
   const { syncSession } = useAuthContext()
   const [flowData, setFlowData] = useState<SelfServiceLoginFlow | undefined>(
     flowDataProp?.loginData,
@@ -25,7 +27,7 @@ const LoginEmail: FCT = ({ flowData: flowDataProp }) => {
 
   const resetFlow = useCallback(() => {
     setFlowData(undefined)
-    document.location.href = "/login"
+    window.location.href = "/login"
   }, [])
 
   useEffect(() => {
@@ -72,7 +74,11 @@ const LoginEmail: FCT = ({ flowData: flowDataProp }) => {
       })
       .then(async () => {
         try {
-          await syncSession()
+          const syncStatus = await syncSession()
+          if (syncStatus instanceof Error) {
+            handleError(syncStatus)
+            return
+          }
           history.push("/")
         } catch (err) {
           console.error(err)
