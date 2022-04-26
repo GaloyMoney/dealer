@@ -16,6 +16,7 @@ import {
   GetTransactionHistoryParameters,
   FetchTickerResult,
   FetchFundingAccountBalanceResult,
+  GetFundingRateHistoryParameters,
 } from "./ExchangeTradingType"
 import {
   HedgingStrategy,
@@ -33,7 +34,13 @@ import {
 import { AccountTypeToId, OkexExchange } from "./OkexExchange"
 import pino from "pino"
 
-import { ExternalTransfer, Order, InternalTransfer, Transaction } from "./database/models"
+import {
+  ExternalTransfer,
+  Order,
+  InternalTransfer,
+  Transaction,
+  FundingRate,
+} from "./database/models"
 import { db as database } from "./database"
 import {
   addAttributesToCurrentSpan,
@@ -162,6 +169,18 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
     }
   }
 
+  public async fetchFundingRateHistory(
+    args: GetFundingRateHistoryParameters,
+  ): Promise<Result<FundingRate[]>> {
+    args.instrumentId = this.exchangeConfig.instrumentId
+    const result = await this.exchange.fetchFundingRateHistory(args)
+    if (result.ok) {
+      return { ok: true, value: result.value.fundingRates }
+    } else {
+      return { ok: false, error: result.error }
+    }
+  }
+
   public async getNextFundingRateInBtc(): Promise<Result<number>> {
     const result = await this.exchange.getPublicFundingRate()
     if (result.ok) {
@@ -241,6 +260,7 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
         [SemanticAttributes.CODE_NAMESPACE]: "app.okexPerpetualStrategy",
         [`${SemanticAttributes.CODE_FUNCTION}.params.liabilityInUsd`]: liabilityInUsd,
         [`${SemanticAttributes.CODE_FUNCTION}.params.btcPriceInUsd`]: btcPriceInUsd,
+        [`${SemanticAttributes.CODE_FUNCTION}.results.isSimulation`]: this.isSimulation,
       },
       async () => {
         try {
@@ -278,6 +298,15 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
             /* hedgingOrder.out.tradeSide !== TradeSide.NoTrade && */ this.isSimulation
           ) {
             logger.debug({ hedgingOrder }, "Calculated a SIMULATED new hedging order")
+            addAttributesToCurrentSpan({
+              [`${SemanticAttributes.CODE_FUNCTION}.results.success`]: true,
+              [`${SemanticAttributes.CODE_FUNCTION}.results.updatedPosition`]:
+                JSON.stringify(updatedPosition),
+              [`${SemanticAttributes.CODE_FUNCTION}.results.isSimulation`]:
+                this.isSimulation,
+              [`${SemanticAttributes.CODE_FUNCTION}.results.hedgingOrder`]:
+                JSON.stringify(hedgingOrder),
+            })
             return {
               ok: true,
               value: updatedPosition,

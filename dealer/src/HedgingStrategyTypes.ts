@@ -1,8 +1,9 @@
-import { Transaction } from "./database/models"
+import { FundingRate, Transaction } from "./database/models"
 import {
   FetchFundingAccountBalanceResult,
   FetchTickerResult,
   GetAccountAndPositionRiskResult,
+  GetFundingRateHistoryParameters,
   GetTransactionHistoryParameters,
 } from "./ExchangeTradingType"
 import { Result } from "./Result"
@@ -55,6 +56,10 @@ export interface HedgingStrategy {
   fetchTransactionHistory(
     args: GetTransactionHistoryParameters,
   ): Promise<Result<Transaction[]>>
+
+  fetchFundingRateHistory(
+    args: GetFundingRateHistoryParameters,
+  ): Promise<Result<FundingRate[]>>
 
   isDepositCompleted(address: string, amountInSats: number): Promise<Result<boolean>>
   isWithdrawalCompleted(address: string, amountInSats: number): Promise<Result<boolean>>

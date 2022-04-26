@@ -13,6 +13,8 @@ import {
   DepositOnLightningParameters,
   GetTransactionHistoryParameters,
   GetTransactionHistoryResult,
+  GetFundingRateHistoryResult,
+  GetFundingRateHistoryParameters,
 } from "./ExchangeTradingType"
 import assert from "assert"
 import { ExchangeBase } from "./ExchangeBase"
@@ -24,7 +26,7 @@ import {
 import { OkexExchangeConfiguration } from "./OkexExchangeConfiguration"
 import { ErrorLevel, Result } from "./Result"
 import pino from "pino"
-import { Transaction } from "./database/models"
+import { ExchangeNames, FundingRate, Transaction } from "./database/models"
 import { sleep } from "./utils"
 import {
   addAttributesToCurrentSpan,
@@ -706,6 +708,189 @@ export class OkexExchange extends ExchangeBase {
         } catch (error) {
           recordExceptionInCurrentSpan({ error, level: ErrorLevel.Warn })
           this.logger.error({ error }, "Error in fetchTransactionHistoryAllPagesAfter()")
+          throw error
+        }
+      },
+    )
+    return ret
+  }
+
+  private extractValidFundingRateFromApiResponse(apiResponse): FundingRate[] {
+    const ret = syncRunInSpan(
+      "app.okexExchange.extractValidFundingRateFromApiResponse",
+      {
+        [SemanticAttributes.CODE_FUNCTION]: "extractValidFundingRateFromApiResponse",
+        [SemanticAttributes.CODE_NAMESPACE]: "app.okexExchange",
+      },
+      () => {
+        const fundingRates: FundingRate[] = []
+
+        try {
+          if (apiResponse?.data) {
+            for (const rawFundingRate of apiResponse?.data) {
+              const fundingRate: FundingRate = {
+                fundingRate: Number(rawFundingRate.fundingRate),
+                instrumentId: rawFundingRate.instId,
+                exchangeName: ExchangeNames.Okex,
+
+                timestamp: new Date(Number(rawFundingRate.fundingTime)).toUTCString(),
+                fundingTime: Number(rawFundingRate.fundingTime),
+              }
+              fundingRates.push(fundingRate)
+            }
+          }
+        } catch (error) {
+          recordExceptionInCurrentSpan({ error, level: ErrorLevel.Warn })
+          this.logger.error(
+            { apiResponse, error },
+            "extractValidFundingRateFromApiResponse({apiResponse}) failed: {error}",
+          )
+          throw error
+        }
+
+        return fundingRates
+      },
+    )
+    return ret
+  }
+
+  public async fetchFundingRateHistory(
+    args: GetFundingRateHistoryParameters,
+  ): Promise<Result<GetFundingRateHistoryResult>> {
+    const ret = await asyncRunInSpan(
+      "app.okexExchange.fetchFundingRateHistory",
+      {
+        [SemanticAttributes.CODE_FUNCTION]: "fetchFundingRateHistory",
+        [SemanticAttributes.CODE_NAMESPACE]: "app.okexExchange",
+        [`${SemanticAttributes.CODE_FUNCTION}.params.args`]: JSON.stringify(args),
+      },
+      async () => {
+        try {
+          let fundingRates: FundingRate[]
+          if (args.afterFundingTime) {
+            fundingRates = await this.fetchFundingRateHistoryAllPagesAfter(args)
+          } else if (args.beforeFundingTime) {
+            fundingRates = await this.fetchFundingRateHistoryAllPagesBefore(args)
+          } else {
+            fundingRates = await this.fetchFundingRateHistoryAllPagesAfter(args)
+          }
+          this.logger.debug(
+            { args, response: fundingRates },
+            "publicGetPublicFundingRateHistory({args}) returned: {response}",
+          )
+
+          return {
+            ok: true,
+            value: {
+              originalResponseAsIs: fundingRates,
+              fundingRates: fundingRates,
+            },
+          }
+        } catch (error) {
+          recordExceptionInCurrentSpan({ error, level: ErrorLevel.Warn })
+          return { ok: false, error: error }
+        }
+      },
+    )
+    return ret as Result<GetFundingRateHistoryResult>
+  }
+
+  private async fetchFundingRateHistoryAllPagesBefore(
+    args: GetFundingRateHistoryParameters,
+  ): Promise<FundingRate[]> {
+    const ret = await asyncRunInSpan(
+      "app.okexExchange.fetchFundingRateHistoryAllPagesBefore",
+      {
+        [SemanticAttributes.CODE_FUNCTION]: "fetchFundingRateHistoryAllPagesBefore",
+        [SemanticAttributes.CODE_NAMESPACE]: "app.okexExchange",
+        [`${SemanticAttributes.CODE_FUNCTION}.params.args`]: JSON.stringify(args),
+      },
+      async () => {
+        try {
+          let before = args.beforeFundingTime
+          const limit = args.limit || 100
+          let allFundingRates: FundingRate[] = []
+          const one = true
+          while (one) {
+            const params = {
+              instId: args.instrumentId,
+              after: args.afterFundingTime,
+              before: before,
+              limit: limit,
+            }
+            const response = await this.exchange.publicGetPublicFundingRateHistory(params)
+            await sleep(this.exchange.rateLimit)
+            this.logger.debug(
+              { params, response },
+              "exchange.publicGetPublicFundingRateHistory({params}) returned: {response}",
+            )
+            if (response?.data?.length) {
+              before = response.data[0].billId
+              const fundingRates = this.extractValidFundingRateFromApiResponse(response)
+              allFundingRates = fundingRates.concat(allFundingRates)
+              if (!before) {
+                break
+              }
+            } else {
+              break
+            }
+          }
+          return allFundingRates
+        } catch (error) {
+          recordExceptionInCurrentSpan({ error, level: ErrorLevel.Warn })
+          this.logger.error({ error }, "Error in fetchFundingRateHistoryAllPagesBefore()")
+          throw error
+        }
+      },
+    )
+
+    return ret
+  }
+
+  private async fetchFundingRateHistoryAllPagesAfter(
+    args: GetFundingRateHistoryParameters,
+  ): Promise<FundingRate[]> {
+    const ret = await asyncRunInSpan(
+      "app.okexExchange.fetchFundingRateHistoryAllPagesAfter",
+      {
+        [SemanticAttributes.CODE_FUNCTION]: "fetchFundingRateHistoryAllPagesAfter",
+        [SemanticAttributes.CODE_NAMESPACE]: "app.okexExchange",
+        [`${SemanticAttributes.CODE_FUNCTION}.params.args`]: JSON.stringify(args),
+      },
+      async () => {
+        try {
+          let after = args.afterFundingTime
+          const limit = args.limit || 100
+          let allFundingRates: FundingRate[] = []
+          const one = true
+          while (one) {
+            const params = {
+              instId: args.instrumentId,
+              after: after,
+              before: args.beforeFundingTime,
+              limit: limit,
+            }
+            const response = await this.exchange.publicGetPublicFundingRateHistory(params)
+            await sleep(this.exchange.rateLimit)
+            this.logger.debug(
+              { params, response },
+              "exchange.publicGetPublicFundingRateHistory({params}) returned: {response}",
+            )
+            if (response?.data?.length) {
+              after = response.data[response.data.length - 1].billId
+              const fundingRates = this.extractValidFundingRateFromApiResponse(response)
+              allFundingRates = allFundingRates.concat(fundingRates)
+              if (!after) {
+                break
+              }
+            } else {
+              break
+            }
+          }
+          return allFundingRates
+        } catch (error) {
+          recordExceptionInCurrentSpan({ error, level: ErrorLevel.Warn })
+          this.logger.error({ error }, "Error in fetchFundingRateHistoryAllPagesAfter()")
           throw error
         }
       },
