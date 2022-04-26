@@ -156,80 +156,80 @@ describe("FundingRatesRepository", () => {
       expect(countResult.value).toBe(expectedCount)
     })
   })
-  describe("getFundingYield", () => {
-    it("should return exact yield from the database table", async () => {
-      const logger = baseLogger.child({ module: "getFundingYield" })
+  // describe("getFundingYield", () => {
+  //   it("should return exact yield from the database table", async () => {
+  //     const logger = baseLogger.child({ module: "getFundingYield" })
 
-      // clear db
-      const clearResult = await database.fundingRates.clearAll()
-      expect(clearResult).toBeTruthy()
-      expect(clearResult.ok).toBeTruthy()
+  //     // clear db
+  //     const clearResult = await database.fundingRates.clearAll()
+  //     expect(clearResult).toBeTruthy()
+  //     expect(clearResult.ok).toBeTruthy()
 
-      let countResult = await database.fundingRates.getCount()
-      logger.error(
-        { countResult },
-        "database.fundingRates.getCount() BEFORE returned: {countResult}.",
-      )
-      console.log(
-        `database.fundingRates.getCount() BEFORE returned: ${JSON.stringify(
-          countResult,
-        )}.`,
-      )
+  //     let countResult = await database.fundingRates.getCount()
+  //     logger.error(
+  //       { countResult },
+  //       "database.fundingRates.getCount() BEFORE returned: {countResult}.",
+  //     )
+  //     console.log(
+  //       `database.fundingRates.getCount() BEFORE returned: ${JSON.stringify(
+  //         countResult,
+  //       )}.`,
+  //     )
 
-      // insert data
-      const apiResponse = getValidFundingRateApiResponse()
-      const fundingRates = getValidFundingRateFromApiResponse(apiResponse)
-      for (const fundingRate of fundingRates) {
-        const insertResult = await database.fundingRates.insert(fundingRate)
-        expect(insertResult).toBeTruthy()
-        expect(insertResult.ok).toBeTruthy()
-      }
+  //     // insert data
+  //     const apiResponse = getValidFundingRateApiResponse()
+  //     const fundingRates = getValidFundingRateFromApiResponse(apiResponse)
+  //     for (const fundingRate of fundingRates) {
+  //       const insertResult = await database.fundingRates.insert(fundingRate)
+  //       expect(insertResult).toBeTruthy()
+  //       expect(insertResult.ok).toBeTruthy()
+  //     }
 
-      countResult = await database.fundingRates.getCount()
-      logger.error(
-        { countResult },
-        "database.fundingRates.getCount() AFTER returned: {countResult}.",
-      )
-      console.log(
-        `database.fundingRates.getCount() AFTER returned: ${JSON.stringify(
-          countResult,
-        )}.`,
-      )
+  //     countResult = await database.fundingRates.getCount()
+  //     logger.error(
+  //       { countResult },
+  //       "database.fundingRates.getCount() AFTER returned: {countResult}.",
+  //     )
+  //     console.log(
+  //       `database.fundingRates.getCount() AFTER returned: ${JSON.stringify(
+  //         countResult,
+  //       )}.`,
+  //     )
 
-      const tests = [
-        { numberOfDays: 0, expectedYield: 0.0 },
-        { numberOfDays: 2, expectedYield: 0.05 },
-        { numberOfDays: 3, expectedYield: 0.0 },
-        { numberOfDays: 4, expectedYield: 0.05 },
-        { numberOfDays: 5, expectedYield: 0.1025 },
-      ]
+  //     const tests = [
+  //       { numberOfDays: 0, expectedYield: 0.0 },
+  //       { numberOfDays: 2, expectedYield: 0.05 },
+  //       { numberOfDays: 3, expectedYield: 0.0 },
+  //       { numberOfDays: 4, expectedYield: 0.05 },
+  //       { numberOfDays: 5, expectedYield: 0.1025 },
+  //     ]
 
-      for (const test of tests) {
-        // test functionality
-        const yieldResult = await database.fundingRates.getFundingYield(
-          ExchangeNames.Okex,
-          test.numberOfDays,
-        )
-        logger.error(
-          { yieldResult },
-          "database.fundingRates.getFundingYield() returned: {yieldResult}.",
-        )
-        console.log(
-          `database.fundingRates.getFundingYield() returned: ${JSON.stringify(
-            yieldResult,
-          )}.`,
-        )
-        expect(yieldResult).toBeTruthy()
-        expect(yieldResult.ok).toBeTruthy()
-        if (!yieldResult.ok) {
-          return
-        }
+  //     for (const test of tests) {
+  //       // test functionality
+  //       const yieldResult = await database.fundingRates.getFundingYield(
+  //         ExchangeNames.Okex,
+  //         test.numberOfDays,
+  //       )
+  //       logger.error(
+  //         { yieldResult },
+  //         "database.fundingRates.getFundingYield() returned: {yieldResult}.",
+  //       )
+  //       console.log(
+  //         `database.fundingRates.getFundingYield() returned: ${JSON.stringify(
+  //           yieldResult,
+  //         )}.`,
+  //       )
+  //       expect(yieldResult).toBeTruthy()
+  //       expect(yieldResult.ok).toBeTruthy()
+  //       if (!yieldResult.ok) {
+  //         return
+  //       }
 
-        // validate
-        expect(Number(yieldResult.value)).toBe(test.expectedYield)
-      }
-    })
-  })
+  //       // validate
+  //       expect(Number(yieldResult.value)).toBe(test.expectedYield)
+  //     }
+  //   })
+  // })
   describe("getLastFundingTime", () => {
     it("should get null funding_time when no fundingRates in the database table", async () => {
       // clear db
