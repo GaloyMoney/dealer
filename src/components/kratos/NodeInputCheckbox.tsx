@@ -1,7 +1,7 @@
 import { getNodeLabel } from "@ory/integrations/ui"
 import { Checkbox } from "@ory/themes"
 
-import { NodeInputProps } from "./helpers"
+import { NodeInputProps } from "components/kratos/helpers"
 
 export const NodeInputCheckbox = ({
   node,

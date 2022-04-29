@@ -1,5 +1,5 @@
-import { NodeInputProps } from "./helpers"
-import TextInput from "./TextInput"
+import { NodeInputProps } from "components/kratos/helpers"
+import TextInput from "components/kratos/TextInput"
 
 export const NodeInputDefault = function NodeInputDefault(props: NodeInputProps) {
   const { node, attributes, value = "", setValue, disabled } = props

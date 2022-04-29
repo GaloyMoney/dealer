@@ -2,8 +2,7 @@ import { formatUsd, translate } from "@galoymoney/client"
 import { SatFormat, SatSymbol, Spinner } from "@galoymoney/react"
 
 import useMyUpdates from "hooks/use-my-updates"
-import { history } from "store/index"
-import { useAuthContext } from "store/use-auth-context"
+import { history, useAuthContext } from "store/index"
 
 const navigateToHome = () => {
   history.push("/")

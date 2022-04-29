@@ -14,8 +14,8 @@ import {
   UiNode,
 } from "@ory/kratos-client"
 
-import { Messages } from "./Messages"
-import { Node } from "./Node"
+import { Messages } from "components/kratos/Messages"
+import { Node } from "components/kratos/Node"
 
 export type Values = Partial<
   | SubmitSelfServiceLoginFlowBody

@@ -1,5 +1,6 @@
 import { Network } from "@galoymoney/client"
-import { GwwConfigType } from "./types"
+
+import { GwwConfigType } from "store/types"
 
 const isBrowser = typeof window !== "undefined"
 
@@ -56,7 +57,7 @@ export type configType = GwwConfigType & {
   port?: number
 }
 
-const config: configType = isBrowser
+export const config: configType = isBrowser
   ? { isBrowser, ...window.__G_DATA.GwwConfig }
   : {
       isDev: process.env.NODE_ENV !== "production",
@@ -94,5 +95,3 @@ const publicConfigKeys = [
 export const publicConfig = Object.fromEntries(
   publicConfigKeys.map((key) => [key, config[key]]),
 )
-
-export default config

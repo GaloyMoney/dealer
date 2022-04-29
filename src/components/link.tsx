@@ -1,7 +1,8 @@
 import * as React from "react"
+
 import { checkAuthRoute, ValidPath } from "server/routes"
-import config from "store/config"
-import { history } from "store/index"
+
+import { history, config } from "store/index"
 
 const navigateTo = (to: string) => {
   const authRoute = checkAuthRoute(to)

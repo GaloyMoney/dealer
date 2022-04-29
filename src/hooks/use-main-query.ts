@@ -1,7 +1,6 @@
 import { setLocale, useQuery } from "@galoymoney/client"
 
-import { useAppState } from "store/index"
-import { useAuthContext } from "store/use-auth-context"
+import { useAppState, useAuthContext } from "store/index"
 
 // FIX: should come from the client
 type Language = "" | "en-US" | "es-SV"

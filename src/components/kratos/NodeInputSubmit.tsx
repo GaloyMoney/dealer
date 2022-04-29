@@ -1,6 +1,7 @@
 import { getNodeLabel } from "@ory/integrations/ui"
 import { ReactNode } from "react"
-import { NodeInputProps } from "./helpers"
+
+import { NodeInputProps } from "components/kratos/helpers"
 
 type ButtonProps = {
   helper?: ReactNode

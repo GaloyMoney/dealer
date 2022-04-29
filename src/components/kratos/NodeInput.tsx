@@ -1,9 +1,9 @@
-import { NodeInputButton } from "./NodeInputButton"
-import { NodeInputCheckbox } from "./NodeInputCheckbox"
-import { NodeInputDefault } from "./NodeInputDefault"
-import { NodeInputHidden } from "./NodeInputHidden"
-import { NodeInputSubmit } from "./NodeInputSubmit"
-import { NodeInputProps } from "./helpers"
+import { NodeInputButton } from "components/kratos/NodeInputButton"
+import { NodeInputCheckbox } from "components/kratos/NodeInputCheckbox"
+import { NodeInputDefault } from "components/kratos/NodeInputDefault"
+import { NodeInputHidden } from "components/kratos/NodeInputHidden"
+import { NodeInputSubmit } from "components/kratos/NodeInputSubmit"
+import { NodeInputProps } from "components/kratos/helpers"
 
 export const NodeInput = (props: NodeInputProps) => {
   const { attributes } = props

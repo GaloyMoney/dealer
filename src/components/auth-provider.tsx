@@ -1,14 +1,19 @@
 import { useMemo, useState, ReactNode, useEffect, useCallback } from "react"
 import { useErrorHandler } from "react-error-boundary"
+import axios from "axios"
 
 import { GaloyClient, GaloyProvider, postRequest } from "@galoymoney/client"
 
-import { createClient, useAppDispatcher, useRequest } from "store/index"
-import { AuthContext, AuthIdentity, AuthSession } from "store/use-auth-context"
-import axios from "axios"
-
-import config from "store/config"
-import storage from "store/local-storage"
+import {
+  AuthContext,
+  AuthIdentity,
+  AuthSession,
+  config,
+  createClient,
+  storage,
+  useAppDispatcher,
+  useRequest,
+} from "store/index"
 
 const galoySessionName = "galoy-session"
 

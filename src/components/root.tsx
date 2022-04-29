@@ -3,12 +3,12 @@ import { useEffect, useReducer } from "react"
 import { GaloyClient, setLocale } from "@galoymoney/client"
 
 import { ValidPath } from "server/routes"
-import { GwwContext, history } from "store/index"
-import mainReducer, { GwwStateType } from "store/reducer"
+
+import { GwwContext, GwwStateType, history, mainReducer } from "store/index"
+import { KratosFlowData } from "kratos/index"
 
 import { AuthProvider } from "components/auth-provider"
 import RootComponent from "components/root-component"
-import { KratosFlowData } from "kratos/index"
 
 type RootFCT = React.FC<{ GwwState: GwwStateType }>
 

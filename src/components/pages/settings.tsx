@@ -8,10 +8,8 @@ import { AxiosError } from "axios"
 
 import { translate } from "@galoymoney/client"
 
-import { useAuthContext } from "store/use-auth-context"
-import { history } from "store/history"
+import { config, history, useAuthContext } from "store/index"
 import { KratosSdk, handleFlowError, getNodesForFlow, KratosFlowData } from "kratos/index"
-import config from "store/config"
 
 import SettingsLayout from "components/settings/layout"
 import ColorThemeSetting from "components/settings/color-theme"

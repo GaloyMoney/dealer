@@ -1,6 +1,6 @@
-import config from "./config"
+import { config } from "store/config"
 
-const storage = {
+export const storage = {
   get(name: string) {
     if (config.isBrowser && window.localStorage) {
       return window.localStorage.getItem("galoy:" + name)
@@ -24,5 +24,3 @@ const storage = {
     }
   },
 }
-
-export default storage

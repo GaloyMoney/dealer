@@ -10,10 +10,7 @@ import {
 import { Icon, Spinner } from "@galoymoney/react"
 
 import useMainQuery from "hooks/use-main-query"
-import { history } from "store/index"
-import config from "store/config"
-import { useAuthContext } from "store/use-auth-context"
-import { NoPropsFCT } from "store/types"
+import { history, config, useAuthContext, NoPropsFCT } from "store/index"
 
 const ContactListForSending: NoPropsFCT = () => {
   const { isAuthenticated } = useAuthContext()

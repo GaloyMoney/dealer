@@ -5,7 +5,7 @@ import { ErrorBoundary } from "react-error-boundary"
 
 import Root from "components/root"
 import ErrorFallback from "components/error-fallback"
-import { setColorThemeFromStorage } from "store/theme"
+import { setColorThemeFromStorage } from "store/index"
 
 const container = document.getElementById("root")
 

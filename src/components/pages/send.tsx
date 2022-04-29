@@ -20,8 +20,7 @@ import {
   SatFormat,
 } from "@galoymoney/react"
 
-import config from "store/config"
-import { useAppDispatcher } from "store/index"
+import { config, useAppDispatcher } from "store/index"
 import useMainQuery from "hooks/use-main-query"
 import useMyUpdates from "hooks/use-my-updates"
 

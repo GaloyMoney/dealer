@@ -1,6 +1,6 @@
 import { Icon } from "@galoymoney/react"
 
-import { useAuthContext } from "store/use-auth-context"
+import { useAuthContext } from "store/index"
 
 import Link from "components/link"
 

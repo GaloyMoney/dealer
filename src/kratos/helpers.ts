@@ -1,4 +1,4 @@
-import { KratosFlowData } from "./server"
+import { KratosFlowData } from "kratos/server"
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const isQuerySet = (query: any): query is string =>

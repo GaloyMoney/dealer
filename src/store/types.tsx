@@ -2,7 +2,7 @@ import * as React from "react"
 
 import { Network, NormalizedCacheObject } from "@galoymoney/client"
 
-import { GwwStateType } from "./reducer"
+import { GwwStateType } from "store/reducer"
 
 // Glabol
 

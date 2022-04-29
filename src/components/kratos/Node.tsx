@@ -7,12 +7,12 @@ import {
 } from "@ory/integrations/ui"
 import { UiNode } from "@ory/kratos-client"
 
-import { NodeAnchor } from "./NodeAnchor"
-import { NodeImage } from "./NodeImage"
-import { NodeInput } from "./NodeInput"
-import { NodeScript } from "./NodeScript"
-import { NodeText } from "./NodeText"
-import { FormDispatcher, ValueSetter } from "./helpers"
+import { NodeAnchor } from "components/kratos/NodeAnchor"
+import { NodeImage } from "components/kratos/NodeImage"
+import { NodeInput } from "components/kratos/NodeInput"
+import { NodeScript } from "components/kratos/NodeScript"
+import { NodeText } from "components/kratos/NodeText"
+import { FormDispatcher, ValueSetter } from "components/kratos/helpers"
 
 interface Props {
   node: UiNode

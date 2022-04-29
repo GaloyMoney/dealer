@@ -13,11 +13,11 @@ import {
 
 import useMainQuery from "hooks/use-main-query"
 import useMyUpdates from "hooks/use-my-updates"
+import { NoPropsFCT } from "store/index"
 
 import InvoiceGenerator from "components/receive/invoice-generator"
 import Header from "components/header"
 import { ButtonLink } from "components/link"
-import { NoPropsFCT } from "store/types"
 
 type InvoiceInputState = {
   layer: "lightning" | "onchain"

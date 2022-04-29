@@ -1,4 +1,5 @@
-import config from "store/config"
+import { config } from "store/index"
+import { KratosFlowData } from "kratos/index"
 
 import Contacts from "components/pages/contacts"
 import Home from "components/pages/home"
@@ -10,8 +11,6 @@ import Register from "components/pages/register"
 import Send from "components/pages/send"
 import Settings from "components/pages/settings"
 import Transactions from "components/pages/transactions"
-
-import { KratosFlowData } from "kratos/index"
 
 // Note: The component property is skipped by the serialize function
 // It's only used on the front-end

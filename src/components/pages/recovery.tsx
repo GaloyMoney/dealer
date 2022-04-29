@@ -6,12 +6,12 @@ import {
 } from "@ory/kratos-client"
 import { AxiosError } from "axios"
 
-import { history } from "store/history"
-import { KratosSdk, handleFlowError, getNodesForFlow, KratosFlowData } from "kratos/index"
-import { Messages } from "components/kratos"
-
-import config from "store/config"
 import { translate } from "@galoymoney/client"
+
+import { config, history } from "store/index"
+import { KratosSdk, handleFlowError, getNodesForFlow, KratosFlowData } from "kratos/index"
+
+import { Messages } from "components/kratos"
 import Link from "components/link"
 
 type FCT = React.FC<{

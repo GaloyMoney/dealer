@@ -1,14 +1,12 @@
 import { Request } from "express"
+
 import { renderToStringWithData } from "@galoymoney/client"
 
 import { appRoutes, AuthRoutePath, authRoutes, RoutePath, ValidPath } from "server/routes"
+import { publicConfig, GwwStateType, createClient } from "store/index"
 import { KratosFlowData } from "kratos/index"
 
 import { SSRRoot } from "components/root"
-
-import { publicConfig } from "store/config"
-import { createClient } from "store/index"
-import { GwwStateType } from "store/reducer"
 
 type ServerRenderResponse = {
   GwwState: GwwStateType

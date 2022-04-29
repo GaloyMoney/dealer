@@ -9,11 +9,9 @@ import { AxiosError } from "axios"
 
 import { translate } from "@galoymoney/client"
 
+import { config, history, useAuthContext } from "store/index"
 import { KratosSdk, handleFlowError, getNodesForFlow, KratosFlowData } from "kratos/index"
-import { history } from "store/history"
-import { useAuthContext } from "store/use-auth-context"
 
-import config from "store/config"
 import Link from "components/link"
 import { Messages } from "components/kratos"
 

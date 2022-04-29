@@ -10,7 +10,7 @@ import {
 } from "@galoymoney/client"
 import { Icon, SatFormat } from "@galoymoney/react"
 
-import config from "store/config"
+import { config } from "store/index"
 
 export const BLOCKCHAIN_EXPLORER_URL = "https://mempool.space/tx/"
 

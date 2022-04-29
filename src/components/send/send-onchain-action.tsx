@@ -2,7 +2,7 @@ import { useMutation, useQuery } from "@galoymoney/client"
 import { MouseEvent } from "react"
 
 import SendActionDisplay from "components/send/send-action-display"
-import { SendActionProps } from "./send-action"
+import { SendActionProps } from "components/send/send-action"
 
 export type SendOnChainActionProps = SendActionProps & {
   address: string

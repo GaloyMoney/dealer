@@ -6,7 +6,7 @@ import morgan from "morgan"
 import serialize from "serialize-javascript"
 import rateLimit from "express-rate-limit"
 
-import config from "store/config"
+import { config } from "store/index"
 
 import apiRouter from "server/api-router"
 import ssrRouter from "server/ssr-router"

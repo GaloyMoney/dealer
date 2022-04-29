@@ -9,8 +9,8 @@ import {
 } from "@ory/kratos-client"
 import { Request } from "express"
 
-import { getUrlForFlow, isQuerySet, KratosFlow } from "./helpers"
-import { KratosSdk } from "./sdk"
+import { KratosSdk } from "kratos/sdk"
+import { getUrlForFlow, isQuerySet, KratosFlow } from "kratos/helpers"
 
 export type KratosFlowData = {
   registrationData?: SelfServiceRegistrationFlow

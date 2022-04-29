@@ -3,7 +3,7 @@ import express from "express"
 import { serverRenderer } from "renderers/server"
 import { checkRoute } from "server/routes"
 import { handleRegister, handleLogin, handleRecovery, handleLogout } from "kratos/index"
-import config from "store/config"
+import { config } from "store/index"
 
 const ssrRouter = express.Router({ caseSensitive: true })
 

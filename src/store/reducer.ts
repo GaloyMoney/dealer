@@ -1,6 +1,6 @@
-import { KratosFlowData } from "kratos/index"
 import { ValidPath } from "server/routes"
-import { AuthIdentity } from "./use-auth-context"
+import { AuthIdentity } from "store/auth-context"
+import { KratosFlowData } from "kratos/index"
 
 export type GwwStateType = {
   key: number
@@ -17,7 +17,7 @@ export type GwwActionType = {
   type: "update" | "navigate" | "kratos-login"
   path?: ValidPath
   authIdentity?: AuthIdentity
-  [payloadKey: string]: string | Record<string, string> | undefined
+  [payloadKey: string]: unknown
 }
 
 export type GwwContextType = {
@@ -25,7 +25,7 @@ export type GwwContextType = {
   dispatch: React.Dispatch<GwwActionType>
 }
 
-const mainReducer = (state: GwwStateType, action: GwwActionType): GwwStateType => {
+export const mainReducer = (state: GwwStateType, action: GwwActionType): GwwStateType => {
   const { type, ...newState } = action
 
   switch (type) {
@@ -39,5 +39,3 @@ const mainReducer = (state: GwwStateType, action: GwwActionType): GwwStateType =
       throw new Error("UNSUPPORTED_ACTION")
   }
 }
-
-export default mainReducer
