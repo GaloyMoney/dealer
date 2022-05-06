@@ -640,7 +640,7 @@ export async function exporter() {
           )
 
           // Funding Yields
-          const fundingYieldMetrics = await dealer.getFundingYieldMetrics()
+          const fundingYieldMetrics = await dealer.getAnnualFundingYieldMetrics()
           Metrics.set(metrics["fundingYield1d"], fundingYieldMetrics.fundingYield1d)
           Metrics.set(metrics["fundingYield1W"], fundingYieldMetrics.fundingYield1W)
           Metrics.set(metrics["fundingYield2W"], fundingYieldMetrics.fundingYield2W)

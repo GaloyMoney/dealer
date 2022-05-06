@@ -542,7 +542,7 @@ export class Dealer {
     return result.value
   }
 
-  public async getFundingYieldMetrics(): Promise<FundingYieldMetrics> {
+  public async getAnnualFundingYieldMetrics(): Promise<FundingYieldMetrics> {
     const ret: FundingYieldMetrics = {
       fundingYield1d: NaN,
       fundingYield1W: NaN,
@@ -572,7 +572,7 @@ export class Dealer {
       { tenor: "5Y", numberOfDays: 5 * 365 },
     ]
     for (const tenor of tenors) {
-      const result = await database.fundingRates.getFundingYield(
+      const result = await database.fundingRates.getAnnualFundingYield(
         ExchangeNames.Okex,
         tenor.numberOfDays,
       )
