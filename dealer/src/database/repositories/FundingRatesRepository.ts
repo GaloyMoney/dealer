@@ -69,6 +69,28 @@ export class FundingRatesRepository {
     }
   }
 
+  public async getAnnualFundingYield(
+    exchangeName: ExchangeNames,
+    numberOfDays: number,
+  ): Promise<Result<number>> {
+    try {
+      const annualFundingYield = await this.db.one(
+        sql.get_funding_yield,
+        { exchangeName, numberOfDays },
+        (a: { annualFundingYield: number }) => a && a.annualFundingYield,
+      )
+      this.logger.info(
+        { annualFundingYield },
+        "getAnnualFundingYield() returned: {result}.",
+      )
+
+      return { ok: true, value: annualFundingYield }
+    } catch (error) {
+      this.logger.error({ error }, "Error: getAnnualFundingYield() failed.")
+      return { ok: false, error: error }
+    }
+  }
+
   public async getLastFundingTime(): Promise<Result<number | null>> {
     try {
       const fundingTime = await this.db.oneOrNone(
