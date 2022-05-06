@@ -371,6 +371,7 @@ export class Dealer {
   private async depositOnExchangeCallback(
     onChainAddress: string,
     transferSizeInBtc: number,
+    retries = 2,
   ): Promise<Result<void>> {
     try {
       const memo = `deposit of ${transferSizeInBtc} btc to ${this.strategy.name}`
@@ -411,11 +412,16 @@ export class Dealer {
       } else {
         this.logger.debug({ payOnChainResult }, "WalletOnChainPay failed.")
 
-        // try again with 50% amount in case we can work around fund limit
-        return this.depositOnExchangeCallback(
-          onChainAddress,
-          roundBtc(transferSizeInBtc / 2),
-        )
+        if (retries > 0) {
+          // try again with 50% amount in case we can work around fund limit
+          return this.depositOnExchangeCallback(
+            onChainAddress,
+            roundBtc(transferSizeInBtc / 2),
+            retries - 1,
+          )
+        }
+
+        return { ok: false, error: payOnChainResult.error }
       }
     } catch (error) {
       return { ok: false, error: error }
