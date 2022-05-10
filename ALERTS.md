@@ -162,10 +162,10 @@
 
 ### Checks for on-support
 #### Diagnostic
-- API: https://www.okx.com/api/v5/system/status
-- API: https://www.okx.com/api/v5/system/status?state=ongoing
-- WEB: https://www.okx.com/status
-- Honeycomb: https://ui.honeycomb.io/
+- [OKX System Status](https://www.okx.com/api/v5/system/status)
+- [OKX System Status Ongoing?](https://www.okx.com/api/v5/system/status?state=ongoing)
+- [OKX Real-time System Maintenance Info](https://www.okx.com/status)
+- [Honeycomb](https://ui.honeycomb.io/)
     - "service.name" = "galoy-\<env/cluster\>-dealer"
     - "code.function" = "createMarketOrder"
     - "error" = "true" ?
@@ -199,8 +199,8 @@
 ### Checks for on-support
 #### Diagnostic
 
-- API: https://www.okx.com/api/v5/system/status
-- API: https://www.okx.com/api/v5/system/status?state=ongoing
-- WEB: https://www.okx.com/status
+- [OKX System Status](https://www.okx.com/api/v5/system/status)
+- [OKX System Status Ongoing?](https://www.okx.com/api/v5/system/status?state=ongoing)
+- [OKX Real-time System Maintenance Info](https://www.okx.com/status)
 
 
