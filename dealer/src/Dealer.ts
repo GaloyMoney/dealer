@@ -601,7 +601,7 @@ export class Dealer {
     if (result.ok && result.value) {
       return 1
     }
-    return 0
+    return -1
   }
 
   private async fetchTransactionHistory(
