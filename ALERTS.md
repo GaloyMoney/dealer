@@ -143,7 +143,7 @@
 
 #### Diagnostic
 
-1. Proceed as [above](./GRAFANA.md#Dealer-is-unable-to-get-funds-on-off-the-exchange-alert) without transactions data:
+1. Proceed as [above](./ALERTS.md#Dealer-is-unable-to-get-funds-on-off-the-exchange-alert) without transactions data:
     - GraphQL Variables:
         ```
             {
@@ -180,7 +180,7 @@
 ### Checks for on-support
 #### Diagnostic
 
-1. Proceed as [above](./GRAFANA.md#Dealer-is-unable-to-get-funds-on-off-the-exchange-alert) without transactions data:
+1. Proceed as [above](./ALERTS.md#Dealer-is-unable-to-get-funds-on-off-the-exchange-alert) without transactions data:
 
 ## Dealer is unable to trade warning
 ### Conditions
@@ -189,7 +189,7 @@
 ### Checks for on-support
 #### Diagnostic
 
-1. Proceed as [above](./GRAFANA.md#Dealer-is-unable-to-get-funds-on-off-the-exchange-alert) without transactions data:
+1. Proceed as [above](./ALERTS.md#Dealer-is-unable-to-get-funds-on-off-the-exchange-alert) without transactions data:
 
 ## Dealer is unable to determine exchange is alive alert
 ### Conditions
