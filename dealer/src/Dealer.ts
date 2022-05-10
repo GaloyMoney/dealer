@@ -596,6 +596,14 @@ export class Dealer {
     return result.value
   }
 
+  public async getExchangeStatus(): Promise<number> {
+    const result = await this.strategy.fetchExchangeStatus()
+    if (result.ok && result.value) {
+      return 1
+    }
+    return -1
+  }
+
   private async fetchTransactionHistory(
     args: GetTransactionHistoryParameters,
   ): Promise<Transaction[]> {

@@ -610,6 +610,43 @@ export abstract class ExchangeBase {
     return ret as Result<FetchFundingAccountBalanceResult>
   }
 
+  public async fetchExchangeStatus(): Promise<Result<boolean>> {
+    const ret = await asyncRunInSpan(
+      "app.exchangeBase.fetchExchangeStatus",
+      {
+        [SemanticAttributes.CODE_FUNCTION]: "fetchExchangeStatus",
+        [SemanticAttributes.CODE_NAMESPACE]: "app.exchangeBase",
+      },
+      async () => {
+        try {
+          const response = await this.exchange.fetchStatus({})
+          this.logger.debug({ response }, "exchange.fetchStatus() returned: {response}")
+
+          const exchangeIsAlive = response?.status === "ok"
+          const lastUpdated = response?.updated
+          const extraInfo = response?.info
+
+          addAttributesToCurrentSpan({
+            [`${SemanticAttributes.CODE_FUNCTION}.results.result`]: JSON.stringify({
+              exchangeIsAlive,
+              lastUpdated,
+              extraInfo,
+            }),
+          })
+
+          return {
+            ok: true,
+            value: exchangeIsAlive,
+          }
+        } catch (error) {
+          recordExceptionInCurrentSpan({ error, level: ErrorLevel.Warn })
+          return { ok: false, error: error }
+        }
+      },
+    )
+    return ret as Result<boolean>
+  }
+
   public async fetchPosition(instrumentId: string): Promise<Result<FetchPositionResult>> {
     const ret = await asyncRunInSpan(
       "app.exchangeBase.fetchPosition",
