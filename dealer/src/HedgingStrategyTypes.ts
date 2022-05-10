@@ -52,6 +52,7 @@ export interface HedgingStrategy {
   getNextFundingRateInBtc(): Promise<Result<number>>
   getFundingAccountBalance(): Promise<Result<FetchFundingAccountBalanceResult>>
   getAccountAndPositionRisk(): Promise<Result<GetAccountAndPositionRiskResult>>
+  fetchExchangeStatus(): Promise<Result<boolean>>
 
   fetchTransactionHistory(
     args: GetTransactionHistoryParameters,

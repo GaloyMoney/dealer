@@ -442,6 +442,13 @@ const metrics: { [key: string]: IMetricData } = {
       help: "5Y funding yield",
     }),
   },
+  exchangeStatus: {
+    value: NaN,
+    gauge: new client.Gauge({
+      name: `${prefix}_exchangeStatus`,
+      help: "exchange alive status",
+    }),
+  },
 }
 
 export async function exporter() {
@@ -653,6 +660,9 @@ export async function exporter() {
           Metrics.set(metrics["fundingYield2Y"], fundingYieldMetrics.fundingYield2Y)
           Metrics.set(metrics["fundingYield3Y"], fundingYieldMetrics.fundingYield3Y)
           Metrics.set(metrics["fundingYield5Y"], fundingYieldMetrics.fundingYield5Y)
+
+          // Is exchange up?
+          Metrics.set(metrics["exchangeStatus"], await dealer.getExchangeStatus())
 
           // Realized Profit And Loss
           const strategyRPnlInSats =
