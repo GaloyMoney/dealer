@@ -3,7 +3,7 @@
 ## 🚩Dealer is unable to get funds on / off the exchange alert
 
 ### Conditions
-    in-flight transfer >0, for 3h (1h expected on average)
+    in-flight fund (BTC) transfer >0, for >3h (6x 10min = 1h expected on-chain on average)
 
 ### Checks for on-support
 #### References
@@ -138,7 +138,7 @@
 			
 ## 🚩Dealer is unable to get liability from Galoy Wallet alert
 ### Conditions
-    liability isNaN
+    liability is not a number (NaN/null/undefined)
 
 ### Checks for on-support
 
@@ -158,7 +158,7 @@
 
 ## 🚩Dealer is unable to close position warning ⚠
 ### Conditions
-    liability == 0 && exposure >0, for 3h (1h expected on average)
+    liability == 0 && exposure >0, for >3h (6x 10min = 1h expected on-chain on average)
 
 ### Checks for on-support
 #### Diagnostic
@@ -176,7 +176,7 @@
 
 ## 🚩Dealer is unable to open position warning ⚠
 ### Conditions
-    liability >0 && exposure == 0, for 3h (1h expected on average)
+    liability >0 && exposure == 0, for >3h (6x 10min = 1h expected on-chain on average)
 
 ### Checks for on-support
 #### Diagnostic
@@ -185,7 +185,7 @@
 
 ## 🚩Dealer is unable to trade warning ⚠
 ### Conditions
-    liability != exposure, for 3h (1h expected on average)
+    liability != exposure, for >3h (6x 10min = 1h expected on-chain on average)
 
 ### Checks for on-support
 #### Diagnostic
