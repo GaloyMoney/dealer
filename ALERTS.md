@@ -7,11 +7,12 @@
 
 ### Checks for on-support
 #### References
-- https://galoymoney.github.io/galoy/
-- https://galoymoney.github.io/galoy/#query-me
-- https://galoymoney.github.io/galoy/#mutation-userLogin
+- [Galoy Postman Collection](https://github.com/GaloyMoney/galoy/tree/main/src/graphql/docs)
+- [Galoy GraphQL API Reference](https://galoymoney.github.io/galoy/)
+- [Galoy GraphQL User Login Endpooint](https://galoymoney.github.io/galoy/#mutation-userLogin)
+- [Galoy GraphQL Main Endpooint](https://galoymoney.github.io/galoy/#query-me)
 		
-#### API URL
+#### Galoy GraphQL API URLs
 - https://localhost:4002/graphql
 - https://api.staging.galoy.io/graphql
 - https://api.freecorn.galoy.io/graphql
@@ -128,8 +129,8 @@
             }
         ```
 1. Look for completion of deposits / withdrawals:
-    - "memo": "deposit of <some amount> btc to OkexPerpetualSwapStrategy",
-    - "memo": "withdrawal of <some amount> btc from OkexPerpetualSwapStrategy",
+    - "memo": "deposit of \<some amount\> btc to OkexPerpetualSwapStrategy",
+    - "memo": "withdrawal of \<some amount\> btc from OkexPerpetualSwapStrategy",
     - "status" === "PENDING"?
     - "settlementVia.__typename" === "SettlementViaOnChain"
     - "transactionHash" on btc explorer
@@ -165,7 +166,7 @@
 - API: https://www.okx.com/api/v5/system/status?state=ongoing
 - WEB: https://www.okx.com/status
 - Honeycomb: https://ui.honeycomb.io/
-    - "service.name" = "galoy-<env/cluster>-dealer"
+    - "service.name" = "galoy-\<env/cluster\>-dealer"
     - "code.function" = "createMarketOrder"
     - "error" = "true" ?
     - "error.level" ?
