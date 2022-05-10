@@ -3282,6 +3282,8 @@
           "custom": {
             "axisLabel": "",
             "axisPlacement": "auto",
+            "axisSoftMax": 1,
+            "axisSoftMin": -1,
             "barAlignment": 0,
             "drawStyle": "bars",
             "fillOpacity": 100,
