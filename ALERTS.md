@@ -1,6 +1,6 @@
 # Dealer Alerts
 
-## Dealer is unable to get funds on / off the exchange alert
+## 🚩Dealer is unable to get funds on / off the exchange alert
 
 ### Conditions
     in-flight transfer >0, for 3h (1h expected on average)
@@ -135,7 +135,7 @@
     - "transactionHash" on btc explorer
     - etc.
 			
-## Dealer is unable to get liability from Galoy Wallet alert
+## 🚩Dealer is unable to get liability from Galoy Wallet alert
 ### Conditions
     liability isNaN
 
@@ -143,7 +143,7 @@
 
 #### Diagnostic
 
-1. Proceed as [above](./ALERTS.md#Dealer-is-unable-to-get-funds-on-off-the-exchange-alert) without transactions data:
+1. Proceed as [above](./ALERTS.md#Dealer-is-unable-to-get-funds-on--off-the-exchange-alert) without transactions data:
     - GraphQL Variables:
         ```
             {
@@ -155,7 +155,7 @@
     - "balance" negative number ?
     - "walletCurrency": "USD" ?
 
-## Dealer is unable to close position warning
+## 🚩Dealer is unable to close position warning ⚠
 ### Conditions
     liability == 0 && exposure >0, for 3h (1h expected on average)
 
@@ -173,25 +173,25 @@
     - "code.function.params.args" ?
     - "span.event" ?
 
-## Dealer is unable to open position warning
+## 🚩Dealer is unable to open position warning ⚠
 ### Conditions
     liability >0 && exposure == 0, for 3h (1h expected on average)
 
 ### Checks for on-support
 #### Diagnostic
 
-1. Proceed as [above](./ALERTS.md#Dealer-is-unable-to-get-funds-on-off-the-exchange-alert) without transactions data:
+1. Proceed as [above](./ALERTS.md#Dealer-is-unable-to-get-funds-on--off-the-exchange-alert) without transactions data:
 
-## Dealer is unable to trade warning
+## 🚩Dealer is unable to trade warning ⚠
 ### Conditions
     liability != exposure, for 3h (1h expected on average)
 
 ### Checks for on-support
 #### Diagnostic
 
-1. Proceed as [above](./ALERTS.md#Dealer-is-unable-to-get-funds-on-off-the-exchange-alert) without transactions data:
+1. Proceed as [above](./ALERTS.md#Dealer-is-unable-to-get-funds-on--off-the-exchange-alert) without transactions data:
 
-## Dealer is unable to determine exchange is alive alert
+## 🚩Dealer is unable to determine exchange is alive alert
 ### Conditions
     exchange.fetchStatus().status != "ok" || call fail
 
