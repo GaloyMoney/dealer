@@ -158,6 +158,10 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
     return await this.exchange.fetchFundingAccountBalance()
   }
 
+  public async fetchExchangeStatus(): Promise<Result<boolean>> {
+    return await this.exchange.fetchExchangeStatus()
+  }
+
   public async fetchTransactionHistory(
     args: GetTransactionHistoryParameters,
   ): Promise<Result<Transaction[]>> {
