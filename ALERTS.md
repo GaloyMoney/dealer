@@ -270,7 +270,7 @@
     exchange.fetchStatus().status != "ok" || call fail
 
 ### Description
-    - The exchange status is
+    - The exchange status reporting endpoint is either unreachable or reports explicitly down status
     - So the goal of the diagnostic is to figure out if the exchange is down, in a planned maintenance window or else
         - Is the exchange down ?
         - Is the exchange in an on going maintenance ?
