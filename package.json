@@ -2,7 +2,6 @@
   "name": "web-wallet",
   "version": "0.0.1",
   "private": true,
-  "main": "src/index.tsx",
   "scripts": {
     "build:all": "yarn install && yarn build:node && yarn build:files && yarn build:bundler",
     "build:bundler": "webpack --mode=production --env=prod",
@@ -18,7 +17,7 @@
     "prettier:fix": "prettier --write .",
     "prod:start": "node build/server/server.js",
     "test:verify": "jest --coverage",
-    "test": ". ./.envrc && jest",
+    "test": "jest",
     "tsc:check": "tsc --pretty --noEmit --skipLibCheck"
   },
   "dependencies": {
@@ -50,6 +49,7 @@
     "@types/react": "^18.0.5",
     "@types/react-dom": "^18.0.1",
     "@types/serialize-javascript": "^5.0.2",
+    "@types/supertest": "^2.0.12",
     "autoprefixer": "^10.4.2",
     "axios": "^0.26.1",
     "body-parser": "^1.20.0",
@@ -85,6 +85,7 @@
     "stream-browserify": "^3.0.0",
     "style-loader": "^3.3.1",
     "subscriptions-transport-ws": "^0.11.0",
+    "supertest": "^6.2.3",
     "ts-loader": "^9.2.8",
     "typescript": "^4.6.3",
     "url": "^0.11.0",
