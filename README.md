@@ -28,7 +28,7 @@ Ex: forward contracts, futures contracts and other derivatives.
 
 One of the simplest strategy to hedge a certain amount of bitcoin in USD is to promise to sell at a future date a specific quantity of USD for a specific amount of bitcoins all determined today, i.e. short (be the seller) an inverse bitcoin futures contract.
 
-Ex. A user received 1 bitcoin. The price of bitcoin is 10,000.00 USD. 
+- Ex. A user received 1 bitcoin. The price of bitcoin is 10,000.00 USD. 
 The user elects to keep the USD amount stable, for 1 month, regardless of the price of bitcoin in USD.
 The user immediately enters an agreement with a 3rd party to pay 1 bitcoin in 1 month in exchange for 10,000.00 USD.
 (The price of 1 bitcoin on the agreement would likely be different than the current price of bitcoin, but it would be related so keeping numbers simple for now.)
@@ -51,9 +51,9 @@ The buyer of a futures contract is taking on the obligation to buy and receive t
 
 Further reading: [Futures Contract](https://www.investopedia.com/terms/f/futurescontract.asp)
 
-Ex. 1: A 1 bitcoin contract to be settled in USD at expiry.
-Ex. 1.1: Buying 1 contract of the above, when it is worth 10,000 USD, would yield 1,000.00 USD profit if the contract is worth 11,000.00 USD at expiry.
-Ex. 1.2: Buying 1 contract of the above, when it is worth 10,000 USD, would yield 1,000.00 USD loss if the contract is worth 9,000.00 USD at expiry.
+- Ex. 1: A 1 bitcoin contract to be settled in USD at expiry.
+- Ex. 1.1: Buying 1 contract of the above, when it is worth 10,000 USD, would yield 1,000.00 USD profit if the contract is worth 11,000.00 USD at expiry.
+- Ex. 1.2: Buying 1 contract of the above, when it is worth 10,000 USD, would yield 1,000.00 USD loss if the contract is worth 9,000.00 USD at expiry.
 
 ###  What Is an Inverse Futures Contract?
 
@@ -62,11 +62,11 @@ In opposition to the standard futures definition above: a legal agreement to buy
 
 Further reading: [Inverse Bitcoin Futures Contract](https://futuresbit.com/what-is-inverse-bitcoin-futures-contract/)
 
-Ex. 1: A 10,000.00 USD contract to be settled in bitcoin at expiry.
-Ex. 1.1: Buying 1 contract of the above, when it is worth 1 bitcoin, would yield 0.1 bitcoin profit if the contract is worth 1.1 bitcoin at expiry.
-- Note that in this case the price of one bitcoin in USD has declined to 9,090.91 USD, resulting in more bitcoins for the same original 10,000.00 USD value of the contract.
-Ex. 1.2: Buying 1 contract of the above, when it is worth 1 bitcoin, would yield 0.1 bitcoin loss if the contract is worth 0.9 bitcoin at expiry.
-- Note that in this case the price of one bitcoin in USD has increased to 11,111.11 USD, resulting in less bitcoins for the same original 10,000.00 USD value of the contract.
+- Ex. 1: A 10,000.00 USD contract to be settled in bitcoin at expiry.
+- Ex. 1.1: Buying 1 contract of the above, when it is worth 1 bitcoin, would yield 0.1 bitcoin profit if the contract is worth 1.1 bitcoin at expiry.
+    - Note that in this case the price of one bitcoin in USD has declined to 9,090.91 USD, resulting in more bitcoins for the same original 10,000.00 USD value of the contract.
+- Ex. 1.2: Buying 1 contract of the above, when it is worth 1 bitcoin, would yield 0.1 bitcoin loss if the contract is worth 0.9 bitcoin at expiry.
+    - Note that in this case the price of one bitcoin in USD has increased to 11,111.11 USD, resulting in less bitcoins for the same original 10,000.00 USD value of the contract.
 
 
 ###  What Is a Perpetual Futures Contract?
