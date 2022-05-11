@@ -181,14 +181,14 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "galoy_dealer_spotUPnlInUsd",
+          "expr": "avg by (container)(galoy_dealer_spotUPnlInUsd)",
           "interval": "",
           "legendFormat": "spot uPnl in usd",
           "refId": "A"
         },
         {
           "exemplar": true,
-          "expr": "galoy_dealer_swapUPnlInUsd",
+          "expr": "avg by (container)(galoy_dealer_swapUPnlInUsd)",
           "hide": false,
           "interval": "",
           "legendFormat": "swap uPnl in usd",
@@ -196,7 +196,7 @@
         },
         {
           "exemplar": true,
-          "expr": "galoy_dealer_strategyUPnlInUsd",
+          "expr": "avg by (container)(galoy_dealer_strategyUPnlInUsd)",
           "hide": false,
           "interval": "",
           "legendFormat": "strategy uPnl in usd",
@@ -379,7 +379,7 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "galoy_dealer_tradingFeesTotalInSats",
+          "expr": "avg by (container)(galoy_dealer_tradingFeesTotalInSats)",
           "hide": false,
           "interval": "",
           "legendFormat": "trading fees in sats",
@@ -387,7 +387,7 @@
         },
         {
           "exemplar": true,
-          "expr": "galoy_dealer_fundingFeesTotalInSats",
+          "expr": "avg by (container)(galoy_dealer_fundingFeesTotalInSats)",
           "hide": false,
           "interval": "",
           "legendFormat": "funding fees in sats",
@@ -395,14 +395,14 @@
         },
         {
           "exemplar": true,
-          "expr": "galoy_dealer_strategyRPnlInSats",
+          "expr": "avg by (container)(galoy_dealer_strategyRPnlInSats)",
           "interval": "",
           "legendFormat": "strategy realized pnl in sats",
           "refId": "C"
         },
         {
           "exemplar": true,
-          "expr": "galoy_dealer_strategyRPnlInSats / 100000000 * galoy_dealer_btcSpotPriceInUsd",
+          "expr": "avg by (container)(galoy_dealer_strategyRPnlInSats / 100000000 * galoy_dealer_btcSpotPriceInUsd)",
           "hide": false,
           "interval": "",
           "legendFormat": "strategy realized pnl in usd",
@@ -583,14 +583,14 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "galoy_dealer_fundingFeesExpenseInSats",
+          "expr": "avg by (container)(galoy_dealer_fundingFeesExpenseInSats)",
           "interval": "",
           "legendFormat": "funding fees expense",
           "refId": "A"
         },
         {
           "exemplar": true,
-          "expr": "galoy_dealer_fundingFeesIncomeInSats",
+          "expr": "avg by (container)(galoy_dealer_fundingFeesIncomeInSats)",
           "hide": false,
           "interval": "",
           "legendFormat": "funding fees income",
@@ -598,7 +598,7 @@
         },
         {
           "exemplar": true,
-          "expr": "galoy_dealer_fundingFeesExpenseCount",
+          "expr": "avg by (container)(galoy_dealer_fundingFeesExpenseCount)",
           "hide": false,
           "interval": "",
           "legendFormat": "#funding fees expense",
@@ -606,7 +606,7 @@
         },
         {
           "exemplar": true,
-          "expr": "galoy_dealer_fundingFeesIncomeCount",
+          "expr": "avg by (container)(galoy_dealer_fundingFeesIncomeCount)",
           "hide": false,
           "interval": "",
           "legendFormat": "#funding fees income",
@@ -769,14 +769,14 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "galoy_dealer_tradingFeesBuyInSats",
+          "expr": "avg by (container)(galoy_dealer_tradingFeesBuyInSats)",
           "interval": "",
           "legendFormat": "trading fees buy",
           "refId": "A"
         },
         {
           "exemplar": true,
-          "expr": "galoy_dealer_tradingFeesSellInSats",
+          "expr": "avg by (container)(galoy_dealer_tradingFeesSellInSats)",
           "hide": false,
           "interval": "",
           "legendFormat": "trading fees sell",
@@ -784,7 +784,7 @@
         },
         {
           "exemplar": true,
-          "expr": "galoy_dealer_tradingFeesBuyCount",
+          "expr": "avg by (container)(galoy_dealer_tradingFeesBuyCount)",
           "hide": false,
           "interval": "",
           "legendFormat": "#trading fees buy",
@@ -792,7 +792,7 @@
         },
         {
           "exemplar": true,
-          "expr": "galoy_dealer_tradingFeesSellCount",
+          "expr": "avg by (container)(galoy_dealer_tradingFeesSellCount)",
           "hide": false,
           "interval": "",
           "legendFormat": "#trading fees sell",
@@ -919,14 +919,14 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "abs(galoy_dealer_liabilityInUsd) ",
+          "expr": "avg by (container)(abs(galoy_dealer_liabilityInUsd) )",
           "interval": "",
           "legendFormat": "liability in usd",
           "refId": "A"
         },
         {
           "exemplar": true,
-          "expr": "galoy_dealer_liabilityInBtc",
+          "expr": "avg by (container)(galoy_dealer_liabilityInBtc)",
           "hide": false,
           "interval": "",
           "legendFormat": "liability in btc",
@@ -1024,7 +1024,7 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "galoy_dealer_positionQuantity",
+          "expr": "avg by (container)(galoy_dealer_positionQuantity)",
           "interval": "",
           "legendFormat": "position",
           "refId": "A"
@@ -1121,7 +1121,7 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "galoy_dealer_averageOpenPrice",
+          "expr": "avg by (container)(galoy_dealer_averageOpenPrice)",
           "interval": "",
           "legendFormat": "avg open px",
           "refId": "A"
@@ -1248,14 +1248,14 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "galoy_dealer_btcFreeBalance",
+          "expr": "avg by (container)(galoy_dealer_btcFreeBalance)",
           "interval": "",
           "legendFormat": "free",
           "refId": "A"
         },
         {
           "exemplar": true,
-          "expr": "galoy_dealer_btcUsedBalance",
+          "expr": "avg by (container)(galoy_dealer_btcUsedBalance)",
           "hide": false,
           "interval": "",
           "legendFormat": "used",
@@ -1263,7 +1263,7 @@
         },
         {
           "exemplar": true,
-          "expr": "galoy_dealer_btcTotalBalance",
+          "expr": "avg by (container)(galoy_dealer_btcTotalBalance)",
           "hide": false,
           "interval": "",
           "legendFormat": "total",
@@ -1271,7 +1271,7 @@
         },
         {
           "exemplar": true,
-          "expr": "galoy_dealer_btcTotalBalance + galoy_dealer_fundingAccountBtcTotalBalance",
+          "expr": "avg by (container)(galoy_dealer_btcTotalBalance + galoy_dealer_fundingAccountBtcTotalBalance)",
           "hide": false,
           "interval": "",
           "legendFormat": "trading & funding total",
@@ -1279,7 +1279,7 @@
         },
         {
           "exemplar": true,
-          "expr": "galoy_dealer_fundingAccountBtcTotalBalance",
+          "expr": "avg by (container)(galoy_dealer_fundingAccountBtcTotalBalance)",
           "hide": false,
           "interval": "",
           "legendFormat": "funding total",
@@ -1407,7 +1407,7 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "galoy_dealer_btcTotalBalance / galoy_dealer_btcUsedBalance",
+          "expr": "avg by (container)(galoy_dealer_btcTotalBalance / galoy_dealer_btcUsedBalance)",
           "interval": "",
           "legendFormat": "total / used ratio",
           "refId": "A"
@@ -1519,7 +1519,7 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "galoy_dealer_exposureInUsd / (-galoy_dealer_liabilityInUsd)",
+          "expr": "avg by (container)(galoy_dealer_exposureInUsd / (-galoy_dealer_liabilityInUsd))",
           "interval": "",
           "legendFormat": "exposure / liability",
           "refId": "A"
@@ -1646,7 +1646,7 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "galoy_dealer_exposureInUsd / galoy_dealer_collateralInUsd",
+          "expr": "avg by (container)(galoy_dealer_exposureInUsd / galoy_dealer_collateralInUsd)",
           "interval": "",
           "legendFormat": "exposure / collateral",
           "refId": "A"
@@ -1788,14 +1788,14 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "galoy_dealer_liquidationPrice",
+          "expr": "avg by (container)(galoy_dealer_liquidationPrice)",
           "interval": "",
           "legendFormat": "liq px",
           "refId": "A"
         },
         {
           "exemplar": true,
-          "expr": "galoy_dealer_lastBtcPriceInUsd",
+          "expr": "avg by (container)(galoy_dealer_lastBtcPriceInUsd)",
           "hide": false,
           "interval": "",
           "legendFormat": "last px",
@@ -1924,14 +1924,14 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "galoy_dealer_unrealizedPnLRatio * 100",
+          "expr": "avg by (container)(galoy_dealer_unrealizedPnLRatio * 100)",
           "interval": "",
           "legendFormat": "upl ratio",
           "refId": "A"
         },
         {
           "exemplar": true,
-          "expr": "galoy_dealer_unrealizedPnL",
+          "expr": "avg by (container)(galoy_dealer_unrealizedPnL)",
           "hide": false,
           "interval": "",
           "legendFormat": "upl",
@@ -2043,7 +2043,7 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "galoy_dealer_autoDeleveragingIndicator",
+          "expr": "avg by (container)(galoy_dealer_autoDeleveragingIndicator)",
           "interval": "",
           "legendFormat": "adl",
           "refId": "A"
@@ -2140,7 +2140,7 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "galoy_dealer_exposureInUsd",
+          "expr": "avg by (container)(galoy_dealer_exposureInUsd)",
           "interval": "",
           "legendFormat": "exposure usd",
           "refId": "A"
@@ -2239,14 +2239,14 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "galoy_dealer_leverage",
+          "expr": "avg by (container)(galoy_dealer_leverage)",
           "interval": "",
           "legendFormat": "position lever",
           "refId": "A"
         },
         {
           "exemplar": true,
-          "expr": "galoy_dealer_exchangeLeverage",
+          "expr": "avg by (container)(galoy_dealer_exchangeLeverage)",
           "hide": false,
           "interval": "",
           "legendFormat": "exchange lever",
@@ -2344,7 +2344,7 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "galoy_dealer_totalAccountValueInUsd",
+          "expr": "avg by (container)(galoy_dealer_totalAccountValueInUsd)",
           "interval": "",
           "legendFormat": "total equity",
           "refId": "A"
@@ -2471,14 +2471,14 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "galoy_dealer_btcSpotPriceInUsd",
+          "expr": "avg by (container)(galoy_dealer_btcSpotPriceInUsd)",
           "interval": "",
           "legendFormat": "Spot",
           "refId": "A"
         },
         {
           "exemplar": true,
-          "expr": "galoy_dealer_btcMarkPriceInUsd",
+          "expr": "avg by (container)(galoy_dealer_btcMarkPriceInUsd)",
           "hide": false,
           "interval": "",
           "legendFormat": "Mark",
@@ -2486,7 +2486,7 @@
         },
         {
           "exemplar": true,
-          "expr": "galoy_dealer_btcDerivativePriceInUsd",
+          "expr": "avg by (container)(galoy_dealer_btcDerivativePriceInUsd)",
           "hide": false,
           "interval": "",
           "legendFormat": "Swap",
@@ -2584,7 +2584,7 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "galoy_dealer_btcDerivativePriceInUsd - galoy_dealer_btcSpotPriceInUsd",
+          "expr": "avg by (container)(galoy_dealer_btcDerivativePriceInUsd - galoy_dealer_btcSpotPriceInUsd)",
           "interval": "",
           "legendFormat": "basis",
           "refId": "A"
@@ -2681,7 +2681,7 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "galoy_dealer_maintenanceMarginRequirement",
+          "expr": "avg by (container)(galoy_dealer_maintenanceMarginRequirement)",
           "interval": "",
           "legendFormat": "mmr",
           "refId": "A"
@@ -2778,7 +2778,7 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "galoy_dealer_collateralInUsd",
+          "expr": "avg by (container)(galoy_dealer_collateralInUsd)",
           "interval": "",
           "legendFormat": "collateral usd",
           "refId": "A"
@@ -2891,7 +2891,7 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "galoy_dealer_notionalLever",
+          "expr": "avg by (container)(galoy_dealer_notionalLever)",
           "interval": "",
           "legendFormat": "notiona lever",
           "refId": "A"
@@ -2988,7 +2988,7 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "galoy_dealer_nextFundingRate",
+          "expr": "avg by (container)(galoy_dealer_nextFundingRate)",
           "interval": "",
           "legendFormat": "next funding rate",
           "refId": "A"
@@ -3085,7 +3085,7 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "galoy_dealer_marginRatio",
+          "expr": "avg by (container)(galoy_dealer_marginRatio)",
           "interval": "",
           "legendFormat": "margin ratio",
           "refId": "A"
@@ -3174,14 +3174,14 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "galoy_dealer_fundingYield1d",
+          "expr": "avg by (container)(galoy_dealer_fundingYield1d)",
           "interval": "",
           "legendFormat": "1d",
           "refId": "A"
         },
         {
           "exemplar": true,
-          "expr": "galoy_dealer_fundingYield1W",
+          "expr": "avg by (container)(galoy_dealer_fundingYield1W)",
           "hide": false,
           "interval": "",
           "legendFormat": "1W",
@@ -3189,7 +3189,7 @@
         },
         {
           "exemplar": true,
-          "expr": "galoy_dealer_fundingYield2W",
+          "expr": "avg by (container)(galoy_dealer_fundingYield2W)",
           "hide": false,
           "interval": "",
           "legendFormat": "2W",
@@ -3197,7 +3197,7 @@
         },
         {
           "exemplar": true,
-          "expr": "galoy_dealer_fundingYield3W",
+          "expr": "avg by (container)(galoy_dealer_fundingYield3W)",
           "hide": false,
           "interval": "",
           "legendFormat": "3W",
@@ -3205,7 +3205,7 @@
         },
         {
           "exemplar": true,
-          "expr": "galoy_dealer_fundingYield1M",
+          "expr": "avg by (container)(galoy_dealer_fundingYield1M)",
           "hide": false,
           "interval": "",
           "legendFormat": "1M",
@@ -3213,7 +3213,7 @@
         },
         {
           "exemplar": true,
-          "expr": "galoy_dealer_fundingYield2M",
+          "expr": "avg by (container)(galoy_dealer_fundingYield2M)",
           "hide": false,
           "interval": "",
           "legendFormat": "2M",
@@ -3221,7 +3221,7 @@
         },
         {
           "exemplar": true,
-          "expr": "galoy_dealer_fundingYield3M",
+          "expr": "avg by (container)(galoy_dealer_fundingYield3M)",
           "hide": false,
           "interval": "",
           "legendFormat": "3M",
@@ -3229,7 +3229,7 @@
         },
         {
           "exemplar": true,
-          "expr": "galoy_dealer_fundingYield6M",
+          "expr": "avg by (container)(galoy_dealer_fundingYield6M)",
           "hide": false,
           "interval": "",
           "legendFormat": "6M",
@@ -3237,7 +3237,7 @@
         },
         {
           "exemplar": true,
-          "expr": "galoy_dealer_fundingYield1Y",
+          "expr": "avg by (container)(galoy_dealer_fundingYield1Y)",
           "hide": false,
           "interval": "",
           "legendFormat": "1Y",
@@ -3245,7 +3245,7 @@
         },
         {
           "exemplar": true,
-          "expr": "galoy_dealer_fundingYield2Y",
+          "expr": "avg by (container)(galoy_dealer_fundingYield2Y)",
           "hide": false,
           "interval": "",
           "legendFormat": "2Y",
@@ -3253,7 +3253,7 @@
         },
         {
           "exemplar": true,
-          "expr": "galoy_dealer_fundingYield3Y",
+          "expr": "avg by (container)(galoy_dealer_fundingYield3Y)",
           "hide": false,
           "interval": "",
           "legendFormat": "3Y",
@@ -3261,7 +3261,7 @@
         },
         {
           "exemplar": true,
-          "expr": "galoy_dealer_fundingYield5Y",
+          "expr": "avg by (container)(galoy_dealer_fundingYield5Y)",
           "hide": false,
           "interval": "",
           "legendFormat": "5Y",
@@ -3282,6 +3282,8 @@
           "custom": {
             "axisLabel": "",
             "axisPlacement": "auto",
+            "axisSoftMax": 1,
+            "axisSoftMin": -1,
             "barAlignment": 0,
             "drawStyle": "bars",
             "fillOpacity": 100,
@@ -3393,7 +3395,7 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "galoy_dealer_exchangeStatus",
+          "expr": "avg by (container)(galoy_dealer_exchangeStatus)",
           "interval": "",
           "legendFormat": "isExchangeAlive",
           "refId": "A"
@@ -3403,7 +3405,7 @@
       "type": "timeseries"
     }
   ],
-  "refresh": "",
+  "refresh": false,
   "schemaVersion": 30,
   "style": "dark",
   "tags": [],
