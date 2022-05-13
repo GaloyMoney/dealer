@@ -12,9 +12,15 @@ import LoginLink from "components/login-link"
 import LogoutLink from "components/logout-link"
 import DiscardableMessage from "components/discardable-message"
 
-const headerNavPages = ["home", "send-bitcoin", "receive-bitcoin"] as const
+const headerNavPages = ["home"] as const
 
-type Page = typeof headerNavPages[number] | "contacts" | "transactions" | "settings"
+type Page =
+  | typeof headerNavPages[number]
+  | "send-bitcoin"
+  | "receive-bitcoin"
+  | "contacts"
+  | "transactions"
+  | "settings"
 
 type FCT = React.FC<{ page: Page }>
 
@@ -68,14 +74,11 @@ const Header: FCT = ({ page }) => {
             <Icon name="qrcode" />
             {translate("Scan QR code")}
           </Link>
-          <Link to="/send" className={`${page === "send-bitcoin" ? "active" : "link"}`}>
+          <Link to="/send" className="link send">
             <Icon name="send" />
             {translate("Send Bitcoin")}
           </Link>
-          <Link
-            to="/receive"
-            className={`${page === "receive-bitcoin" ? "active" : "link"}`}
-          >
+          <Link to="/receive" className="link receive">
             <Icon name="receive" />
             {translate("Receive Bitcoin")}
           </Link>

@@ -23,7 +23,9 @@ const ContactsList: NoPropsFCT = () => {
 
       {errorsMessage && <ErrorMessage message={errorsMessage} />}
 
-      {data?.me?.contacts.length === 0 && <div className="no-data">No Contacts</div>}
+      {data?.me?.contacts.length === 0 && (
+        <div className="no-data">{translate("No Contacts")}</div>
+      )}
 
       {data?.me?.contacts.map((contact) => {
         return (
@@ -61,7 +63,11 @@ const Contacts: NoPropsFCT = () => {
       <Header page="contacts" />
 
       <div className="page-title">{translate("Contacts")}</div>
-      {isAuthenticated ? <ContactsList /> : <div className="no-data">No Contacts</div>}
+      {isAuthenticated ? (
+        <ContactsList />
+      ) : (
+        <div className="no-data">{translate("No Contacts")}</div>
+      )}
     </div>
   )
 }

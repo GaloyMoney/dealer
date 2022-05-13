@@ -4,10 +4,10 @@ import { formatUsd, translate, useMutation } from "@galoymoney/client"
 import {
   DebouncedTextarea,
   FormattedNumberInput,
+  Icon,
   OnNumberValueChange,
   OnTextValueChange,
   SatFormat,
-  SatSymbol,
   Spinner,
 } from "@galoymoney/react"
 
@@ -16,10 +16,12 @@ import useMyUpdates from "hooks/use-my-updates"
 import { NoPropsFCT } from "store/index"
 
 import InvoiceGenerator from "components/receive/invoice-generator"
+import Link, { ButtonLink } from "components/link"
 import Header from "components/header"
-import { ButtonLink } from "components/link"
 
-type InvoiceInputState = {
+type InvoiceInput = {
+  view?: "amount" | "result"
+
   layer: "lightning" | "onchain"
   currency: "USD" | "SATS"
   amount?: number | ""
@@ -31,7 +33,8 @@ const Receive: NoPropsFCT = () => {
   const { btcWalletId } = useMainQuery()
   const { satsToUsd, usdToSats } = useMyUpdates()
 
-  const [input, setInput] = useState<InvoiceInputState>({
+  const [input, setInput] = useState<InvoiceInput>({
+    view: "amount",
     layer: "lightning",
     currency: "USD",
     amount: "",
@@ -210,6 +213,8 @@ const Receive: NoPropsFCT = () => {
   return (
     <div className="receive">
       <Header page="receive-bitcoin" />
+      <div className="page-title">{translate("Receive Bitcoin")}</div>
+
       <div className="tabs">
         <div
           className={`tab ${input.layer === "lightning" ? "active" : "link"}`}
@@ -226,38 +231,76 @@ const Receive: NoPropsFCT = () => {
       </div>
 
       <div className="tab-content">
-        <div className="amount-input center-display">
-          <div className="currency-label">
-            {input.currency === "SATS" ? <SatSymbol /> : "$"}
-          </div>
-          <FormattedNumberInput
-            initValue={input.amount}
-            onChange={handleAmountUpdate}
-            onDebouncedChange={handleDebouncedAmountUpdate}
-            placeholder={translate("Set invoice value in %{currency}", {
-              currency: input.currency,
-            })}
-          />
-          <div className="toggle-currency link" onClick={toggleCurrency}>
-            &#8645;
-          </div>
-        </div>
-        <div className="note-input center-display">
-          <DebouncedTextarea
-            initValue={input.memo}
-            onChange={handleMemoUpdate}
-            onDebouncedChange={handleDebouncedMemoUpdate}
-            name="memo"
-            rows={3}
-            placeholder={translate("Set a note for the sender here (optional)")}
-          />
-        </div>
-        {conversionDisplay && (
-          <div className="amount-converted">
-            <div className="amount-converted">{conversionDisplay}</div>
-          </div>
+        {input.view === "amount" && (
+          <>
+            <div className="amount-input center-display">
+              <div className="input-label">{translate("Set Amount")}</div>
+              <div className="amount-input-form">
+                <div className="currency-label">
+                  {input.currency === "SATS" ? <Icon name="sat" /> : "$"}
+                </div>
+                <FormattedNumberInput
+                  initValue={input.amount}
+                  onChange={handleAmountUpdate}
+                  onDebouncedChange={handleDebouncedAmountUpdate}
+                  placeholder={translate("Set invoice value in %{currency}", {
+                    currency: input.currency,
+                  })}
+                />
+                <div className="toggle-currency link" onClick={toggleCurrency}>
+                  &#8645;
+                </div>
+              </div>
+            </div>
+
+            <div className="note-input center-display">
+              <div className="input-label">{translate("Note or Label")}</div>
+              <DebouncedTextarea
+                initValue={input.memo}
+                onChange={handleMemoUpdate}
+                onDebouncedChange={handleDebouncedMemoUpdate}
+                name="memo"
+                rows={3}
+                placeholder={translate("Set a note for the sender here (optional)")}
+              />
+            </div>
+
+            {conversionDisplay && (
+              <div className="amount-converted">
+                <div className="amount-converted">{conversionDisplay}</div>
+              </div>
+            )}
+
+            <div className="action-button center-display">
+              <button
+                onClick={() =>
+                  setInput((currInput) => ({ ...currInput, view: "result" }))
+                }
+                disabled={!input.amount}
+              >
+                {translate("Next")}{" "}
+                {input.amount === undefined && <Spinner size="small" />}
+              </button>
+            </div>
+          </>
         )}
-        <div className="action-container center-display">{InvoiceGeneratorDisplay()}</div>
+
+        {input.view === "result" && (
+          <>
+            {conversionDisplay && (
+              <div className="amount-converted">
+                <div className="amount-converted">{conversionDisplay}</div>
+              </div>
+            )}
+            <div className="action-container center-display">
+              {InvoiceGeneratorDisplay()}
+            </div>
+          </>
+        )}
+
+        <div className="action-button center-display">
+          <Link to="/">{translate("Cancel")}</Link>
+        </div>
       </div>
     </div>
   )

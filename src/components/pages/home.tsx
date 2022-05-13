@@ -7,6 +7,7 @@ import TransactionList from "components/transactions/list"
 
 const Home: NoPropsFCT = () => {
   const { isAuthenticated } = useAuthContext()
+
   return (
     <>
       <div className="home">

@@ -55,8 +55,6 @@ const descriptionDisplay = (tx: GaloyGQL.Transaction) => {
   }
 }
 
-type IconName = "send" | "receive" | "send-pending" | "receive-pending"
-
 type FCT = React.FC<{ tx: GaloyGQL.Transaction }>
 
 const TransactionItem: FCT = ({ tx }) => {
@@ -72,10 +70,7 @@ const TransactionItem: FCT = ({ tx }) => {
     setShowDetails(!showDetails)
   }
 
-  const txIconName = isReceive ? "receive" : "send"
-  const txIcon = (
-    <Icon name={(isPending ? txIconName + "-pending" : txIconName) as IconName} />
-  )
+  const txIcon = <Icon name={isReceive ? "receive" : "send"} />
 
   if (showDetails) {
     return (

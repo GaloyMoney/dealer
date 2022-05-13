@@ -13,7 +13,7 @@ const EmailSetting: FCT = ({ guestView }) => {
   return (
     <div className="setting">
       <div className="icon">
-        <Icon name="email" />
+        <Icon name="at" />
       </div>
       <div className="name">
         {translate("Email")}

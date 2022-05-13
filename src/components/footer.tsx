@@ -20,7 +20,7 @@ const Footer: FCT = ({ page }) => {
         </div>
         <div className="tab">
           <Link to="/transactions">
-            <Icon name="history" />
+            <Icon name="clock" />
           </Link>
         </div>
         <div className="tab disabled">

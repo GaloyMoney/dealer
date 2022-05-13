@@ -1,5 +1,6 @@
-import { AxiosError } from "axios"
 import { History } from "history"
+
+import { KratosError } from "kratos/server"
 
 // A small function to help us deal with errors coming from fetching a flow.
 export const handleFlowError = ({
@@ -9,7 +10,7 @@ export const handleFlowError = ({
   history: History
   resetFlow: () => void
 }) => {
-  return async (err: AxiosError) => {
+  return async (err: KratosError) => {
     console.debug("[Kratos error]", err, err.response?.data.error)
 
     switch (err.response?.data.error?.id) {

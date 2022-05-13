@@ -5,15 +5,21 @@ import {
   SelfServiceRegistrationFlow,
   SubmitSelfServiceRegistrationFlowBody,
 } from "@ory/kratos-client"
-import { AxiosError } from "axios"
 
 import { translate } from "@galoymoney/client"
 
 import { config, history, useAuthContext } from "store/index"
-import { KratosSdk, handleFlowError, getNodesForFlow, KratosFlowData } from "kratos/index"
+import {
+  KratosSdk,
+  handleFlowError,
+  getNodesForFlow,
+  KratosFlowData,
+  KratosError,
+} from "kratos/index"
 
 import Link from "components/link"
 import { Messages } from "components/kratos"
+import { Icon } from "@galoymoney/react"
 
 type FCT = React.FC<{
   flowData?: KratosFlowData
@@ -88,7 +94,7 @@ const Register: FCT = ({ flowData: flowDataProp }) => {
         }
       })
       .catch(handleFlowError({ history, resetFlow }))
-      .catch((err: AxiosError) => {
+      .catch((err: KratosError) => {
         // If the previous handler did not catch the error it's most likely a form validation error
         if (err.response?.status === 400) {
           setFlowData(err.response?.data)
@@ -158,7 +164,7 @@ const Register: FCT = ({ flowData: flowDataProp }) => {
       </div>
       <div className="form-links">
         <Link to="/login">
-          <i aria-hidden className="fas fa-sign-in-alt" />
+          <Icon name="login" />
           {translate("Login")}
         </Link>
       </div>

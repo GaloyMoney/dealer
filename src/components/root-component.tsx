@@ -13,6 +13,7 @@ import {
 
 import ErrorFallback from "components/error-fallback"
 import { KratosFlowData } from "kratos/index"
+import useMainQuery from "hooks/use-main-query"
 
 type FCT = React.FC<{
   path: ValidPath
@@ -22,6 +23,7 @@ type FCT = React.FC<{
 
 const RootComponent: FCT = ({ path, flowData, ...props }) => {
   const checkedRoutePath = checkRoute(path)
+  const { language } = useMainQuery()
 
   if (!(checkedRoutePath instanceof Error)) {
     const Component = appRoutes[checkedRoutePath].component
@@ -35,7 +37,7 @@ const RootComponent: FCT = ({ path, flowData, ...props }) => {
         }
       >
         <ErrorBoundary FallbackComponent={ErrorFallback}>
-          <div id="main-container">
+          <div id="main-container" data-language={language}>
             <Component {...props} />
           </div>
         </ErrorBoundary>

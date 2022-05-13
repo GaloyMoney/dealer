@@ -32,7 +32,7 @@ const LanguageSetting: FCT = ({ guestView }) => {
   return (
     <div className="setting">
       <div className="icon">
-        <Icon name="language" />
+        <Icon name="world" />
       </div>
       <div className="name">
         {translate("Language")}

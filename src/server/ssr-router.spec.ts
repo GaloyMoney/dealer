@@ -4,6 +4,8 @@ import serialize from "serialize-javascript"
 
 import ssrRouter from "./ssr-router"
 
+jest.useFakeTimers()
+
 jest.mock("../store/config", () => ({
   config: {
     isBrowser: false,

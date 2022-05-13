@@ -4,7 +4,7 @@ module.exports = {
     "^.+\\.tsx?$": "ts-jest",
   },
   modulePaths: ["<rootDir>/src"],
-  setupFilesAfterEnv: ["<rootDir>/src/setupTests.ts"],
-  testEnvironment: "jsdom",
+  setupFilesAfterEnv: ["<rootDir>/src/jest/setupTests.ts"],
+  testEnvironment: "<rootDir>/src/jest/custom-env.ts",
   testPathIgnorePatterns: ["/node_modules/"],
 }

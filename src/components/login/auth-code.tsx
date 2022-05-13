@@ -57,11 +57,11 @@ const AuthCode: FCT = ({ phoneNumber }) => {
           { phoneNumber },
         )}
       </div>
-      <form onSubmit={handleAuthCodeSubmit}>
+      <form className="auth-code-form" onSubmit={handleAuthCodeSubmit}>
         <input
           type="number"
           name="authCode"
-          className="auth-code"
+          className="auth-code-input"
           autoFocus
           autoComplete="off"
           pattern="[0-9]{6}"

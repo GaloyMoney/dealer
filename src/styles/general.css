@@ -13,11 +13,15 @@ body {
 
   a,
   .link {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
     color: var(--color-links);
     text-decoration: none;
     cursor: pointer;
-    i {
-      margin-right: 0.45rem;
+    i,
+    svg {
+      margin-right: 0.5rem;
     }
   }
 
@@ -39,7 +43,6 @@ body {
   textarea,
   select {
     width: 100%;
-    max-width: 300px;
     padding: 0.5rem;
     margin-top: 0.5rem;
     margin-bottom: 0.5rem;
@@ -47,6 +50,15 @@ body {
     background-color: var(--color-light-bg);
     border: thin solid var(--color-borders);
     border-radius: 0.25rem;
+  }
+
+  input:disabled,
+  input[disabled],
+  textarea:disabled,
+  textarea[disabled] select:disabled,
+  select[disabled] {
+    background-color: var(--color-disabled-button-bg);
+    color: var(--color-disabled-button-fg);
   }
 
   input:focus,
@@ -69,7 +81,7 @@ body {
 
   button,
   .button {
-    display: inline-flex;
+    align-self: center;
     padding: 0.5rem 1rem;
     border: thin solid var(--color-borders);
     border-radius: 0.25rem;
@@ -106,8 +118,8 @@ body {
 }
 
 svg {
-  width: 21px;
-  height: 21px;
+  width: 24px;
+  height: 24px;
 }
 
 a svg {
@@ -135,7 +147,6 @@ a svg {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center;
   max-width: 375px;
   margin: 0 auto;
   text-align: center;

@@ -4,12 +4,17 @@ import {
   SelfServiceSettingsFlow,
   SubmitSelfServiceSettingsFlowBody,
 } from "@ory/kratos-client"
-import { AxiosError } from "axios"
 
 import { translate } from "@galoymoney/client"
 
 import { config, history, useAuthContext } from "store/index"
-import { KratosSdk, handleFlowError, getNodesForFlow, KratosFlowData } from "kratos/index"
+import {
+  KratosSdk,
+  handleFlowError,
+  getNodesForFlow,
+  KratosFlowData,
+  KratosError,
+} from "kratos/index"
 
 import SettingsLayout from "components/settings/layout"
 import ColorThemeSetting from "components/settings/color-theme"
@@ -82,7 +87,7 @@ const Settings: FCT = ({ flowData: flowDataProp }) => {
       })
       .then(async ({ data }) => setFlowData(data))
       .catch(handleFlowError({ history, resetFlow }))
-      .catch((err: AxiosError) => {
+      .catch((err: KratosError) => {
         // If the previous handler did not catch the error it's most likely a form validation error
         if (err.response?.status === 400) {
           setFlowData(err.response?.data)

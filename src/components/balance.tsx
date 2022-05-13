@@ -1,5 +1,5 @@
 import { formatUsd, translate } from "@galoymoney/client"
-import { SatFormat, SatSymbol, Spinner } from "@galoymoney/react"
+import { SatFormat, Spinner } from "@galoymoney/react"
 
 import useMyUpdates from "hooks/use-my-updates"
 import { history, useAuthContext } from "store/index"
@@ -43,7 +43,7 @@ const Balance: FCT = ({ balance }) => {
         <div className="title">{translate("Current Balance")}</div>
         <div className="value">
           <div className="primary">
-            <SatSymbol />0
+            <SatFormat amount={0} />
           </div>
           <div className="secondary">{formatUsd(0)}</div>
         </div>

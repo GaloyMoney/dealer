@@ -36,7 +36,7 @@ const ColorThemeSetting: NoPropsFCT = () => {
   return (
     <div className="setting">
       <div className="icon">
-        <Icon name="colors" />
+        <Icon name="opacity" />
       </div>
       <div className="name">
         {translate("Color Theme")}

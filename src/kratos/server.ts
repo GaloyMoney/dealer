@@ -11,6 +11,7 @@ import { Request } from "express"
 
 import { KratosSdk } from "kratos/sdk"
 import { getUrlForFlow, isQuerySet, KratosFlow } from "kratos/helpers"
+import { AxiosError } from "axios"
 
 export type KratosFlowData = {
   registrationData?: SelfServiceRegistrationFlow
@@ -18,6 +19,9 @@ export type KratosFlowData = {
   recoveryData?: SelfServiceRecoveryFlow
   settingsData?: SelfServiceSettingsFlow
 }
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type KratosError = AxiosError<any>
 
 type HandleKratosResponse =
   | { redirect: true; redirectTo: string }

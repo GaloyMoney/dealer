@@ -1,7 +1,9 @@
 import { useState } from "react"
 
+import { translate } from "@galoymoney/client"
+
 const messages = {
-  emailVerified: "Your email address has been verified",
+  emailVerified: translate("Your email address has been verified"),
 }
 
 type FCT = React.FC<{ type: keyof typeof messages }>

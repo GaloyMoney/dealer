@@ -4,12 +4,17 @@ import {
   SelfServiceRecoveryFlow,
   SubmitSelfServiceRecoveryFlowBody,
 } from "@ory/kratos-client"
-import { AxiosError } from "axios"
 
 import { translate } from "@galoymoney/client"
 
 import { config, history } from "store/index"
-import { KratosSdk, handleFlowError, getNodesForFlow, KratosFlowData } from "kratos/index"
+import {
+  KratosSdk,
+  handleFlowError,
+  getNodesForFlow,
+  KratosFlowData,
+  KratosError,
+} from "kratos/index"
 
 import { Messages } from "components/kratos"
 import Link from "components/link"
@@ -67,7 +72,7 @@ const Recovery: FCT = ({ flowData: flowDataProp }) => {
         setFlowData(data)
       })
       .catch(handleFlowError({ history, resetFlow }))
-      .catch((err: AxiosError) => {
+      .catch((err: KratosError) => {
         // If the previous handler did not catch the error it's most likely a form validation error
         if (err.response?.status === 400) {
           setFlowData(err.response?.data)
