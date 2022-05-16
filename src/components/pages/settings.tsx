@@ -42,7 +42,7 @@ const Settings: FCT = ({ flowData: flowDataProp }) => {
   }, [])
 
   useEffect(() => {
-    if (flowData) {
+    if (flowData || !config.kratosFeatureFlag) {
       return
     }
 
