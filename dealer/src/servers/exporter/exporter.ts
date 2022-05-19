@@ -142,6 +142,41 @@ const metrics: { [key: string]: IMetricData } = {
       help: "trading fees sell count",
     }),
   },
+  totalInFlightTransfersCount: {
+    value: NaN,
+    gauge: new client.Gauge({
+      name: `${prefix}_totalInFlightTransfersCount`,
+      help: "total in-flight transfers count",
+    }),
+  },
+  completedDepositCount: {
+    value: NaN,
+    gauge: new client.Gauge({
+      name: `${prefix}_completedDepositCount`,
+      help: "completed in-flight deposit count",
+    }),
+  },
+  completedWithdrawalCount: {
+    value: NaN,
+    gauge: new client.Gauge({
+      name: `${prefix}_completedWithdrawalCount`,
+      help: "complete in-flight withdrawal count",
+    }),
+  },
+  pendingDepositCount: {
+    value: NaN,
+    gauge: new client.Gauge({
+      name: `${prefix}_pendingDepositCount`,
+      help: "pending in-flight deposit count",
+    }),
+  },
+  pendingWithdrawalCount: {
+    value: NaN,
+    gauge: new client.Gauge({
+      name: `${prefix}_pendingWithdrawalCount`,
+      help: "pending in-flight withdrawal count",
+    }),
+  },
   fundingFeesTotalInSats: {
     value: NaN,
     gauge: new client.Gauge({
@@ -602,6 +637,29 @@ export async function exporter() {
           // Strategy uPnl
           const strategyUPnlInUsd = spotUPnlInUsd + swapUPnlInUsd
           Metrics.set(metrics["strategyUPnlInUsd"], strategyUPnlInUsd)
+
+          // InFlight Transfers
+          const inFlightTransfersMetrics = await dealer.getInFlightTransfersMetrics()
+          Metrics.set(
+            metrics["totalInFlightTransfersCount"],
+            inFlightTransfersMetrics.totalInFlightTransfersCount,
+          )
+          Metrics.set(
+            metrics["completedDepositCount"],
+            inFlightTransfersMetrics.completedDepositCount,
+          )
+          Metrics.set(
+            metrics["completedWithdrawalCount"],
+            inFlightTransfersMetrics.completedWithdrawalCount,
+          )
+          Metrics.set(
+            metrics["pendingDepositCount"],
+            inFlightTransfersMetrics.pendingDepositCount,
+          )
+          Metrics.set(
+            metrics["pendingWithdrawalCount"],
+            inFlightTransfersMetrics.pendingWithdrawalCount,
+          )
 
           // Trading Fees
           const tradingFeesMetrics = await dealer.getTradingFeesMetrics()
