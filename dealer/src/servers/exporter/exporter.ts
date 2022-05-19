@@ -475,6 +475,7 @@ export async function exporter() {
           // load funding rates to be up-to-date
           await dealer.fetchAndLoadFundingRates()
 
+          let btcBalanceOnExchange = 0
           let averageOpenPrice = 0
           let swapPosInCt = 0
           const liabilityInUsd = await dealer.getLiabilityInUsd()
@@ -552,6 +553,7 @@ export async function exporter() {
               }
               if (ogBal.btcTotalBalance) {
                 Metrics.set(metrics["btcTotalBalance"], ogBal.btcTotalBalance)
+                btcBalanceOnExchange += ogBal.btcTotalBalance
               }
             } else {
               Metrics.set(metrics["notionalLever"], 0)
@@ -569,9 +571,25 @@ export async function exporter() {
           Metrics.set(metrics["liabilityInUsd"], liabilityInUsd)
           Metrics.set(metrics["liabilityInBtc"], liabilityInBtc)
 
+          // Funding Account Balance
+          const fundingAccountBalance = await dealer.getFundingAccountBalance()
+          Metrics.set(
+            metrics["fundingAccountBtcFreeBalance"],
+            fundingAccountBalance.btcFreeBalance,
+          )
+          Metrics.set(
+            metrics["fundingAccountBtcUsedBalance"],
+            fundingAccountBalance.btcUsedBalance,
+          )
+          Metrics.set(
+            metrics["fundingAccountBtcTotalBalance"],
+            fundingAccountBalance.btcTotalBalance,
+          )
+          btcBalanceOnExchange += fundingAccountBalance.btcTotalBalance
+
           // Spot uPnl
-          const openSpotQuantityInBtc = Math.abs(liabilityInBtc)
-          const spotOpenPrice = Math.abs(liabilityInUsd / liabilityInBtc)
+          const openSpotQuantityInBtc = Math.abs(liabilityInBtc) + btcBalanceOnExchange
+          const spotOpenPrice = Math.abs(liabilityInUsd) / openSpotQuantityInBtc
           const spotUPnlInUsd = (spotPrice - spotOpenPrice) * openSpotQuantityInBtc
           Metrics.set(metrics["spotUPnlInUsd"], spotUPnlInUsd)
 
@@ -629,21 +647,6 @@ export async function exporter() {
           Metrics.set(
             metrics["fundingFeesIncomeCount"],
             fundingFeesMetrics.fundingFeesIncomeCount,
-          )
-
-          // Funding Account Balance
-          const fundingAccountBalance = await dealer.getFundingAccountBalance()
-          Metrics.set(
-            metrics["fundingAccountBtcFreeBalance"],
-            fundingAccountBalance.btcFreeBalance,
-          )
-          Metrics.set(
-            metrics["fundingAccountBtcUsedBalance"],
-            fundingAccountBalance.btcUsedBalance,
-          )
-          Metrics.set(
-            metrics["fundingAccountBtcTotalBalance"],
-            fundingAccountBalance.btcTotalBalance,
           )
 
           // Funding Yields
