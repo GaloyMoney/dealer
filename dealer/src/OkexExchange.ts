@@ -674,7 +674,6 @@ export class OkexExchange extends ExchangeBase {
             { apiResponse, error },
             "extractValidTransactionFromApiResponse({apiResponse}) failed: {error}",
           )
-          throw error
         }
 
         return transactions
@@ -735,10 +734,10 @@ export class OkexExchange extends ExchangeBase {
         [`${SemanticAttributes.CODE_FUNCTION}.params.args`]: JSON.stringify(args),
       },
       async () => {
+        let allTransactions: Transaction[] = []
         try {
           let before = args.beforeTransactionId
           const limit = args.limit || 100
-          let allTransactions: Transaction[] = []
           const one = true
           while (one) {
             const params = {
@@ -763,12 +762,11 @@ export class OkexExchange extends ExchangeBase {
               break
             }
           }
-          return allTransactions
         } catch (error) {
           recordExceptionInCurrentSpan({ error, level: ErrorLevel.Warn })
-          this.logger.error({ error }, "Error in fetchTransactionHistoryAllPagesBefore()")
-          throw error
+          this.logger.warn({ error }, "Error in fetchTransactionHistoryAllPagesBefore()")
         }
+        return allTransactions
       },
     )
 
@@ -786,10 +784,10 @@ export class OkexExchange extends ExchangeBase {
         [`${SemanticAttributes.CODE_FUNCTION}.params.args`]: JSON.stringify(args),
       },
       async () => {
+        let allTransactions: Transaction[] = []
         try {
           let after = args.afterTransactionId
           const limit = args.limit || 100
-          let allTransactions: Transaction[] = []
           const one = true
           while (one) {
             const params = {
@@ -814,12 +812,11 @@ export class OkexExchange extends ExchangeBase {
               break
             }
           }
-          return allTransactions
         } catch (error) {
           recordExceptionInCurrentSpan({ error, level: ErrorLevel.Warn })
           this.logger.error({ error }, "Error in fetchTransactionHistoryAllPagesAfter()")
-          throw error
         }
+        return allTransactions
       },
     )
     return ret
@@ -855,7 +852,6 @@ export class OkexExchange extends ExchangeBase {
             { apiResponse, error },
             "extractValidFundingRateFromApiResponse({apiResponse}) failed: {error}",
           )
-          throw error
         }
 
         return fundingRates
@@ -916,10 +912,10 @@ export class OkexExchange extends ExchangeBase {
         [`${SemanticAttributes.CODE_FUNCTION}.params.args`]: JSON.stringify(args),
       },
       async () => {
+        let allFundingRates: FundingRate[] = []
         try {
           let before = args.beforeFundingTime
           const limit = args.limit || 100
-          let allFundingRates: FundingRate[] = []
           const one = true
           while (one) {
             const params = {
@@ -945,12 +941,11 @@ export class OkexExchange extends ExchangeBase {
               break
             }
           }
-          return allFundingRates
         } catch (error) {
           recordExceptionInCurrentSpan({ error, level: ErrorLevel.Warn })
           this.logger.error({ error }, "Error in fetchFundingRateHistoryAllPagesBefore()")
-          throw error
         }
+        return allFundingRates
       },
     )
 
@@ -968,10 +963,10 @@ export class OkexExchange extends ExchangeBase {
         [`${SemanticAttributes.CODE_FUNCTION}.params.args`]: JSON.stringify(args),
       },
       async () => {
+        let allFundingRates: FundingRate[] = []
         try {
           let after = args.afterFundingTime
           const limit = args.limit || 100
-          let allFundingRates: FundingRate[] = []
           const one = true
           while (one) {
             const params = {
@@ -997,12 +992,11 @@ export class OkexExchange extends ExchangeBase {
               break
             }
           }
-          return allFundingRates
         } catch (error) {
           recordExceptionInCurrentSpan({ error, level: ErrorLevel.Warn })
           this.logger.error({ error }, "Error in fetchFundingRateHistoryAllPagesAfter()")
-          throw error
         }
+        return allFundingRates
       },
     )
     return ret
