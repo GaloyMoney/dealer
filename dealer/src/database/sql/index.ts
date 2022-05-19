@@ -15,6 +15,8 @@ export const inFlightTransfersQueries = {
   get_pending_withdraw: sql("in_flight_transfers/get_pending_withdraw.sql"),
   get_this: sql("in_flight_transfers/get_this.sql"),
 
+  get_metrics: sql("transactions/get_metrics.sql"),
+
   clear: sql("in_flight_transfers/clear.sql"),
 }
 

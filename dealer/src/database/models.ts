@@ -86,6 +86,14 @@ export enum TransactionBillSubtypeToId {
   FundingFeeIncome = 174,
 }
 
+export type InFlightTransfersMetrics = {
+  totalInFlightTransfersCount: number
+  completedDepositCount: number
+  completedWithdrawalCount: number
+  pendingDepositCount: number
+  pendingWithdrawalCount: number
+}
+
 export type TradingFeesMetrics = {
   tradingFeesTotalInSats: number
   tradingFeesBuyInSats: number

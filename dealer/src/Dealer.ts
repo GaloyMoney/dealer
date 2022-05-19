@@ -14,6 +14,7 @@ import {
   FundingRate,
   FundingYieldMetrics,
   InFlightTransfer,
+  InFlightTransfersMetrics,
   TradingFeesMetrics,
   Transaction,
 } from "./database/models"
@@ -524,6 +525,14 @@ export class Dealer {
     const result = await this.wallet.getBtcWalletBalance()
     if (!result.ok) {
       return NaN
+    }
+    return result.value
+  }
+
+  public async getInFlightTransfersMetrics(): Promise<InFlightTransfersMetrics> {
+    const result = await database.inFlightTransfers.getMetrics()
+    if (!result.ok) {
+      return {} as InFlightTransfersMetrics
     }
     return result.value
   }
