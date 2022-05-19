@@ -169,9 +169,9 @@ export abstract class ExchangeBase {
         [`${SemanticAttributes.CODE_FUNCTION}.params.args`]: JSON.stringify(args),
       },
       async () => {
+        const allDeposits: unknown[] = []
         try {
           let page = 0
-          const allDeposits: unknown[] = []
           const one = true
           while (one) {
             const code = undefined
@@ -197,12 +197,11 @@ export abstract class ExchangeBase {
               break
             }
           }
-          return allDeposits
         } catch (error) {
           recordExceptionInCurrentSpan({ error, level: ErrorLevel.Warn })
           this.logger.debug({ error }, "Error in fetchDepositsAllPages()" + error.message)
-          throw error
         }
+        return allDeposits
       },
     )
   }
@@ -351,9 +350,9 @@ export abstract class ExchangeBase {
         [`${SemanticAttributes.CODE_FUNCTION}.params.args`]: JSON.stringify(args),
       },
       async () => {
+        const allWithdrawals: unknown[] = []
         try {
           let page = 0
-          const allWithdrawals: unknown[] = []
           const one = true
           while (one) {
             const code = undefined
@@ -384,15 +383,14 @@ export abstract class ExchangeBase {
               break
             }
           }
-          return allWithdrawals
         } catch (error) {
           recordExceptionInCurrentSpan({ error, level: ErrorLevel.Warn })
           this.logger.debug(
             { error },
             "Error in fetchWithdrawalsAllPages()" + error.message,
           )
-          throw error
         }
+        return allWithdrawals
       },
     )
   }
