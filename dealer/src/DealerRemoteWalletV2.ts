@@ -109,25 +109,25 @@ export class DealerRemoteWalletV2 implements GaloyWallet {
             (wallet) => wallet?.__typename === "BTCWallet",
           )
           const btcWalletId = btcWallet?.id
-          const btcWalletBalance = (btcWallet?.balance ?? NaN) - btcBalanceOffset
+          const btcWalletBalance: number = (btcWallet?.balance ?? NaN) - btcBalanceOffset
 
           const usdWallet = me?.defaultAccount?.wallets?.find(
             (wallet) => wallet?.__typename === "UsdWallet",
           )
           const usdWalletId = usdWallet?.id
-          const usdWalletBalance = (usdWallet?.balance ?? NaN) - usdBalanceOffset
+          const usdWalletBalance: number = (usdWallet?.balance ?? NaN) - usdBalanceOffset
 
           addAttributesToCurrentSpan({
             [`${SemanticAttributes.CODE_FUNCTION}.results.btcWalletId`]: btcWalletId,
             [`${SemanticAttributes.CODE_FUNCTION}.results.btcWalletBalance`]:
-              btcWalletBalance,
+              String(btcWalletBalance),
             [`${SemanticAttributes.CODE_FUNCTION}.results.btcBalanceOffset`]:
-              btcBalanceOffset,
+              String(btcBalanceOffset),
             [`${SemanticAttributes.CODE_FUNCTION}.results.usdWalletId`]: usdWalletId,
             [`${SemanticAttributes.CODE_FUNCTION}.results.usdWalletBalance`]:
-              usdWalletBalance,
+              String(usdWalletBalance),
             [`${SemanticAttributes.CODE_FUNCTION}.results.usdBalanceOffset`]:
-              usdBalanceOffset,
+              String(usdBalanceOffset),
           })
 
           return {

@@ -108,21 +108,21 @@ export class DealerRemoteWallet implements GaloyWallet {
             (wallet) => wallet?.id === "BTCWallet",
           )
           const btcWalletId = btcWallet?.id
-          const btcWalletBalance = btcWallet?.balance ?? NaN
+          const btcWalletBalance: number = btcWallet?.balance ?? NaN
 
           const usdWallet = result.data.wallets?.find(
             (wallet) => wallet?.id === "USDWallet",
           )
           const usdWalletId = usdWallet?.id
-          const usdWalletBalance = usdWallet?.balance ?? NaN
+          const usdWalletBalance: number = usdWallet?.balance ?? NaN
 
           addAttributesToCurrentSpan({
             [`${SemanticAttributes.CODE_FUNCTION}.results.btcWalletId`]: btcWalletId,
             [`${SemanticAttributes.CODE_FUNCTION}.results.btcWalletBalance`]:
-              btcWalletBalance,
+              String(btcWalletBalance),
             [`${SemanticAttributes.CODE_FUNCTION}.results.usdWalletId`]: usdWalletId,
             [`${SemanticAttributes.CODE_FUNCTION}.results.usdWalletBalance`]:
-              usdWalletBalance,
+              String(usdWalletBalance),
           })
 
           return {
