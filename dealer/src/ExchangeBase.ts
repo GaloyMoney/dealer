@@ -730,6 +730,8 @@ export abstract class ExchangeBase {
     btcPriceInUsd: number,
   ): Promise<Result<GetAccountAndPositionRiskResult>>
 
+  abstract closePosition(instrumentId: string): Promise<Result<boolean>>
+
   abstract getInstrumentDetails(): Promise<Result<GetInstrumentDetailsResult>>
 
   abstract getPublicFundingRate(): Promise<Result<GetPublicFundingRateResult>>

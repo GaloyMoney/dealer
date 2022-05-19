@@ -204,12 +204,14 @@ export class Dealer {
         if (usdLiability < hedgingBounds.MINIMUM_POSITIVE_LIABILITY_USD) {
           logger.debug(
             { usdLiability },
-            "No liabilities to hedge, skipping the order loop",
+            "No liabilities to hedge, skipping the order loop and closing position if any",
           )
 
           addAttributesToCurrentSpan({
             [`${SemanticAttributes.CODE_FUNCTION}.results.orderLoopSkipped`]: true,
           })
+
+          await this.strategy.closePosition()
 
           result.updatePositionSkipped = true
         } else {

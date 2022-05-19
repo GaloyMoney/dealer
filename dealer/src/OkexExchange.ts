@@ -140,12 +140,63 @@ export class OkexExchange extends ExchangeBase {
     return ret as Result<GetAccountAndPositionRiskResult>
   }
 
+  public async closePosition(instrumentId: string): Promise<Result<boolean>> {
+    const ret = await asyncRunInSpan(
+      "app.okexExchange.closePosition",
+      {
+        [SemanticAttributes.CODE_FUNCTION]: "closePosition",
+        [SemanticAttributes.CODE_NAMESPACE]: "app.okexExchange",
+        [`${SemanticAttributes.CODE_FUNCTION}.params.instrumentId`]: instrumentId,
+        [`${SemanticAttributes.CODE_FUNCTION}.sub.method`]:
+          "privatePostTradeClosePosition",
+      },
+      async () => {
+        try {
+          const config = this.exchangeConfig as OkexExchangeConfiguration
+          const params = {
+            instId: instrumentId,
+            mgnMode: config.marginMode,
+            autoCxl: true,
+          }
+
+          addAttributesToCurrentSpan({
+            [`${SemanticAttributes.CODE_FUNCTION}.sub.params`]: JSON.stringify(params),
+          })
+
+          const response = await this.exchange.privatePostTradeClosePosition(params)
+          this.logger.debug(
+            { config, params, response },
+            "exchange.privatePostTradeClosePosition({params}) returned: {response}",
+          )
+
+          addAttributesToCurrentSpan({
+            [`${SemanticAttributes.CODE_FUNCTION}.results.result`]:
+              JSON.stringify(response),
+          })
+
+          return {
+            ok: true,
+            value: true,
+          }
+        } catch (error) {
+          recordExceptionInCurrentSpan({ error, level: ErrorLevel.Warn })
+          return { ok: true, value: true }
+        }
+      },
+    )
+    return ret as Result<boolean>
+  }
+
   public async getInstrumentDetails(): Promise<Result<GetInstrumentDetailsResult>> {
     const ret = await asyncRunInSpan(
       "app.okexExchange.getInstrumentDetails",
       {
         [SemanticAttributes.CODE_FUNCTION]: "getInstrumentDetails",
         [SemanticAttributes.CODE_NAMESPACE]: "app.okexExchange",
+        [`${SemanticAttributes.CODE_FUNCTION}.sub.method`]: "publicGetPublicInstruments",
+        [`${SemanticAttributes.CODE_FUNCTION}.sub.params.instType`]:
+          SupportedInstrumentType.Swap,
+        [`${SemanticAttributes.CODE_FUNCTION}.sub.params.instId`]: this.instrumentId,
       },
       async () => {
         try {
@@ -157,6 +208,12 @@ export class OkexExchange extends ExchangeBase {
             { instrumentId: this.instrumentId, response },
             "publicGetPublicInstruments({instrumentId}) returned: {response}",
           )
+
+          addAttributesToCurrentSpan({
+            [`${SemanticAttributes.CODE_FUNCTION}.sub.results.result`]:
+              JSON.stringify(response),
+          })
+
           assert(response, ApiError.UNSUPPORTED_API_RESPONSE)
           assert(
             response.data[0].ctValCcy === TradeCurrency.USD,
@@ -193,6 +250,8 @@ export class OkexExchange extends ExchangeBase {
       {
         [SemanticAttributes.CODE_FUNCTION]: "getPublicFundingRate",
         [SemanticAttributes.CODE_NAMESPACE]: "app.okexExchange",
+        [`${SemanticAttributes.CODE_FUNCTION}.sub.method`]: "publicGetPublicFundingRate",
+        [`${SemanticAttributes.CODE_FUNCTION}.sub.params.instId`]: this.instrumentId,
       },
       async () => {
         try {
@@ -203,6 +262,12 @@ export class OkexExchange extends ExchangeBase {
             { instrumentId: this.instrumentId, response },
             "exchange.publicGetPublicFundingRate({instrumentId}) returned: {response}",
           )
+
+          addAttributesToCurrentSpan({
+            [`${SemanticAttributes.CODE_FUNCTION}.sub.results.result`]:
+              JSON.stringify(response),
+          })
+
           assert(response, ApiError.UNSUPPORTED_API_RESPONSE)
           assert(
             response.data[0].instId === this.instrumentId,
@@ -241,6 +306,10 @@ export class OkexExchange extends ExchangeBase {
       {
         [SemanticAttributes.CODE_FUNCTION]: "getPublicMarkPrice",
         [SemanticAttributes.CODE_NAMESPACE]: "app.okexExchange",
+        [`${SemanticAttributes.CODE_FUNCTION}.sub.method`]: "publicGetPublicMarkPrice",
+        [`${SemanticAttributes.CODE_FUNCTION}.sub.params.instType`]:
+          SupportedInstrumentType.Swap,
+        [`${SemanticAttributes.CODE_FUNCTION}.sub.params.instId`]: this.instrumentId,
       },
       async () => {
         try {
@@ -252,6 +321,12 @@ export class OkexExchange extends ExchangeBase {
             { instrumentId: this.instrumentId, response },
             "exchange.publicGetPublicMarkPrice({instrumentId}) returned: {response}",
           )
+
+          addAttributesToCurrentSpan({
+            [`${SemanticAttributes.CODE_FUNCTION}.sub.results.result`]:
+              JSON.stringify(response),
+          })
+
           assert(response, ApiError.UNSUPPORTED_API_RESPONSE)
           assert(
             response?.data[0]?.instType === SupportedInstrumentType.Swap,
@@ -290,6 +365,9 @@ export class OkexExchange extends ExchangeBase {
       {
         [SemanticAttributes.CODE_FUNCTION]: "getMarketIndexTickers",
         [SemanticAttributes.CODE_NAMESPACE]: "app.okexExchange",
+        [`${SemanticAttributes.CODE_FUNCTION}.sub.method`]: "publicGetMarketIndexTickers",
+        [`${SemanticAttributes.CODE_FUNCTION}.sub.params.instId`]:
+          SupportedInstrument.OKEX_BTC_USD_SPOT,
       },
       async () => {
         try {
@@ -300,6 +378,12 @@ export class OkexExchange extends ExchangeBase {
             { instrumentId: this.instrumentId, response },
             "exchange.publicGetMarketIndexTickers({instrumentId}) returned: {response}",
           )
+
+          addAttributesToCurrentSpan({
+            [`${SemanticAttributes.CODE_FUNCTION}.sub.results.result`]:
+              JSON.stringify(response),
+          })
+
           assert(response, ApiError.UNSUPPORTED_API_RESPONSE)
           assert(
             response?.data[0]?.instId === SupportedInstrument.OKEX_BTC_USD_SPOT,
@@ -436,6 +520,8 @@ export class OkexExchange extends ExchangeBase {
         [SemanticAttributes.CODE_FUNCTION]: "withdrawOnLightning",
         [SemanticAttributes.CODE_NAMESPACE]: "app.okexExchange",
         [`${SemanticAttributes.CODE_FUNCTION}.params.args`]: JSON.stringify(args),
+        [`${SemanticAttributes.CODE_FUNCTION}.sub.method`]:
+          "privatePostAssetWithdrawalLightning",
       },
       async () => {
         try {
@@ -444,11 +530,22 @@ export class OkexExchange extends ExchangeBase {
             invoice: args.invoice,
             pwd: this.fundingPassword,
           }
+
+          addAttributesToCurrentSpan({
+            [`${SemanticAttributes.CODE_FUNCTION}.sub.params`]: JSON.stringify(params),
+          })
+
           const response = await this.exchange.privatePostAssetWithdrawalLightning(params)
           this.logger.debug(
             { params, response },
             "privatePostAssetWithdrawalLightning({params}) returned: {response}",
           )
+
+          addAttributesToCurrentSpan({
+            [`${SemanticAttributes.CODE_FUNCTION}.sub.results.result`]:
+              JSON.stringify(response),
+          })
+
           assert(response, ApiError.UNSUPPORTED_API_RESPONSE)
           assert(response.code === "0", ApiError.UNSUPPORTED_API_RESPONSE)
           assert(response.data[0].wdId, ApiError.UNSUPPORTED_API_RESPONSE)
@@ -483,6 +580,8 @@ export class OkexExchange extends ExchangeBase {
         [SemanticAttributes.CODE_FUNCTION]: "depositOnLightning",
         [SemanticAttributes.CODE_NAMESPACE]: "app.okexExchange",
         [`${SemanticAttributes.CODE_FUNCTION}.params.args`]: JSON.stringify(args),
+        [`${SemanticAttributes.CODE_FUNCTION}.sub.method`]:
+          "privateGetAssetDepositLightning",
       },
       async () => {
         try {
@@ -491,11 +590,22 @@ export class OkexExchange extends ExchangeBase {
             amt: args.amountInSats,
             to: AccountTypeToId.Trading,
           }
+
+          addAttributesToCurrentSpan({
+            [`${SemanticAttributes.CODE_FUNCTION}.sub.params`]: JSON.stringify(params),
+          })
+
           const response = await this.exchange.privateGetAssetDepositLightning(params)
           this.logger.debug(
             { params, response },
             "privateGetAssetDepositLightning({params}) returned: {response}",
           )
+
+          addAttributesToCurrentSpan({
+            [`${SemanticAttributes.CODE_FUNCTION}.sub.results.result`]:
+              JSON.stringify(response),
+          })
+
           assert(response, ApiError.UNSUPPORTED_API_RESPONSE)
           assert(response.data[0].invoice, ApiError.UNSUPPORTED_API_RESPONSE)
 

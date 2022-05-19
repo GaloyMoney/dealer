@@ -253,6 +253,16 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
     return { ok: true, value: false }
   }
 
+  public async closePosition(): Promise<Result<boolean>> {
+    const instrumentId = this.instrumentId
+    const result = await this.exchange.closePosition(instrumentId)
+    this.logger.debug(
+      { instrumentId, result },
+      "exchange.closePosition({instrumentId}) returned: {result}",
+    )
+    return result
+  }
+
   public async updatePosition(
     liabilityInUsd: number,
     btcPriceInUsd: number,

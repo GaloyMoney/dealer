@@ -64,6 +64,7 @@ export interface HedgingStrategy {
 
   isDepositCompleted(address: string, amountInSats: number): Promise<Result<boolean>>
   isWithdrawalCompleted(address: string, amountInSats: number): Promise<Result<boolean>>
+  closePosition(): Promise<Result<boolean>>
   updatePosition(
     liabilityInUsd: number,
     btcPriceInUsd: number,
