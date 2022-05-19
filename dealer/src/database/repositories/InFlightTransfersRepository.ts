@@ -1,7 +1,7 @@
 import pino from "pino"
 import { IDatabase, IMain } from "pg-promise"
 import { IResult } from "pg-promise/typescript/pg-subset"
-import { InFlightTransfer } from "../models"
+import { InFlightTransfer, InFlightTransfersMetrics } from "../models"
 import { inFlightTransfersQueries as sql } from "../sql"
 import { Result } from "../../Result"
 
@@ -176,6 +176,33 @@ export class InFlightTransfersRepository {
       return { ok: true, value: transfers }
     } catch (error) {
       this.logger.error({ error }, "Error: getAll() failed.")
+      return { ok: false, error: error }
+    }
+  }
+
+  private static inFlightTransfersMetricsCallback(
+    metrics: InFlightTransfersMetrics,
+  ): InFlightTransfersMetrics {
+    metrics.totalInFlightTransfersCount = Number(metrics.totalInFlightTransfersCount)
+    metrics.completedDepositCount = Number(metrics.completedDepositCount)
+    metrics.completedWithdrawalCount = Number(metrics.completedWithdrawalCount)
+    metrics.pendingDepositCount = Number(metrics.pendingDepositCount)
+    metrics.pendingWithdrawalCount = Number(metrics.pendingWithdrawalCount)
+    return metrics
+  }
+
+  public async getMetrics(): Promise<Result<InFlightTransfersMetrics>> {
+    try {
+      const rowCount = await this.db.one(
+        sql.get_metrics,
+        [],
+        InFlightTransfersRepository.inFlightTransfersMetricsCallback,
+      )
+      this.logger.info({ rowCount }, "getMetrics() returned: {result}.")
+
+      return { ok: true, value: rowCount }
+    } catch (error) {
+      this.logger.error({ error }, "Error: getMetrics() failed.")
       return { ok: false, error: error }
     }
   }
