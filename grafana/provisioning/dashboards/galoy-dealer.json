@@ -3403,6 +3403,89 @@
       ],
       "title": "Exchange Status",
       "type": "timeseries"
+    },
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "percentage",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 6,
+        "x": 18,
+        "y": 42
+      },
+      "id": 66,
+      "options": {
+        "displayMode": "lcd",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": ["lastNotNull"],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true,
+        "text": {}
+      },
+      "pluginVersion": "8.1.1",
+      "targets": [
+        {
+          "exemplar": true,
+          "expr": "avg by (container)(galoy_dealer_completedDepositCount)",
+          "interval": "",
+          "legendFormat": "done deposit cnt",
+          "refId": "A"
+        },
+        {
+          "exemplar": true,
+          "expr": "avg by (container)(galoy_dealer_pendingDepositCount)",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "pend deposit cnt",
+          "refId": "B"
+        },
+        {
+          "exemplar": true,
+          "expr": "avg by (container)(galoy_dealer_completedWithdrawalCount)",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "done withdraw cnt",
+          "refId": "C"
+        },
+        {
+          "exemplar": true,
+          "expr": "avg by (container)(galoy_dealer_pendingWithdrawalCount)",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "pending withdraw cnt",
+          "refId": "D"
+        },
+        {
+          "exemplar": true,
+          "expr": "avg by (container)(galoy_dealer_totalInFlightTransfersCount)",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "total transfer cnt",
+          "refId": "E"
+        }
+      ],
+      "title": "InFlight Transfers",
+      "type": "bargauge"
     }
   ],
   "refresh": false,
@@ -3420,5 +3503,5 @@
   "timezone": "",
   "title": "Galoy Dealer",
   "uid": "pTEP9n47k",
-  "version": 38
+  "version": 66
 }
