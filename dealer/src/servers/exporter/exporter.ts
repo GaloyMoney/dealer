@@ -576,6 +576,10 @@ export async function exporter() {
               Metrics.set(metrics["maintenanceMarginRequirement"], 0)
               Metrics.set(metrics["exchangeLeverage"], 0)
             }
+            Metrics.set(metrics["notionalLever"], 0)
+            Metrics.set(metrics["btcFreeBalance"], 0)
+            Metrics.set(metrics["btcUsedBalance"], 0)
+            Metrics.set(metrics["btcTotalBalance"], 0)
             if (ogBal) {
               if (ogBal.notionalLever) {
                 Metrics.set(metrics["notionalLever"], ogBal.notionalLever)
@@ -590,11 +594,6 @@ export async function exporter() {
                 Metrics.set(metrics["btcTotalBalance"], ogBal.btcTotalBalance)
                 btcBalanceOnExchange += ogBal.btcTotalBalance
               }
-            } else {
-              Metrics.set(metrics["notionalLever"], 0)
-              Metrics.set(metrics["btcFreeBalance"], 0)
-              Metrics.set(metrics["btcUsedBalance"], 0)
-              Metrics.set(metrics["btcTotalBalance"], 0)
             }
           }
           Metrics.set(metrics["nextFundingRate"], await dealer.getNextFundingRateInBtc())
