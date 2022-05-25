@@ -94,6 +94,14 @@ export type InFlightTransfersMetrics = {
   pendingWithdrawalCount: number
 }
 
+export type InternalTransfersMetrics = {
+  totalInternalTransfersCount: number
+  tradingToFundingSuccessCount: number
+  tradingToFundingFailCount: number
+  fundingToTradingSuccessCount: number
+  fundingToTradingFailCount: number
+}
+
 export type TradingFeesMetrics = {
   tradingFeesTotalInSats: number
   tradingFeesBuyInSats: number

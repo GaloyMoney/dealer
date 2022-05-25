@@ -55,6 +55,8 @@ export const internalTransfersQueries = {
 
   get_count: sql("internal_transfers/get_count.sql"),
 
+  get_metrics: sql("internal_transfers/get_metrics.sql"),
+
   clear: sql("internal_transfers/clear.sql"),
 }
 

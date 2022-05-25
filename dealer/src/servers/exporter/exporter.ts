@@ -177,6 +177,41 @@ const metrics: { [key: string]: IMetricData } = {
       help: "pending in-flight withdrawal count",
     }),
   },
+  totalInternalTransfersCount: {
+    value: NaN,
+    gauge: new client.Gauge({
+      name: `${prefix}_totalInternalTransfersCount`,
+      help: "total on exchange internal transfers count",
+    }),
+  },
+  tradingToFundingSuccessCount: {
+    value: NaN,
+    gauge: new client.Gauge({
+      name: `${prefix}_tradingToFundingSuccessCount`,
+      help: "on exchange successful internal transfers from trading to funding count",
+    }),
+  },
+  tradingToFundingFailCount: {
+    value: NaN,
+    gauge: new client.Gauge({
+      name: `${prefix}_tradingToFundingFailCount`,
+      help: "on exchange failed internal transfers from trading to funding count",
+    }),
+  },
+  fundingToTradingSuccessCount: {
+    value: NaN,
+    gauge: new client.Gauge({
+      name: `${prefix}_fundingToTradingSuccessCount`,
+      help: "on exchange successful internal transfers from funding to trading count",
+    }),
+  },
+  fundingToTradingFailCount: {
+    value: NaN,
+    gauge: new client.Gauge({
+      name: `${prefix}_fundingToTradingFailCount`,
+      help: "on exchange failed internal transfers from funding to trading count",
+    }),
+  },
   fundingFeesTotalInSats: {
     value: NaN,
     gauge: new client.Gauge({
@@ -658,6 +693,29 @@ export async function exporter() {
           Metrics.set(
             metrics["pendingWithdrawalCount"],
             inFlightTransfersMetrics.pendingWithdrawalCount,
+          )
+
+          // Internal Transfers
+          const internalTransfersMetrics = await dealer.getInternalTransfersMetrics()
+          Metrics.set(
+            metrics["totalInternalTransfersCount"],
+            internalTransfersMetrics.totalInternalTransfersCount,
+          )
+          Metrics.set(
+            metrics["tradingToFundingSuccessCount"],
+            internalTransfersMetrics.tradingToFundingSuccessCount,
+          )
+          Metrics.set(
+            metrics["tradingToFundingFailCount"],
+            internalTransfersMetrics.tradingToFundingFailCount,
+          )
+          Metrics.set(
+            metrics["fundingToTradingSuccessCount"],
+            internalTransfersMetrics.fundingToTradingSuccessCount,
+          )
+          Metrics.set(
+            metrics["fundingToTradingFailCount"],
+            internalTransfersMetrics.fundingToTradingFailCount,
           )
 
           // Trading Fees
