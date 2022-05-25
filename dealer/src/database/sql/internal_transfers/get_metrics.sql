@@ -1,5 +1,3 @@
-SELECT COUNT(*) 
-FROM dealer.internal_transfers 
 SELECT
     count(*) AS total_internal_transfers_count,
     count(*) FILTER (WHERE eatf.account_name = 'Unified account' and eatt.account_name = 'FUNDING' and intx.success = true ) AS trading_to_funding_success_count,
