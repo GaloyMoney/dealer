@@ -15,6 +15,7 @@ import {
   FundingYieldMetrics,
   InFlightTransfer,
   InFlightTransfersMetrics,
+  InternalTransfersMetrics,
   TradingFeesMetrics,
   Transaction,
 } from "./database/models"
@@ -533,6 +534,14 @@ export class Dealer {
     const result = await database.inFlightTransfers.getMetrics()
     if (!result.ok) {
       return {} as InFlightTransfersMetrics
+    }
+    return result.value
+  }
+
+  public async getInternalTransfersMetrics(): Promise<InternalTransfersMetrics> {
+    const result = await database.internalTransfers.getMetrics()
+    if (!result.ok) {
+      return {} as InternalTransfersMetrics
     }
     return result.value
   }

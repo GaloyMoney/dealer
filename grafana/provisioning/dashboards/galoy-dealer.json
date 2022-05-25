@@ -919,7 +919,7 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "avg by (container)(abs(galoy_dealer_liabilityInUsd) )",
+          "expr": "avg by (container)(-galoy_dealer_liabilityInUsd)",
           "interval": "",
           "legendFormat": "liability in usd",
           "refId": "A"
@@ -3096,6 +3096,305 @@
     },
     {
       "datasource": null,
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "axisSoftMax": 1,
+            "axisSoftMin": -1,
+            "barAlignment": 0,
+            "drawStyle": "bars",
+            "fillOpacity": 100,
+            "gradientMode": "scheme",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [
+            {
+              "options": {
+                "from": 0,
+                "result": {
+                  "color": "green",
+                  "index": 0,
+                  "text": "UP"
+                },
+                "to": 1
+              },
+              "type": "range"
+            },
+            {
+              "options": {
+                "from": -1,
+                "result": {
+                  "color": "red",
+                  "index": 1,
+                  "text": "DOWN"
+                },
+                "to": 0
+              },
+              "type": "range"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": -0.0001
+              },
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "green",
+                "value": 0.001
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "isExchangeAlive"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "thresholds",
+                  "seriesBy": "last"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 14,
+        "w": 12,
+        "x": 0,
+        "y": 42
+      },
+      "id": 64,
+      "options": {
+        "legend": {
+          "calcs": ["last"],
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "targets": [
+        {
+          "exemplar": true,
+          "expr": "avg by (container)(galoy_dealer_exchangeStatus)",
+          "interval": "",
+          "legendFormat": "isExchangeAlive",
+          "refId": "A"
+        }
+      ],
+      "title": "Exchange Status",
+      "type": "timeseries"
+    },
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "percentage",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 6,
+        "x": 12,
+        "y": 42
+      },
+      "id": 67,
+      "options": {
+        "displayMode": "lcd",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": ["lastNotNull"],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true,
+        "text": {}
+      },
+      "pluginVersion": "8.1.1",
+      "targets": [
+        {
+          "exemplar": true,
+          "expr": "avg by (container)(galoy_dealer_tradingToFundingSuccessCount)",
+          "interval": "",
+          "legendFormat": "done withdraw cnt",
+          "refId": "A"
+        },
+        {
+          "exemplar": true,
+          "expr": "avg by (container)(galoy_dealer_tradingToFundingFailCount)",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "failed withdraw cnt",
+          "refId": "B"
+        },
+        {
+          "exemplar": true,
+          "expr": "avg by (container)(galoy_dealer_fundingToTradingSuccessCount)",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "done deposit cnt",
+          "refId": "C"
+        },
+        {
+          "exemplar": true,
+          "expr": "avg by (container)(galoy_dealer_fundingToTradingFailCount)",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "failed  deposit cnt",
+          "refId": "D"
+        },
+        {
+          "exemplar": true,
+          "expr": "avg by (container)(galoy_dealer_totalInternalTransfersCount)",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "total transfer cnt",
+          "refId": "E"
+        }
+      ],
+      "title": "On Exchange Internal Transfers",
+      "type": "bargauge"
+    },
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "percentage",
+            "steps": [
+              {
+                "color": "orange",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 6,
+        "x": 18,
+        "y": 42
+      },
+      "id": 66,
+      "options": {
+        "displayMode": "lcd",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": ["lastNotNull"],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true,
+        "text": {}
+      },
+      "pluginVersion": "8.1.1",
+      "targets": [
+        {
+          "exemplar": true,
+          "expr": "avg by (container)(galoy_dealer_completedDepositCount)",
+          "interval": "",
+          "legendFormat": "done deposit cnt",
+          "refId": "A"
+        },
+        {
+          "exemplar": true,
+          "expr": "avg by (container)(galoy_dealer_pendingDepositCount)",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "pend deposit cnt",
+          "refId": "B"
+        },
+        {
+          "exemplar": true,
+          "expr": "avg by (container)(galoy_dealer_completedWithdrawalCount)",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "done withdraw cnt",
+          "refId": "C"
+        },
+        {
+          "exemplar": true,
+          "expr": "avg by (container)(galoy_dealer_pendingWithdrawalCount)",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "pending withdraw cnt",
+          "refId": "D"
+        },
+        {
+          "exemplar": true,
+          "expr": "avg by (container)(galoy_dealer_totalInFlightTransfersCount)",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "total transfer cnt",
+          "refId": "E"
+        }
+      ],
+      "title": "InFlight Transfers",
+      "type": "bargauge"
+    },
+    {
+      "datasource": null,
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -3155,8 +3454,8 @@
       "gridPos": {
         "h": 7,
         "w": 12,
-        "x": 0,
-        "y": 42
+        "x": 12,
+        "y": 49
       },
       "id": 62,
       "options": {
@@ -3270,222 +3569,6 @@
       ],
       "title": "Funding Yield",
       "type": "bargauge"
-    },
-    {
-      "datasource": null,
-      "description": "",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "axisSoftMax": 1,
-            "axisSoftMin": -1,
-            "barAlignment": 0,
-            "drawStyle": "bars",
-            "fillOpacity": 100,
-            "gradientMode": "scheme",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [
-            {
-              "options": {
-                "from": 0,
-                "result": {
-                  "color": "green",
-                  "index": 0,
-                  "text": "UP"
-                },
-                "to": 1
-              },
-              "type": "range"
-            },
-            {
-              "options": {
-                "from": -1,
-                "result": {
-                  "color": "red",
-                  "index": 1,
-                  "text": "DOWN"
-                },
-                "to": 0
-              },
-              "type": "range"
-            }
-          ],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "red",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": -0.0001
-              },
-              {
-                "color": "green",
-                "value": 0
-              },
-              {
-                "color": "green",
-                "value": 0.001
-              }
-            ]
-          }
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "isExchangeAlive"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "mode": "thresholds",
-                  "seriesBy": "last"
-                }
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 7,
-        "w": 6,
-        "x": 12,
-        "y": 42
-      },
-      "id": 64,
-      "options": {
-        "legend": {
-          "calcs": ["last"],
-          "displayMode": "list",
-          "placement": "bottom"
-        },
-        "tooltip": {
-          "mode": "multi"
-        }
-      },
-      "targets": [
-        {
-          "exemplar": true,
-          "expr": "avg by (container)(galoy_dealer_exchangeStatus)",
-          "interval": "",
-          "legendFormat": "isExchangeAlive",
-          "refId": "A"
-        }
-      ],
-      "title": "Exchange Status",
-      "type": "timeseries"
-    },
-    {
-      "datasource": null,
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "percentage",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 7,
-        "w": 6,
-        "x": 18,
-        "y": 42
-      },
-      "id": 66,
-      "options": {
-        "displayMode": "lcd",
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": ["lastNotNull"],
-          "fields": "",
-          "values": false
-        },
-        "showUnfilled": true,
-        "text": {}
-      },
-      "pluginVersion": "8.1.1",
-      "targets": [
-        {
-          "exemplar": true,
-          "expr": "avg by (container)(galoy_dealer_completedDepositCount)",
-          "interval": "",
-          "legendFormat": "done deposit cnt",
-          "refId": "A"
-        },
-        {
-          "exemplar": true,
-          "expr": "avg by (container)(galoy_dealer_pendingDepositCount)",
-          "hide": false,
-          "interval": "",
-          "legendFormat": "pend deposit cnt",
-          "refId": "B"
-        },
-        {
-          "exemplar": true,
-          "expr": "avg by (container)(galoy_dealer_completedWithdrawalCount)",
-          "hide": false,
-          "interval": "",
-          "legendFormat": "done withdraw cnt",
-          "refId": "C"
-        },
-        {
-          "exemplar": true,
-          "expr": "avg by (container)(galoy_dealer_pendingWithdrawalCount)",
-          "hide": false,
-          "interval": "",
-          "legendFormat": "pending withdraw cnt",
-          "refId": "D"
-        },
-        {
-          "exemplar": true,
-          "expr": "avg by (container)(galoy_dealer_totalInFlightTransfersCount)",
-          "hide": false,
-          "interval": "",
-          "legendFormat": "total transfer cnt",
-          "refId": "E"
-        }
-      ],
-      "title": "InFlight Transfers",
-      "type": "bargauge"
     }
   ],
   "refresh": false,
@@ -3503,5 +3586,5 @@
   "timezone": "",
   "title": "Galoy Dealer",
   "uid": "pTEP9n47k",
-  "version": 66
+  "version": 74
 }
