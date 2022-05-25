@@ -1,6 +1,6 @@
 import pino from "pino"
 import { IDatabase, IMain } from "pg-promise"
-import { InternalTransfer } from "../models"
+import { InternalTransfer, InternalTransfersMetrics } from "../models"
 import { internalTransfersQueries as sql } from "../sql"
 import { Result } from "../../Result"
 
@@ -60,6 +60,33 @@ export class InternalTransfersRepository {
       return { ok: true, value: rowCount }
     } catch (error) {
       this.logger.error({ error }, "Error: getCount() failed.")
+      return { ok: false, error: error }
+    }
+  }
+
+  private static InternalTransfersMetricsCallback(
+    metrics: InternalTransfersMetrics,
+  ): InternalTransfersMetrics {
+    metrics.totalInternalTransfersCount = Number(metrics.totalInternalTransfersCount)
+    metrics.tradingToFundingSuccessCount = Number(metrics.tradingToFundingSuccessCount)
+    metrics.tradingToFundingFailCount = Number(metrics.tradingToFundingFailCount)
+    metrics.fundingToTradingSuccessCount = Number(metrics.fundingToTradingSuccessCount)
+    metrics.fundingToTradingFailCount = Number(metrics.fundingToTradingFailCount)
+    return metrics
+  }
+
+  public async getMetrics(): Promise<Result<InternalTransfersMetrics>> {
+    try {
+      const rowCount = await this.db.one(
+        sql.get_metrics,
+        [],
+        InternalTransfersRepository.InternalTransfersMetricsCallback,
+      )
+      this.logger.info({ rowCount }, "getMetrics() returned: {result}.")
+
+      return { ok: true, value: rowCount }
+    } catch (error) {
+      this.logger.error({ error }, "Error: getMetrics() failed.")
       return { ok: false, error: error }
     }
   }

@@ -919,7 +919,7 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "avg by (container)(abs(galoy_dealer_liabilityInUsd) )",
+          "expr": "avg by (container)(-galoy_dealer_liabilityInUsd)",
           "interval": "",
           "legendFormat": "liability in usd",
           "refId": "A"
@@ -3485,6 +3485,89 @@
         }
       ],
       "title": "InFlight Transfers",
+      "type": "bargauge"
+    },
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "percentage",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 6,
+        "x": 18,
+        "y": 49
+      },
+      "id": 67,
+      "options": {
+        "displayMode": "lcd",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": ["lastNotNull"],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true,
+        "text": {}
+      },
+      "pluginVersion": "8.1.1",
+      "targets": [
+        {
+          "exemplar": true,
+          "expr": "avg by (container)(galoy_dealer_tradingToFundingSuccessCount)",
+          "interval": "",
+          "legendFormat": "done withdraw cnt",
+          "refId": "A"
+        },
+        {
+          "exemplar": true,
+          "expr": "avg by (container)(galoy_dealer_tradingToFundingFailCount)",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "failed withdraw cnt",
+          "refId": "B"
+        },
+        {
+          "exemplar": true,
+          "expr": "avg by (container)(galoy_dealer_fundingToTradingSuccessCount)",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "done deposit cnt",
+          "refId": "C"
+        },
+        {
+          "exemplar": true,
+          "expr": "avg by (container)(galoy_dealer_fundingToTradingFailCount)",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "failed  deposit cnt",
+          "refId": "D"
+        },
+        {
+          "exemplar": true,
+          "expr": "avg by (container)(galoy_dealer_totalInternalTransfersCount)",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "total transfer cnt",
+          "refId": "E"
+        }
+      ],
+      "title": "On Exchange Internal Transfers",
       "type": "bargauge"
     }
   ],
