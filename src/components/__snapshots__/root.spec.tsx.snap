@@ -650,9 +650,7 @@ exports[`Root appRoutes renders Receive and matches snapshot 1`] = `
         <div
           class="action-button center-display"
         >
-          <button
-            disabled=""
-          >
+          <button>
             Next 
           </button>
         </div>

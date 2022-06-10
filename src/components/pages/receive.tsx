@@ -276,7 +276,7 @@ const Receive: NoPropsFCT = () => {
                 onClick={() =>
                   setInput((currInput) => ({ ...currInput, view: "result" }))
                 }
-                disabled={!input.amount}
+                disabled={input.amount === undefined}
               >
                 {translate("Next")}{" "}
                 {input.amount === undefined && <Spinner size="small" />}

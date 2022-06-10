@@ -12,7 +12,7 @@ type ExpiredMessageFCT = React.FC<{ onClick: () => void }>
 
 const ExpiredMessage: ExpiredMessageFCT = ({ onClick }) => (
   <div className="invoice-message expired-invoice">
-    {translate("Invoice Expired...")}{" "}
+    {translate("Invoice Expired")}{" "}
     <div className="link" onClick={onClick}>
       {translate("Generate New Invoice")}
     </div>

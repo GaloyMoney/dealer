@@ -3,11 +3,12 @@ import { useContext, createContext } from "react"
 export type AuthIdentity = {
   id: string
   uid: string
+  userId?: string
   phoneNumber?: string
   emailAddress?: string
   firstName?: string
   lastName?: string
-  accountStatus?: string
+  accountStatus?: "NEW" | "PENDING" | "ACTIVE" | "LOCKED" // FIXME: Get from client
 }
 
 export type AuthSession = {
