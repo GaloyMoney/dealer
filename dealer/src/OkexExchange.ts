@@ -434,11 +434,11 @@ export class OkexExchange extends ExchangeBase {
                 "exchange.privateGetAssetCurrencies() returned: {response}",
               )
               if (btcCurrency?.minWd)
-                config.minOnChainWithdrawalAmount = btcCurrency?.minWd
+                config.minOnChainWithdrawalAmount = Number(btcCurrency?.minWd)
               if (btcCurrency?.minFee)
-                config.minOnChainWithdrawalFee = btcCurrency?.minFee
+                config.minOnChainWithdrawalFee = Number(btcCurrency?.minFee)
               if (btcCurrency?.maxFee)
-                config.maxOnChainWithdrawalFee = btcCurrency?.maxFee
+                config.maxOnChainWithdrawalFee = Number(btcCurrency?.maxFee)
               this.logger.debug(
                 { config, response: btcCurrency },
                 "ExchangeConfiguration after update: {config}",
