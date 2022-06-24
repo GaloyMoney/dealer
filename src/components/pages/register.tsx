@@ -75,7 +75,7 @@ const Register: FCT = ({ flowData: flowDataProp }) => {
   const handleKratosRegister = async (values: SubmitSelfServiceRegistrationFlowBody) => {
     const kratos = KratosSdk(config.kratosBrowserUrl)
     kratos
-      .submitSelfServiceRegistrationFlow(String(flowData?.id), values, {
+      .submitSelfServiceRegistrationFlow(String(flowData?.id), values, undefined, {
         withCredentials: true,
       })
       .then(async ({ data }) => {

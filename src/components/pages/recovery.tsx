@@ -65,7 +65,7 @@ const Recovery: FCT = ({ flowData: flowDataProp }) => {
   const handleKratossRecovery = async (values: SubmitSelfServiceRecoveryFlowBody) => {
     const kratos = KratosSdk(config.kratosBrowserUrl)
     kratos
-      .submitSelfServiceRecoveryFlow(String(flowData?.id), undefined, values, {
+      .submitSelfServiceRecoveryFlow(String(flowData?.id), values, undefined, undefined, {
         withCredentials: true,
       })
       .then(({ data }) => {

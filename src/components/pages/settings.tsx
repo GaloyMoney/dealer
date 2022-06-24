@@ -82,7 +82,7 @@ const Settings: FCT = ({ flowData: flowDataProp }) => {
   const handleKratosRegister = async (values: SubmitSelfServiceSettingsFlowBody) => {
     const kratos = KratosSdk(config.kratosBrowserUrl)
     kratos
-      .submitSelfServiceSettingsFlow(String(flowData?.id), undefined, values, {
+      .submitSelfServiceSettingsFlow(String(flowData?.id), values, undefined, undefined, {
         withCredentials: true,
       })
       .then(async ({ data }) => setFlowData(data))

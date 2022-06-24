@@ -17,5 +17,6 @@
     "preserveSymlinks": true,
     "resolveJsonModule": true
   },
-  "include": ["src"]
+  "include": ["src"],
+  "exclude": ["src/modules/*/vendor"]
 }
