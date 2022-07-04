@@ -570,11 +570,11 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
 
               const bookingResult = await withdrawBookKeepingCallback(
                 withdrawOnChainAddress,
-                transferSizeInBtc,
+                withdrawArgs.quantity,
               )
               this.logger.debug(
-                { transferSizeInBtc, bookingResult },
-                "withdrawBookKeepingCallback() returned: {depositResult}",
+                { withdrawOnChainAddress, transferSizeInBtc: withdrawArgs.quantity, bookingResult },
+                "withdrawBookKeepingCallback() returned: {bookingResult}",
               )
               if (!bookingResult.ok) {
                 return { ok: false, error: bookingResult.error }
