@@ -526,11 +526,10 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
 
             // then initiate the withdrawal which by default uses the funding account
             const config = this.exchangeConfig as OkexExchangeConfiguration
-            const averageFee =
-              (config.minOnChainWithdrawalFee + config.maxOnChainWithdrawalFee) / 2
+            const averageFee = config.minOnChainWithdrawalFee
             const withdrawArgs = {
               currency: TradeCurrency.BTC,
-              quantity: transferSizeInBtc,
+              quantity: transferSizeInBtc - averageFee,
               address: withdrawOnChainAddress,
               params: {
                 fee: averageFee,
