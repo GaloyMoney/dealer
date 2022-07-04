@@ -11,8 +11,11 @@ import {
   SemanticAttributes,
 } from "../../services/tracing"
 import { ErrorLevel } from "../../Result"
+import { yamlConfig } from "../../config"
 
 dotenv.config()
+
+const fees = yamlConfig.fees
 
 const logger = baseLogger.child({ module: "exporter" })
 
@@ -512,6 +515,27 @@ const metrics: { [key: string]: IMetricData } = {
       help: "5Y funding yield",
     }),
   },
+  baseFee: {
+    value: NaN,
+    gauge: new client.Gauge({
+      name: `${prefix}_baseFee`,
+      help: "price service base fee",
+    }),
+  },
+  immediateConversionSpread: {
+    value: NaN,
+    gauge: new client.Gauge({
+      name: `${prefix}_immediateConversionSpread`,
+      help: "price service immediate conversion spread",
+    }),
+  },
+  delayedConversionSpread: {
+    value: NaN,
+    gauge: new client.Gauge({
+      name: `${prefix}_delayedConversionSpread`,
+      help: "price service delayed conversion spread",
+    }),
+  },
   exchangeStatus: {
     value: NaN,
     gauge: new client.Gauge({
@@ -781,6 +805,15 @@ export async function exporter() {
 
           // Is exchange up?
           Metrics.set(metrics["exchangeStatus"], await dealer.getExchangeStatus())
+
+          // Price Service fees & spread
+          Metrics.set(metrics["exchangeStatus"], await dealer.getExchangeStatus())
+          Metrics.set(metrics["baseFee"], fees.BASE_FEE)
+          Metrics.set(
+            metrics["immediateConversionSpread"],
+            fees.IMMEDIATE_CONVERSION_SPREAD,
+          )
+          Metrics.set(metrics["delayedConversionSpread"], fees.DELAYED_CONVERSION_SPREAD)
 
           // Realized Profit And Loss
           const strategyRPnlInSats =
