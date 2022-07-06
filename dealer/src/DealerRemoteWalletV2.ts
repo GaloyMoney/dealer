@@ -1,24 +1,41 @@
-import { ErrorLevel, Result } from "./Result"
-import { GaloyWallet, WalletsBalances } from "./GaloyWalletTypes"
 import {
   ApolloClient,
   NormalizedCacheObject,
   createHttpLink,
   InMemoryCache,
   ApolloLink,
+  gql,
 } from "@apollo/client/core"
 import { setContext } from "@apollo/client/link/context"
 import fetch from "node-fetch"
 import { pino } from "pino"
-import { cents2usd, sat2btc } from "./utils"
 
 import { QUERIES, MUTATIONS } from "@galoymoney/client"
+
+import { cents2usd, sat2btc } from "./utils"
+
+import { GaloyWallet, WalletsBalances } from "./GaloyWalletTypes"
+import { ErrorLevel, Result } from "./Result"
 import {
   addAttributesToCurrentSpan,
   asyncRunInSpan,
   recordExceptionInCurrentSpan,
   SemanticAttributes,
 } from "./services/tracing"
+
+const BALANCE_QUERY = gql`
+  query walletsBalance {
+    me {
+      defaultAccount {
+        wallets {
+          id
+          balance
+          walletCurrency
+        }
+      }
+    }
+  }
+`
 
 export class DealerRemoteWalletV2 implements GaloyWallet {
   client: ApolloClient<NormalizedCacheObject>
@@ -90,29 +107,22 @@ export class DealerRemoteWalletV2 implements GaloyWallet {
         const usdBalanceOffset = Number(process.env["DEALER_USD_BAL_OFFSET"] ?? 0)
 
         const logger = this.logger.child({ method: "getWalletsBalances()" })
-        const variables = {
-          isAuthenticated: this.isAuthenticated(),
-          recentTransactions: 0,
-        }
         try {
-          const result = await this.client.query({
-            query: QUERIES.main,
-            variables: variables,
-          })
+          const result = await this.client.query({ query: BALANCE_QUERY })
           logger.debug(
-            { query: QUERIES.main, variables, result },
-            "{query} with {variables} to galoy graphql api successful with {result}",
+            { query: BALANCE_QUERY, result },
+            "{query} to galoy graphql api successful with {result}",
           )
 
           const me = result.data?.me
           const btcWallet = me?.defaultAccount?.wallets?.find(
-            (wallet) => wallet?.__typename === "BTCWallet",
+            (wallet) => wallet.walletCurrency === "BTC",
           )
           const btcWalletId = btcWallet?.id
           const btcWalletBalance: number = (btcWallet?.balance ?? NaN) - btcBalanceOffset
 
           const usdWallet = me?.defaultAccount?.wallets?.find(
-            (wallet) => wallet?.__typename === "UsdWallet",
+            (wallet) => wallet.walletCurrency === "USD",
           )
           const usdWalletId = usdWallet?.id
           const usdWalletBalance: number = (usdWallet?.balance ?? NaN) - usdBalanceOffset
@@ -142,8 +152,8 @@ export class DealerRemoteWalletV2 implements GaloyWallet {
         } catch (error) {
           recordExceptionInCurrentSpan({ error, level: ErrorLevel.Warn })
           logger.error(
-            { query: QUERIES.main, variables, error },
-            "{query} with {variables} to galoy graphql api failed with {error}",
+            { query: BALANCE_QUERY, error },
+            "{query} to galoy graphql api failed with {error}",
           )
           return { ok: false, error }
         }
