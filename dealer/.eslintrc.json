@@ -1,0 +1,6 @@
+{
+  "extends": "../eslintrc.base.json",
+  "rules": {
+    "@typescript-eslint/no-unused-vars": ["error", { "ignoreRestSiblings": true }]
+  }
+}
