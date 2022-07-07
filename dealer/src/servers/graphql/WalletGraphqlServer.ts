@@ -19,6 +19,8 @@ import { db as database } from "../../database"
 
 import { baseLogger } from "../../services/logger"
 
+import { CustomApolloError } from "./error"
+
 const graphqlLogger = baseLogger.child({ module: "graphql" })
 
 dotenv.config()
@@ -38,7 +40,7 @@ const pino_http = PinoHttp({
     }),
   },
   autoLogging: {
-    ignorePaths: ["/healthz"],
+    ignore: (req) => req.url === "/healthz",
   },
 })
 
@@ -180,7 +182,8 @@ export async function startApolloServer() {
       }
     },
     formatError: (err) => {
-      const log = err.extensions?.exception?.log
+      const exception = err.extensions?.exception as CustomApolloError
+      const log = exception.log
 
       // An err object needs to necessarily have the forwardToClient field to be forwarded
       // i.e. catch-all errors will not be forwarded
@@ -191,8 +194,8 @@ export async function startApolloServer() {
         // ex: fields that indicate whether a payment succeeded or not, or stacktraces, that are required
         // for metrics or debugging
         // the err.extensions.metadata field contains such fields
-        log({ ...errObj, ...err.extensions?.metadata })
-        if (err.extensions?.exception.forwardToClient) {
+        log({ ...errObj, ...(err.extensions?.metadata as object) })
+        if (exception.forwardToClient) {
           return errObj
         }
       } else {
@@ -209,6 +212,8 @@ export async function startApolloServer() {
   app.get("/healthz", async (req, res) => {
     res.send("OK")
   })
+
+  await server.start()
 
   server.applyMiddleware({ app })
 

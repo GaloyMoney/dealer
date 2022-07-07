@@ -27,7 +27,7 @@
 
     "import/no-deprecated": "error",
     "import/no-extraneous-dependencies": "error",
-    "import/no-unassigned-import": "error",
+    "import/no-unassigned-import": "off",
     "import/no-unresolved": "off",
     "import/order": ["error", { "newlines-between": "always-and-inside-groups" }],
 

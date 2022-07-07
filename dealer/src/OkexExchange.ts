@@ -645,7 +645,7 @@ export class OkexExchange extends ExchangeBase {
 
         try {
           if (apiResponse?.data) {
-            for (const rawTransaction of apiResponse?.data) {
+            for (const rawTransaction of apiResponse.data) {
               const transaction: Transaction = {
                 balance: Number(rawTransaction.bal),
                 balanceChange: Number(rawTransaction.balChg),
@@ -837,7 +837,7 @@ export class OkexExchange extends ExchangeBase {
 
         try {
           if (apiResponse?.data) {
-            for (const rawFundingRate of apiResponse?.data) {
+            for (const rawFundingRate of apiResponse.data) {
               const fundingRate: FundingRate = {
                 fundingRate: Number(rawFundingRate.fundingRate),
                 instrumentId: rawFundingRate.instId,

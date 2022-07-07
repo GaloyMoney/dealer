@@ -1,3 +1,4 @@
+import "cross-fetch/polyfill" // The Apollo client depends on fetch
 import {
   ApolloClient,
   NormalizedCacheObject,
@@ -7,7 +8,6 @@ import {
   gql,
 } from "@apollo/client/core"
 import { setContext } from "@apollo/client/link/context"
-import fetch from "node-fetch"
 import { pino } from "pino"
 
 import { QUERIES, MUTATIONS } from "@galoymoney/client"
@@ -47,7 +47,7 @@ export class DealerRemoteWalletV2 implements GaloyWallet {
 
   constructor(logger: pino.Logger) {
     const GRAPHQL_URI = process.env["GRAPHQL_URI"]
-    this.httpLink = createHttpLink({ uri: GRAPHQL_URI, fetch })
+    this.httpLink = createHttpLink({ uri: GRAPHQL_URI })
     const cache = new InMemoryCache()
     this.client = new ApolloClient({ link: this.httpLink, cache: cache })
     this.logger = logger.child({ class: DealerRemoteWalletV2.name })

@@ -1,4 +1,4 @@
-import parse from "csv-parse/lib/sync"
+import { parse } from "csv-parse/sync"
 import fs from "fs"
 import { Result } from "src/Result"
 import { OrderStatus } from "src/ExchangeTradingType"
