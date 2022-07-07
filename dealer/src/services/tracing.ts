@@ -23,7 +23,9 @@ import {
   TimeInput,
   Exception,
   SpanOptions,
+  Context,
 } from "@opentelemetry/api"
+
 import { ErrorLevel } from "../Result"
 import { tracingConfig } from "../config"
 
@@ -58,7 +60,7 @@ const provider = new NodeTracerProvider({
 })
 
 class SpanProcessorWrapper extends SimpleSpanProcessor {
-  onStart(span: SdkSpan) {
+  onStart(span: SdkSpan, parentContext: Context) {
     const ctx = context.active()
     if (ctx) {
       const baggage = propagation.getBaggage(ctx)
@@ -68,7 +70,7 @@ class SpanProcessorWrapper extends SimpleSpanProcessor {
         })
       }
     }
-    super.onStart(span)
+    super.onStart(span, parentContext)
   }
 }
 provider.addSpanProcessor(
@@ -132,6 +134,7 @@ export const recordExceptionInCurrentSpan = ({
 const recordException = (span: Span, exception: Exception, level?: ErrorLevel) => {
   const errorLevel = level || exception["level"] || ErrorLevel.Warn
   span.setAttribute("error.level", errorLevel)
+  span.setAttribute("error.name", exception["name"])
   span.recordException(exception)
   span.setStatus({ code: SpanStatusCode.ERROR })
 }
@@ -145,7 +148,7 @@ export const syncRunInSpan = <F extends () => ReturnType<F>>(
     try {
       const ret = fn()
       if ((ret as unknown) instanceof Error) {
-        recordException(span, ret)
+        recordException(span, ret as Error)
       }
       span.end()
       return ret
@@ -167,7 +170,7 @@ export const asyncRunInSpan = <F extends () => ReturnType<F>>(
     try {
       const ret = await Promise.resolve(fn())
       if ((ret as unknown) instanceof Error) {
-        recordException(span, ret)
+        recordException(span, ret as Error)
       }
       span.end()
       return ret
@@ -185,11 +188,13 @@ const resolveFunctionSpanOptions = ({
   functionName,
   functionArgs,
   spanAttributes,
+  root,
 }: {
   namespace: string
   functionName: string
   functionArgs: Array<unknown>
-  spanAttributes: SpanAttributes
+  spanAttributes?: SpanAttributes
+  root?: boolean
 }): SpanOptions => {
   const attributes = {
     [SemanticAttributes.CODE_FUNCTION]: functionName,
@@ -200,12 +205,15 @@ const resolveFunctionSpanOptions = ({
     const params =
       typeof functionArgs[0] === "object" ? functionArgs[0] : { "0": functionArgs[0] }
     for (const key in params) {
-      attributes[`${SemanticAttributes.CODE_FUNCTION}.params.${key}`] = params[key]
+      const value = params[key]
+      attributes[`${SemanticAttributes.CODE_FUNCTION}.params.${key}`] = value
       attributes[`${SemanticAttributes.CODE_FUNCTION}.params.${key}.null`] =
-        params[key] === null
+        value === null
+      attributes[`${SemanticAttributes.CODE_FUNCTION}.params.${key}.undefined`] =
+        value === undefined
     }
   }
-  return { attributes }
+  return { attributes, root }
 }
 
 export const wrapToRunInSpan = <
@@ -215,19 +223,24 @@ export const wrapToRunInSpan = <
   fn,
   fnName,
   namespace,
+  spanAttributes,
+  root,
 }: {
   fn: (...args: A) => R
   fnName?: string
   namespace: string
+  spanAttributes?: SpanAttributes
+  root?: boolean
 }) => {
   return (...args: A): R => {
-    const functionName = fn.name || fnName || "unknown"
+    const functionName = fnName || fn.name || "unknown"
     const spanName = `${namespace}.${functionName}`
     const spanOptions = resolveFunctionSpanOptions({
       namespace,
       functionName,
       functionArgs: args,
-      spanAttributes: {},
+      spanAttributes,
+      root,
     })
     const ret = tracer.startActiveSpan(spanName, spanOptions, (span) => {
       try {
@@ -257,19 +270,24 @@ export const wrapAsyncToRunInSpan = <
   fn,
   fnName,
   namespace,
+  spanAttributes,
+  root,
 }: {
   fn: (...args: A) => Promise<PromiseReturnType<R>>
   fnName?: string
   namespace: string
+  spanAttributes?: SpanAttributes
+  root?: boolean
 }) => {
   return (...args: A): Promise<PromiseReturnType<R>> => {
-    const functionName = fn.name || fnName || "unknown"
+    const functionName = fnName || fn.name || "unknown"
     const spanName = `${namespace}.${functionName}`
     const spanOptions = resolveFunctionSpanOptions({
       namespace,
       functionName,
       functionArgs: args,
-      spanAttributes: {},
+      spanAttributes,
+      root,
     })
     const ret = tracer.startActiveSpan(spanName, spanOptions, async (span) => {
       try {
