@@ -1,4 +1,5 @@
 import { Params } from "ccxt"
+
 import { FundingRate, Transaction } from "./database/models"
 
 export enum TradeCurrency {

@@ -2,6 +2,27 @@ import { ServerUnaryCall, sendUnaryData, Server, ServerCredentials } from "@grpc
 
 import { baseLogger } from "../../services/logger"
 
+import {
+  btc2sat,
+  cents2usd,
+  CENTS_PER_USD,
+  sat2btc,
+  SATS_PER_BTC,
+  toCents,
+  toCentsPerSatsRatio,
+  toSats,
+  toSeconds,
+  usd2cents,
+} from "../../utils"
+
+import { yamlConfig } from "../../config"
+
+import {
+  addAttributesToCurrentSpan,
+  SemanticAttributes,
+  wrapToRunInSpan,
+} from "../../services/tracing"
+
 import { PriceServiceService } from "./proto/services/price/v1/price_service_grpc_pb"
 import {
   GetCentsFromSatsForImmediateBuyRequest,
@@ -25,25 +46,7 @@ import {
 } from "./proto/services/price/v1/price_service_pb"
 
 import { loop, lastBidInUsdPerBtc, lastAskInUsdPerBtc } from "./price_fetcher"
-import {
-  btc2sat,
-  cents2usd,
-  CENTS_PER_USD,
-  sat2btc,
-  SATS_PER_BTC,
-  toCents,
-  toCentsPerSatsRatio,
-  toSats,
-  toSeconds,
-  usd2cents,
-} from "../../utils"
 
-import { yamlConfig } from "../../config"
-import {
-  addAttributesToCurrentSpan,
-  SemanticAttributes,
-  wrapToRunInSpan,
-} from "../../services/tracing"
 const fees = yamlConfig.fees
 
 const logger = baseLogger.child({ module: "price-service" })

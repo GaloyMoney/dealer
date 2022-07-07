@@ -1,5 +1,6 @@
 import { baseLogger } from "../../services/logger"
 import { toCents, toSats } from "../../utils"
+
 import { DealerPriceService } from "./client_service"
 import { DealerPriceServiceError } from "./errors"
 

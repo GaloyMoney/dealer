@@ -31,7 +31,7 @@
   },
   "dependencies": {
     "@apollo/client": "^3.5.8",
-    "@galoymoney/client": "^0.1.10",
+    "@galoymoney/client": "^0.1.32",
     "@grpc/grpc-js": "^1.5.3",
     "@opentelemetry/api": "^1.0.2",
     "@opentelemetry/core": "^1.0.0",

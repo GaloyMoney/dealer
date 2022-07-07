@@ -1,3 +1,7 @@
+import assert from "assert"
+
+import pino from "pino"
+
 import {
   GetAccountAndPositionRiskResult,
   GetInstrumentDetailsResult,
@@ -16,7 +20,6 @@ import {
   GetFundingRateHistoryResult,
   GetFundingRateHistoryParameters,
 } from "./ExchangeTradingType"
-import assert from "assert"
 import { ExchangeBase } from "./ExchangeBase"
 import {
   ExchangeConfiguration,
@@ -25,7 +28,7 @@ import {
 } from "./ExchangeConfiguration"
 import { OkexExchangeConfiguration } from "./OkexExchangeConfiguration"
 import { ErrorLevel, Result } from "./Result"
-import pino from "pino"
+
 import { ExchangeNames, FundingRate, Transaction } from "./database/models"
 import { sleep } from "./utils"
 import {

@@ -1,4 +1,10 @@
 import pgPromise, { IInitOptions, IDatabase, IMain } from "pg-promise"
+
+import humps from "humps"
+import dotenv from "dotenv"
+
+import { baseLogger } from "../services/logger"
+
 import {
   Extensions,
   InFlightTransfersRepository,
@@ -9,9 +15,6 @@ import {
   ExternalTransfersRepository,
   FundingRatesRepository,
 } from "./repositories"
-import { baseLogger } from "../services/logger"
-import humps from "humps"
-import dotenv from "dotenv"
 
 dotenv.config()
 

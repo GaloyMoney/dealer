@@ -1,5 +1,3 @@
-import { ErrorLevel, Result } from "./Result"
-import { GaloyWallet, WalletsBalances } from "./GaloyWalletTypes"
 import {
   ApolloClient,
   NormalizedCacheObject,
@@ -9,6 +7,9 @@ import {
 } from "@apollo/client/core"
 import fetch from "node-fetch"
 import { pino } from "pino"
+
+import { GaloyWallet, WalletsBalances } from "./GaloyWalletTypes"
+import { ErrorLevel, Result } from "./Result"
 import { cents2usd, sat2btc } from "./utils"
 import {
   addAttributesToCurrentSpan,

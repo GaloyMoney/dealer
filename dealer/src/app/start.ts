@@ -7,13 +7,13 @@ import { baseLogger } from "../services/logger"
 // import { scheduler } from "./scheduler"
 // import { priceService } from "../servers/price"
 
-import { exporter, scheduler, priceService } from "."
-
 import {
   addAttributesToCurrentSpan,
   SemanticAttributes,
   wrapAsyncToRunInSpan,
 } from "../services/tracing"
+
+import { exporter, scheduler, priceService } from "."
 
 const logger = baseLogger.child({ module: "cron" })
 

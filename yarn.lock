@@ -392,7 +392,7 @@
     minimatch "^3.0.4"
     strip-json-comments "^3.1.1"
 
-"@galoymoney/client@^0.1.10":
+"@galoymoney/client@^0.1.32":
   version "0.1.32"
   resolved "https://registry.yarnpkg.com/@galoymoney/client/-/client-0.1.32.tgz#da2992b4f43de9fc59f7bc5c2f85bd812e8fe99b"
   integrity sha512-qukVUqLCFFg1OKnOqk+ph+KGUwOH9IX8nMITwg1b0Xx2ZnzF6jVvRdf0hkb/XIb6I61e86NXCm9Y1t97NGuPIQ==

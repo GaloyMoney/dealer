@@ -1,3 +1,5 @@
+import { AddressInfo } from "net"
+
 import dotenv from "dotenv"
 import {
   stringLength,
@@ -16,7 +18,6 @@ import { v4 as uuidv4 } from "uuid"
 import { db as database } from "../../database"
 
 import { baseLogger } from "../../services/logger"
-import { AddressInfo } from "net"
 
 const graphqlLogger = baseLogger.child({ module: "graphql" })
 

@@ -1,5 +1,6 @@
 import pino from "pino"
 import { IDatabase, IMain } from "pg-promise"
+
 import { ExchangeNames, FundingRate } from "../models"
 import { fundingRatesQueries as sql } from "../sql"
 import { Result } from "../../Result"

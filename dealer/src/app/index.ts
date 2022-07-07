@@ -1,11 +1,12 @@
 import { wrapAsyncToRunInSpan } from "../services/tracing"
 
 // import * as DealerMod from "../Dealer"
-import * as schedulerMod from "./scheduler"
 import * as exporterMod from "../servers/exporter/exporter"
 import * as priceServiceMod from "../servers/price"
 
 import { baseLogger } from "../services/logger"
+
+import * as schedulerMod from "./scheduler"
 const logger = baseLogger.child({ module: "wrapper" })
 
 const allFunctions = {

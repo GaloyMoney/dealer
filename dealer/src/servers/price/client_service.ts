@@ -1,7 +1,12 @@
 import util from "util"
+
 import { credentials } from "@grpc/grpc-js"
-import { UnknownDealerPriceServiceError } from "./errors"
+
 import { baseLogger } from "../../services/logger"
+
+import { toCents, toCentsPerSatsRatio, toSats } from "../../utils"
+
+import { UnknownDealerPriceServiceError } from "./errors"
 import { PriceServiceClient } from "./proto/services/price/v1/price_service_grpc_pb"
 import {
   GetCentsFromSatsForImmediateBuyRequest,
@@ -23,7 +28,6 @@ import {
   GetCentsPerSatsExchangeMidRateRequest,
   GetCentsPerSatsExchangeMidRateResponse,
 } from "./proto/services/price/v1/price_service_pb"
-import { toCents, toCentsPerSatsRatio, toSats } from "../../utils"
 
 const serverPort = process.env.PRICE_SERVER_PORT ?? "50055"
 const client = new PriceServiceClient(

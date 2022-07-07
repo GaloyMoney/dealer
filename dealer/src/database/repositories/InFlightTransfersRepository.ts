@@ -1,6 +1,7 @@
 import pino from "pino"
 import { IDatabase, IMain } from "pg-promise"
 import { IResult } from "pg-promise/typescript/pg-subset"
+
 import { InFlightTransfer, InFlightTransfersMetrics } from "../models"
 import { inFlightTransfersQueries as sql } from "../sql"
 import { Result } from "../../Result"
@@ -42,7 +43,7 @@ export class InFlightTransfersRepository {
   public async completed(address: string): Promise<Result<number>> {
     try {
       const rowCount = await this.db.tx("update-completed", async (t) => {
-        return await t.result(sql.complete, { address }, (r: IResult) => r.rowCount)
+        return t.result(sql.complete, { address }, (r: IResult) => r.rowCount)
       })
       if (rowCount !== 1) {
         throw new Error(`completedInFlightTransfer({address}) updated ${rowCount} rows.`)
