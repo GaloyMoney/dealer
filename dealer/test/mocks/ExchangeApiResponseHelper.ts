@@ -1,12 +1,9 @@
-import dateFormat from "dateformat"
 import { SupportedInstrument } from "src/ExchangeConfiguration"
 import { OrderStatus, FundTransferStatus, TradeCurrency } from "src/ExchangeTradingType"
 import { MarginMode, PositionMode } from "src/OkexExchangeConfiguration"
 
-export const DATE_FORMAT_STRING = "yyyymmddHHMMss"
-
 export function getValidFetchDepositAddressResponse() {
-  const datetime = dateFormat(new Date(), DATE_FORMAT_STRING)
+  const datetime = new Date().getTime()
   const address = `bc1q00exchange00000000000000000000000000datetime${datetime}`
   return {
     code: "0",

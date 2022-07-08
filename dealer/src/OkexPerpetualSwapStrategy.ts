@@ -1,3 +1,5 @@
+import pino from "pino"
+
 import { floorBtc, roundBtc, sleep } from "./utils"
 import { yamlConfig } from "./config"
 import { ErrorLevel, Result } from "./Result"
@@ -32,7 +34,6 @@ import {
   DestinationAddressType,
 } from "./OkexExchangeConfiguration"
 import { AccountTypeToId, OkexExchange } from "./OkexExchange"
-import pino from "pino"
 
 import {
   ExternalTransfer,
@@ -149,17 +150,17 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
   }
 
   public async getDerivativeMarketInfo(): Promise<Result<FetchTickerResult>> {
-    return await this.exchange.fetchTicker(SupportedInstrument.OKEX_PERPETUAL_SWAP)
+    return this.exchange.fetchTicker(SupportedInstrument.OKEX_PERPETUAL_SWAP)
   }
 
   public async getFundingAccountBalance(): Promise<
     Result<FetchFundingAccountBalanceResult>
   > {
-    return await this.exchange.fetchFundingAccountBalance()
+    return this.exchange.fetchFundingAccountBalance()
   }
 
   public async fetchExchangeStatus(): Promise<Result<boolean>> {
-    return await this.exchange.fetchExchangeStatus()
+    return this.exchange.fetchExchangeStatus()
   }
 
   public async fetchTransactionHistory(
@@ -573,7 +574,11 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
                 withdrawArgs.quantity,
               )
               this.logger.debug(
-                { withdrawOnChainAddress, transferSizeInBtc: withdrawArgs.quantity, bookingResult },
+                {
+                  withdrawOnChainAddress,
+                  transferSizeInBtc: withdrawArgs.quantity,
+                  bookingResult,
+                },
                 "withdrawBookKeepingCallback() returned: {bookingResult}",
               )
               if (!bookingResult.ok) {

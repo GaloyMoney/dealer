@@ -1,9 +1,11 @@
 import pino from "pino"
 import { IDatabase, IMain } from "pg-promise"
+
+import { Md5 } from "ts-md5/dist/md5"
+
 import { ExternalTransfer } from "../models"
 import { externalTransfersQueries as sql } from "../sql"
 import { Result } from "../../Result"
-import { Md5 } from "ts-md5/dist/md5"
 
 export class ExternalTransfersRepository {
   private logger: pino.Logger

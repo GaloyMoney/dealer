@@ -16,5 +16,8 @@ dealer-check-code:
 	yarn dealer eslint-check
 	yarn dealer build
 
+dealer-watch-compile:
+	$(BIN_DIR)/tsc -p ./dealer/tsconfig-build.json --watch  --noEmit --skipLibCheck
+
 dealer-unit-in-ci:
 	. ./.envrc && yarn dealer ci:test:unit

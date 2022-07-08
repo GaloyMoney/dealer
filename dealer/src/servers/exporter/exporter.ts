@@ -1,6 +1,7 @@
 import dotenv from "dotenv"
 import express from "express"
 import client, { register } from "prom-client"
+
 import { baseLogger } from "../../services/logger"
 import { Dealer } from "../../Dealer"
 import { PositionSide } from "../../ExchangeTradingType"

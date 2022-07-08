@@ -1,3 +1,7 @@
+import ccxt, { ExchangeId } from "ccxt"
+
+import pino from "pino"
+
 import {
   FetchDepositAddressResult,
   WithdrawParameters,
@@ -33,9 +37,8 @@ import {
   GetFundingRateHistoryResult,
 } from "./ExchangeTradingType"
 import { ErrorLevel, Result } from "./Result"
-import ccxt, { ExchangeId } from "ccxt"
 import { ExchangeConfiguration, Headers } from "./ExchangeConfiguration"
-import pino from "pino"
+
 import {
   addAttributesToCurrentSpan,
   asyncRunInSpan,
@@ -161,7 +164,7 @@ export abstract class ExchangeBase {
   }
 
   private async fetchDepositsAllPages(args: FetchDepositsParameters) {
-    return await asyncRunInSpan(
+    return asyncRunInSpan(
       "app.exchangeBase.fetchDepositsAllPages",
       {
         [SemanticAttributes.CODE_FUNCTION]: "fetchDepositsAllPages",
@@ -342,7 +345,7 @@ export abstract class ExchangeBase {
   }
 
   private async fetchWithdrawalsAllPages(args: FetchWithdrawalsParameters) {
-    return await asyncRunInSpan(
+    return asyncRunInSpan(
       "app.exchangeBase.fetchWithdrawalsAllPages",
       {
         [SemanticAttributes.CODE_FUNCTION]: "fetchWithdrawalsAllPages",

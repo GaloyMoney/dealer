@@ -1,4 +1,3 @@
-import dateFormat from "dateformat"
 import { UpdatedPositionAndLeverageResult } from "src/Dealer"
 import {
   OrderStatus,
@@ -10,7 +9,6 @@ import { baseLogger } from "src/services/logger"
 import { Result } from "src/Result"
 import { roundBtc, sat2btc } from "src/utils"
 import {
-  DATE_FORMAT_STRING,
   getValidFetchDepositAddressResponse,
   getValidFetchDepositsResponse,
   getValidWithdrawResponse,
@@ -421,7 +419,7 @@ export class OkexScenarioStepBuilder {
     expectedResult.walletMockStats.getWalletOnChainDepositAddress++
     walletMock.getWalletOnChainDepositAddress.mockImplementationOnce(
       (): Result<string> => {
-        const datetime = dateFormat(new Date(), DATE_FORMAT_STRING)
+        const datetime = new Date().getTime()
         const address = `bc1q00wallet0000000000000000000000000000datetime${datetime}`
         return { ok: true, value: address }
       },

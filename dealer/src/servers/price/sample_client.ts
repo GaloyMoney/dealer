@@ -1,5 +1,6 @@
 import { baseLogger } from "../../services/logger"
 import { toSats, usd2cents } from "../../utils"
+
 import { DealerPriceService } from "./client_service"
 
 const priceService = DealerPriceService()

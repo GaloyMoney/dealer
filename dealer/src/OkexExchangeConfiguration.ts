@@ -1,3 +1,5 @@
+import assert from "assert"
+
 import {
   FetchDepositAddressResult,
   WithdrawParameters,
@@ -17,7 +19,6 @@ import {
   FetchWithdrawalsParameters,
   TransferParameters,
 } from "./ExchangeTradingType"
-import assert from "assert"
 import {
   ExchangeConfiguration,
   SupportedExchange,

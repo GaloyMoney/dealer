@@ -1,5 +1,7 @@
-import { QueryFile, IQueryFileOptions } from "pg-promise"
 import { join as joinPath } from "path"
+
+import { QueryFile, IQueryFileOptions } from "pg-promise"
+
 import { baseLogger } from "../../services/logger"
 
 const logger = baseLogger.child({ module: "db/queries" })

@@ -1,3 +1,7 @@
+import assert from "assert"
+
+import pino from "pino"
+
 import {
   GetAccountAndPositionRiskResult,
   GetInstrumentDetailsResult,
@@ -16,7 +20,6 @@ import {
   GetFundingRateHistoryResult,
   GetFundingRateHistoryParameters,
 } from "./ExchangeTradingType"
-import assert from "assert"
 import { ExchangeBase } from "./ExchangeBase"
 import {
   ExchangeConfiguration,
@@ -25,7 +28,7 @@ import {
 } from "./ExchangeConfiguration"
 import { OkexExchangeConfiguration } from "./OkexExchangeConfiguration"
 import { ErrorLevel, Result } from "./Result"
-import pino from "pino"
+
 import { ExchangeNames, FundingRate, Transaction } from "./database/models"
 import { sleep } from "./utils"
 import {
@@ -642,7 +645,7 @@ export class OkexExchange extends ExchangeBase {
 
         try {
           if (apiResponse?.data) {
-            for (const rawTransaction of apiResponse?.data) {
+            for (const rawTransaction of apiResponse.data) {
               const transaction: Transaction = {
                 balance: Number(rawTransaction.bal),
                 balanceChange: Number(rawTransaction.balChg),
@@ -834,7 +837,7 @@ export class OkexExchange extends ExchangeBase {
 
         try {
           if (apiResponse?.data) {
-            for (const rawFundingRate of apiResponse?.data) {
+            for (const rawFundingRate of apiResponse.data) {
               const fundingRate: FundingRate = {
                 fundingRate: Number(rawFundingRate.fundingRate),
                 instrumentId: rawFundingRate.instId,
