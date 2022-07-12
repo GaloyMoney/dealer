@@ -8,6 +8,7 @@ const main = async () => {
 
   const DealerUpdatePositionAndLeverageTask = () => dealer.updatePositionAndLeverage()
   const wrappedTask = wrapAsyncToRunInSpan({
+    root: true,
     namespace: "app.dealer",
     fn: DealerUpdatePositionAndLeverageTask,
   })
