@@ -50,7 +50,7 @@
     "apollo-server-errors": "^3.3.1",
     "apollo-server-express": "^3.9.0",
     "black-scholes-model": "^1.0.10",
-    "ccxt": "^1.78.5",
+    "ccxt": "1.78.5",
     "cross-fetch": "^3.1.5",
     "csv-parse": "^5.2.2",
     "dotenv": "^16.0.1",
