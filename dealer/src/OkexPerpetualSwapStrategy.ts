@@ -525,75 +525,109 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
             }
             await database.internalTransfers.insert(intTransferRecord)
 
-            // then initiate the withdrawal which by default uses the funding account
-            const config = this.exchangeConfig as OkexExchangeConfiguration
-            const averageFee = config.minOnChainWithdrawalFee
-            const withdrawArgs = {
-              currency: TradeCurrency.BTC,
-              quantity: transferSizeInBtc - averageFee,
-              address: withdrawOnChainAddress,
-              params: {
-                fee: averageFee,
-                dest: DestinationAddressType.External,
-                pwd: this.exchange.fundingPassword,
-              },
-            }
-            const withdrawalResult = await this.exchange.withdraw(withdrawArgs)
+            // only withdraw if funding balance > MINIMUM_FUNDING_BALANCE_BTC
+            //  and if so, withdraw (funding balance - MINIMUM_FUNDING_BALANCE_BTC)
+            //  i.e. newTransferSizeInBtc = max(0, funding balance - MINIMUM_FUNDING_BALANCE_BTC)
+            let newTransferSizeInBtc = transferSizeInBtc
+            const fundingAccountBalanceResult = await this.getFundingAccountBalance()
             this.logger.debug(
-              { withdrawArgs, withdrawalResult },
-              "withdraw() returned: {withdrawalResult}",
+              { fundingAccountBalanceResult },
+              "getFundingAccountBalance() returned: {fundingAccountBalanceResult}",
             )
-
-            // keep record of the attempt
-            const extTransferRecord: ExternalTransfer = {
-              isDepositNotWithdrawal: false,
-              currency: withdrawArgs.currency,
-              quantity: withdrawArgs.quantity,
-              destinationAddressTypeId: withdrawArgs.params.dest,
-              toAddress: withdrawArgs.address,
-              fundPassword: withdrawArgs.params.pwd,
-              fee: Number(withdrawArgs.params.fee),
-              chain: SupportedChain.BTC_Bitcoin,
-              // transferId: null,
-              success: false,
-            }
-
-            if (!withdrawalResult.ok) {
-              await database.externalTransfers.insert(extTransferRecord)
-              return { ok: false, error: withdrawalResult.error }
-            }
-            const withdrawalResponse = withdrawalResult.value
-
-            if (withdrawalResponse.id) {
-              extTransferRecord.transferId = withdrawalResponse.id
-              extTransferRecord.success = true
-              await database.externalTransfers.insert(extTransferRecord)
-
-              const bookingResult = await withdrawBookKeepingCallback(
-                withdrawOnChainAddress,
-                withdrawArgs.quantity,
-              )
-              this.logger.debug(
-                {
-                  withdrawOnChainAddress,
-                  transferSizeInBtc: withdrawArgs.quantity,
-                  bookingResult,
-                },
-                "withdrawBookKeepingCallback() returned: {bookingResult}",
-              )
-              if (!bookingResult.ok) {
-                return { ok: false, error: bookingResult.error }
-              }
-
-              this.logger.info(
-                { withdrawalResponse },
-                "rebalancing withdrawal was successful",
+            if (fundingAccountBalanceResult.ok) {
+              newTransferSizeInBtc = Math.max(
+                0,
+                fundingAccountBalanceResult.value.btcFreeBalance -
+                  hedgingBounds.MINIMUM_FUNDING_BALANCE_BTC,
               )
             } else {
-              await database.externalTransfers.insert(extTransferRecord)
               this.logger.error(
-                { withdrawalResponse },
-                "rebalancing withdrawal was NOT successful",
+                { fundingAccountBalanceResult },
+                "getFundingAccountBalance() error: {fundingAccountBalanceResult}",
+              )
+            }
+
+            if (newTransferSizeInBtc > 0) {
+              // then initiate the withdrawal which by default uses the funding account
+              const config = this.exchangeConfig as OkexExchangeConfiguration
+              const averageFee = config.minOnChainWithdrawalFee
+              const withdrawArgs = {
+                currency: TradeCurrency.BTC,
+                quantity: newTransferSizeInBtc - averageFee,
+                address: withdrawOnChainAddress,
+                params: {
+                  fee: averageFee,
+                  dest: DestinationAddressType.External,
+                  pwd: this.exchange.fundingPassword,
+                },
+              }
+              const withdrawalResult = await this.exchange.withdraw(withdrawArgs)
+              this.logger.debug(
+                { withdrawArgs, withdrawalResult },
+                "withdraw() returned: {withdrawalResult}",
+              )
+
+              // keep record of the attempt
+              const extTransferRecord: ExternalTransfer = {
+                isDepositNotWithdrawal: false,
+                currency: withdrawArgs.currency,
+                quantity: withdrawArgs.quantity,
+                destinationAddressTypeId: withdrawArgs.params.dest,
+                toAddress: withdrawArgs.address,
+                fundPassword: withdrawArgs.params.pwd,
+                fee: Number(withdrawArgs.params.fee),
+                chain: SupportedChain.BTC_Bitcoin,
+                // transferId: null,
+                success: false,
+              }
+
+              if (!withdrawalResult.ok) {
+                await database.externalTransfers.insert(extTransferRecord)
+                return { ok: false, error: withdrawalResult.error }
+              }
+              const withdrawalResponse = withdrawalResult.value
+
+              if (withdrawalResponse.id) {
+                extTransferRecord.transferId = withdrawalResponse.id
+                extTransferRecord.success = true
+                await database.externalTransfers.insert(extTransferRecord)
+
+                const bookingResult = await withdrawBookKeepingCallback(
+                  withdrawOnChainAddress,
+                  withdrawArgs.quantity,
+                )
+                this.logger.debug(
+                  {
+                    withdrawOnChainAddress,
+                    transferSizeInBtc: withdrawArgs.quantity,
+                    bookingResult,
+                  },
+                  "withdrawBookKeepingCallback() returned: {bookingResult}",
+                )
+                if (!bookingResult.ok) {
+                  return { ok: false, error: bookingResult.error }
+                }
+
+                this.logger.info(
+                  { withdrawalResponse },
+                  "rebalancing withdrawal was successful",
+                )
+              } else {
+                await database.externalTransfers.insert(extTransferRecord)
+                this.logger.error(
+                  { withdrawalResponse },
+                  "rebalancing withdrawal was NOT successful",
+                )
+              }
+            } else {
+              this.logger.debug(
+                {
+                  transferSizeInBtc,
+                  newTransferSizeInBtc,
+                  fundingAccountBalanceResult,
+                  hedgingBounds,
+                },
+                "no withdraw() required",
               )
             }
           } else if (fundTransferSide === FundTransferSide.Deposit) {
