@@ -17,6 +17,11 @@ jest.mock("../kratos", () => ({
   }),
 }))
 
+jest.mock("../hooks/use-main-query", () => () => ({
+  username: "test",
+  lightningAddressDomain: "pay.domain",
+}))
+
 describe("Root appRoutes", () => {
   it("renders Home and matches snapshot", () => {
     const { asFragment } = render(

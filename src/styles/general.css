@@ -109,6 +109,10 @@ body {
   text-align: center;
 }
 
+.error-hint {
+  color: var(--color-error);
+}
+
 .small {
   font-size: 0.8rem;
 }

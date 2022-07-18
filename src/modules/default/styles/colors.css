@@ -2,6 +2,7 @@
   :root {
     --color-bg: #f9f9f9;
     --color-light-bg: #fdfdfd;
+    --color-dark-bg: #ededed;
     --color-menu-bg: #f2f2f2;
     --color-primary: #111111;
     --color-secondary: #666666;
@@ -25,6 +26,7 @@
   :root {
     --color-bg: #151515;
     --color-light-bg: #131313;
+    --color-dark-bg: #232323;
     --color-menu-bg: #1c1c1c;
     --color-primary: #eeeeee;
     --color-secondary: #999999;
@@ -47,6 +49,7 @@
 body.light {
   --color-bg: #f9f9f9;
   --color-light-bg: #fdfdfd;
+  --color-dark-bg: #ededed;
   --color-menu-bg: #f2f2f2;
   --color-primary: #111111;
   --color-secondary: #666666;

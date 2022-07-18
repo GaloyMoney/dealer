@@ -17,6 +17,7 @@ const useMainQuery = () => {
   })
 
   const pubKey = data?.globals?.nodesIds?.[0] ?? ""
+  const lightningAddressDomain = data?.globals?.lightningAddressDomain
   const btcPrice = data?.btcPrice ?? undefined
 
   const me = data?.me
@@ -33,6 +34,7 @@ const useMainQuery = () => {
   const language = (me?.language ?? "DEFAULT") as Language
 
   return {
+    lightningAddressDomain,
     btcPrice,
     pubKey,
     btcWalletId,

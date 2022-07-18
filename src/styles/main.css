@@ -695,3 +695,32 @@ button {
     }
   }
 }
+
+.grouped-input-button {
+  display: flex;
+  align-items: center;
+  background-color: var(--color-light-bg);
+  border: thin solid var(--color-borders);
+  border-radius: 0.25rem;
+  button {
+    border-radius: unset;
+    border: unset;
+  }
+  .input-label-right {
+    display: flex;
+    width: 100%;
+    padding: 0.5rem;
+    color: var(--color-primary);
+    input {
+      border: unset;
+      padding: 0;
+      margin-top: 0;
+      margin-bottom: 0;
+    }
+    span {
+      color: var(--color-subtext);
+      padding-left: 0.4rem;
+      padding-right: 0.4rem;
+    }
+  }
+}
