@@ -150,7 +150,7 @@ export class DealerRemoteWalletV2 implements GaloyWallet {
             },
           }
         } catch (error) {
-          recordExceptionInCurrentSpan({ error, level: ErrorLevel.Warn })
+          recordExceptionInCurrentSpan({ error, level: ErrorLevel.Critical })
           logger.error(
             { query: BALANCE_QUERY, error },
             "{query} to galoy graphql api failed with {error}",
@@ -336,7 +336,7 @@ export class DealerRemoteWalletV2 implements GaloyWallet {
 
           return { ok: true, value: undefined }
         } catch (error) {
-          recordExceptionInCurrentSpan({ error, level: ErrorLevel.Warn })
+          recordExceptionInCurrentSpan({ error, level: ErrorLevel.Critical })
           logger.error(
             { mutation: MUTATIONS.onChainAddressCurrent, error },
             "{mutation} to galoy graphql api failed with {error}",

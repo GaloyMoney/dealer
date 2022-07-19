@@ -182,7 +182,7 @@ export class OkexExchange extends ExchangeBase {
             value: true,
           }
         } catch (error) {
-          recordExceptionInCurrentSpan({ error, level: ErrorLevel.Warn })
+          recordExceptionInCurrentSpan({ error, level: ErrorLevel.Critical })
           return { ok: true, value: true }
         }
       },
