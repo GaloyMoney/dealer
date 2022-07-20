@@ -115,7 +115,7 @@ export abstract class ExchangeBase {
             value: result,
           }
         } catch (error) {
-          recordExceptionInCurrentSpan({ error, level: ErrorLevel.Warn })
+          recordExceptionInCurrentSpan({ error, level: ErrorLevel.Critical })
           return { ok: false, error: error }
         }
       },
@@ -296,7 +296,7 @@ export abstract class ExchangeBase {
             },
           }
         } catch (error) {
-          recordExceptionInCurrentSpan({ error, level: ErrorLevel.Warn })
+          recordExceptionInCurrentSpan({ error, level: ErrorLevel.Critical })
           return { ok: false, error: error }
         }
       },
@@ -441,7 +441,7 @@ export abstract class ExchangeBase {
             },
           }
         } catch (error) {
-          recordExceptionInCurrentSpan({ error, level: ErrorLevel.Warn })
+          recordExceptionInCurrentSpan({ error, level: ErrorLevel.Critical })
           return { ok: false, error: error }
         }
       },
@@ -486,7 +486,7 @@ export abstract class ExchangeBase {
             },
           }
         } catch (error) {
-          recordExceptionInCurrentSpan({ error, level: ErrorLevel.Warn })
+          recordExceptionInCurrentSpan({ error, level: ErrorLevel.Critical })
           return { ok: false, error: error }
         }
       },
@@ -559,7 +559,7 @@ export abstract class ExchangeBase {
             value: result,
           }
         } catch (error) {
-          recordExceptionInCurrentSpan({ error, level: ErrorLevel.Warn })
+          recordExceptionInCurrentSpan({ error, level: ErrorLevel.Critical })
           return { ok: false, error: error }
         }
       },
