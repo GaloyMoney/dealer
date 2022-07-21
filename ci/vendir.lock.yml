@@ -2,14 +2,8 @@ apiVersion: vendir.k14s.io/v1alpha1
 directories:
 - contents:
   - git:
-      commitTitle: 'fix: git cliff config should be pulled from pipeline-tasks (#4)'
-      sha: fc36c9834e4da8374728298ffd362b7bc1280bc5
+      commitTitle: 'fix: add TMP_ENV_CI to test-integration'
+      sha: 4d51b09040a3fe9ab403d4ea07464cdaf2af7979
     path: .
-  path: tasks/vendor
-- contents:
-  - git:
-      commitTitle: 'fix: git cliff config should be pulled from pipeline-tasks (#4)'
-      sha: fc36c9834e4da8374728298ffd362b7bc1280bc5
-    path: .
-  path: config/vendor
+  path: vendor
 kind: LockConfig
