@@ -10,6 +10,9 @@
 #@   "install_yarn_deps",
 #@   "deps_version_resource",
 #@   "bundled_deps_resource",
+#@   "version_resource",
+#@   "versioned_image_resource",
+#@   "charts_repo_resource",
 #@   "release_task_image_config",
 #@   "edge_image_resource",
 #@   "public_docker_registry",
@@ -95,15 +98,9 @@ resources:
 - #@ bundled_deps_resource()
 - #@ slack_resource()
 
-- name: version
-  type: semver
-  source:
-    initial_version: 0.0.0
-    driver: git
-    file: version
-    uri: #@ data.values.git_uri
-    branch: #@ data.values.git_version_branch
-    private_key: #@ data.values.github_private_key
+- #@ version_resource()
+- #@ charts_repo_resource()
+- #@ versioned_image_resource()
 
 - name: gh-release
   type: github-release
@@ -118,20 +115,6 @@ resources:
     uri: #@ data.values.git_charts_uri
     branch: #@ data.values.git_charts_bot_branch
     private_key: #@ data.values.github_private_key
-
-- name: charts-repo
-  type: git
-  source:
-    uri: #@ data.values.git_charts_uri
-    branch: #@ data.values.git_charts_branch
-    private_key: #@ data.values.github_private_key
-
-- name: versioned-image
-  type: registry-image
-  source:
-    username: #@ data.values.docker_registry_user
-    password: #@ data.values.docker_registry_password
-    repository: #@ public_docker_registry() + "/galoy-pay"
 
 resource_types:
 - #@ gcr_resource_type()
