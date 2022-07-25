@@ -2,8 +2,8 @@ apiVersion: vendir.k14s.io/v1alpha1
 directories:
 - contents:
   - git:
-      commitTitle: 'feat: add spelling and test-integration actions'
-      sha: a5537cfff450976aeb7ec1cd27fc355cac88ad1a
+      commitTitle: 'fix: tyopos'
+      sha: 4e855b05150001c0ef852e90be94cd25fc30f5ca
     path: .
   path: vendor
 kind: LockConfig
