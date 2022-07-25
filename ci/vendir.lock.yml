@@ -2,8 +2,8 @@ apiVersion: vendir.k14s.io/v1alpha1
 directories:
 - contents:
   - git:
-      commitTitle: 'fix: missing / in versioned_image_resource'
-      sha: b319561d4e992af6ef4b8062192475afef751b6d
+      commitTitle: 'feat: release should have passed audit / check-code'
+      sha: 54fe5c6b4e8b89ce295cbcbf566bc805e3624903
     path: .
   path: vendor
 kind: LockConfig

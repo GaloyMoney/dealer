@@ -183,7 +183,7 @@ plan:
 - in_parallel:
   - get: repo
     trigger: true
-    passed: [ build-edge-image ]
+    passed: [ build-edge-image, audit, check-code ]
   - get: edge-image
     passed: [ build-edge-image ]
     params:
