@@ -2,8 +2,8 @@ apiVersion: vendir.k14s.io/v1alpha1
 directories:
 - contents:
   - git:
-      commitTitle: 'feat: add bulid-edge-image fragments'
-      sha: 7a751655dab581bbcc1775a466caf0590a0290ee
+      commitTitle: 'fix: rename make -> nodejs'
+      sha: d6c300f8b1a4dc2012e6b91366902d1fab21fc64
     path: .
   path: vendor
 kind: LockConfig

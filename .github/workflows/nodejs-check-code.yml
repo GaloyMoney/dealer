@@ -1,4 +1,4 @@
-name: 'Check Code'
+name: 'Nodejs Check Code'
 
 on:
   pull_request:
@@ -6,7 +6,7 @@ on:
 
 jobs:
   check-code:
-    name: Packages Check Code
+    name: Nodejs Check Code
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
