@@ -13,3 +13,5 @@ docker_registry_password: ((docker-creds.password))
 git_version_branch: version
 gh_org: GaloyMoney
 gh_repository: galoy-pay
+slack_channel: galoy-pay-github
+slack_webhook_url: ((addons-slack.api_url))
