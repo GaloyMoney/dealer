@@ -2,8 +2,8 @@ apiVersion: vendir.k14s.io/v1alpha1
 directories:
 - contents:
   - git:
-      commitTitle: 'fix: rename make -> nodejs'
-      sha: d6c300f8b1a4dc2012e6b91366902d1fab21fc64
+      commitTitle: 'feat: add spelling and test-integration actions'
+      sha: a5537cfff450976aeb7ec1cd27fc355cac88ad1a
     path: .
   path: vendor
 kind: LockConfig
