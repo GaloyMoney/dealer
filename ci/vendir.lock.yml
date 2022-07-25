@@ -2,8 +2,8 @@ apiVersion: vendir.k14s.io/v1alpha1
 directories:
 - contents:
   - git:
-      commitTitle: 'feat: add shared/* structure and check-code action'
-      sha: e733720e34936644816d4b7a12a98b9db1236071
+      commitTitle: 'feat: add bulid-edge-image fragments'
+      sha: 7a751655dab581bbcc1775a466caf0590a0290ee
     path: .
   path: vendor
 kind: LockConfig
