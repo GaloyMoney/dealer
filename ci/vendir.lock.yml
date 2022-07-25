@@ -2,8 +2,8 @@ apiVersion: vendir.k14s.io/v1alpha1
 directories:
 - contents:
   - git:
-      commitTitle: 'fix: tyopos'
-      sha: 4e855b05150001c0ef852e90be94cd25fc30f5ca
+      commitTitle: 'fix: missing / in versioned_image_resource'
+      sha: b319561d4e992af6ef4b8062192475afef751b6d
     path: .
   path: vendor
 kind: LockConfig

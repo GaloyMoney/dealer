@@ -314,7 +314,7 @@ type: registry-image
 source:
   username: #@ data.values.docker_registry_user
   password: #@ data.values.docker_registry_password
-  repository: #@ public_docker_registry() + data.values.gh_repository
+  repository: #@ public_docker_registry() + "/" + data.values.gh_repository
 #@ end
 
 #@ def gcr_resource_type():
