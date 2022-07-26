@@ -2,8 +2,8 @@ apiVersion: vendir.k14s.io/v1alpha1
 directories:
 - contents:
   - git:
-      commitTitle: 'feat: release should have passed audit / check-code'
-      sha: 54fe5c6b4e8b89ce295cbcbf566bc805e3624903
+      commitTitle: 'feat: add charts pr tasks'
+      sha: 2bd9509c8acacd26c4f2b5cf526979f1d56652da
     path: .
   path: vendor
 kind: LockConfig

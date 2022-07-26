@@ -7,7 +7,7 @@ directories:
   - path: .
     git:
       url: https://github.com/GaloyMoney/concourse-shared.git
-      ref: 54fe5c6b4e8b89ce295cbcbf566bc805e3624903
+      ref: 2bd9509c8acacd26c4f2b5cf526979f1d56652da
     includePaths:
     - shared/**/*
     newRootPath: shared
