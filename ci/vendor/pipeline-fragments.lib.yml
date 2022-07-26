@@ -251,7 +251,7 @@ plan:
         BRANCH: #@ data.values.git_charts_branch
         CHARTS_SUBDIR: #@ data.values.gh_repository
       run:
-        path: pipeline-tasks/ci/tasks/bump-image-digest.sh
+        path: pipeline-tasks/ci/vendor/tasks/bump-image-digest.sh
   - put: charts-repo-bot-branch
     params:
       repository: charts-repo
@@ -270,7 +270,7 @@ plan:
         BOT_BRANCH: #@ data.values.git_charts_bot_branch
         CHARTS_SUBDIR: #@ data.values.gh_repository
       run:
-        path: pipeline-tasks/ci/tasks/open-charts-pr.sh
+        path: pipeline-tasks/ci/vendor/tasks/open-charts-pr.sh
 #@ end
 
 #@ def repo_resource():
