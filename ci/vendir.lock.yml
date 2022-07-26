@@ -2,8 +2,8 @@ apiVersion: vendir.k14s.io/v1alpha1
 directories:
 - contents:
   - git:
-      commitTitle: 'fix: double branch key'
-      sha: f5d3a49e7461d3f652caa11066f0231d688d8f82
+      commitTitle: 'fix: again bump image commit'
+      sha: 45c4ba4749438b61ae00157371cb0648eb681ee6
     path: .
   path: vendor
 kind: LockConfig
