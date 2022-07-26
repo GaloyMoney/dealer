@@ -2,8 +2,8 @@ apiVersion: vendir.k14s.io/v1alpha1
 directories:
 - contents:
   - git:
-      commitTitle: 'fix: path to charts pr scripts'
-      sha: 75a8a54909ac0a2f74e9ee8f2779ab57a91ebb10
+      commitTitle: 'feat: add nodejs-dependabot.yml'
+      sha: 261970a93493278678c6b24fdaebd5d4a78bdc06
     path: .
   path: vendor
 kind: LockConfig
