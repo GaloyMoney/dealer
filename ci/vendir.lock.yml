@@ -2,8 +2,8 @@ apiVersion: vendir.k14s.io/v1alpha1
 directories:
 - contents:
   - git:
-      commitTitle: 'feat: add nodejs-dependabot.yml'
-      sha: 261970a93493278678c6b24fdaebd5d4a78bdc06
+      commitTitle: 'fix: audit_return was not accurate'
+      sha: bb69fa04f570029da37e13f0105298c1309d6807
     path: .
   path: vendor
 kind: LockConfig
