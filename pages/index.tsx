@@ -21,7 +21,6 @@ function Home() {
     GRAPHQL_URI.indexOf("testnet") === -1
       ? `https://1ml.com/node/`
       : `https://1ml.com/testnet/node/`
-
   const { loading, error, data } = useQuery(GET_NODE_STATS)
 
   return (
