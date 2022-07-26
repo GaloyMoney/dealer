@@ -2,8 +2,8 @@ apiVersion: vendir.k14s.io/v1alpha1
 directories:
 - contents:
   - git:
-      commitTitle: 'feat: add charts pr tasks'
-      sha: 2bd9509c8acacd26c4f2b5cf526979f1d56652da
+      commitTitle: 'fix: double branch key'
+      sha: f5d3a49e7461d3f652caa11066f0231d688d8f82
     path: .
   path: vendor
 kind: LockConfig
