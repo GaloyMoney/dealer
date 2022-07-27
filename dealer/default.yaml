@@ -18,12 +18,6 @@ hedging:
   MINIMUM_ORDER_SIZE_IN_CONTRACT: 1
   CONTRACT_FACE_VALUE: 100
 
-rebalancing:
-  lndHoldingBase: 50000000 # 0.5
-  ratioTargetDeposit: 1
-  ratioTargetWithdraw: 1
-  minOnchain: 10000000 # 0.1
-
 fees:
   BASE_FEE: 0.0005
   IMMEDIATE_CONVERSION_SPREAD: 0.0005
