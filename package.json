@@ -12,6 +12,7 @@
     "check-code": "yarn prettier-check && yarn eslint-check && yarn tsc-check"
   },
   "dependencies": {
+    "@apollo/client": "^3.4.16",
     "bech32": "^2.0.0",
     "bootstrap": "^4.5.2",
     "copy-to-clipboard": "^3.3.1",
@@ -31,7 +32,6 @@
     "use-debounce": "^7.0.1"
   },
   "devDependencies": {
-    "@apollo/client": "^3.4.16",
     "@types/node": "^16.11.1",
     "@types/react": "^17.0.30",
     "@types/react-dom": "^17.0.0",
