@@ -3656,10 +3656,8 @@
       "type": "bargauge"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "kgBfv5gVz"
-      },
+      "datasource": null
+      "description": "",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -3718,9 +3716,7 @@
       "id": 71,
       "options": {
         "legend": {
-          "calcs": [
-            "last"
-          ],
+          "calcs": ["last"],
           "displayMode": "list",
           "placement": "bottom"
         },
@@ -3732,9 +3728,9 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "( avg(avg_over_time(galoy_dealer_btcTotalBalance[1h])) + avg(avg_over_time(galoy_dealer_fundingAccountBtcTotalBalance[1h])) + (avg(avg_over_time(galoy_dealer_btc_balance[1h]))/1e8) + (avg(avg_over_time(galoy_dealer_tradingFeesTotalInSats[1h]))/1e8) + (avg(avg_over_time(galoy_dealer_fundingFeesTotalInSats[1h]) / 1e8)) ) * avg(avg_over_time(USD_price[1h])) + avg(avg_over_time(galoy_dealer_swapUPnlInUsd[1h])) + (avg(avg_over_time(galoy_dealer_usd_balance[1h]))/100)",
-          "legendFormat": "assets - liability",
-          "range": true,
+          "expr": "avg by(container) (avg_over_time(USD_price[1h])) * (avg by(container) (avg_over_time(galoy_dealer_btc_balance[1h])) / 100000000 + (avg by(container) (avg_over_time(galoy_dealer_btcTotalBalance[1h])) + avg by(container) (avg_over_time(galoy_dealer_fundingAccountBtcTotalBalance[1h])))) + avg by(container) (avg_over_time(galoy_dealer_swapUPnlInUsd[1h])) + (avg by(container) (avg_over_time(galoy_dealer_usd_balance[1h])) / 100)",
+          "interval": "",
+          "legendFormat": "assets vs. liability",
           "refId": "A"
         }
       ],
