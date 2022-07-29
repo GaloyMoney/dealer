@@ -8,6 +8,10 @@
 #@   return public_docker_registry() + "/nodejs-concourse"
 #@ end
 
+#@ def rust_concourse_image():
+#@   return public_docker_registry() + "/rust-concourse"
+#@ end
+
 #@ def release_concourse_image():
 #@   return public_docker_registry() + "/release-pipeline"
 #@ end
@@ -18,6 +22,14 @@ source:
   username: ((docker-creds.username))
   password: ((docker-creds.password))
   repository: #@ nodejs_concourse_image()
+#@ end
+
+#@ def rust_task_image_config():
+type: registry-image
+source:
+  username: ((docker-creds.username))
+  password: ((docker-creds.password))
+  repository: #@ rust_concourse_image()
 #@ end
 
 #@ def release_task_image_config():
@@ -54,6 +66,28 @@ plan:
     - name: bundled-deps
     - name: pipeline-tasks
     - name: repo
+    run:
+      path: pipeline-tasks/ci/vendor/tasks/check-code.sh
+on_failure: #@ slack_failure_notification()
+#@ end
+
+#@ def rust_check_code():
+name: check-code
+serial: true
+plan:
+- in_parallel:
+  - { get: repo, trigger: true }
+  - { get: pipeline-tasks }
+- task: check-code
+  config:
+    platform: linux
+    image_resource: #@ rust_task_image_config()
+    inputs:
+    - name: pipeline-tasks
+    - name: repo
+    caches:
+    - path: cargo-home
+    - path: cargo-target-dir
     run:
       path: pipeline-tasks/ci/vendor/tasks/check-code.sh
 on_failure: #@ slack_failure_notification()
@@ -110,6 +144,37 @@ plan:
       SSH_PRIVATE_KEY: ((staging-ssh.ssh_private_key))
       SSH_PUB_KEY: ((staging-ssh.ssh_public_key))
       JEST_TIMEOUT: 90000
+    run:
+      path: pipeline-tasks/ci/vendor/tasks/test-integration.sh
+on_failure: #@ slack_failure_notification()
+#@ end
+
+#@ def rust_integration_test():
+name: test-integration
+serial: true
+plan:
+- in_parallel:
+  - { get: repo, trigger: true }
+  - { get: pipeline-tasks }
+- task: test-integration
+  timeout: 12m
+  tags: ["galoy-staging"]
+  config:
+    platform: linux
+    image_resource: #@ rust_task_image_config()
+    inputs:
+    - name: pipeline-tasks
+    - name: repo
+      path: #@ data.values.gh_repository + "-integration"
+    caches:
+    - path: cargo-home
+    - path: cargo-target-dir
+    params:
+      REPO_PATH: #@ data.values.gh_repository + "-integration"
+      DOCKER_HOST_IP: ((staging-ssh.docker_host_ip))
+      GOOGLE_CREDENTIALS: ((staging-gcp-creds.creds_json))
+      SSH_PRIVATE_KEY: ((staging-ssh.ssh_private_key))
+      SSH_PUB_KEY: ((staging-ssh.ssh_public_key))
     run:
       path: pipeline-tasks/ci/vendor/tasks/test-integration.sh
 on_failure: #@ slack_failure_notification()

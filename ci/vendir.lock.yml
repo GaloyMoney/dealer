@@ -2,8 +2,8 @@ apiVersion: vendir.k14s.io/v1alpha1
 directories:
 - contents:
   - git:
-      commitTitle: 'fix: only audit prod deps'
-      sha: d0c6c9af1185bb4faa1ef64e20185c342519dddf
+      commitTitle: 'revert: remove --exclude from rsync'
+      sha: bd299047c51dd3518a98ce52ad4ea9e9c7faa0a7
     path: .
   path: vendor
 kind: LockConfig
