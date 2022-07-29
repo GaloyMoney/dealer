@@ -2,8 +2,8 @@ apiVersion: vendir.k14s.io/v1alpha1
 directories:
 - contents:
   - git:
-      commitTitle: 'revert: remove --exclude from rsync'
-      sha: bd299047c51dd3518a98ce52ad4ea9e9c7faa0a7
+      commitTitle: 'feat: add rust-dependabot.yml'
+      sha: 8eefeec5d26ab37b59d128d3522f4563e05a2a9a
     path: .
   path: vendor
 kind: LockConfig
