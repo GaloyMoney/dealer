@@ -1,12 +1,11 @@
 import bodyParser from "body-parser"
 import cookieSession from "cookie-session"
 import express from "express"
-import helmet from "helmet"
 import morgan from "morgan"
 import serialize from "serialize-javascript"
 import rateLimit from "express-rate-limit"
 
-import { config } from "store/index"
+import { config, helmetConfig } from "store/index"
 
 import apiRouter from "server/api-router"
 import ssrRouter from "server/ssr-router"
@@ -18,19 +17,7 @@ app.use(express.static("public"))
 app.set("view engine", "ejs")
 
 if (!config.isDev) {
-  app.use(
-    helmet({
-      contentSecurityPolicy: {
-        directives: {
-          defaultSrc: ["'self'"],
-          scriptSrc: ["'self'", "'unsafe-inline'", "https:"],
-          connectSrc: ["'self'", "*"],
-          imgSrc: ["'self'", "data:", "https:"],
-        },
-      },
-      crossOriginEmbedderPolicy: false,
-    }),
-  )
+  app.use(helmetConfig)
 }
 
 app.use(
