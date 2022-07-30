@@ -467,3 +467,10 @@ type: docker-image
 source:
   repository: cfcommunity/slack-notification-resource
 #@ end
+
+#@ def npm_resource_type():
+name: npm
+type: docker-image
+source:
+  repository: timotto/concourse-npm-resource
+#@ end
