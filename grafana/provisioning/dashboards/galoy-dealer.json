@@ -3656,7 +3656,7 @@
       "type": "bargauge"
     },
     {
-      "datasource": null
+      "datasource": null,
       "description": "",
       "fieldConfig": {
         "defaults": {
