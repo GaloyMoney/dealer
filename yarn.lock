@@ -2560,10 +2560,10 @@ react-overlays@^5.1.1:
     uncontrollable "^7.2.1"
     warning "^4.0.3"
 
-react-qrcode-logo@^2.4.0:
-  version "2.5.0"
-  resolved "https://registry.yarnpkg.com/react-qrcode-logo/-/react-qrcode-logo-2.5.0.tgz#f5215deaed92a1279d6abb3eb6e4fcd822773aa6"
-  integrity sha512-Z+Ywb2Cw3EK5csfkZHuyNpxZl5BiHxrBPAeRE3bB1qERAUMc/tMzBKpfMEb/Olti/Ic04j/DYt6ncYRLa/wFMA==
+react-qrcode-logo@^2.7.0:
+  version "2.7.0"
+  resolved "https://registry.yarnpkg.com/react-qrcode-logo/-/react-qrcode-logo-2.7.0.tgz#9cadfd0da193f348cb4ac0534a9f8d85657a6232"
+  integrity sha512-79Ce+1GlETAbu8fQGAoHczjvXjsm044+FeVAutu9lwJ/w0hRKRRPPHQRkPmXZK4aPi/H9Fqv+7P29VYQ9Yo2dA==
   dependencies:
     lodash.isequal "^4.5.0"
     qrcode-generator "^1.4.1"
