@@ -1,48 +1,7 @@
-import React, { useState, useEffect, useRef } from "react"
-import { gql, useMutation } from "@apollo/client"
+import React, { useEffect, useRef } from "react"
 
+import useCreateInvoice from "../hooks/use-Create-Invoice"
 import Invoice from "./invoice"
-
-type OperationError = {
-  message: string
-}
-
-type LnInvoiceObject = {
-  paymentRequest: string
-}
-
-const LN_INVOICE_CREATE_ON_BEHALF_OF_RECIPIENT = gql`
-  mutation lnInvoiceCreateOnBehalfOfRecipient($walletId: WalletId!, $amount: SatAmount!) {
-    mutationData: lnInvoiceCreateOnBehalfOfRecipient(
-      input: { recipientWalletId: $walletId, amount: $amount }
-    ) {
-      errors {
-        message
-      }
-      invoice {
-        paymentRequest
-      }
-    }
-  }
-`
-
-const LN_USD_INVOICE_CREATE_ON_BEHALF_OF_RECIPIENT = gql`
-  mutation lnUsdInvoiceCreateOnBehalfOfRecipient(
-    $walletId: WalletId!
-    $amount: CentAmount!
-  ) {
-    mutationData: lnUsdInvoiceCreateOnBehalfOfRecipient(
-      input: { recipientWalletId: $walletId, amount: $amount }
-    ) {
-      errors {
-        message
-      }
-      invoice {
-        paymentRequest
-      }
-    }
-  }
-`
 
 const INVOICE_STALE_CHECK_INTERVAL = 2 * 60 * 1000
 const INVOICE_EXPIRE_INTERVAL = 60 * 60 * 1000
@@ -60,32 +19,18 @@ function GenerateInvoice({
   regenerate: () => void
   currency: string
 }) {
-  const [invoiceStatus, setInvoiceStatus] = useState<
-    "loading" | "new" | "need-update" | "expired"
-  >("loading")
-
-  const INVOICE_CREATION_MUTATION =
-    recipientWalletCurrency === "USD"
-      ? LN_USD_INVOICE_CREATE_ON_BEHALF_OF_RECIPIENT
-      : LN_INVOICE_CREATE_ON_BEHALF_OF_RECIPIENT
+  const { createInvoice, data, loading, errorsMessage, invoiceStatus, setInvoiceStatus } =
+    useCreateInvoice({ recipientWalletCurrency })
   const timerIds = useRef<number[]>([])
-
-  const [createInvoice, { loading, error, data }] = useMutation<{
-    mutationData: {
-      errors: OperationError[]
-      invoice?: LnInvoiceObject
-    }
-  }>(INVOICE_CREATION_MUTATION, {
-    onError: console.error,
-    onCompleted: () => setInvoiceStatus("new"),
-  })
 
   const clearAllTimers = () => {
     timerIds.current.forEach((timerId) => clearTimeout(timerId))
   }
   useEffect(() => {
     createInvoice({
-      variables: { walletId: recipientWalletId, amount: amountInBase },
+      variables: {
+        input: { recipientWalletId, amount: amountInBase },
+      },
     })
     if (currency !== "SATS" || recipientWalletCurrency === "USD") {
       timerIds.current.push(
@@ -101,15 +46,21 @@ function GenerateInvoice({
     return clearAllTimers
   }, [recipientWalletId, amountInBase, currency, createInvoice])
 
-  let errorString: string | null = error?.message || null
+  const errorString: string | null = errorsMessage || null
   let invoice
 
   if (data) {
-    const invoiceData = data.mutationData
-    if (invoiceData.errors?.length > 0) {
-      errorString = invoiceData.errors.map((e) => e.message).join(", ")
-    } else {
-      invoice = invoiceData.invoice
+    if ("lnInvoiceCreateOnBehalfOfRecipient" in data) {
+      const { lnInvoiceCreateOnBehalfOfRecipient: invoiceData } = data
+      if (invoiceData.invoice) {
+        invoice = invoiceData.invoice
+      }
+    }
+    if ("lnUsdInvoiceCreateOnBehalfOfRecipient" in data) {
+      const { lnUsdInvoiceCreateOnBehalfOfRecipient: invoiceData } = data
+      if (invoiceData.invoice) {
+        invoice = invoiceData.invoice
+      }
     }
   }
 

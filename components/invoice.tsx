@@ -1,28 +1,14 @@
+import copy from "copy-to-clipboard"
 import { useState } from "react"
-import { gql, useSubscription } from "@apollo/client"
 import Card from "react-bootstrap/Card"
 import OverlayTrigger from "react-bootstrap/OverlayTrigger"
 import Tooltip from "react-bootstrap/Tooltip"
-import { QRCode } from "react-qrcode-logo"
-import copy from "copy-to-clipboard"
 import Lottie from "react-lottie"
+import { QRCode } from "react-qrcode-logo"
+
+import { useSubscription } from "@galoymoney/client"
 
 import animationData from "./success-animation.json"
-
-type OperationError = {
-  message: string
-}
-
-const LN_INVOICE_PAYMENT_STATUS = gql`
-  subscription lnInvoicePaymentStatus($input: LnInvoicePaymentStatusInput!) {
-    lnInvoicePaymentStatus(input: $input) {
-      errors {
-        message
-      }
-      status
-    }
-  }
-`
 
 export default function Invoice({
   paymentRequest,
@@ -33,16 +19,9 @@ export default function Invoice({
 }) {
   const [showCopied, setShowCopied] = useState(false)
 
-  const { loading, error, data } = useSubscription<{
-    lnInvoicePaymentStatus: {
-      errors: OperationError[]
-      status?: string
-    }
-  }>(LN_INVOICE_PAYMENT_STATUS, {
+  const { loading, data, error, errorsMessage } = useSubscription.lnInvoicePaymentStatus({
     variables: {
-      input: {
-        paymentRequest,
-      },
+      input: { paymentRequest },
     },
     onSubscriptionData: ({ subscriptionData }) => {
       if (subscriptionData?.data?.lnInvoicePaymentStatus?.status === "PAID") {
@@ -61,7 +40,7 @@ export default function Invoice({
 
   if (error) {
     console.error(error)
-    return <div className="error">{error.message}</div>
+    return <div className="error">{errorsMessage}</div>
   }
 
   if (loading) {

@@ -1,0 +1,232 @@
+.digits_container {
+  margin-top: 2rem;
+}
+
+.output {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  position: relative;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.output > button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent;
+  border-radius: 6px;
+  border: none;
+  outline: none;
+  position: absolute;
+  right: 0;
+}
+
+.curr_denomination {
+  color: rgba(17, 25, 40, 1);
+  font-size: 2rem;
+  font-weight: 600;
+}
+
+.curr_denomination_small {
+  color: rgba(17, 25, 40, 1);
+  font-size: 1.35rem;
+  font-weight: 600;
+}
+
+.other_denomination {
+  color: rgba(17, 25, 40, 1);
+  font-size: 0.875rem;
+  font-weight: 400;
+}
+
+.digits_grid {
+  display: grid;
+  place-content: center;
+  grid-template-columns: repeat(3, 3rem);
+  grid-template-rows: repeat(4, 2rem);
+  row-gap: 3.5rem;
+  column-gap: 4rem;
+  margin: 2rem;
+}
+
+.digits_grid > button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent;
+  border-radius: 6px;
+  border: none;
+  outline: none;
+  padding: 1.5rem;
+  font-size: 2rem;
+  font-weight: 500;
+  line-height: 48px;
+  color: rgba(17, 25, 40, 1);
+}
+
+.digits_grid > button:hover,
+.digits_grid > button:focus,
+.digits_grid > button:focus-visible {
+  border: 1px solid rgb(233, 233, 236);
+}
+
+@media (min-width: 760px) {
+  .digits_grid {
+    grid-template-columns: repeat(3, 4rem);
+    grid-template-rows: repeat(4, 4rem);
+    row-gap: 0.65rem;
+    column-gap: 7rem;
+  }
+}
+
+.pay_btn_container {
+  display: grid;
+  place-items: center;
+  margin-top: 2rem;
+}
+
+.pay_btn,
+.pay_new_btn {
+  background-color: rgb(83, 111, 242);
+  color: #fff;
+  font-weight: 600;
+  width: 327px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  column-gap: 10px;
+  border: none;
+  outline: none;
+  height: 50px;
+  padding: 13px 32px;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+}
+
+.pay_new_btn {
+  background-color: transparent;
+  color: rgb(83, 111, 242);
+  border: 2px solid rgb(83, 111, 242);
+  border-radius: 10px;
+}
+
+.clear_btn {
+  color: rgba(83, 111, 242, 1);
+  background-color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  column-gap: 10px;
+  border: none;
+  border-radius: 10px;
+  outline: none;
+  font-size: 18px;
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+  transition: all 0.5s ease;
+}
+
+.clear_btn:hover,
+.clear_btn:focus,
+.clear_btn:focus-visible {
+  border: 1px solid rgb(233, 233, 236);
+}
+
+.invoice_container {
+  display: grid;
+  place-items: center;
+}
+
+@keyframes timer {
+  from {
+    width: 0%;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+.timer_container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 270px;
+  column-gap: 15px;
+  font-size: 14px;
+  font-weight: 300;
+  margin-top: 30px;
+  margin-bottom: 5px;
+}
+
+.timer_container > p {
+  margin: 0;
+}
+
+.timer {
+  background-color: rgb(233, 233, 236);
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  width: 100%;
+  height: 5px;
+  border-radius: 10px;
+  overflow: hidden;
+  transition: all 0.5s ease;
+}
+
+.timer > span {
+  background-color: rgba(83, 111, 242, 1);
+  width: 100%;
+  height: 100%;
+  transition: all 0.5s ease;
+  animation-name: timer;
+  animation-duration: 300s;
+}
+
+.qr_clipboard {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.qr_clipboard > button {
+  background-color: transparent;
+  color: rgba(145, 155, 186, 1);
+  font-weight: 500;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  outline: none;
+  column-gap: 5px;
+  cursor: pointer;
+}
+
+.qr_clipboard > button:first-child {
+  cursor: copy;
+}
+
+.qr_clipboard > button:first-child:hover {
+  color: green;
+  /* background-color: red; */
+}
+
+.loading,
+.error {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: green;
+  padding: 50% 1rem;
+  margin-top: 2rem;
+  outline: 1px dashed rgba(0, 128, 0, 0.35);
+}
+
+.error {
+  color: red;
+  outline: 1px dashed rgba(255, 0, 0, 0.35);
+}

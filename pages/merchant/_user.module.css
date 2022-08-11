@@ -1,0 +1,94 @@
+.payment_container {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  padding-top: 2rem;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.pin_btn_group {
+  --gray-200: rgba(239, 241, 245, 1);
+  --radius: 6px;
+  background-color: var(--gray-200);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  outline: none;
+  border: none;
+  border-radius: var(--radius);
+  width: 146px;
+  height: 30px;
+  transition: all 0.2s ease-in-out;
+}
+
+.pin_btn_group:hover,
+.pin_btn_group:focus {
+  background-color: rgb(233, 233, 236);
+}
+
+.pin_icon {
+  width: 14px;
+  height: 14px;
+}
+
+.pin_btn {
+  --black-900: rgba(17, 25, 40, 1);
+  font-family: "Source Sans Pro", sans-serif;
+  font-weight: 600;
+  font-size: 0.75rem;
+  line-height: 12px;
+  background-color: transparent;
+  color: var(--black-900);
+  outline: none;
+  border: none;
+}
+
+.username_container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.username_container > button {
+  background-color: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  outline: none;
+  position: absolute;
+  left: -50%;
+  transition: all 0.5s ease;
+}
+
+.username_container > button:hover,
+.username_container > button:focus {
+  outline: 1px solid rgba(239, 241, 245, 1);
+  border-radius: 50%;
+  padding: 0.75rem 0.85rem;
+}
+
+.username {
+  color: rgba(17, 25, 40, 1);
+  font-weight: 500;
+  line-height: 22px;
+  margin-top: 12px;
+  text-transform: capitalize;
+}
+
+.error {
+  color: rgb(224, 6, 6);
+  font-size: 1.5rem;
+  text-align: center;
+  font-weight: 600;
+  padding: 50% 1rem;
+  display: grid;
+  place-items: center;
+}
+
+.error > p:last-child {
+  color: rgb(45, 43, 43);
+}
