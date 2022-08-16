@@ -25,8 +25,9 @@ function reducer(state: React.ComponentState, { type, payload }: ACTION_TYPE) {
     case ACTIONS.ADD_DIGIT:
       if (payload == "0" && state.currentAmount == "0") return { state }
       if (payload === "." && state.currentAmount.includes(".")) return { state }
-      if (state.currentAmount?.length >= MAX_INPUT_VALUE_LENGTH) return state
-      if (state.currentAmount.match(/(\.[0-9]{2,}$|\..*\.)/)) return { state }
+      if (state.currentAmount == undefined) return { state }
+      if (state.currentAmount?.length >= MAX_INPUT_VALUE_LENGTH) return { state }
+      if (state.currentAmount.match(/(\.[0-9]{2,}$|\..*\.)/)) return { ...state }
       return {
         ...state,
         currentAmount: `${state.currentAmount || ""}${payload}`,

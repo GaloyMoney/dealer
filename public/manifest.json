@@ -1,12 +1,14 @@
 {
-  "name": "GALOY MERCHANT APP",
-  "short_name": "POS",
-  "start_url": "/merchant/",
+  "name": "POS Cash Register",
+  "short_name": "Cash Register",
+  "description": "A Bitcoin POS cash register application that connects with the merchant's wallet",
+  "start_url": "/merchant/[username]",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#536FF2",
   "theme_color": "#536FF2",
   "orientation": "portrait-primary",
-  "id": "/merchant/",
+  "id": "/merchant/[username]",
   "icons": [
     {
       "src": "/manifest-logo/logo72x72.svg",

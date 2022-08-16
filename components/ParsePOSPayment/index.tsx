@@ -82,7 +82,12 @@ function ParsePayment({ defaultWalletCurrency, walletId, dispatch, state }: Prop
           <DigitButton digit={"."} dispatch={dispatch} />
           <DigitButton digit={"0"} dispatch={dispatch} />
           <button onClick={() => dispatch({ type: ACTIONS.DELETE_DIGIT })}>
-            <Image src="/icons/backspace-icon.svg" width="32" height="32" />
+            <Image
+              src="/icons/backspace-icon.svg"
+              alt="delete digit icon"
+              width="32"
+              height="32"
+            />
           </button>
         </div>
       )}
