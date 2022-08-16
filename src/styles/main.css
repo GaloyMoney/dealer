@@ -630,6 +630,9 @@ button {
 
 .form-links {
   margin: 2.5rem auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .discardable-message {

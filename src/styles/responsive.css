@@ -30,6 +30,13 @@
       }
     }
   }
+  .form-links {
+    flex-direction: column;
+    .separator {
+      visibility: hidden;
+      margin: 0.5rem auto;
+    }
+  }
 }
 
 @media (max-width: 700px) {
