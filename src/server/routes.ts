@@ -97,3 +97,9 @@ type AuthRoutes = Record<
 export const authRoutes: AuthRoutes = authRoutesDef
 
 export type ValidPath = RoutePath | AuthRoutePath
+
+const authRequiredPaths: ValidPath[] = []
+
+export const routeRequiresAuth: (path: ValidPath) => boolean = (path) => {
+  return authRequiredPaths.includes(path)
+}

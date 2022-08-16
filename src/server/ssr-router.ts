@@ -1,7 +1,7 @@
 import express from "express"
 
 import { serverRenderer } from "renderers/server"
-import { checkRoute } from "server/routes"
+import { checkRoute, routeRequiresAuth } from "server/routes"
 import { handleRegister, handleLogin, handleRecovery, handleLogout } from "kratos/index"
 import { config } from "store/index"
 
@@ -19,6 +19,10 @@ ssrRouter.get("/*", async (req, res) => {
     const checkedRoutePath = checkRoute(routePath)
 
     if (!(checkedRoutePath instanceof Error)) {
+      if (routeRequiresAuth(checkedRoutePath) && !req.session?.authSession) {
+        return res.redirect("/login?return_to=" + req.url)
+      }
+
       const ssrVars = await serverRenderer(req)({
         path: checkedRoutePath,
       })
