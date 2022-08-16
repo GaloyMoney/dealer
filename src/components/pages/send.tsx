@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from "react"
 import {
   parsePaymentDestination,
   translate,
-  ValidPaymentReponse,
+  ValidPaymentResponse,
   useDelayedQuery,
   formatUsd,
   PaymentType,
@@ -90,7 +90,7 @@ const Send: FCT = ({ to }) => {
   }, [input.currency, input.amount])
 
   const setInputFromParsedDestination = useCallback(
-    async (parsedDestination: ValidPaymentReponse) => {
+    async (parsedDestination: ValidPaymentResponse) => {
       const newInputState: Partial<InvoiceInput> = {
         valid: parsedDestination.valid,
         errorMessage: parsedDestination.errorMessage,
@@ -233,7 +233,7 @@ const Send: FCT = ({ to }) => {
     dispatch({ type: "navigate", path: "/send" })
   }, [dispatch])
 
-  const parseQRCode = useCallback<(destination: string) => false | ValidPaymentReponse>(
+  const parseQRCode = useCallback<(destination: string) => false | ValidPaymentResponse>(
     (destination) => {
       if (destination.match(/^(bitcoin:|lightning:|1|3|bc|ln)/iu)) {
         const parsedDestination = parsePaymentDestination({
