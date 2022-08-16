@@ -49,12 +49,12 @@ describe("mainReducer", () => {
     act(() => {
       dispatch({
         type: "kratos-login",
-        authIdentity: { id: "1", uid: "A" },
+        authIdentity: { id: "1", uid: "A", uidc: "A" },
       })
     })
 
     const [newState] = result.current
 
-    expect(newState.authIdentity).toEqual({ id: "1", uid: "A" })
+    expect(newState.authIdentity).toEqual({ id: "1", uid: "A", uidc: "A" })
   })
 })

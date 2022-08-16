@@ -3,7 +3,7 @@ import { useContext, createContext } from "react"
 export type AuthIdentity = {
   id: string
   uid: string
-  userId?: string
+  uidc: string
   phoneNumber?: string
   emailAddress?: string
   firstName?: string

@@ -27,6 +27,7 @@ apiRouter.post("/login", async (req, res) => {
         identity: {
           id: kratosSession.identity.id,
           uid: token.uid,
+          uidc: token.uid.slice(-6) + kratosSession.identity.id.slice(-6), // FIXME: Get from backend
           emailAddress: kratosSession.identity.traits.email,
           firstName: kratosSession.identity.traits.name?.first,
           lastName: kratosSession.identity.traits.name?.last,
@@ -61,7 +62,12 @@ apiRouter.post("/login", async (req, res) => {
     }
 
     const authSession = {
-      identity: { userId: token.uid, phoneNumber },
+      identity: {
+        id: token.uid,
+        uid: token.uid,
+        uidc: token.uid.slice(-6) + token.uid(-6), // FIXME: Get from backend
+        phoneNumber,
+      },
       galoyJwtToken,
     }
 
