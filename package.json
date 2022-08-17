@@ -23,7 +23,7 @@
   },
   "dependencies": {
     "@apollo/client": "^3.6.9",
-    "@galoymoney/client": "^0.1.39",
+    "@galoymoney/client": "^0.1.45",
     "@galoymoney/react": "^0.1.12",
     "@opentelemetry/api": "^1.1.0",
     "@opentelemetry/core": "^1.5.0",
@@ -67,7 +67,7 @@
     "ejs": "^3.1.8",
     "express": "^4.18.1",
     "express-rate-limit": "^6.5.1",
-    "graphql": "^16.5.0",
+    "graphql": "^16.6.0",
     "helmet": "^5.1.1",
     "history": "^5.2.0",
     "i18n-js": "^3.9.2",

@@ -517,10 +517,10 @@
     minimatch "^3.1.2"
     strip-json-comments "^3.1.1"
 
-"@galoymoney/client@^0.1.39":
-  version "0.1.44"
-  resolved "https://registry.yarnpkg.com/@galoymoney/client/-/client-0.1.44.tgz#630af5856834e7dcba93820df0118e6d267412a8"
-  integrity sha512-s/2ucVTiuYmDx6kNjWtiZCn9LUF/oLBtPRXOYBcz/CpwW/pax3pbjJVNWWp1JwjDzZXIM891R6nIUDWUbPTQyA==
+"@galoymoney/client@^0.1.45":
+  version "0.1.45"
+  resolved "https://registry.yarnpkg.com/@galoymoney/client/-/client-0.1.45.tgz#8365ea07dfededea8e218137b8f4ff1143eb38a8"
+  integrity sha512-5wNirhAFuk7n5dpRvtHuv33MNRBdSLEkyl5Lib7EUNz8pKifpK29h271EpervzR01wY1amAMqotmOPTBLp4lsw==
 
 "@galoymoney/react@^0.1.12":
   version "0.1.12"
@@ -3975,10 +3975,10 @@ graphql-tag@^2.12.6:
   dependencies:
     tslib "^2.1.0"
 
-graphql@^16.5.0:
-  version "16.5.0"
-  resolved "https://registry.yarnpkg.com/graphql/-/graphql-16.5.0.tgz#41b5c1182eaac7f3d47164fb247f61e4dfb69c85"
-  integrity sha512-qbHgh8Ix+j/qY+a/ZcJnFQ+j8ezakqPiHwPiZhV/3PgGlgf96QMBB5/f2rkiC9sgLoy/xvT6TSiaf2nTHJh5iA==
+graphql@^16.6.0:
+  version "16.6.0"
+  resolved "https://registry.yarnpkg.com/graphql/-/graphql-16.6.0.tgz#c2dcffa4649db149f6282af726c8c83f1c7c5fdb"
+  integrity sha512-KPIBPDlW7NxrbT/eh4qPXz5FiFdL5UbaA0XUNz2Rp3Z3hqBSkbj0GVjwFDztsWVauZUWsbKHgMg++sk8UX0bkw==
 
 har-schema@^2.0.0:
   version "2.0.0"
