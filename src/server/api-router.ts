@@ -13,14 +13,11 @@ export type GalowyJwtToken = null | (jwt.JwtPayload & { kratosUserId?: string })
 apiRouter.post("/login", async (req, res) => {
   try {
     const { authToken, phoneNumber, authCode } = req.body
-    const kratosSession = await handleWhoAmI(req)
-    if (!kratosSession) {
-      throw new Error("INVALID_LOGIN_REQUEST")
-    }
     if (authToken) {
       const token = jwt.decode(authToken) as GalowyJwtToken
+      const kratosSession = await handleWhoAmI(req)
 
-      if (!token || !token.uid) {
+      if (!token || !token.uid || !kratosSession) {
         throw new Error("INVALID_LOGIN_REQUEST")
       }
 
@@ -67,7 +64,7 @@ apiRouter.post("/login", async (req, res) => {
       identity: {
         id: token.uid,
         uid: token.uid,
-        uidc: token.uid.slice(-6) + kratosSession.identity.id.slice(-6), // FIXME: Get from backend
+        uidc: token.uid.slice(-6) + token.uid.slice(-6), // FIXME: Get from backend
         phoneNumber,
       },
       galoyJwtToken,
