@@ -1,4 +1,4 @@
-import { translate } from "@galoymoney/client"
+import { translate } from "store/index"
 import { InvoiceInput } from "components/pages/send"
 
 import SendIntraLedgerAction, {

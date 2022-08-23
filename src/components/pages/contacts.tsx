@@ -1,7 +1,7 @@
-import { translate, truncatedDisplay, useQuery } from "@galoymoney/client"
+import { truncatedDisplay, useQuery } from "@galoymoney/client"
 import { Icon, Spinner } from "@galoymoney/react"
 
-import { history, useAuthContext, NoPropsFCT } from "store/index"
+import { translate, history, useAuthContext, NoPropsFCT } from "store/index"
 
 import ErrorMessage from "components/error-message"
 import Header from "components/header"

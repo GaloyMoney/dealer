@@ -706,8 +706,8 @@ button {
   border: thin solid var(--color-borders);
   border-radius: 0.25rem;
   button {
-    border-radius: unset;
-    border: unset;
+    border-radius: unset !important;
+    border: unset !important;
   }
   .input-label-right {
     display: flex;

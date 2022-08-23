@@ -1,10 +1,9 @@
 import { useState } from "react"
 
-import { translate } from "@galoymoney/client"
 import { Icon } from "@galoymoney/react"
 
 import useMainQuery from "hooks/use-main-query"
-import { useAuthContext, useAppState } from "store/index"
+import { translate, useAuthContext, useAppState } from "store/index"
 
 import Balance from "components/balance"
 import Link from "components/link"

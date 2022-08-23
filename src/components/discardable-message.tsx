@@ -1,6 +1,6 @@
 import { useState } from "react"
 
-import { translate } from "@galoymoney/client"
+import { translate } from "store/index"
 
 const messages = {
   emailVerified: translate("Your email address has been verified"),

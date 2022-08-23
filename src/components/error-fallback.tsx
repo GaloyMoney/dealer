@@ -1,7 +1,6 @@
-import { translate } from "@galoymoney/client"
 import { FallbackProps } from "react-error-boundary"
 
-import { config } from "store/index"
+import { config, translate } from "store/index"
 
 type FCT = React.FC<FallbackProps>
 

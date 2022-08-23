@@ -1,7 +1,9 @@
 import { MouseEvent } from "react"
 
-import { formatUsd, GaloyGQL, translate } from "@galoymoney/client"
+import { formatUsd, GaloyGQL } from "@galoymoney/client"
 import { SatFormat, Spinner, SuccessCheckmark } from "@galoymoney/react"
+
+import { translate } from "store/index"
 
 import useMyUpdates from "hooks/use-my-updates"
 

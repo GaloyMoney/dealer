@@ -1,16 +1,14 @@
 import { useState } from "react"
 
 import {
-  formatRelativeTime,
-  formatTime,
+  formatForLocale,
   formatUsd,
   GaloyGQL,
-  translate,
   truncatedDisplay,
 } from "@galoymoney/client"
 import { Icon, SatFormat } from "@galoymoney/react"
 
-import { config } from "store/index"
+import { config, translate, getLocale } from "store/index"
 
 export const BLOCKCHAIN_EXPLORER_URL = "https://mempool.space/tx/"
 
@@ -54,6 +52,8 @@ const descriptionDisplay = (tx: GaloyGQL.Transaction) => {
     }
   }
 }
+
+const { formatTime, formatRelativeTime } = formatForLocale(getLocale())
 
 type FCT = React.FC<{ tx: GaloyGQL.Transaction }>
 

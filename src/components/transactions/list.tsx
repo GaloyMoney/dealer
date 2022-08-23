@@ -1,11 +1,11 @@
 import { useRef } from "react"
 
-import { GaloyGQL, translate, useDelayedQuery } from "@galoymoney/client"
+import { GaloyGQL, useDelayedQuery } from "@galoymoney/client"
 import { Spinner } from "@galoymoney/react"
 
 import useMainQuery from "hooks/use-main-query"
 import TransactionItem from "components/transactions/item"
-import { NoPropsFCT } from "store/index"
+import { translate, NoPropsFCT } from "store/index"
 
 const TRANSACTIONS_PER_PAGE = 25
 const EMPTY_CONNECTION = {

@@ -1,9 +1,9 @@
 import { ChangeEvent, useEffect, useState } from "react"
 
-import { translate } from "@galoymoney/client"
 import { Icon } from "@galoymoney/react"
 
 import {
+  translate,
   ColorTheme,
   colorThemeLabels,
   NoPropsFCT,

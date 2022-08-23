@@ -1,14 +1,9 @@
 import { useCallback, useRef } from "react"
 
-import {
-  GaloyGQL,
-  isThisMonth,
-  isToday,
-  isYesterday,
-  translate,
-  useQuery,
-} from "@galoymoney/client"
+import { GaloyGQL, isThisMonth, isToday, isYesterday, useQuery } from "@galoymoney/client"
 import { Spinner } from "@galoymoney/react"
+
+import { translate } from "store/index"
 
 import Header from "components/header"
 import TransactionItem from "components/transactions/item"

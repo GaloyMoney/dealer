@@ -1,4 +1,4 @@
-import { translate } from "@galoymoney/client"
+import { translate } from "store/index"
 import { Icon } from "@galoymoney/react"
 
 import Link from "components/link"

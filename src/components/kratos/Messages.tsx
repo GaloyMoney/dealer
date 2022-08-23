@@ -1,5 +1,6 @@
-import { TranslationKey, translate, translateUnknown } from "@galoymoney/client"
 import { UiText } from "@ory/kratos-client"
+
+import { TranslationKey, translate, translateUnknown } from "store/index"
 
 interface MessageProps {
   message: UiText

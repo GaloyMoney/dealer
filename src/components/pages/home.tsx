@@ -1,6 +1,4 @@
-import { translate } from "@galoymoney/client"
-
-import { useAuthContext, NoPropsFCT } from "store/index"
+import { translate, useAuthContext, NoPropsFCT } from "store/index"
 
 import Header from "components/header"
 import TransactionList from "components/transactions/list"

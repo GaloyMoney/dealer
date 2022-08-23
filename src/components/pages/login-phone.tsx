@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react"
 
-import { translate } from "@galoymoney/client"
+import { translate } from "store/index"
 import { PhoneNumberInput } from "@galoymoney/react"
 
 import { CaptchaChallenge } from "components/login/captcha-callenge"

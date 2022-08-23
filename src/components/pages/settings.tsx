@@ -5,7 +5,7 @@ import {
   SubmitSelfServiceSettingsFlowBody,
 } from "@ory/kratos-client"
 
-import { translate } from "@galoymoney/client"
+import { translate } from "store/translate"
 
 import { config, history, useAuthContext } from "store/index"
 import {

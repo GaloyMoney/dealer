@@ -6,9 +6,7 @@ import {
   SubmitSelfServiceRegistrationFlowBody,
 } from "@ory/kratos-client"
 
-import { translate } from "@galoymoney/client"
-
-import { config, history, useAuthContext } from "store/index"
+import { config, translate, history, useAuthContext } from "store/index"
 import {
   KratosSdk,
   handleFlowError,

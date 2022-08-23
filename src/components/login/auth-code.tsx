@@ -1,9 +1,8 @@
 import { ChangeEvent, useState } from "react"
 
-import { translate } from "@galoymoney/client"
 import { Icon, Spinner } from "@galoymoney/react"
 
-import { config, history, useRequest, useAuthContext } from "store/index"
+import { config, translate, history, useRequest, useAuthContext } from "store/index"
 
 type FCT = React.FC<{ phoneNumber: string }>
 

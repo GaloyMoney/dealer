@@ -3,8 +3,6 @@ import { useState, useEffect, useCallback } from "react"
 import { useErrorHandler } from "react-error-boundary"
 import { SelfServiceLoginFlow, SubmitSelfServiceLoginFlowBody } from "@ory/kratos-client"
 
-import { translate } from "@galoymoney/client"
-
 import {
   KratosSdk,
   handleFlowError,
@@ -12,7 +10,7 @@ import {
   KratosFlowData,
   KratosError,
 } from "kratos/index"
-import { config, history, useAuthContext } from "store/index"
+import { config, translate, history, useAuthContext } from "store/index"
 
 import Link from "components/link"
 import { Messages } from "components/kratos"

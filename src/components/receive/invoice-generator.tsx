@@ -1,7 +1,9 @@
 import { useState, useEffect, useRef } from "react"
 
-import { formatUsd, GaloyGQL, translate, useMutation } from "@galoymoney/client"
+import { formatUsd, GaloyGQL, useMutation } from "@galoymoney/client"
 import { Spinner } from "@galoymoney/react"
+
+import { translate } from "store/index"
 
 import { LightningInvoice, OnChainInvoice } from "components/receive/invoice"
 import ErrorMessage from "components/error-message"

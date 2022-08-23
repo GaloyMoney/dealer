@@ -517,10 +517,10 @@
     minimatch "^3.1.2"
     strip-json-comments "^3.1.1"
 
-"@galoymoney/client@^0.1.45":
-  version "0.1.45"
-  resolved "https://registry.yarnpkg.com/@galoymoney/client/-/client-0.1.45.tgz#8365ea07dfededea8e218137b8f4ff1143eb38a8"
-  integrity sha512-5wNirhAFuk7n5dpRvtHuv33MNRBdSLEkyl5Lib7EUNz8pKifpK29h271EpervzR01wY1amAMqotmOPTBLp4lsw==
+"@galoymoney/client@^0.1.46":
+  version "0.1.46"
+  resolved "https://registry.yarnpkg.com/@galoymoney/client/-/client-0.1.46.tgz#558ec54f2541974fcec430e4c704aed6779cec57"
+  integrity sha512-puDsnevkR1EFaXuPUWlg/rE2fWR79XofY1Mxqm5q3nYbsWJAV8eLU+xLEua5tDUqb+TgDjBBWdW/muh8iCOmZw==
 
 "@galoymoney/react@^0.1.12":
   version "0.1.12"
@@ -1263,6 +1263,11 @@
   integrity sha512-anKkLmZZ+xm4p8JWBf4hElkM4XR+EZeA2M9BAkkTldmcyDY4mbdIJnRghDJH3Ov5ooY7/UAoENtmdMSkaAd7Cw==
   dependencies:
     "@types/node" "*"
+
+"@types/i18n-js@^3.8.2":
+  version "3.8.2"
+  resolved "https://registry.yarnpkg.com/@types/i18n-js/-/i18n-js-3.8.2.tgz#957a3fa268124d09e3b3b34695f0184118f4bc4f"
+  integrity sha512-F+AuFCjllE1A0W/YUxJB13q2t7cWITMqXOTXQ/InfXxxT8nXrrqL7s/8Pv6XThGjFPemukElwk6QlMOKCEg7eQ==
 
 "@types/intl-tel-input@^17.0.4":
   version "17.0.4"
@@ -4170,7 +4175,7 @@ human-signals@^2.1.0:
   resolved "https://registry.yarnpkg.com/human-signals/-/human-signals-2.1.0.tgz#dc91fcba42e4d06e4abaed33b3e7a3c02f514ea0"
   integrity sha512-B4FFZ6q/T2jhhksgkbEW3HBvWIfDW85snkQgawt07S7J5QXTk6BkNV+0yAeZrM5QpMAdYlocGoljn0sJ/WQkFw==
 
-i18n-js@^3.9.2:
+i18n-js@3.9.2:
   version "3.9.2"
   resolved "https://registry.yarnpkg.com/i18n-js/-/i18n-js-3.9.2.tgz#4a015dcfabd4c9fc73115fc2d02d2627e4c15ca5"
   integrity sha512-+Gm8h5HL0emzKhRx2avMKX+nKiVPXeaOZm7Euf2/pbbFcLQoJ3zZYiUykAzoRasijCoWos2Kl1tslmScTgAQKw==

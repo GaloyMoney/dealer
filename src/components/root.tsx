@@ -1,10 +1,10 @@
 import { useEffect, useReducer } from "react"
 
-import { GaloyClient, setLocale } from "@galoymoney/client"
+import { GaloyClient } from "@galoymoney/client"
 
 import { ValidPath } from "server/routes"
 
-import { GwwContext, GwwStateType, history, mainReducer } from "store/index"
+import { setLocale, GwwContext, GwwStateType, history, mainReducer } from "store/index"
 import { KratosFlowData } from "kratos/index"
 
 import { AuthProvider } from "components/auth-provider"

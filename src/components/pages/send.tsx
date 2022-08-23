@@ -2,7 +2,6 @@ import { useCallback, useEffect, useMemo, useState } from "react"
 
 import {
   parsePaymentDestination,
-  translate,
   ValidPaymentResponse,
   useDelayedQuery,
   formatUsd,
@@ -20,7 +19,7 @@ import {
   Icon,
 } from "@galoymoney/react"
 
-import { config, useAppDispatcher } from "store/index"
+import { config, translate, useAppDispatcher } from "store/index"
 import useMainQuery from "hooks/use-main-query"
 import useMyUpdates from "hooks/use-my-updates"
 

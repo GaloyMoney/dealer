@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react"
 
-import { formatUsd, translate, useMutation } from "@galoymoney/client"
+import { formatUsd, useMutation } from "@galoymoney/client"
 import {
   DebouncedTextarea,
   FormattedNumberInput,
@@ -13,7 +13,7 @@ import {
 
 import useMainQuery from "hooks/use-main-query"
 import useMyUpdates from "hooks/use-my-updates"
-import { NoPropsFCT } from "store/index"
+import { translate, NoPropsFCT } from "store/index"
 
 import InvoiceGenerator from "components/receive/invoice-generator"
 import Link, { ButtonLink } from "components/link"

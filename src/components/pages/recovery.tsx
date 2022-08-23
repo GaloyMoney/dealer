@@ -5,9 +5,7 @@ import {
   SubmitSelfServiceRecoveryFlowBody,
 } from "@ory/kratos-client"
 
-import { translate } from "@galoymoney/client"
-
-import { config, history } from "store/index"
+import { config, translate, history } from "store/index"
 import {
   KratosSdk,
   handleFlowError,
