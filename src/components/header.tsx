@@ -1,7 +1,5 @@
 import { useState } from "react"
 
-import { Icon } from "@galoymoney/react"
-
 import useMainQuery from "hooks/use-main-query"
 import { translate, useAuthContext, useAppState } from "store/index"
 
@@ -10,6 +8,7 @@ import Link from "components/link"
 import LoginLink from "components/login-link"
 import LogoutLink from "components/logout-link"
 import DiscardableMessage from "components/discardable-message"
+import Icon from "components/icon"
 
 const headerNavPages = ["home"] as const
 

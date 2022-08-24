@@ -6,9 +6,11 @@ import {
   GaloyGQL,
   truncatedDisplay,
 } from "@galoymoney/client"
-import { Icon, SatFormat } from "@galoymoney/react"
+import { SatFormat } from "@galoymoney/react"
 
 import { config, translate, getLocale } from "store/index"
+
+import Icon from "components/icon"
 
 export const BLOCKCHAIN_EXPLORER_URL = "https://mempool.space/tx/"
 

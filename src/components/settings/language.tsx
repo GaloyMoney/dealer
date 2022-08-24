@@ -1,10 +1,11 @@
 import { ChangeEvent } from "react"
 
 import { useMutation } from "@galoymoney/client"
-import { Icon } from "@galoymoney/react"
 
 import useMainQuery from "hooks/use-main-query"
 import { setLocale, translate, useAppState } from "store/index"
+
+import Icon from "components/icon"
 
 const languageLabels = {
   "DEFAULT": "Default (OS)",

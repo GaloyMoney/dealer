@@ -1,7 +1,7 @@
 import { translate } from "store/index"
-import { Icon } from "@galoymoney/react"
 
 import Link from "components/link"
+import Icon from "components/icon"
 
 const LoginLink = () => (
   <Link to="/login">

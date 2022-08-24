@@ -1,7 +1,5 @@
 import { ChangeEvent, useEffect, useState } from "react"
 
-import { Icon } from "@galoymoney/react"
-
 import {
   translate,
   ColorTheme,
@@ -10,6 +8,8 @@ import {
   setColorTheme,
   storage,
 } from "store/index"
+
+import Icon from "components/icon"
 
 const ColorThemeSetting: NoPropsFCT = () => {
   const [colorTheme, setColorThemeState] = useState<ColorTheme>("DEFAULT")

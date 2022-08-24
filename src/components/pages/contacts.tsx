@@ -1,10 +1,11 @@
 import { truncatedDisplay, useQuery } from "@galoymoney/client"
-import { Icon, Spinner } from "@galoymoney/react"
+import { Spinner } from "@galoymoney/react"
 
 import { translate, history, useAuthContext, NoPropsFCT } from "store/index"
 
 import ErrorMessage from "components/error-message"
 import Header from "components/header"
+import Icon from "components/icon"
 
 const ContactsList: NoPropsFCT = () => {
   const { loading, errorsMessage, data } = useQuery.contacts()
