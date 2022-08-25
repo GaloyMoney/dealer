@@ -9,7 +9,7 @@ interface MessageProps {
 const kratosMessages: Record<number, TranslationKey> = {
   1060001: "You successfully recovered your account. Please change your password.",
   4000005: "Password is too short",
-  4000006: "Invalid email or password",
+  4000006: "Invaild email or password",
   4000007: "An account with the same email exists already",
 }
 
