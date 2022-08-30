@@ -39,6 +39,7 @@ export interface ExchangeConfiguration {
   exchangeId: SupportedExchange
   instrumentId: SupportedInstrument
   headers: Headers
+  timeout?: number
 
   fetchDepositAddressValidateInput(currency: string)
   fetchDepositAddressProcessApiResponse(response): FetchDepositAddressResult

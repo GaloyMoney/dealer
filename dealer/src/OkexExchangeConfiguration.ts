@@ -44,6 +44,7 @@ export enum DestinationAddressType {
   External = 4,
 }
 
+const exchange = yamlConfig.exchange
 const hedgingBounds = yamlConfig.hedging
 const withdrawalFees = yamlConfig.withdrawal
 
@@ -51,6 +52,7 @@ export class OkexExchangeConfiguration implements ExchangeConfiguration {
   exchangeId: SupportedExchange
   instrumentId: SupportedInstrument
   headers: Headers
+  timeout?: number
   positionMode: PositionMode
   marginMode: MarginMode
   leverage: number
@@ -68,6 +70,7 @@ export class OkexExchangeConfiguration implements ExchangeConfiguration {
     this.minOnChainWithdrawalAmount = withdrawalFees.MIN_ON_CHAIN_WITHDRAWAL_AMOUNT
     this.minOnChainWithdrawalFee = withdrawalFees.MIN_ON_CHAIN_WITHDRAWAL_FEE
     this.maxOnChainWithdrawalFee = withdrawalFees.MAX_ON_CHAIN_WITHDRAWAL_FEE
+    this.timeout = exchange.REQUEST_TIMEOUT || 20000
 
     if (process.env["NETWORK"] === "testnet") {
       this.headers["x-simulated-trading"] = 1
