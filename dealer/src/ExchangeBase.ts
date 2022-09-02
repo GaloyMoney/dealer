@@ -50,6 +50,7 @@ export abstract class ExchangeBase {
   exchangeConfig: ExchangeConfiguration
   exchangeId: ExchangeId
   headers: Headers
+  timeout?: number
   fundingPassword: string
   exchange: ccxt.okex5
   logger: pino.Logger
@@ -58,6 +59,7 @@ export abstract class ExchangeBase {
     this.exchangeConfig = exchangeConfig
     this.exchangeId = exchangeConfig.exchangeId as ExchangeId
     this.headers = exchangeConfig.headers
+    this.timeout = exchangeConfig.timeout
 
     const apiKey = process.env[`${this.exchangeId.toUpperCase()}_KEY`]
     const secret = process.env[`${this.exchangeId.toUpperCase()}_SECRET`]
@@ -71,8 +73,13 @@ export abstract class ExchangeBase {
     this.fundingPassword = fundingPassword
 
     const exchangeClass = ccxt[this.exchangeId]
-    this.exchange = new exchangeClass({ apiKey, secret, password, headers: this.headers })
-
+    this.exchange = new exchangeClass({
+      apiKey,
+      secret,
+      password,
+      headers: this.headers,
+      timeout: this.timeout,
+    })
     this.exchange.options["createMarketBuyOrderRequiresPrice"] = false
 
     // The following check throws if something is wrong
