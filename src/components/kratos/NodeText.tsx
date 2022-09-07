@@ -1,4 +1,4 @@
-import { UiText, UiNode, UiNodeTextAttributes } from "@ory/kratos-client"
+import { UiText, UiNode, UiNodeTextAttributes } from "@ory/client"
 import { CodeBox, P } from "@ory/themes"
 
 interface Props {

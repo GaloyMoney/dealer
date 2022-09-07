@@ -1,5 +1,4 @@
-import { Configuration } from "@ory/client"
-import { V0alpha2ApiInterface, V0alpha2Api } from "@ory/kratos-client"
+import { Configuration, V0alpha2ApiInterface, V0alpha2Api } from "@ory/client"
 
 export const KratosSdk: (kratosEndpoint?: string) => V0alpha2ApiInterface = (
   kratosEndpoint = process.env.KRATOS_API_URL as string,

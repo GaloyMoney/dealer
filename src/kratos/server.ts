@@ -6,7 +6,7 @@ import {
   SelfServiceRegistrationFlow,
   SelfServiceSettingsFlow,
   Session as KratosSession,
-} from "@ory/kratos-client"
+} from "@ory/client"
 import { Request } from "express"
 
 import { KratosSdk } from "kratos/sdk"

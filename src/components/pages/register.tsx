@@ -4,7 +4,7 @@ import { useErrorHandler } from "react-error-boundary"
 import {
   SelfServiceRegistrationFlow,
   SubmitSelfServiceRegistrationFlowBody,
-} from "@ory/kratos-client"
+} from "@ory/client"
 
 import { config, translate, history, useAuthContext } from "store/index"
 import {

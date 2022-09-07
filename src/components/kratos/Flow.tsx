@@ -12,7 +12,7 @@ import {
   SubmitSelfServiceSettingsFlowBody,
   SubmitSelfServiceVerificationFlowBody,
   UiNode,
-} from "@ory/kratos-client"
+} from "@ory/client"
 
 import { Messages } from "components/kratos/Messages"
 import { Node } from "components/kratos/Node"

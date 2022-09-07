@@ -1,9 +1,6 @@
 /* eslint-disable camelcase */
 import { useState, useEffect, useCallback } from "react"
-import {
-  SelfServiceRecoveryFlow,
-  SubmitSelfServiceRecoveryFlowBody,
-} from "@ory/kratos-client"
+import { SelfServiceRecoveryFlow, SubmitSelfServiceRecoveryFlowBody } from "@ory/client"
 
 import { config, translate, history } from "store/index"
 import {

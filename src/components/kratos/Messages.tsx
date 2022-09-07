@@ -1,4 +1,4 @@
-import { UiText } from "@ory/kratos-client"
+import { UiText } from "@ory/client"
 
 import { TranslationKey, translate, translateUnknown } from "store/index"
 

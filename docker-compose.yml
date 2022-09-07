@@ -2,7 +2,7 @@ version: "3.7"
 
 services:
   kratos-migrate:
-    image: oryd/kratos:v0.9.0-alpha.2
+    image: oryd/kratos:v0.10.1
     depends_on:
       - postgres
     environment:
@@ -20,7 +20,7 @@ services:
       - intranet
 
   kratos:
-    image: oryd/kratos:v0.9.0-alpha.2
+    image: oryd/kratos:v0.10.1
     command: serve -c /etc/config/kratos/kratos.yml --dev --watch-courier
     depends_on:
       - postgres

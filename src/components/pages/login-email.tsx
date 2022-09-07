@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
 import { useState, useEffect, useCallback } from "react"
 import { useErrorHandler } from "react-error-boundary"
-import { SelfServiceLoginFlow, SubmitSelfServiceLoginFlowBody } from "@ory/kratos-client"
+import { SelfServiceLoginFlow, SubmitSelfServiceLoginFlowBody } from "@ory/client"
 
 import {
   KratosSdk,
@@ -42,7 +42,7 @@ const LoginEmail: FCT = ({ flowData: flowDataProp }) => {
     const flowId = params.get("flow")
     const returnTo = params.get("return_to")
     const refresh = params.get("refresh")
-    const aal = params.get("all")
+    const aal = params.get("aal")
 
     // flow id exists, we can fetch the flow data
     if (flowId) {
