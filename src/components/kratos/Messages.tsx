@@ -1,25 +1,20 @@
 import { UiText } from "@ory/client"
 
-import { TranslationKey, translate, translateUnknown } from "store/index"
+import { translateUnknown } from "store/index"
 
 interface MessageProps {
   message: UiText
 }
 
-const kratosMessages: Record<number, TranslationKey> = {
-  1060001: "You successfully recovered your account. Please change your password.",
-  4000005: "Password is too short",
-  4000006: "Invalid email or password",
-  4000007: "An account with the same email exists already",
-}
+// FIXME: Kratos uses different texts under the same message ID!
+// Can't lookup a message by these IDs
+
+// 1060001: "You successfully recovered your account. Please change your password.",
+// 4000005: "Password is too short",
+// 4000006: "Invalid email or password",
+// 4000007: "An account with the same email exists already",
 
 const messageText = (message: UiText): string => {
-  const text = kratosMessages[message.id]
-
-  if (text) {
-    return translate(text)
-  }
-
   return translateUnknown(message.text) as string
 }
 
