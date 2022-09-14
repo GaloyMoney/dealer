@@ -213,7 +213,6 @@
 
 .qr_clipboard > button:first-child:hover {
   color: green;
-  /* background-color: red; */
 }
 
 .loading,

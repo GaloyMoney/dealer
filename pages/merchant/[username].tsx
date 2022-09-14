@@ -8,6 +8,7 @@ import styles from "./_user.module.css"
 import reducer, { ACTIONS } from "./_reducer"
 import ParsePayment from "../../components/ParsePOSPayment"
 import { useQuery } from "@galoymoney/client"
+import PinToHomescreen from "../../components/PinToHomescreen"
 
 function ReceivePayment() {
   const router = useRouter()
@@ -29,7 +30,7 @@ function ReceivePayment() {
     createdInvoice: false,
     walletCurrency: data?.accountDefaultWallet.walletCurrency || "USD",
     username: accountUsername,
-    paymentStatus: "",
+    pinnedToHomeScreenModalVisible: false,
   })
 
   React.useEffect(() => {
@@ -59,9 +60,23 @@ function ReceivePayment() {
                 alt="pin icon"
                 className={styles.pin_icon}
               />
-              <button className={styles.pin_btn}>Pin to homescreen</button>
+              <button
+                onClick={() =>
+                  dispatch({
+                    type: ACTIONS.PINNED_TO_HOMESCREEN_MODAL_VISIBLE,
+                    payload: !state.pinnedToHomeScreenModalVisible,
+                  })
+                }
+                className={styles.pin_btn}
+              >
+                Pin to homescreen
+              </button>
             </ButtonGroup>
           )}
+          <PinToHomescreen
+            pinnedToHomeScreenModalVisible={state.pinnedToHomeScreenModalVisible}
+            dispatch={dispatch}
+          />
           <div className={styles.username_container}>
             {state.createdInvoice && (
               <button onClick={() => dispatch({ type: ACTIONS.BACK })}>
