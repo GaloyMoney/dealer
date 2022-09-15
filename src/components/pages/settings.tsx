@@ -4,7 +4,7 @@ import { SelfServiceSettingsFlow, SubmitSelfServiceSettingsFlowBody } from "@ory
 
 import { translate } from "store/translate"
 
-import { config, history, useAuthContext } from "store/index"
+import { config, history, NoPropsFCT, useAuthContext } from "store/index"
 import {
   KratosSdk,
   handleFlowError,
@@ -21,13 +21,14 @@ import EmailSetting from "components/settings/email"
 import { Messages } from "components/kratos"
 import LoginLink from "components/login-link"
 import LogoutLink from "components/logout-link"
+import Link from "components/link"
 
 type FCT = React.FC<{
   flowData?: KratosFlowData
 }>
 
-const Settings: FCT = ({ flowData: flowDataProp }) => {
-  const { isAuthenticated, syncSession } = useAuthContext()
+const SettingsPasswordUpdate: FCT = ({ flowData: flowDataProp }) => {
+  const { syncSession } = useAuthContext()
 
   const [flowData, setFlowData] = useState<SelfServiceSettingsFlow | undefined>(
     flowDataProp?.settingsData,
@@ -74,9 +75,9 @@ const Settings: FCT = ({ flowData: flowDataProp }) => {
       )
       .then(({ data }) => setFlowData(data))
       .catch(handleFlowError({ history, resetFlow }))
-  }, [flowData, isAuthenticated, resetFlow, syncSession])
+  }, [flowData, resetFlow, syncSession])
 
-  const handleKratosRegister = async (values: SubmitSelfServiceSettingsFlowBody) => {
+  const handleKratosSettings = async (values: SubmitSelfServiceSettingsFlowBody) => {
     const kratos = KratosSdk(config.kratosBrowserUrl)
     kratos
       .submitSelfServiceSettingsFlow(String(flowData?.id), values, undefined, undefined, {
@@ -98,53 +99,56 @@ const Settings: FCT = ({ flowData: flowDataProp }) => {
     event.stopPropagation()
     event.preventDefault()
 
+    const passwordForm = event.currentTarget
+
     const values = {
       method: "password",
-      csrf_token: event.currentTarget.csrf_token.value,
-      password: event.currentTarget.password.value,
+      csrf_token: passwordForm.csrf_token.value,
+      password: passwordForm.password.value,
     }
 
-    handleKratosRegister(values)
+    await handleKratosSettings(values)
+
+    passwordForm.password.value = ""
   }
 
   const nodes = getNodesForFlow(flowData)
 
-  // FIXME: find a better way to identify password change flow
-  const changePasswordFlow = flowData?.ui?.messages?.[0]?.id === 1060001
-
-  if (changePasswordFlow) {
-    return (
-      <div className="auth-settings auth-form">
-        <form action={flowData?.ui.action} method="POST" onSubmit={onSubmit}>
-          <Messages messages={flowData?.ui?.messages} />
+  return (
+    <div className="auth-settings auth-form">
+      <form action={flowData?.ui.action} method="POST" onSubmit={onSubmit}>
+        <Messages messages={flowData?.ui?.messages} />
+        <input
+          type="hidden"
+          name="csrf_token"
+          value={nodes?.csrf_token.attributes.value}
+        />
+        <div className="input-container">
+          <div className="">{translate("New Password")}</div>
           <input
-            type="hidden"
-            name="csrf_token"
-            value={nodes?.csrf_token.attributes.value}
+            name="password"
+            type="password"
+            autoComplete="current-password"
+            required
           />
-          <div className="input-container">
-            <div className="">{translate("New Password")}</div>
-            <input
-              name="password"
-              type="password"
-              autoComplete="current-password"
-              required
-            />
-            <Messages messages={nodes?.password.messages} />
-          </div>
-          <div className="button-container">
-            <button className="button" name="method" value="password">
-              {translate("Save")}
-            </button>
-          </div>
-        </form>
-      </div>
-    )
-  }
+          <Messages messages={nodes?.password.messages} />
+        </div>
+        <div className="button-container">
+          <button className="button" name="method" value="password">
+            {translate("Save")}
+          </button>
+          <Link to="/">{translate("Home")}</Link>
+        </div>
+      </form>
+    </div>
+  )
+}
+
+const SettingsMainScreen: NoPropsFCT = () => {
+  const { isAuthenticated } = useAuthContext()
 
   return (
     <SettingsLayout>
-      {flowData?.ui?.messages && <Messages messages={flowData?.ui?.messages} />}
       <div className="list">
         {config.kratosFeatureFlag && <EmailSetting guestView={!isAuthenticated} />}
         <UsernameSetting guestView={!isAuthenticated} />
@@ -153,6 +157,23 @@ const Settings: FCT = ({ flowData: flowDataProp }) => {
         <div className="setting">{isAuthenticated ? <LogoutLink /> : <LoginLink />}</div>
       </div>
     </SettingsLayout>
+  )
+}
+
+const getFlow = () => {
+  if (!config.isBrowser) {
+    return undefined
+  }
+  const params = new URLSearchParams(window.location.search)
+
+  return params.get("flow")
+}
+
+const Settings: FCT = ({ flowData: flowDataProp }) => {
+  return getFlow() ? (
+    <SettingsPasswordUpdate flowData={flowDataProp} />
+  ) : (
+    <SettingsMainScreen />
   )
 }
 
