@@ -24,7 +24,7 @@
     "i18n-js": "^3.9.2",
     "lnurl-pay": "^1.0.1",
     "lodash.debounce": "^4.0.8",
-    "next": "^12.2.3",
+    "next": "^12.3.0",
     "original-url": "^1.2.3",
     "react": "^17.0.2",
     "react-app-polyfill": "^2.0.0",
