@@ -49,7 +49,6 @@ const browser = (function () {
 
 const PinToHomescreen = ({ pinnedToHomeScreenModalVisible, dispatch }: Props) => {
   const os = getOS()
-  const [, setIsOpen] = React.useState<boolean>(pinnedToHomeScreenModalVisible)
   const pinToHomeRef = React.useRef(null)
   if (!pinnedToHomeScreenModalVisible) return null
   let modalWidth: string
@@ -68,7 +67,6 @@ const PinToHomescreen = ({ pinnedToHomeScreenModalVisible, dispatch }: Props) =>
         <Modal
           ref={pinToHomeRef}
           isOpened={pinnedToHomeScreenModalVisible}
-          setIsOpened={setIsOpen}
           handleClose={handleClose}
           modalWidth={modalWidth}
           modalTitle="How to pin the Cash Register to your home screen"
@@ -103,7 +101,6 @@ const PinToHomescreen = ({ pinnedToHomeScreenModalVisible, dispatch }: Props) =>
         <Modal
           ref={pinToHomeRef}
           isOpened={pinnedToHomeScreenModalVisible}
-          setIsOpened={setIsOpen}
           handleClose={handleClose}
           modalWidth={modalWidth}
           modalTitle="Add to home screen"
@@ -133,7 +130,6 @@ const PinToHomescreen = ({ pinnedToHomeScreenModalVisible, dispatch }: Props) =>
         <Modal
           ref={pinToHomeRef}
           isOpened={pinnedToHomeScreenModalVisible}
-          setIsOpened={setIsOpen}
           handleClose={handleClose}
           modalWidth={modalWidth}
           modalTitle="How to pin the Cash Register to your home screen"
@@ -162,7 +158,6 @@ const PinToHomescreen = ({ pinnedToHomeScreenModalVisible, dispatch }: Props) =>
         <Modal
           ref={pinToHomeRef}
           isOpened={pinnedToHomeScreenModalVisible}
-          setIsOpened={setIsOpen}
           handleClose={handleClose}
           modalTitle="How to pin the Cash Register to your home screen"
         >
@@ -189,7 +184,6 @@ const PinToHomescreen = ({ pinnedToHomeScreenModalVisible, dispatch }: Props) =>
       <Modal
         ref={pinToHomeRef}
         isOpened={pinnedToHomeScreenModalVisible}
-        setIsOpened={setIsOpen}
         handleClose={handleClose}
         modalTitle="How to pin the Cash Register to your home screen"
       >

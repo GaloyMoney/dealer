@@ -7,7 +7,6 @@ interface Props {
   children?: React.ReactNode
   modalContentRef?: React.LegacyRef<HTMLDivElement>
   isOpened: boolean
-  setIsOpened: React.Dispatch<React.SetStateAction<boolean>>
   handleClose: () => void
   modalTitle?: string
   modalWidth?: string
@@ -15,14 +14,14 @@ interface Props {
 
 const Modal = React.forwardRef(
   (
-    { children, isOpened, setIsOpened, modalTitle, modalWidth, handleClose }: Props,
+    { children, isOpened, modalTitle, modalWidth, handleClose }: Props,
     modalContentRef: React.ForwardedRef<HTMLDivElement>,
   ) => {
     const defaultModalWidth = modalWidth || "100%"
     const modalFocus = modalContentRef || null
 
     return (
-      <dialog open={isOpened} onClose={() => setIsOpened(false)} className={styles.modal}>
+      <dialog open={isOpened} className={styles.modal}>
         <div className={styles.modal_wrapper} style={{ width: defaultModalWidth }}>
           <button onClick={handleClose} className={styles.close_btn}>
             <Image src="/icons/cross-icon.svg" />

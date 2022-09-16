@@ -44,6 +44,7 @@ function GenerateInvoice({
       window.setTimeout(() => setInvoiceStatus("expired"), INVOICE_EXPIRE_INTERVAL),
     )
     return clearAllTimers
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [recipientWalletId, amountInBase, currency, createInvoice])
 
   const errorString: string | null = errorsMessage || null

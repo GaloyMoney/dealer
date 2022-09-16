@@ -33,7 +33,25 @@ The page will automatically reload when you make edits.
 
 You will also see any lint errors in the console.
 
-### How to build for production?
+## How to run this repo in docker?
+
+In your terminal, run
+
+```sh
+yarn build:docker
+```
+
+then run
+
+```sh
+yarn dev:docker
+```
+
+This will spin up an instance of a galoy-pay docker container running on <http://localhost:3000>
+
+This will also run the app in production mode.
+
+## How to build for production?
 
 In the project directory, you can run:
 

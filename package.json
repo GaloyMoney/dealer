@@ -9,7 +9,9 @@
     "prettier-check": "prettier --check .",
     "eslint-check": "eslint \"{pages,components,lib}/**/*.ts\"",
     "tsc-check": "tsc --noEmit --skipLibCheck",
-    "check-code": "yarn prettier-check && yarn eslint-check && yarn tsc-check"
+    "check-code": "yarn prettier-check && yarn eslint-check && yarn tsc-check",
+    "dev:docker": "docker compose up",
+    "build:docker": "docker build -t galoy-pay ."
   },
   "dependencies": {
     "@apollo/client": "^3.4.16",
