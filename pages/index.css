@@ -80,3 +80,44 @@ code {
 .invoice-container {
   max-width: 390px;
 }
+
+.username-form {
+  display: inline-flex;
+  flex-direction: column;
+  margin-top: 2rem;
+}
+
+.username-form > label > span {
+  font-weight: 700;
+}
+
+.username-form > input {
+  padding: 0.5rem;
+  border: 1px solid rgb(192, 191, 191);
+}
+
+.username-form > button {
+  border: none;
+  border-radius: 4px;
+  margin-top: 1rem;
+  padding: 0.5rem;
+  font-weight: 500;
+}
+
+.username-form > button:focus,
+.username-form > button:focus-within {
+  border: 1px solid #007bff;
+  background-color: #e9ecef;
+}
+
+.username-form > button:hover {
+  background-color: #e9ecef;
+}
+
+@media (min-width: 768px) {
+  .username-form > label {
+    font-size: 1rem;
+    font-weight: 500;
+    opacity: 0.9;
+  }
+}
