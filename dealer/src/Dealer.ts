@@ -153,7 +153,7 @@ export class Dealer {
   public async updatePositionAndLeverage(): Promise<
     Result<UpdatedPositionAndLeverageResult>
   > {
-    const hedging_disabled = process.env["HEDGING_DISABLED"]
+    const hedging_disabled = process.env[ "HEDGING_DISABLED" ]
 
     const ret = await asyncRunInSpan(
       "app.dealer.updatePositionAndLeverage",
