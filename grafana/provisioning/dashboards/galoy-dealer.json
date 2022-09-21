@@ -170,7 +170,9 @@
       "id": 54,
       "options": {
         "legend": {
-          "calcs": ["last"],
+          "calcs": [
+            "last"
+          ],
           "displayMode": "list",
           "placement": "bottom"
         },
@@ -368,7 +370,9 @@
       "id": 56,
       "options": {
         "legend": {
-          "calcs": ["last"],
+          "calcs": [
+            "last"
+          ],
           "displayMode": "list",
           "placement": "bottom"
         },
@@ -572,7 +576,9 @@
       "id": 60,
       "options": {
         "legend": {
-          "calcs": ["last"],
+          "calcs": [
+            "last"
+          ],
           "displayMode": "list",
           "placement": "bottom"
         },
@@ -758,7 +764,9 @@
       "id": 58,
       "options": {
         "legend": {
-          "calcs": ["last"],
+          "calcs": [
+            "last"
+          ],
           "displayMode": "list",
           "placement": "bottom"
         },
@@ -907,7 +915,9 @@
       "id": 12,
       "options": {
         "legend": {
-          "calcs": ["last"],
+          "calcs": [
+            "last"
+          ],
           "displayMode": "list",
           "placement": "bottom"
         },
@@ -1013,7 +1023,9 @@
       "id": 32,
       "options": {
         "legend": {
-          "calcs": ["last"],
+          "calcs": [
+            "last"
+          ],
           "displayMode": "list",
           "placement": "bottom"
         },
@@ -1110,7 +1122,9 @@
       "id": 34,
       "options": {
         "legend": {
-          "calcs": ["last"],
+          "calcs": [
+            "last"
+          ],
           "displayMode": "list",
           "placement": "bottom"
         },
@@ -1237,7 +1251,9 @@
       "id": 44,
       "options": {
         "legend": {
-          "calcs": ["last"],
+          "calcs": [
+            "last"
+          ],
           "displayMode": "list",
           "placement": "bottom"
         },
@@ -1396,7 +1412,9 @@
       "id": 50,
       "options": {
         "legend": {
-          "calcs": ["last"],
+          "calcs": [
+            "last"
+          ],
           "displayMode": "list",
           "placement": "bottom"
         },
@@ -1508,7 +1526,9 @@
       "id": 52,
       "options": {
         "legend": {
-          "calcs": ["last"],
+          "calcs": [
+            "last"
+          ],
           "displayMode": "list",
           "placement": "bottom"
         },
@@ -1635,7 +1655,9 @@
       "id": 51,
       "options": {
         "legend": {
-          "calcs": ["last"],
+          "calcs": [
+            "last"
+          ],
           "displayMode": "list",
           "placement": "bottom"
         },
@@ -1777,7 +1799,9 @@
       "id": 30,
       "options": {
         "legend": {
-          "calcs": ["last"],
+          "calcs": [
+            "last"
+          ],
           "displayMode": "list",
           "placement": "bottom"
         },
@@ -1913,7 +1937,9 @@
       "id": 38,
       "options": {
         "legend": {
-          "calcs": ["last"],
+          "calcs": [
+            "last"
+          ],
           "displayMode": "list",
           "placement": "bottom"
         },
@@ -2032,7 +2058,9 @@
       "id": 28,
       "options": {
         "legend": {
-          "calcs": ["last"],
+          "calcs": [
+            "last"
+          ],
           "displayMode": "list",
           "placement": "bottom"
         },
@@ -2129,7 +2157,9 @@
       "id": 24,
       "options": {
         "legend": {
-          "calcs": ["last"],
+          "calcs": [
+            "last"
+          ],
           "displayMode": "list",
           "placement": "bottom"
         },
@@ -2228,7 +2258,9 @@
       "id": 16,
       "options": {
         "legend": {
-          "calcs": ["last"],
+          "calcs": [
+            "last"
+          ],
           "displayMode": "list",
           "placement": "bottom"
         },
@@ -2333,7 +2365,9 @@
       "id": 26,
       "options": {
         "legend": {
-          "calcs": ["last"],
+          "calcs": [
+            "last"
+          ],
           "displayMode": "list",
           "placement": "bottom"
         },
@@ -2460,7 +2494,9 @@
       "id": 8,
       "options": {
         "legend": {
-          "calcs": ["last"],
+          "calcs": [
+            "last"
+          ],
           "displayMode": "list",
           "placement": "bottom"
         },
@@ -2573,7 +2609,9 @@
       "id": 10,
       "options": {
         "legend": {
-          "calcs": ["last"],
+          "calcs": [
+            "last"
+          ],
           "displayMode": "list",
           "placement": "bottom"
         },
@@ -2670,7 +2708,9 @@
       "id": 42,
       "options": {
         "legend": {
-          "calcs": ["last"],
+          "calcs": [
+            "last"
+          ],
           "displayMode": "list",
           "placement": "bottom"
         },
@@ -2767,7 +2807,9 @@
       "id": 22,
       "options": {
         "legend": {
-          "calcs": ["last"],
+          "calcs": [
+            "last"
+          ],
           "displayMode": "list",
           "placement": "bottom"
         },
@@ -2880,7 +2922,9 @@
       "id": 46,
       "options": {
         "legend": {
-          "calcs": ["last"],
+          "calcs": [
+            "last"
+          ],
           "displayMode": "list",
           "placement": "bottom"
         },
@@ -2977,7 +3021,9 @@
       "id": 6,
       "options": {
         "legend": {
-          "calcs": ["last"],
+          "calcs": [
+            "last"
+          ],
           "displayMode": "list",
           "placement": "bottom"
         },
@@ -3074,7 +3120,9 @@
       "id": 40,
       "options": {
         "legend": {
-          "calcs": ["last"],
+          "calcs": [
+            "last"
+          ],
           "displayMode": "list",
           "placement": "bottom"
         },
@@ -3093,257 +3141,6 @@
       ],
       "title": "Margin Ratio",
       "type": "timeseries"
-    },
-    {
-      "datasource": null,
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "mappings": [],
-          "min": 0,
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          },
-          "unit": "percentunit"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 5,
-        "w": 12,
-        "x": 0,
-        "y": 42
-      },
-      "id": 69,
-      "options": {
-        "displayMode": "lcd",
-        "orientation": "horizontal",
-        "reduceOptions": {
-          "calcs": ["lastNotNull"],
-          "fields": "",
-          "values": false
-        },
-        "showUnfilled": true,
-        "text": {}
-      },
-      "pluginVersion": "8.1.1",
-      "targets": [
-        {
-          "exemplar": true,
-          "expr": "avg by (container)(galoy_dealer_baseFee)",
-          "interval": "",
-          "legendFormat": "base fee",
-          "refId": "A"
-        },
-        {
-          "exemplar": true,
-          "expr": "avg by (container)(galoy_dealer_immediateConversionSpread)",
-          "hide": false,
-          "interval": "",
-          "legendFormat": "immediate spread",
-          "refId": "B"
-        },
-        {
-          "exemplar": true,
-          "expr": "avg by (container)(galoy_dealer_delayedConversionSpread)",
-          "hide": false,
-          "interval": "",
-          "legendFormat": "delayed spread",
-          "refId": "C"
-        },
-        {
-          "exemplar": true,
-          "expr": "avg by (container)(galoy_dealer_baseFee + galoy_dealer_immediateConversionSpread)",
-          "hide": false,
-          "interval": "",
-          "legendFormat": "immediate fee (base + spread)",
-          "refId": "D"
-        },
-        {
-          "exemplar": true,
-          "expr": "avg by (container)(galoy_dealer_baseFee + galoy_dealer_delayedConversionSpread)",
-          "hide": false,
-          "interval": "",
-          "legendFormat": "delayed fee (base + spread)",
-          "refId": "E"
-        }
-      ],
-      "title": "Price Service Spreads & Fees",
-      "type": "bargauge"
-    },
-    {
-      "datasource": null,
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "percentage",
-            "steps": [
-              {
-                "color": "red",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 7,
-        "w": 6,
-        "x": 12,
-        "y": 42
-      },
-      "id": 67,
-      "options": {
-        "displayMode": "lcd",
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": ["lastNotNull"],
-          "fields": "",
-          "values": false
-        },
-        "showUnfilled": true,
-        "text": {}
-      },
-      "pluginVersion": "8.1.1",
-      "targets": [
-        {
-          "exemplar": true,
-          "expr": "avg by (container)(galoy_dealer_tradingToFundingSuccessCount)",
-          "interval": "",
-          "legendFormat": "done withdraw cnt",
-          "refId": "A"
-        },
-        {
-          "exemplar": true,
-          "expr": "avg by (container)(galoy_dealer_tradingToFundingFailCount)",
-          "hide": false,
-          "interval": "",
-          "legendFormat": "failed withdraw cnt",
-          "refId": "B"
-        },
-        {
-          "exemplar": true,
-          "expr": "avg by (container)(galoy_dealer_fundingToTradingSuccessCount)",
-          "hide": false,
-          "interval": "",
-          "legendFormat": "done deposit cnt",
-          "refId": "C"
-        },
-        {
-          "exemplar": true,
-          "expr": "avg by (container)(galoy_dealer_fundingToTradingFailCount)",
-          "hide": false,
-          "interval": "",
-          "legendFormat": "failed  deposit cnt",
-          "refId": "D"
-        },
-        {
-          "exemplar": true,
-          "expr": "avg by (container)(galoy_dealer_totalInternalTransfersCount)",
-          "hide": false,
-          "interval": "",
-          "legendFormat": "total transfer cnt",
-          "refId": "E"
-        }
-      ],
-      "title": "On Exchange Internal Transfers",
-      "type": "bargauge"
-    },
-    {
-      "datasource": null,
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "percentage",
-            "steps": [
-              {
-                "color": "orange",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 7,
-        "w": 6,
-        "x": 18,
-        "y": 42
-      },
-      "id": 66,
-      "options": {
-        "displayMode": "lcd",
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": ["lastNotNull"],
-          "fields": "",
-          "values": false
-        },
-        "showUnfilled": true,
-        "text": {}
-      },
-      "pluginVersion": "8.1.1",
-      "targets": [
-        {
-          "exemplar": true,
-          "expr": "avg by (container)(galoy_dealer_completedDepositCount)",
-          "interval": "",
-          "legendFormat": "done deposit cnt",
-          "refId": "A"
-        },
-        {
-          "exemplar": true,
-          "expr": "avg by (container)(galoy_dealer_pendingDepositCount)",
-          "hide": false,
-          "interval": "",
-          "legendFormat": "pend deposit cnt",
-          "refId": "B"
-        },
-        {
-          "exemplar": true,
-          "expr": "avg by (container)(galoy_dealer_completedWithdrawalCount)",
-          "hide": false,
-          "interval": "",
-          "legendFormat": "done withdraw cnt",
-          "refId": "C"
-        },
-        {
-          "exemplar": true,
-          "expr": "avg by (container)(galoy_dealer_pendingWithdrawalCount)",
-          "hide": false,
-          "interval": "",
-          "legendFormat": "pending withdraw cnt",
-          "refId": "D"
-        },
-        {
-          "exemplar": true,
-          "expr": "avg by (container)(galoy_dealer_totalInFlightTransfersCount)",
-          "hide": false,
-          "interval": "",
-          "legendFormat": "total transfer cnt",
-          "refId": "E"
-        }
-      ],
-      "title": "InFlight Transfers",
-      "type": "bargauge"
     },
     {
       "datasource": null,
@@ -3450,15 +3247,17 @@
         ]
       },
       "gridPos": {
-        "h": 9,
+        "h": 7,
         "w": 12,
         "x": 0,
-        "y": 47
+        "y": 42
       },
       "id": 64,
       "options": {
         "legend": {
-          "calcs": ["last"],
+          "calcs": [
+            "last"
+          ],
           "displayMode": "list",
           "placement": "bottom"
         },
@@ -3476,6 +3275,260 @@
         }
       ],
       "title": "Exchange Status",
+      "type": "timeseries"
+    },
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "percentage",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 6,
+        "x": 12,
+        "y": 42
+      },
+      "id": 67,
+      "options": {
+        "displayMode": "lcd",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true,
+        "text": {}
+      },
+      "pluginVersion": "8.1.1",
+      "targets": [
+        {
+          "exemplar": true,
+          "expr": "avg by (container)(galoy_dealer_tradingToFundingSuccessCount)",
+          "interval": "",
+          "legendFormat": "done withdraw cnt",
+          "refId": "A"
+        },
+        {
+          "exemplar": true,
+          "expr": "avg by (container)(galoy_dealer_tradingToFundingFailCount)",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "failed withdraw cnt",
+          "refId": "B"
+        },
+        {
+          "exemplar": true,
+          "expr": "avg by (container)(galoy_dealer_fundingToTradingSuccessCount)",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "done deposit cnt",
+          "refId": "C"
+        },
+        {
+          "exemplar": true,
+          "expr": "avg by (container)(galoy_dealer_fundingToTradingFailCount)",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "failed  deposit cnt",
+          "refId": "D"
+        },
+        {
+          "exemplar": true,
+          "expr": "avg by (container)(galoy_dealer_totalInternalTransfersCount)",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "total transfer cnt",
+          "refId": "E"
+        }
+      ],
+      "title": "On Exchange Internal Transfers",
+      "type": "bargauge"
+    },
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "percentage",
+            "steps": [
+              {
+                "color": "orange",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 6,
+        "x": 18,
+        "y": 42
+      },
+      "id": 66,
+      "options": {
+        "displayMode": "lcd",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true,
+        "text": {}
+      },
+      "pluginVersion": "8.1.1",
+      "targets": [
+        {
+          "exemplar": true,
+          "expr": "avg by (container)(galoy_dealer_completedDepositCount)",
+          "interval": "",
+          "legendFormat": "done deposit cnt",
+          "refId": "A"
+        },
+        {
+          "exemplar": true,
+          "expr": "avg by (container)(galoy_dealer_pendingDepositCount)",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "pend deposit cnt",
+          "refId": "B"
+        },
+        {
+          "exemplar": true,
+          "expr": "avg by (container)(galoy_dealer_completedWithdrawalCount)",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "done withdraw cnt",
+          "refId": "C"
+        },
+        {
+          "exemplar": true,
+          "expr": "avg by (container)(galoy_dealer_pendingWithdrawalCount)",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "pending withdraw cnt",
+          "refId": "D"
+        },
+        {
+          "exemplar": true,
+          "expr": "avg by (container)(galoy_dealer_totalInFlightTransfersCount)",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "total transfer cnt",
+          "refId": "E"
+        }
+      ],
+      "title": "InFlight Transfers",
+      "type": "bargauge"
+    },
+    {
+      "datasource": null,
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 25,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineStyle": {
+              "fill": "solid"
+            },
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 0,
+        "y": 49
+      },
+      "id": 71,
+      "options": {
+        "legend": {
+          "calcs": [
+            "last"
+          ],
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "exemplar": true,
+          "expr": "avg by(container) (avg_over_time(USD_price[1h])) * (avg by(container) (avg_over_time(galoy_dealer_btc_balance[1h])) / 100000000 + (avg by(container) (avg_over_time(galoy_dealer_btcTotalBalance[1h])) + avg by(container) (avg_over_time(galoy_dealer_fundingAccountBtcTotalBalance[1h])))) + avg by(container) (avg_over_time(galoy_dealer_swapUPnlInUsd[1h])) + (avg by(container) (avg_over_time(galoy_dealer_usd_balance[1h])) / 100)",
+          "interval": "",
+          "legendFormat": "assets vs. liability",
+          "refId": "A"
+        }
+      ],
+      "title": "Assets - Liability in USD",
       "type": "timeseries"
     },
     {
@@ -3547,7 +3600,9 @@
         "displayMode": "lcd",
         "orientation": "vertical",
         "reduceOptions": {
-          "calcs": ["lastNotNull"],
+          "calcs": [
+            "lastNotNull"
+          ],
           "fields": "",
           "values": false
         },
@@ -3654,88 +3709,6 @@
       ],
       "title": "Funding Yield",
       "type": "bargauge"
-    },
-    {
-      "datasource": null,
-      "description": "",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 25,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineInterpolation": "linear",
-            "lineStyle": {
-              "fill": "solid"
-            },
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 7,
-        "w": 6,
-        "x": 0,
-        "y": 56
-      },
-      "id": 71,
-      "options": {
-        "legend": {
-          "calcs": ["last"],
-          "displayMode": "list",
-          "placement": "bottom"
-        },
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "targets": [
-        {
-          "exemplar": true,
-          "expr": "avg by(container) (avg_over_time(USD_price[1h])) * (avg by(container) (avg_over_time(galoy_dealer_btc_balance[1h])) / 100000000 + (avg by(container) (avg_over_time(galoy_dealer_btcTotalBalance[1h])) + avg by(container) (avg_over_time(galoy_dealer_fundingAccountBtcTotalBalance[1h])))) + avg by(container) (avg_over_time(galoy_dealer_swapUPnlInUsd[1h])) + (avg by(container) (avg_over_time(galoy_dealer_usd_balance[1h])) / 100)",
-          "interval": "",
-          "legendFormat": "assets vs. liability",
-          "refId": "A"
-        }
-      ],
-      "title": "Assets - Liability in USD",
-      "type": "timeseries"
     }
   ],
   "refresh": false,
@@ -3753,5 +3726,5 @@
   "timezone": "",
   "title": "Galoy Dealer",
   "uid": "pTEP9n47k",
-  "version": 78
+  "version": 1
 }
