@@ -153,6 +153,8 @@ export class Dealer {
   public async updatePositionAndLeverage(): Promise<
     Result<UpdatedPositionAndLeverageResult>
   > {
+    const hedging_disabled = process.env["HEDGING_DISABLED"]
+
     const ret = await asyncRunInSpan(
       "app.dealer.updatePositionAndLeverage",
       {
@@ -204,69 +206,71 @@ export class Dealer {
 
         const result = {} as UpdatedPositionAndLeverageResult
 
-        if (usdLiability < hedgingBounds.MINIMUM_POSITIVE_LIABILITY_USD) {
-          logger.debug(
-            { usdLiability },
-            "No liabilities to hedge, skipping the order loop and closing position if any",
-          )
-
-          addAttributesToCurrentSpan({
-            [`${SemanticAttributes.CODE_FUNCTION}.results.orderLoopSkipped`]: true,
-          })
-
-          await this.strategy.closePosition()
-
-          result.updatePositionSkipped = true
-        } else {
-          logger.debug("starting with order loop")
-
-          const updatedPositionResult = await this.strategy.updatePosition(
-            usdLiability,
-            btcPriceInUsd,
-          )
-          result.updatedPositionResult = updatedPositionResult
-          if (updatedPositionResult.ok) {
-            const originalPosition = updatedPositionResult.value.originalPosition
-            const updatedPosition = updatedPositionResult.value.updatedPosition
+        result.updatePositionSkipped = true
+        if (!hedging_disabled) {
+          if (usdLiability < hedgingBounds.MINIMUM_POSITIVE_LIABILITY_USD) {
+            logger.debug(
+              { usdLiability },
+              "No liabilities to hedge, skipping the order loop and closing position if any",
+            )
 
             addAttributesToCurrentSpan({
-              [`${SemanticAttributes.CODE_FUNCTION}.results.updatePosition.success`]:
-                true,
-              [`${SemanticAttributes.CODE_FUNCTION}.results.updatePosition.originalPosition`]:
-                JSON.stringify(originalPosition),
-              [`${SemanticAttributes.CODE_FUNCTION}.results.updatePosition.updatedPosition`]:
-                JSON.stringify(updatedPosition),
+              [`${SemanticAttributes.CODE_FUNCTION}.results.orderLoopSkipped`]: true,
             })
 
-            logger.info(
-              {
-                usdLiability,
-                btcPriceInUsd,
-                activeStrategy: this.strategy.name,
-                originalPosition,
-                updatedPosition,
-              },
-              "The {activeStrategy} was successful at UpdatePosition({usdLiability}, {btcPriceInUsd})",
-            )
+            await this.strategy.closePosition()
+
+            result.updatePositionSkipped = true
           } else {
-            addAttributesToCurrentSpan({
-              [`${SemanticAttributes.CODE_FUNCTION}.results.updatePosition.success`]:
-                false,
-              [`${SemanticAttributes.CODE_FUNCTION}.results.updatePosition.error`]:
-                JSON.stringify(updatedPositionResult.error),
-            })
-            logger.error(
-              {
-                usdLiability,
-                btcPriceInUsd,
-                activeStrategy: this.strategy.name,
-                updatedPosition: updatedPositionResult,
-              },
-              "The {activeStrategy} failed during the UpdatePosition({usdLiability}, {btcPriceInUsd}) execution",
+            logger.debug("starting with order loop")
+
+            const updatedPositionResult = await this.strategy.updatePosition(
+              usdLiability,
+              btcPriceInUsd,
             )
+            result.updatedPositionResult = updatedPositionResult
+            if (updatedPositionResult.ok) {
+              const originalPosition = updatedPositionResult.value.originalPosition
+              const updatedPosition = updatedPositionResult.value.updatedPosition
+
+              addAttributesToCurrentSpan({
+                [`${SemanticAttributes.CODE_FUNCTION}.results.updatePosition.success`]:
+                  true,
+                [`${SemanticAttributes.CODE_FUNCTION}.results.updatePosition.originalPosition`]:
+                  JSON.stringify(originalPosition),
+                [`${SemanticAttributes.CODE_FUNCTION}.results.updatePosition.updatedPosition`]:
+                  JSON.stringify(updatedPosition),
+              })
+
+              logger.info(
+                {
+                  usdLiability,
+                  btcPriceInUsd,
+                  activeStrategy: this.strategy.name,
+                  originalPosition,
+                  updatedPosition,
+                },
+                "The {activeStrategy} was successful at UpdatePosition({usdLiability}, {btcPriceInUsd})",
+              )
+            } else {
+              addAttributesToCurrentSpan({
+                [`${SemanticAttributes.CODE_FUNCTION}.results.updatePosition.success`]:
+                  false,
+                [`${SemanticAttributes.CODE_FUNCTION}.results.updatePosition.error`]:
+                  JSON.stringify(updatedPositionResult.error),
+              })
+              logger.error(
+                {
+                  usdLiability,
+                  btcPriceInUsd,
+                  activeStrategy: this.strategy.name,
+                  updatedPosition: updatedPositionResult,
+                },
+                "The {activeStrategy} failed during the UpdatePosition({usdLiability}, {btcPriceInUsd}) execution",
+              )
+            }
           }
         }
-
         // Check for any in-flight fund transfer, and skip if not all completed
         const dbCallResult = await database.inFlightTransfers.getPendingCount()
         if (dbCallResult.ok && dbCallResult.value === 0) {

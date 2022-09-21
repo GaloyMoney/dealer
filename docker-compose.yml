@@ -3,15 +3,15 @@ networks:
   monitoring:
     driver: bridge
 volumes:
-    prometheus_data: {}
-    grafana_data: {}
+  prometheus_data: {}
+  grafana_data: {}
 services:
   otel-agent:
     image: otel/opentelemetry-collector-contrib:0.43.0
-    command: ["--config=/etc/otel-agent-config.yaml"]
+    command: [ "--config=/etc/otel-agent-config.yaml" ]
     environment:
-    - HONEYCOMB_DATASET=${HONEYCOMB_DATASET}
-    - HONEYCOMB_API_KEY=${HONEYCOMB_API_KEY}
+      - HONEYCOMB_DATASET=${HONEYCOMB_DATASET}
+      - HONEYCOMB_API_KEY=${HONEYCOMB_API_KEY}
     volumes:
       - ./dev/otel-agent-config.yaml:/etc/otel-agent-config.yaml
   prometheus:
@@ -51,9 +51,9 @@ services:
       dockerfile: dealer/Dockerfile
     depends_on:
       postgres:
-        condition: service_healthy      
+        condition: service_healthy
     extra_hosts:
-    - "host.docker.internal:host-gateway"
+      - "host.docker.internal:host-gateway"
     links:
       - postgres
       - graphql
@@ -67,25 +67,26 @@ services:
       - monitoring
     environment:
       # HEDGING_NOT_IN_SIMULATION: ${HEDGING_NOT_IN_SIMULATION}
+      HEDGING_DISABLED: ${HEDGING_DISABLED}
       NETWORK: ${NETWORK}
       LOG_LEVEL: ${LOG_LEVEL}
-      # 
+      #
       ACTIVE_STRATEGY: ${ACTIVE_STRATEGY}
       ACTIVE_WALLET: ${ACTIVE_WALLET}
-      # 
+      #
       OKEX5_KEY: ${OKEX5_KEY}
       OKEX5_SECRET: ${OKEX5_SECRET}
       OKEX5_PASSWORD: ${OKEX5_PASSWORD}
       OKEX5_FUND_PASSWORD: ${OKEX5_FUND_PASSWORD}
-      # 
+      #
       GRAPHQL_URI: ${GRAPHQL_URI}
       DATABASE_URL: ${DATABASE_URL}
       JAEGER_HOST: ${JAEGER_HOST}
-      # 
+      #
       DEALER_PHONE: ${DEALER_PHONE}
       DEALER_CODE: ${DEALER_CODE}
       DEALER_TOKEN: ${DEALER_TOKEN}
-      # 
+      #
       DEALER_BTC_BAL_OFFSET: ${DEALER_BTC_BAL_OFFSET}
       DEALER_USD_BAL_OFFSET: ${DEALER_USD_BAL_OFFSET}
   graphql:
@@ -93,7 +94,7 @@ services:
       context: .
       dockerfile: dealer/src/servers/graphql/Dockerfile
     extra_hosts:
-    - "host.docker.internal:host-gateway"
+      - "host.docker.internal:host-gateway"
     links:
       - postgres
     ports:
@@ -112,7 +113,7 @@ services:
       - "5432:5432"
     networks:
       - monitoring
-    volumes: 
+    volumes:
       - ../postgresdata:/var/lib/postgresql/data
     restart: always
     environment:
@@ -120,7 +121,7 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: galoy
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
       interval: 5s
       timeout: 5s
       retries: 5
