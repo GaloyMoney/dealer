@@ -19,6 +19,10 @@
     --color-disabled-button-fg: #aaa;
     --color-send: #ed4b85;
     --color-receive: #28bf89;
+    --color-btcPrimary: #8c540a;
+    --color-btcSecondary: #f1a43c;
+    --color-usdPrimary: #40632c;
+    --color-usdSecondary: #85bb65;
   }
 }
 
@@ -43,6 +47,10 @@
     --color-disabled-button-fg: #999;
     --color-send: #ed4b85;
     --color-receive: #28bf89;
+    --color-btcPrimary: #8c540a;
+    --color-btcSecondary: #f1a43c;
+    --color-usdPrimary: #40632c;
+    --color-usdSecondary: #85bb65;
   }
 }
 
@@ -66,6 +74,10 @@ body.light {
   --color-disabled-button-fg: #aaa;
   --color-send: #ed4b85;
   --color-receive: #28bf89;
+  --color-btcPrimary: #8c540a;
+  --color-btcSecondary: #f1a43c;
+  --color-usdPrimary: #40632c;
+  --color-usdSecondary: #85bb65;
 }
 
 body.dark {
@@ -87,4 +99,8 @@ body.dark {
   --color-disabled-button-fg: #999;
   --color-send: #ed4b85;
   --color-receive: #28bf89;
+  --color-btcPrimary: #8c540a;
+  --color-btcSecondary: #f1a43c;
+  --color-usdPrimary: #40632c;
+  --color-usdSecondary: #85bb65;
 }

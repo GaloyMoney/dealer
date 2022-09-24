@@ -44,6 +44,103 @@
   }
 }
 
+.wallets-header-container {
+  margin: 2.5rem auto;
+  display: flex;
+  justify-content: space-between;
+  max-width: 375px;
+
+  svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .sats {
+    display: flex;
+    justify-content: space-between;
+    flex-grow: 1;
+    border: thin solid var(--color-borders);
+    border-radius: 0.4rem;
+    .label {
+      color: var(--color-btcPrimary);
+      background-color: var(--color-btcSecondary);
+      border-right: thin solid var(--color-bg);
+      border-radius: 0.4rem 0 0 0.4rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      div {
+        transform: rotate(270deg);
+        font-weight: bold;
+      }
+    }
+    .balances {
+      flex-grow: 1;
+      text-align: left;
+      padding: 0.25rem 0.75rem;
+      .primary {
+        margin: 0.2rem auto;
+        font-size: 1.2rem;
+      }
+      .secondary {
+        font-size: 0.75rem;
+        color: gray;
+      }
+    }
+  }
+
+  .divider {
+    display: flex;
+    align-items: center;
+    background-color: var(--color-dark-bg);
+    color: var(--color-subtext);
+    border: thin solid var(--color-borders);
+    border-radius: 50%;
+    width: 55px;
+    justify-content: center;
+    margin: 0 -18px;
+    z-index: 1;
+    svg {
+      width: 32px;
+      height: 32px;
+    }
+  }
+
+  .usd {
+    display: flex;
+    justify-content: space-between;
+    flex-grow: 1;
+    border: thin solid var(--color-borders);
+    border-radius: 0.4rem;
+    .label {
+      color: var(--color-usdPrimary);
+      background-color: var(--color-usdSecondary);
+      border-left: thin solid var(--color-bg);
+      border-radius: 0 0.4rem 0.4rem 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      div {
+        transform: rotate(90deg);
+        font-weight: bold;
+      }
+    }
+    .balances {
+      flex-grow: 1;
+      text-align: right;
+      padding: 0.25rem 0.75rem;
+      display: flex;
+      .usd-balance {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        flex-grow: 1;
+        font-size: 1.2rem;
+      }
+    }
+  }
+}
+
 .header-nav {
   margin: 1rem auto;
   display: flex;
@@ -74,12 +171,6 @@
     background-color: var(--color-active-bg);
     font-weight: bold;
     color: var(--color-primary);
-  }
-}
-
-.home {
-  .header-nav {
-    margin-top: 3rem;
   }
 }
 

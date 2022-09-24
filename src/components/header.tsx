@@ -4,6 +4,7 @@ import useMainQuery from "hooks/use-main-query"
 import { translate, useAuthContext, useAppState } from "store/index"
 
 import Balance from "components/balance"
+import WalletsHeader from "components/wallets-header"
 import Link from "components/link"
 import LoginLink from "components/login-link"
 import LogoutLink from "components/logout-link"
@@ -25,7 +26,7 @@ type FCT = React.FC<{ page: Page }>
 const Header: FCT = ({ page }) => {
   const { isAuthenticated } = useAuthContext()
   const { emailVerified } = useAppState()
-  const { btcWalletBalance } = useMainQuery()
+  const { btcWalletBalance, usdWalletBalance } = useMainQuery()
   const [showMenu, setShowMenu] = useState(false)
 
   const handleMenuClick: React.MouseEventHandler<HTMLDivElement> = (event) => {
@@ -42,10 +43,12 @@ const Header: FCT = ({ page }) => {
 
   const showVerifiedConfirmation = page === "home" && emailVerified
 
+  const showWalletsHeader = page === "home" && isAuthenticated
+
   return (
     <div className={`header-container ${page}-header`}>
       <div className="header">
-        <Balance balance={btcWalletBalance} />
+        <Balance btcBalance={btcWalletBalance} usdBalance={usdWalletBalance} />
         <div className="links">
           {page !== "home" && (
             <>
@@ -65,6 +68,8 @@ const Header: FCT = ({ page }) => {
       </div>
 
       {showVerifiedConfirmation && <DiscardableMessage type="emailVerified" />}
+
+      {showWalletsHeader && <WalletsHeader />}
 
       {showHeaderNav && (
         <div className="header-nav">

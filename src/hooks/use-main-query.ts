@@ -29,6 +29,12 @@ const useMainQuery = () => {
 
   const transactions = btcWallet?.transactions
 
+  const usdWallet = me?.defaultAccount?.wallets?.find(
+    (wallet) => wallet?.__typename === "UsdWallet",
+  )
+  const usdWalletId = usdWallet?.id
+  const usdWalletBalanceInCents = isAuthenticated ? usdWallet?.balance ?? NaN : 0
+
   const username = me?.username
   const phoneNumber = me?.phone
   const language = (me?.language ?? "DEFAULT") as Language
@@ -37,9 +43,14 @@ const useMainQuery = () => {
     lightningAddressDomain,
     btcPrice,
     pubKey,
+
     btcWalletId,
     btcWalletBalance,
     transactions,
+
+    usdWalletId,
+    usdWalletBalance: usdWalletBalanceInCents / 100,
+
     username,
     phoneNumber,
     language,

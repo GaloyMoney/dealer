@@ -8,33 +8,28 @@ const navigateToHome = () => {
   history.push("/")
 }
 
-type FCT = React.FC<{ balance: number }>
+type FCT = React.FC<{ btcBalance: number; usdBalance: number }>
 
-const BalanceMain: FCT = ({ balance }) => {
+const BalanceMain: FCT = ({ btcBalance, usdBalance }) => {
   const { satsToUsd } = useMyUpdates()
 
   return (
     <div className="balance" onClick={navigateToHome}>
       <div className="title">{translate("Current Balance")}</div>
       <div className="value">
-        {Number.isNaN(balance) ? (
+        {Number.isNaN(btcBalance) && Number.isNaN(usdBalance) ? (
           <Spinner />
         ) : (
-          <>
-            <div className="primary">
-              <SatFormat amount={balance} />
-            </div>
-            {satsToUsd && (
-              <div className="secondary">&#8776; {formatUsd(satsToUsd(balance))}</div>
-            )}
-          </>
+          satsToUsd && (
+            <div className="primary">{formatUsd(satsToUsd(btcBalance) + usdBalance)}</div>
+          )
         )}
       </div>
     </div>
   )
 }
 
-const Balance: FCT = ({ balance }) => {
+const Balance: FCT = ({ btcBalance, usdBalance }) => {
   const { isAuthenticated } = useAuthContext()
 
   if (!isAuthenticated) {
@@ -51,7 +46,7 @@ const Balance: FCT = ({ balance }) => {
     )
   }
 
-  return <BalanceMain balance={balance} />
+  return <BalanceMain btcBalance={btcBalance} usdBalance={usdBalance} />
 }
 
 export default Balance
