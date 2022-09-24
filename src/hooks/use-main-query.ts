@@ -27,7 +27,7 @@ const useMainQuery = () => {
   const btcWalletId = btcWallet?.id
   const btcWalletBalance = isAuthenticated ? btcWallet?.balance ?? NaN : 0
 
-  const transactions = btcWallet?.transactions
+  const transactions = me?.defaultAccount?.transactions
 
   const usdWallet = me?.defaultAccount?.wallets?.find(
     (wallet) => wallet?.__typename === "UsdWallet",

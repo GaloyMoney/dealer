@@ -512,10 +512,14 @@ button {
     .icon {
       flex: 0;
     }
+    .amount {
+      flex: 2;
+    }
     .converted-usd {
       font-size: 90%;
       margin-top: 0.25rem;
       color: var(--color-secondary);
+      padding-left: 0;
     }
   }
 

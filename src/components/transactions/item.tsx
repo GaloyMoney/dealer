@@ -88,10 +88,14 @@ const TransactionItem: FCT = ({ tx }) => {
           </div>
 
           <div className="amount">
-            <div>
-              <SatFormat amount={tx.settlementAmount} />
-            </div>
-            <div className="converted-usd">{formatUsd(usdAmount)}</div>
+            {tx.settlementCurrency === "USD" ? (
+              <div className="usd-primary">{formatUsd(tx.settlementAmount / 100)}</div>
+            ) : (
+              <div>
+                <SatFormat amount={tx.settlementAmount} />
+                <div className="converted-usd">{formatUsd(usdAmount)}</div>
+              </div>
+            )}
           </div>
         </div>
 
@@ -169,10 +173,14 @@ const TransactionItem: FCT = ({ tx }) => {
         </div>
 
         <div className="amount">
-          <div>
-            <SatFormat amount={tx.settlementAmount} />
-          </div>
-          <div className="converted-usd">{formatUsd(usdAmount)}</div>
+          {tx.settlementCurrency === "USD" ? (
+            <div className="usd-primary">{formatUsd(tx.settlementAmount / 100)}</div>
+          ) : (
+            <div>
+              <SatFormat amount={tx.settlementAmount} />
+              <div className="converted-usd">{formatUsd(usdAmount)}</div>
+            </div>
+          )}
         </div>
       </div>
     </div>
