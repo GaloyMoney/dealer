@@ -35,6 +35,10 @@
       display: flex;
       justify-content: space-around;
       font-size: 1.1rem;
+      svg {
+        width: 26px;
+        height: 26px;
+      }
       .menu-icon {
         cursor: pointer;
         font-size: 1.25rem;
@@ -101,8 +105,8 @@
     margin: 0 -18px;
     z-index: 1;
     svg {
-      width: 32px;
-      height: 32px;
+      width: 28px;
+      height: 28px;
     }
   }
 
@@ -149,13 +153,22 @@
     margin: 1rem auto;
     border: thin solid var(--color-borders);
     border-radius: 0.25rem;
-    padding: 0.75rem 1.75rem;
+    padding: 0.5rem 1.75rem;
     background-color: var(--color-light-bg);
     width: 75%;
     max-width: 225px;
     display: flex;
     align-items: center;
     justify-content: center;
+    .button-label {
+      display: flex;
+      align-items: center;
+    }
+  }
+  .scan {
+    svg {
+      color: var(--color-btcSecondary);
+    }
   }
   .send {
     svg {
@@ -405,8 +418,6 @@ button {
     align-items: center;
     svg {
       margin-left: 0.25rem;
-      width: 32px;
-      height: 32px;
     }
   }
 }
@@ -443,6 +454,10 @@ button {
   display: inline-flex;
   justify-content: center;
   align-items: center;
+  svg {
+    width: 18px;
+    height: 18px;
+  }
   .minus {
     margin-right: 2px;
   }
@@ -580,10 +595,6 @@ button {
       justify-content: left;
       align-items: center;
       margin: 1rem;
-      i,
-      svg {
-        width: 30px;
-      }
     }
     .close {
       position: fixed;

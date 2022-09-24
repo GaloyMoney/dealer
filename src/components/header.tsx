@@ -73,17 +73,23 @@ const Header: FCT = ({ page }) => {
 
       {showHeaderNav && (
         <div className="header-nav">
-          <Link to="/scan">
-            <Icon name="qrcode" />
-            {translate("Scan QR code")}
+          <Link to="/scan" className="link scan">
+            <div className="button-label">
+              <Icon name="qrcode" />
+              {translate("Scan QR code")}
+            </div>
           </Link>
           <Link to="/send" className="link send">
-            <Icon name="send" />
-            {translate("Send Bitcoin")}
+            <div className="button-label">
+              <Icon name="send" />
+              {translate("Send Bitcoin")}
+            </div>
           </Link>
           <Link to="/receive" className="link receive">
-            <Icon name="receive" />
-            {translate("Receive Bitcoin")}
+            <div className="button-label">
+              <Icon name="receive" />
+              {translate("Receive Bitcoin")}
+            </div>
           </Link>
         </div>
       )}
