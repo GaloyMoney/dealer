@@ -15,7 +15,8 @@
       cursor: pointer;
       .title {
         text-align: center;
-        margin-bottom: 0.5rem;
+        margin-bottom: 0.4rem;
+        font-size: 0.8rem;
       }
 
       .value {
@@ -34,12 +35,14 @@
     .links {
       display: flex;
       justify-content: space-around;
+      align-items: center;
       font-size: 1.1rem;
       svg {
-        width: 26px;
-        height: 26px;
+        width: 28px;
+        height: 28px;
       }
       .menu-icon {
+        display: flex;
         cursor: pointer;
         font-size: 1.25rem;
         color: var(--color-links);
@@ -63,6 +66,7 @@
     display: flex;
     justify-content: space-between;
     flex-grow: 1;
+    background-color: var(--color-light-bg);
     border: thin solid var(--color-borders);
     border-radius: 0.4rem;
     .label {
@@ -97,16 +101,18 @@
     display: flex;
     align-items: center;
     background-color: var(--color-dark-bg);
-    color: var(--color-subtext);
     border: thin solid var(--color-borders);
     border-radius: 50%;
-    width: 55px;
     justify-content: center;
     margin: 0 -18px;
     z-index: 1;
-    svg {
-      width: 28px;
-      height: 28px;
+    a {
+      width: 55px;
+      svg {
+        width: 28px;
+        height: 28px;
+        margin-right: unset;
+      }
     }
   }
 
@@ -114,6 +120,7 @@
     display: flex;
     justify-content: space-between;
     flex-grow: 1;
+    background-color: var(--color-light-bg);
     border: thin solid var(--color-borders);
     border-radius: 0.4rem;
     .label {
@@ -831,5 +838,187 @@ button {
       padding-left: 0.4rem;
       padding-right: 0.4rem;
     }
+  }
+}
+
+.conversion-flow {
+  .container {
+    max-width: 450px;
+    margin: 0 auto;
+    .from-to {
+      border: thin solid var(--color-borders);
+      border-radius: 0.5rem;
+      margin: 1rem auto;
+      background-color: var(--color-light-bg);
+      .wallet {
+        display: flex;
+        padding: 1.25rem 1rem;
+        align-items: center;
+        .label {
+          width: 50px;
+        }
+        .icon-btc {
+          color: var(--color-btcPrimary);
+          background-color: var(--color-btcSecondary);
+        }
+        .icon-usd {
+          color: var(--color-usdPrimary);
+          background-color: var(--color-usdSecondary);
+        }
+        .icon-btc,
+        .icon-usd {
+          border: thin solid var(--color-dark-bg);
+          border-radius: 0.4rem;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          width: 50px;
+          padding: 0.5rem 0.25rem;
+        }
+        .title-balance {
+          margin-left: 1rem;
+          .title {
+            font-weight: bold;
+            margin-bottom: 0.3rem;
+          }
+          .balance {
+            font-size: 0.85rem;
+            color: var(--color-subtext);
+          }
+        }
+      }
+    }
+    .divider {
+      display: flex;
+      align-items: center;
+      height: 0;
+      hr.left {
+        flex: 9;
+      }
+      hr.right {
+        flex: 0.2;
+      }
+      .icon {
+        cursor: pointer;
+        text-align: center;
+        border: thin solid var(--color-borders);
+        background-color: var(--color-dark-bg);
+        border-radius: 50%;
+        color: var(--color-subtext);
+        width: 50px;
+        height: 50px;
+        svg {
+          width: 24px;
+          height: 24px;
+          margin-top: 13px;
+        }
+      }
+    }
+    .amount-input {
+      border: thin solid var(--color-borders);
+      border-radius: 0.5rem;
+      margin: 1rem auto;
+      padding: 1.25rem 1rem;
+      background-color: var(--color-light-bg);
+      .container {
+        display: flex;
+        align-items: center;
+        .label {
+          flex: 1;
+          margin-right: 0.5rem;
+        }
+        .content {
+          flex: 8;
+          .input {
+            display: flex;
+            align-items: center;
+            margin-left: 0.5rem;
+            margin-right: 0.5rem;
+            .currency-label {
+              margin-right: 0.25rem;
+              font-size: 1.2rem;
+              svg {
+                width: 20px;
+                height: 20px;
+              }
+            }
+            .toggle-currency {
+              cursor: pointer;
+              margin-left: 0.5rem;
+              font-size: 1.2rem;
+            }
+          }
+          .converted-input {
+            display: flex;
+            align-items: center;
+            margin-left: 0.5rem;
+            font-size: 0.8rem;
+            color: var(--color-subtext);
+            svg {
+              width: 18px;
+              height: 18px;
+              margin-right: 0;
+            }
+          }
+        }
+
+        .toggle-currency {
+          flex: 1;
+        }
+      }
+    }
+    .percentages {
+      margin: 1rem auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      .buttons {
+        display: flex;
+        .percentage {
+          border: thin solid var(--color-borders);
+          border-radius: 0.5rem;
+          background-color: var(--color-light-bg);
+          margin-left: 0.75rem;
+          padding: 0.5rem;
+          cursor: pointer;
+        }
+      }
+    }
+    .button-next {
+      margin-top: 3rem;
+      text-align: center;
+      a {
+        margin-left: 1.5rem;
+      }
+    }
+
+    .review {
+      border: thin solid var(--color-borders);
+      border-radius: 0.5rem;
+      margin: 1rem auto;
+      background-color: var(--color-light-bg);
+      .row {
+        padding: 1rem;
+        .label {
+          margin-bottom: 0.25rem;
+        }
+        .value {
+          font-weight: bold;
+        }
+      }
+    }
+  }
+}
+
+.conversion-status {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  max-width: 375px;
+  margin: 5rem auto;
+  text-align: center;
+  .nav-back,
+  .success {
+    margin-top: 2rem;
   }
 }

@@ -1,5 +1,8 @@
 import { formatUsd } from "@galoymoney/client"
 import { Icon, SatFormat } from "@galoymoney/react"
+
+import Link from "components/link"
+
 import useMainQuery from "hooks/use-main-query"
 import useMyUpdates from "hooks/use-my-updates"
 import { NoPropsFCT } from "store/index"
@@ -25,7 +28,9 @@ const WalletsHeader: NoPropsFCT = () => {
       </div>
 
       <div className="divider">
-        <Icon name="transfer" />
+        <Link to="/convert">
+          <Icon name="transfer" />
+        </Link>
       </div>
 
       <div className="usd">

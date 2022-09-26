@@ -127,6 +127,7 @@ export const AuthProvider: FCT = ({
       onError: ({ graphQLErrors, networkError }) => {
         if (graphQLErrors) {
           console.debug("[GraphQL errors]:", graphQLErrors)
+          handleError(graphQLErrors[0].message)
         }
         if (networkError) {
           console.debug("[Network error]:", networkError)

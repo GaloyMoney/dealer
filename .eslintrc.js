@@ -41,6 +41,7 @@ module.exports = {
     "@typescript-eslint/no-empty-function": "off",
     "@typescript-eslint/prefer-for-of": "error",
     "@typescript-eslint/unified-signatures": "error",
+    "@typescript-eslint/no-shadow": ["error"],
 
     "import/no-deprecated": "error",
     "import/no-extraneous-dependencies": "error",
@@ -131,7 +132,7 @@ module.exports = {
     "no-script-url": "error",
     "no-self-compare": "error",
     "no-sequences": "error",
-    "no-shadow": "error",
+    "no-shadow": "off",
     "no-template-curly-in-string": "error",
     "no-throw-literal": "error",
     "no-unmodified-loop-condition": "error",

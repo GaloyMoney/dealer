@@ -24,6 +24,8 @@ const ErrorFallback: FCT = ({ error }) => {
       </a>
       <div className="separator">|</div>
       <a href="/">{translate("Reload Application")}</a>
+      <div className="separator">|</div>
+      <a href="/logout">{translate("Logout")}</a>
     </div>
   )
 }

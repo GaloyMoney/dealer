@@ -15,6 +15,7 @@ const headerNavPages = ["home"] as const
 
 type Page =
   | typeof headerNavPages[number]
+  | "conversion-flow"
   | "send-bitcoin"
   | "receive-bitcoin"
   | "contacts"

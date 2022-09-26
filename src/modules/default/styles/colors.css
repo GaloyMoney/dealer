@@ -12,7 +12,7 @@
     --color-highlight-bg: #999999;
     --color-highlight-fg: #eeeeee;
     --color-active-bg: #f8d9aa;
-    --color-borders: #c5c5c5;
+    --color-borders: #c9c9c9;
     --color-button-bg: #f9e4b3;
     --color-button-fg: #000;
     --color-disabled-button-bg: #ececec;
@@ -67,7 +67,7 @@ body.light {
   --color-highlight-bg: #999999;
   --color-highlight-fg: #eeeeee;
   --color-active-bg: #f8d9aa;
-  --color-borders: #c5c5c5;
+  --color-borders: #c9c9c9;
   --color-button-bg: #f9e4b3;
   --color-button-fg: #000;
   --color-disabled-button-bg: #ececec;

@@ -9,7 +9,7 @@ const useMainQuery = () => {
   const { isAuthenticated } = useAuthContext()
   const { defaultLanguage } = useAppState()
 
-  const { data } = useQuery.main({
+  const { data, refetch } = useQuery.main({
     variables: { isAuthenticated, recentTransactions: 5 },
     onCompleted: (completed) => {
       setLocale(completed?.me?.language ?? defaultLanguage)
@@ -21,6 +21,10 @@ const useMainQuery = () => {
   const btcPrice = data?.btcPrice ?? undefined
 
   const me = data?.me
+
+  const wallets = data?.me?.defaultAccount?.wallets
+  const defaultWalletId = data?.me?.defaultAccount?.defaultWalletId
+
   const btcWallet = me?.defaultAccount?.wallets?.find(
     (wallet) => wallet?.__typename === "BTCWallet",
   )
@@ -44,6 +48,10 @@ const useMainQuery = () => {
     btcPrice,
     pubKey,
 
+    refetch,
+
+    wallets,
+    defaultWalletId,
     btcWalletId,
     btcWalletBalance,
     transactions,

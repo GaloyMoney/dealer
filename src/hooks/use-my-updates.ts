@@ -19,6 +19,7 @@ const satPriceInCents = (update: PriceData | undefined) => {
 }
 
 type UseMyUpdates = {
+  usdPerBtc: number | null
   satsToUsd: ((sats: number) => number) | null
   usdToSats: ((usd: number) => number) | null
   currentBalance: number | null
@@ -66,7 +67,16 @@ const useMyUpdates = (): UseMyUpdates => {
     }
   }
 
-  // The following conversion functions have to be defined here as they they depend on cachedPrice.current
+  const currentBalance = data?.myUpdates?.me?.defaultAccount?.wallets?.[0]?.balance ?? NaN
+
+  // The following variables have to be defined here as they depend on cachedPrice.current
+
+  const usdPerBtc = useMemo(() => {
+    return Number.isNaN(cachedPrice.current)
+      ? null
+      : (cachedPrice.current * 100_000_000) / 100
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cachedPrice.current])
 
   const satsToUsd = useMemo(() => {
     return Number.isNaN(cachedPrice.current)
@@ -82,9 +92,8 @@ const useMyUpdates = (): UseMyUpdates => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cachedPrice.current])
 
-  const currentBalance = data?.myUpdates?.me?.defaultAccount?.wallets?.[0]?.balance ?? NaN
-
   return {
+    usdPerBtc,
     satsToUsd,
     usdToSats,
     currentBalance,

@@ -11,6 +11,7 @@ import Register from "components/pages/register"
 import Send from "components/pages/send"
 import Settings from "components/pages/settings"
 import Transactions from "components/pages/transactions"
+import ConversionFlow from "components/pages/conversion-flow"
 
 // Note: The component property is skipped by the serialize function
 // It's only used on the front-end
@@ -18,6 +19,10 @@ const appRoutesDef = {
   "/": {
     component: Home,
     title: `${config.walletName} Web Wallet`,
+  },
+  "/convert": {
+    component: ConversionFlow,
+    title: "Convert BTC <> USD",
   },
   "/send": {
     component: Send,
