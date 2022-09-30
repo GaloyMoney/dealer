@@ -8,8 +8,12 @@ import useMyUpdates from "hooks/use-my-updates"
 import { NoPropsFCT } from "store/index"
 
 const WalletsHeader: NoPropsFCT = () => {
-  const { btcWalletBalance, usdWalletBalance } = useMainQuery()
+  const { btcWalletBalance, usdWalletBalance, wallets } = useMainQuery()
   const { satsToUsd } = useMyUpdates()
+
+  if (wallets.length === 1) {
+    return null
+  }
 
   return (
     <div className="wallets-header-container">

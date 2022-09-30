@@ -1,6 +1,5 @@
 import { useState } from "react"
 
-import useMainQuery from "hooks/use-main-query"
 import { translate, useAuthContext, useAppState } from "store/index"
 
 import Balance from "components/balance"
@@ -27,7 +26,6 @@ type FCT = React.FC<{ page: Page }>
 const Header: FCT = ({ page }) => {
   const { isAuthenticated } = useAuthContext()
   const { emailVerified } = useAppState()
-  const { btcWalletBalance, usdWalletBalance } = useMainQuery()
   const [showMenu, setShowMenu] = useState(false)
 
   const handleMenuClick: React.MouseEventHandler<HTMLDivElement> = (event) => {
@@ -49,7 +47,7 @@ const Header: FCT = ({ page }) => {
   return (
     <div className={`header-container ${page}-header`}>
       <div className="header">
-        <Balance btcBalance={btcWalletBalance} usdBalance={usdWalletBalance} />
+        <Balance />
         <div className="links">
           {page !== "home" && (
             <>

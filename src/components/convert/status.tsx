@@ -31,10 +31,12 @@ const ConversionStatus: RFC = ({ success, errorsMessage }) => {
         <>
           <SuccessCheckmark />
 
-          {translate("Conversion successful")}
+          <div className="success">{translate("Conversion successful")}</div>
         </>
       ) : (
-        translateUnknown(errorsMessage ?? "Something went wrong")
+        <div className="error">
+          {translateUnknown(errorsMessage ?? "Something went wrong")}
+        </div>
       )}
 
       <div className="nav-back">

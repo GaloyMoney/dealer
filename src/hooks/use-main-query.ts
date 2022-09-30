@@ -22,7 +22,7 @@ const useMainQuery = () => {
 
   const me = data?.me
 
-  const wallets = data?.me?.defaultAccount?.wallets
+  const wallets = data?.me?.defaultAccount?.wallets ?? []
   const defaultWalletId = data?.me?.defaultAccount?.defaultWalletId
 
   const btcWallet = me?.defaultAccount?.wallets?.find(
