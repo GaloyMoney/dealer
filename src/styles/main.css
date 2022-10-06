@@ -226,8 +226,13 @@
   justify-content: center;
   align-items: center;
   .currency-label {
-    margin-right: 0.5rem;
-    font-size: 1.5rem;
+    margin-right: 0.2rem;
+    font-size: 1.3rem;
+    width: 30px;
+    svg {
+      width: 24px;
+      height: 24px;
+    }
   }
   .toggle-currency {
     cursor: pointer;

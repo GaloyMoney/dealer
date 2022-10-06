@@ -100,6 +100,10 @@ body {
     color: var(--color-button-fg);
     background-color: var(--color-button-bg);
     cursor: pointer;
+    svg {
+      width: 18px;
+      height: 18px;
+    }
   }
   button:disabled,
   button[disabled] {

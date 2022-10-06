@@ -1,7 +1,8 @@
 import { formatUsd } from "@galoymoney/client"
-import { Icon, SatFormat } from "@galoymoney/react"
+import { SatFormat } from "@galoymoney/react"
 
 import Link from "components/link"
+import Icon from "components/icon"
 
 import useMainQuery from "hooks/use-main-query"
 import useMyUpdates from "hooks/use-my-updates"
