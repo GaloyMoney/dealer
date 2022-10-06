@@ -4,20 +4,34 @@ import { translate, useAppDispatcher } from "store/index"
 import useMainQuery from "hooks/use-main-query"
 
 import { ButtonLink } from "components/link"
+
 import SendIntraLedgerAction, {
   SendIntraLedgerActionProps,
 } from "components/send/send-intra-ledger-action"
+import SendIntraLedgerUsdAction, {
+  SendIntraLedgerUsdActionProps,
+} from "components/send/send-intra-ledger-usd-action"
+
 import {
   SendLnActionProps,
   SendLnInvoiceAction,
   SendLnNoAmountActionProps,
   SendLnNoAmountInvoiceAction,
 } from "components/send/send-ln-action"
+import {
+  SendLnUsdActionProps,
+  SendLnUsdInvoiceAction,
+  SendLnNoAmountUsdActionProps,
+  SendLnNoAmountUsdInvoiceAction,
+} from "components/send/send-ln-usd-action"
+
 import SendOnChainAction, {
   SendOnChainActionProps,
 } from "components/send/send-onchain-action"
+
 import { SendScreenInput } from "components/pages/send"
 import { Spinner } from "@galoymoney/react"
+import { formatSats, formatUsd } from "@galoymoney/client"
 
 export type SendActionProps = SendScreenInput & {
   btcWalletId: string
@@ -25,11 +39,14 @@ export type SendActionProps = SendScreenInput & {
   reset: () => void
 }
 
-type FCT = React.FC<{ children?: React.ReactNode; input: SendScreenInput }>
+type FCT = React.FC<{
+  children?: React.ReactNode
+  input: SendScreenInput
+}>
 
 const SendAction: FCT = ({ children, input }) => {
   const dispatch = useAppDispatcher()
-  const { btcWalletId, btcWalletBalance } = useMainQuery()
+  const { btcWalletId, btcWalletBalance, usdWalletBalance } = useMainQuery()
 
   const reset = useCallback(() => {
     dispatch({ type: "navigate", path: "/send" })
@@ -51,11 +68,32 @@ const SendAction: FCT = ({ children, input }) => {
   const satAmountPending =
     typeof input.amount === "number" && input.satAmount === undefined
 
-  if (input.satAmount && input.satAmount > btcWalletBalance) {
-    const errorMessage = translate("Payment amount exceeds balance of %{balance} sats", {
-      balance: btcWalletBalance,
-    })
-    return <div className="error">{errorMessage}</div>
+  if (
+    input.fromWallet?.walletCurrency === "BTC" &&
+    input.satAmount &&
+    input.satAmount > btcWalletBalance
+  ) {
+    return (
+      <div className="error">
+        {translate("Payment amount exceeds balance of %{balance}", {
+          balance: formatSats(btcWalletBalance),
+        })}
+      </div>
+    )
+  }
+
+  if (
+    input.fromWallet?.walletCurrency === "USD" &&
+    input.usdAmount &&
+    input.usdAmount > usdWalletBalance
+  ) {
+    return (
+      <div className="error">
+        {translate("Payment amount exceeds balance of %{balance}", {
+          balance: formatUsd(usdWalletBalance),
+        })}
+      </div>
+    )
   }
 
   if (children) {
@@ -66,16 +104,6 @@ const SendAction: FCT = ({ children, input }) => {
 
   if (showSpinner) {
     return <Spinner size="big" />
-  }
-
-  if (input.satAmount && input.satAmount > btcWalletBalance) {
-    return (
-      <div className="error">
-        {translate("Payment amount exceeds balance of %{balance} sats", {
-          balance: btcWalletBalance,
-        })}
-      </div>
-    )
   }
 
   const validInput =
@@ -94,7 +122,10 @@ const SendAction: FCT = ({ children, input }) => {
     reset,
   }
 
-  if (sendActionProps.paymentType === "lightning") {
+  if (
+    sendActionProps.paymentType === "lightning" &&
+    input.fromWallet?.walletCurrency === "BTC"
+  ) {
     return sendActionProps.fixedAmount ? (
       <SendLnInvoiceAction {...(sendActionProps as SendLnActionProps)} />
     ) : (
@@ -102,12 +133,37 @@ const SendAction: FCT = ({ children, input }) => {
     )
   }
 
+  if (
+    sendActionProps.paymentType === "lightning" &&
+    input.fromWallet?.walletCurrency === "USD"
+  ) {
+    return sendActionProps.fixedAmount ? (
+      <SendLnUsdInvoiceAction {...(sendActionProps as SendLnUsdActionProps)} />
+    ) : (
+      <SendLnNoAmountUsdInvoiceAction
+        {...(sendActionProps as SendLnNoAmountUsdActionProps)}
+      />
+    )
+  }
+
   if (sendActionProps.paymentType === "onchain") {
     return <SendOnChainAction {...(sendActionProps as SendOnChainActionProps)} />
   }
 
-  if (sendActionProps.paymentType === "intraledger") {
+  if (
+    sendActionProps.paymentType === "intraledger" &&
+    input.fromWallet?.walletCurrency === "BTC"
+  ) {
     return <SendIntraLedgerAction {...(sendActionProps as SendIntraLedgerActionProps)} />
+  }
+
+  if (
+    sendActionProps.paymentType === "intraledger" &&
+    input.fromWallet?.walletCurrency === "USD"
+  ) {
+    return (
+      <SendIntraLedgerUsdAction {...(sendActionProps as SendIntraLedgerUsdActionProps)} />
+    )
   }
 
   return <button disabled>{translate("Enter amount and destination")}</button>

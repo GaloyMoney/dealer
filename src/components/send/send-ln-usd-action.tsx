@@ -1,39 +1,40 @@
 import { MouseEvent, useEffect } from "react"
 
-import { useMutation } from "@galoymoney/client"
+import { GaloyGQL, useMutation } from "@galoymoney/client"
 
 import SendActionDisplay from "components/send/send-action-display"
 import { SendActionProps } from "components/send/send-action"
 
-export type SendLnActionProps = SendActionProps & {
+export type SendLnUsdActionProps = SendActionProps & {
+  fromWallet: GaloyGQL.Wallet
   paymentRequest: string
 }
 
-type SendLnActionFCT = React.FC<SendLnActionProps>
+type SendLnUsdActionFCT = React.FC<SendLnUsdActionProps>
 
-export const SendLnInvoiceAction: SendLnActionFCT = (props) => {
+export const SendLnUsdInvoiceAction: SendLnUsdActionFCT = (props) => {
   const [sendPayment, { loading, data, errorsMessage: paymentError }] =
     useMutation.lnInvoicePaymentSend()
 
   const [
     propeForFee,
     { loading: feeLoading, data: feeData, errorsMessage: feeProbeError },
-  ] = useMutation.lnInvoiceFeeProbe()
+  ] = useMutation.lnUsdInvoiceFeeProbe()
 
   useEffect(() => {
     propeForFee({
       variables: {
-        input: { walletId: props.btcWalletId, paymentRequest: props.paymentRequest },
+        input: { walletId: props.fromWallet.id, paymentRequest: props.paymentRequest },
       },
     })
-  }, [propeForFee, props.btcWalletId, props.paymentRequest, props.sameNode])
+  }, [propeForFee, props.fromWallet, props.paymentRequest, props.sameNode])
 
   const handleSend = (event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault()
     sendPayment({
       variables: {
         input: {
-          walletId: props.btcWalletId,
+          walletId: props.fromWallet.id,
           paymentRequest: props.paymentRequest,
           memo: props.memo,
         },
@@ -42,8 +43,8 @@ export const SendLnInvoiceAction: SendLnActionFCT = (props) => {
   }
 
   const feeAmount = {
-    amount: feeData?.lnInvoiceFeeProbe?.amount ?? undefined,
-    currency: "SATS" as const,
+    amount: feeData?.lnUsdInvoiceFeeProbe?.amount ?? undefined,
+    currency: "CENTS" as const,
   }
 
   return (
@@ -58,44 +59,46 @@ export const SendLnInvoiceAction: SendLnActionFCT = (props) => {
   )
 }
 
-export type SendLnNoAmountActionProps = SendLnActionProps & {
-  satAmount: number
+export type SendLnNoAmountUsdActionProps = SendLnUsdActionProps & {
+  usdAmount: number
 }
 
-type SendLnNoAmountActionFCT = React.FC<SendLnNoAmountActionProps>
+type SendLnNoAmountUsdActionFCT = React.FC<SendLnNoAmountUsdActionProps>
 
-export const SendLnNoAmountInvoiceAction: SendLnNoAmountActionFCT = (props) => {
+export const SendLnNoAmountUsdInvoiceAction: SendLnNoAmountUsdActionFCT = (props) => {
   const [sendPayment, { loading, data, errorsMessage: paymentError }] =
-    useMutation.lnNoAmountInvoicePaymentSend()
+    useMutation.lnNoAmountUsdInvoicePaymentSend()
 
   const [
     propeForFee,
     { loading: feeLoading, data: feeData, errorsMessage: feeProbeError },
-  ] = useMutation.lnNoAmountInvoiceFeeProbe()
+  ] = useMutation.lnNoAmountUsdInvoiceFeeProbe()
 
   useEffect(() => {
     if (!props.sameNode) {
       propeForFee({
         variables: {
           input: {
-            walletId: props.btcWalletId,
+            walletId: props.fromWallet.id,
             paymentRequest: props.paymentRequest,
-            amount: props.satAmount,
+            amount: 100 * props.usdAmount,
           },
         },
       })
     }
   }, [
     propeForFee,
-    props.btcWalletId,
+    props.fromWallet.id,
     props.paymentRequest,
     props.sameNode,
-    props.satAmount,
+    props.usdAmount,
   ])
 
   const feeAmount = {
-    amount: props.sameNode ? 0 : feeData?.lnNoAmountInvoiceFeeProbe?.amount ?? undefined,
-    currency: "SATS" as const,
+    amount: props.sameNode
+      ? 0
+      : feeData?.lnNoAmountUsdInvoiceFeeProbe?.amount ?? undefined,
+    currency: "CENTS" as const,
   }
 
   const handleSend = (event: MouseEvent<HTMLButtonElement>) => {
@@ -103,9 +106,9 @@ export const SendLnNoAmountInvoiceAction: SendLnNoAmountActionFCT = (props) => {
     sendPayment({
       variables: {
         input: {
-          walletId: props.btcWalletId,
+          walletId: props.fromWallet.id,
           paymentRequest: props.paymentRequest,
-          amount: props.satAmount,
+          amount: 100 * props.usdAmount,
           memo: props.memo,
         },
       },
@@ -116,7 +119,7 @@ export const SendLnNoAmountInvoiceAction: SendLnNoAmountActionFCT = (props) => {
     <SendActionDisplay
       loading={loading || feeLoading}
       error={paymentError || feeProbeError}
-      data={data?.lnNoAmountInvoicePaymentSend}
+      data={data?.lnNoAmountUsdInvoicePaymentSend}
       feeAmount={feeAmount}
       reset={props.reset}
       handleSend={handleSend}

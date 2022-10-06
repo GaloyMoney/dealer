@@ -27,7 +27,10 @@ const SendOnChainAction: FCT = (props) => {
     },
   })
 
-  const feeSatAmount = feeData?.onChainTxFee?.amount
+  const feeAmount = {
+    amount: feeData?.onChainTxFee?.amount ?? undefined,
+    currency: "SATS" as const,
+  }
 
   const handleSend = (event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault()
@@ -48,7 +51,7 @@ const SendOnChainAction: FCT = (props) => {
       loading={loading || feeLoading}
       error={paymentError || feeProbeError}
       data={data?.onChainPaymentSend}
-      feeSatAmount={feeSatAmount}
+      feeAmount={feeAmount}
       reset={props.reset}
       handleSend={handleSend}
     />

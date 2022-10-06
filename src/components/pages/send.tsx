@@ -1,8 +1,9 @@
 import { useState } from "react"
 
-import { PaymentType } from "@galoymoney/client"
+import { GaloyGQL, PaymentType } from "@galoymoney/client"
 
 import { translate } from "store/index"
+import useMainQuery from "hooks/use-main-query"
 
 import Link from "components/link"
 import Header from "components/header"
@@ -12,6 +13,7 @@ import SendConfirm from "components/send/send-confirm"
 
 export type SendScreenInput = {
   view?: "destination" | "amount" | "confirm"
+  fromWallet?: GaloyGQL.Wallet
   currency: "USD" | "SATS"
 
   // undefined in input is used to indicate their changing state
@@ -20,6 +22,7 @@ export type SendScreenInput = {
   memo?: string
 
   satAmount?: number // from price conversion
+  usdAmount?: number // from price conversion
 
   valid?: boolean // from parsing
   errorMessage?: string
@@ -37,7 +40,10 @@ export type SendScreenInput = {
 type FCT = React.FC<{ to?: string }>
 
 const Send: FCT = ({ to }) => {
+  const { defaultWallet } = useMainQuery()
+
   const [input, setInput] = useState<SendScreenInput>({
+    fromWallet: defaultWallet,
     view: "destination",
     currency: "USD",
     amount: "",

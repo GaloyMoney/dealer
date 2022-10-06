@@ -1,4 +1,4 @@
-import { useQuery } from "@galoymoney/client"
+import { GaloyGQL, useQuery } from "@galoymoney/client"
 
 import { setLocale, useAppState, useAuthContext } from "store/index"
 
@@ -22,8 +22,9 @@ const useMainQuery = () => {
 
   const me = data?.me
 
-  const wallets = data?.me?.defaultAccount?.wallets ?? []
+  const wallets = (data?.me?.defaultAccount?.wallets ?? []) as Array<GaloyGQL.Wallet>
   const defaultWalletId = data?.me?.defaultAccount?.defaultWalletId
+  const defaultWallet = wallets?.find((wallet) => wallet?.id === defaultWalletId)
 
   const btcWallet = me?.defaultAccount?.wallets?.find(
     (wallet) => wallet?.__typename === "BTCWallet",
@@ -52,6 +53,8 @@ const useMainQuery = () => {
 
     wallets,
     defaultWalletId,
+    defaultWallet,
+    btcWallet,
     btcWalletId,
     btcWalletBalance,
     transactions,

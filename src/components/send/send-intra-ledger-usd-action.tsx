@@ -4,16 +4,16 @@ import { MouseEvent } from "react"
 import SendActionDisplay from "components/send/send-action-display"
 import { SendActionProps } from "components/send/send-action"
 
-export type SendIntraLedgerActionProps = SendActionProps & {
+export type SendIntraLedgerUsdActionProps = SendActionProps & {
   recipientWalletId: string
-  satAmount: number
+  usdAmount: number
 }
 
-type FCT = React.FC<SendIntraLedgerActionProps>
+type FCT = React.FC<SendIntraLedgerUsdActionProps>
 
-const SendIntraLedgerAction: FCT = (props) => {
+const SendIntraLedgerUsdAction: FCT = (props) => {
   const [sendPayment, { loading, errorsMessage, data }] =
-    useMutation.intraLedgerPaymentSend()
+    useMutation.intraLedgerUsdPaymentSend()
 
   const handleSend = (event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault()
@@ -22,7 +22,7 @@ const SendIntraLedgerAction: FCT = (props) => {
         input: {
           walletId: props.btcWalletId,
           recipientWalletId: props.recipientWalletId,
-          amount: props.satAmount,
+          amount: 100 * props.usdAmount,
           memo: props.memo,
         },
       },
@@ -33,12 +33,12 @@ const SendIntraLedgerAction: FCT = (props) => {
     <SendActionDisplay
       loading={loading}
       error={errorsMessage}
-      data={data?.intraLedgerPaymentSend}
-      feeAmount={{ amount: 0, currency: "SATS" as const }}
+      data={data?.intraLedgerUsdPaymentSend}
+      feeAmount={{ amount: 0, currency: "CENTS" as const }}
       reset={props.reset}
       handleSend={handleSend}
     />
   )
 }
 
-export default SendIntraLedgerAction
+export default SendIntraLedgerUsdAction

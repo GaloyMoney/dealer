@@ -184,7 +184,7 @@ const ConversionInput: React.FC<{
       <div className="page-title">{translate("Convert")}</div>
 
       <div className="container">
-        <div className="from-to">
+        <div className="wallet-selector">
           <div className="wallet from-wallet">
             <div className="label">From</div>
             {fromWallet.currency === "BTC" ? (

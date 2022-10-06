@@ -804,19 +804,21 @@ button {
     .content {
       text-align: left;
       max-width: 300px;
-      .amount-display {
-        .primary {
-          display: block;
-        }
-        .converted {
-          display: inline-flex;
-          align-items: center;
-          font-size: 0.85rem;
-          margin-top: 0.3rem;
-          color: var(--color-secondary);
-        }
-      }
     }
+  }
+}
+
+.amount-display {
+  .primary {
+    display: block;
+  }
+  .converted {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 0.85rem;
+    margin-top: 0.3rem;
+    color: var(--color-secondary);
   }
 }
 
@@ -849,52 +851,80 @@ button {
   }
 }
 
+.modal-background {
+  background-color: black;
+  background-color: #000000cc;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  .modal-content {
+    margin: 15% auto;
+    margin: 15% auto;
+    max-width: 400px;
+    background-color: var(--color-light-bg);
+    padding: 1.5rem;
+  }
+}
+
+.wallet-selector {
+  .wallet {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 1.25rem 1rem;
+    .label {
+      width: 50px;
+    }
+    .icon-btc {
+      color: var(--color-btcPrimary);
+      background-color: var(--color-btcSecondary);
+    }
+    .icon-usd {
+      color: var(--color-usdPrimary);
+      background-color: var(--color-usdSecondary);
+    }
+    .icon-btc,
+    .icon-usd {
+      border: thin solid var(--color-dark-bg);
+      border-radius: 0.4rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 50px;
+      padding: 0.5rem 0.25rem;
+    }
+    .title-balance {
+      margin-left: 1rem;
+      margin-right: 1rem;
+      flex: 1;
+      .title {
+        font-weight: bold;
+        margin-bottom: 0.3rem;
+        text-align: left;
+      }
+      .balance {
+        font-size: 0.85rem;
+        color: var(--color-subtext);
+        text-align: left;
+      }
+      .pick-icon {
+        color: var(--color-subtext);
+      }
+    }
+  }
+}
+
 .conversion-flow {
   .container {
     max-width: 450px;
     margin: 0 auto;
-    .from-to {
+    .wallet-selector {
       border: thin solid var(--color-borders);
       border-radius: 0.5rem;
       margin: 1rem auto;
       background-color: var(--color-light-bg);
-      .wallet {
-        display: flex;
-        padding: 1.25rem 1rem;
-        align-items: center;
-        .label {
-          width: 50px;
-        }
-        .icon-btc {
-          color: var(--color-btcPrimary);
-          background-color: var(--color-btcSecondary);
-        }
-        .icon-usd {
-          color: var(--color-usdPrimary);
-          background-color: var(--color-usdSecondary);
-        }
-        .icon-btc,
-        .icon-usd {
-          border: thin solid var(--color-dark-bg);
-          border-radius: 0.4rem;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          width: 50px;
-          padding: 0.5rem 0.25rem;
-        }
-        .title-balance {
-          margin-left: 1rem;
-          .title {
-            font-weight: bold;
-            margin-bottom: 0.3rem;
-          }
-          .balance {
-            font-size: 0.85rem;
-            color: var(--color-subtext);
-          }
-        }
-      }
     }
     .divider {
       display: flex;
@@ -1028,5 +1058,16 @@ button {
   .nav-back,
   .success {
     margin-top: 2rem;
+  }
+}
+
+.send {
+  .wallet-selector {
+    .wallet {
+      border: thin solid var(--color-borders);
+      border-radius: 0.5rem;
+      margin: 0.5rem auto;
+      background-color: var(--color-light-bg);
+    }
   }
 }
