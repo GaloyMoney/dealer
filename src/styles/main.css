@@ -107,11 +107,11 @@
     margin: 0 -18px;
     z-index: 1;
     a {
-      width: 55px;
+      padding: 1rem;
+      display: block;
       svg {
-        width: 28px;
-        height: 28px;
-        margin-right: unset;
+        width: 100%;
+        height: 100%;
       }
     }
   }
