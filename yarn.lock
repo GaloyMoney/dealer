@@ -101,10 +101,10 @@
     minimatch "^3.1.2"
     strip-json-comments "^3.1.1"
 
-"@galoymoney/client@^0.1.50":
-  version "0.1.50"
-  resolved "https://registry.yarnpkg.com/@galoymoney/client/-/client-0.1.50.tgz#c9fef9a60781482f7f0ab09e180d64ecf9a9b12f"
-  integrity sha512-XzSOXmZz4F+OY8Ux8jy3ZN4FEjt/3W0OkI9qWyX2dtjJ8bCzhGc6UTwzblyxmHKZMpOy/oVy+kkDnljjiXLyOg==
+"@galoymoney/client@^0.1.42":
+  version "0.1.43"
+  resolved "https://registry.yarnpkg.com/@galoymoney/client/-/client-0.1.43.tgz#76693be7b652d789b529a5f40ffab3da12ce5db6"
+  integrity sha512-3yyYbNITcXkLSBmBLWoi2BEc8shxNcX0MlvBEav3FHeWhEg6DV9fs2K8z0ORZdcUA5EDbxi3128VYsyS/9qHNg==
 
 "@graphql-typed-document-node/core@^3.1.1":
   version "3.1.1"
