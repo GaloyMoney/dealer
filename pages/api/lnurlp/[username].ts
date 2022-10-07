@@ -10,7 +10,7 @@ import {
 } from "@apollo/client"
 import type { NextApiRequest, NextApiResponse } from "next"
 
-import { GRAPHQL_URI_INTERNAL } from "../../../lib/config"
+import { GRAPHQL_URI } from "../../../lib/config"
 
 const ipForwardingMiddleware = new ApolloLink((operation, forward) => {
   operation.setContext(({ headers = {} }) => ({
@@ -28,7 +28,7 @@ const client = new ApolloClient({
   link: concat(
     ipForwardingMiddleware,
     new HttpLink({
-      uri: GRAPHQL_URI_INTERNAL,
+      uri: GRAPHQL_URI,
     }),
   ),
   cache: new InMemoryCache(),
