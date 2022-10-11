@@ -678,72 +678,28 @@ exports[`Root appRoutes renders Receive and matches snapshot 1`] = `
         Receive Bitcoin
       </div>
       <div
-        class="tabs"
+        class="content"
       >
         <div
-          class="tab active"
+          class="action-container center-display invoice-generator"
         >
-          Lightning
-        </div>
-        <div
-          class="tab link"
-        >
-          OnChain
-        </div>
-      </div>
-      <div
-        class="tab-content"
-      >
-        <div
-          class="amount-input center-display"
-        >
-          <div
-            class="input-label"
-          >
-            Set Amount
-          </div>
-          <div
-            class="amount-input-form"
-          >
-            <div
-              class="currency-label"
-            >
-              $
-            </div>
-            <input
-              inputmode="numeric"
-              pattern="\\\\d*"
-              placeholder="Set invoice value in USD"
-              type="text"
-              value=""
-            />
-            <div
-              class="toggle-currency link"
-            >
-              ⇅
-            </div>
-          </div>
-        </div>
-        <div
-          class="note-input center-display"
-        >
-          <div
-            class="input-label"
-          >
-            Note or Label
-          </div>
-          <textarea
-            name="memo"
-            placeholder="Set a note for the sender here (optional)"
-            rows="3"
-          />
+          <button>
+            Login to send
+          </button>
         </div>
         <div
           class="action-button center-display"
         >
-          <button>
-            Next 
-          </button>
+          <div
+            class="receive-action"
+          >
+            Set amount/note
+          </div>
+          <div
+            class="receive-action"
+          >
+            Use a Bitcoin on-chain adddress
+          </div>
         </div>
         <div
           class="action-button center-display"

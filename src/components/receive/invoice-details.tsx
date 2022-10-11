@@ -2,8 +2,8 @@ import { useState } from "react"
 import { QRCode } from "react-qrcode-logo"
 import copy from "copy-to-clipboard"
 
-import { GaloyGQL, satsToBTC } from "@galoymoney/client"
-import { SuccessCheckmark } from "@galoymoney/react"
+import { formatUsd, GaloyGQL, satsToBTC } from "@galoymoney/client"
+import { SatFormat, SuccessCheckmark } from "@galoymoney/react"
 
 import { translate, useAppDispatcher } from "store/index"
 import useMyUpdates from "hooks/use-my-updates"
@@ -70,19 +70,24 @@ const LightningInvoice: LightningInvoiceFCT = ({ invoice, onPaymentSuccess }) =>
         <div className="payment-destination-code">{paymentRequestLine}</div>
       </div>
       <div className="copy-message">{translate("Click QR code to copy")}</div>
-      <p>{translate("Waiting for payment confirmation...")}</p>
     </div>
   )
 }
 
 type OnChainInvoiceFCT = React.FC<{
-  btcAddress?: GaloyGQL.Scalars["OnChainAddress"]
-  satAmount?: number
+  btcAddress: GaloyGQL.Scalars["OnChainAddress"]
+  satAmount: number
+  usdAmount: number
   memo?: string
   onPaymentSuccess?: () => void
 }>
 
-const OnChainInvoice: OnChainInvoiceFCT = ({ btcAddress, satAmount, memo }) => {
+const OnChainInvoice: OnChainInvoiceFCT = ({
+  btcAddress,
+  satAmount,
+  usdAmount,
+  memo,
+}) => {
   const [showCopied, setShowCopied] = useState(false)
 
   const params = new URLSearchParams()
@@ -118,6 +123,19 @@ const OnChainInvoice: OnChainInvoiceFCT = ({ btcAddress, satAmount, memo }) => {
         <div className="payment-destination-code">{btcAddress}</div>
       </div>
       <div className="copy-message">{translate("Click QR code to copy")}</div>
+
+      <div className="amount-description">
+        {satAmount === 0 ? (
+          "Flexible Amount Invoice"
+        ) : (
+          <>
+            <div className="converted-sats">
+              <SatFormat amount={satAmount} />
+            </div>
+            <div className="converted-usd small">&#8776; {formatUsd(usdAmount)}</div>
+          </>
+        )}
+      </div>
     </div>
   )
 }

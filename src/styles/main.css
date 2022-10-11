@@ -278,25 +278,6 @@
   }
 }
 
-.tabs {
-  max-width: 400px;
-  margin: 0 auto;
-  display: flex;
-  justify-content: center;
-  margin-bottom: 1.5rem;
-  .tab {
-    width: 100%;
-    border: thin solid var(--color-borders);
-    padding: 0.5rem;
-    text-align: center;
-  }
-  .active {
-    background-color: var(--color-active-bg);
-    font-weight: bold;
-    color: var(--color-primary);
-  }
-}
-
 #main-container {
   margin: 0 auto;
   max-width: 1024px;
@@ -439,6 +420,8 @@ button {
 
 .invoice-qrcode-container {
   position: relative;
+  width: 100%;
+  height: 400px;
 
   .invoice-qrcode {
     display: flex;
@@ -460,7 +443,7 @@ button {
 
   .copy-message {
     font-size: 0.8rem;
-    margin-top: 1rem;
+    margin: 0.75rem auto;
   }
 }
 
@@ -1068,6 +1051,40 @@ button {
       border-radius: 0.5rem;
       margin: 0.5rem auto;
       background-color: var(--color-light-bg);
+    }
+  }
+}
+
+.receive {
+  .invoice-generator {
+    width: 100%;
+    height: 400px;
+  }
+  .amount-description {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    .converted-usd {
+      margin-left: 0.5rem;
+      color: var(--color-secondary);
+    }
+  }
+  .receive-action {
+    background-color: var(--color-light-bg);
+    border: thin solid var(--color-borders);
+    align-self: center;
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    text-decoration: none;
+    text-align: center;
+    transition: all 0.2s;
+    cursor: pointer;
+    width: 100%;
+    margin: 0.5rem;
+    svg {
+      width: 18px;
+      height: 18px;
     }
   }
 }

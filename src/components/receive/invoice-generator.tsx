@@ -1,11 +1,11 @@
 import { useState, useEffect, useRef } from "react"
 
 import { formatUsd, GaloyGQL, useMutation } from "@galoymoney/client"
-import { Spinner } from "@galoymoney/react"
+import { SatFormat, Spinner } from "@galoymoney/react"
 
 import { translate } from "store/index"
 
-import { LightningInvoice, OnChainInvoice } from "components/receive/invoice"
+import { LightningInvoice, OnChainInvoice } from "components/receive/invoice-details"
 import ErrorMessage from "components/error-message"
 
 const INVOICE_EXPIRE_INTERVAL = 60 * 60 * 1000
@@ -30,7 +30,7 @@ type AmountInvoiceFCT = React.FC<{
   currency: string
   memo: string
   satAmount: number
-  convertedUsdAmount: number
+  usdAmount: number
 }>
 
 const AmountInvoiceGenerator: AmountInvoiceFCT = ({
@@ -40,7 +40,7 @@ const AmountInvoiceGenerator: AmountInvoiceFCT = ({
   memo,
   currency,
   satAmount,
-  convertedUsdAmount,
+  usdAmount,
 }) => {
   const [invoiceStatus, setInvoiceStatus] = useState<undefined | "new" | "expired">()
 
@@ -83,7 +83,7 @@ const AmountInvoiceGenerator: AmountInvoiceFCT = ({
   }
 
   const invoiceNeedUpdate = Boolean(
-    currency === "USD" && amount && Math.abs(convertedUsdAmount - amount) / amount > 0.01,
+    currency === "USD" && amount && Math.abs(usdAmount - amount) / amount > 0.01,
   )
 
   return (
@@ -91,7 +91,7 @@ const AmountInvoiceGenerator: AmountInvoiceFCT = ({
       {invoiceNeedUpdate && (
         <div className="invoice-message">
           {translate("Invoice value is now %{value}", {
-            value: formatUsd(convertedUsdAmount),
+            value: formatUsd(usdAmount),
           })}
           <div className="link" onClick={regenerate}>
             {translate("Generate new invoice for %{amount}", {
@@ -101,6 +101,12 @@ const AmountInvoiceGenerator: AmountInvoiceFCT = ({
         </div>
       )}
       <LightningInvoice invoice={invoice} onPaymentSuccess={clearTimers} />
+      <div className="amount-description">
+        <div className="converted-sats">
+          <SatFormat amount={satAmount} />
+        </div>
+        <div className="converted-usd small">&#8776; {formatUsd(usdAmount)}</div>
+      </div>
     </>
   )
 }
@@ -157,7 +163,12 @@ const NoAmountInvoiceGenerator: NoAmountInvoiceFCT = ({
     return <ExpiredMessage onClick={regenerate} />
   }
 
-  return <LightningInvoice invoice={invoice} onPaymentSuccess={clearTimers} />
+  return (
+    <>
+      <LightningInvoice invoice={invoice} onPaymentSuccess={clearTimers} />
+      <div className="amount-description">Flexible Amount Invoice</div>
+    </>
+  )
 }
 
 const InvoiceGenerator: AmountInvoiceFCT = (props) => {
@@ -166,6 +177,7 @@ const InvoiceGenerator: AmountInvoiceFCT = (props) => {
       <OnChainInvoice
         btcAddress={props.btcAddress}
         satAmount={props.satAmount}
+        usdAmount={props.usdAmount}
         memo={props.memo}
       />
     )
