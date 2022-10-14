@@ -42,9 +42,10 @@ function ReceiveInvoice({ recipientWalletCurrency, walletId, dispatch }: Props) 
     onExpire: () => console.warn("onExpire called on USD"),
   })
 
-  const { createInvoice, data, errorsMessage, error, loading } = useCreateInvoice({
-    recipientWalletCurrency,
-  })
+  const { createInvoice, data, errorsMessage, error, loading, invoiceStatus } =
+    useCreateInvoice({
+      recipientWalletCurrency,
+    })
 
   const paymentAmount = React.useMemo(() => {
     if (currency === "USD") {
@@ -89,10 +90,6 @@ function ReceiveInvoice({ recipientWalletCurrency, walletId, dispatch }: Props) 
     }
   }
 
-  if (!invoice?.paymentRequest) {
-    return null
-  }
-
   const copyInvoice = () => {
     if (!invoice?.paymentRequest) {
       return
@@ -102,6 +99,14 @@ function ReceiveInvoice({ recipientWalletCurrency, walletId, dispatch }: Props) 
     setTimeout(() => {
       setCopied(false)
     }, 3000)
+  }
+
+  if (loading || invoiceStatus === "loading" || !invoice?.paymentRequest) {
+    return (
+      <div className={styles.loading}>
+        <div className={styles.loader}></div>
+      </div>
+    )
   }
 
   return (
@@ -116,11 +121,6 @@ function ReceiveInvoice({ recipientWalletCurrency, walletId, dispatch }: Props) 
         </div>
       )}
       <div>
-        {loading ||
-          (invoice?.paymentRequest == undefined && (
-            <p className={styles.loading}>Generating invoice</p>
-          ))}
-
         {error && <p className={styles.error}>{errorString}</p>}
 
         {data && (

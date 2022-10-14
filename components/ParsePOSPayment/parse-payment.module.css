@@ -217,12 +217,40 @@
 
 .loading,
 .error {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   font-size: 1.2rem;
   font-weight: 600;
   color: green;
-  padding: 50% 1rem;
+  padding: 30% 1rem;
   margin-top: 2rem;
   outline: 1px dashed rgba(0, 128, 0, 0.35);
+}
+
+@media (min-width: 760px) {
+  .loading {
+    padding: 1rem 0;
+    outline: none;
+  }
+}
+
+.loader {
+  border: 12px solid rgb(243, 243, 243);
+  border-top: 12px solid rgba(83, 111, 242, 1);
+  border-radius: 50%;
+  width: 100px;
+  height: 100px;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .error {
