@@ -20,6 +20,9 @@
     "test": "jest",
     "tsc:check": "tsc --pretty --noEmit --skipLibCheck"
   },
+  "engines": {
+    "node": "18"
+  },
   "dependencies": {
     "@apollo/client": "^3.7.3",
     "@galoymoney/client": "^0.1.62",
