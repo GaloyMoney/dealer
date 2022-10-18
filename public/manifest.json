@@ -2,7 +2,7 @@
   "name": "POS Cash Register",
   "short_name": "Cash Register",
   "description": "A Bitcoin POS cash register application that connects with the merchant's wallet",
-  "start_url": "/",
+  "start_url": "/checkusername",
   "scope": "/",
   "display": "standalone",
   "background_color": "#536FF2",

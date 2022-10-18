@@ -49,6 +49,7 @@ const browser = (function () {
 
 const PinToHomescreen = ({ pinnedToHomeScreenModalVisible, dispatch }: Props) => {
   const os = getOS()
+
   const pinToHomeRef = React.useRef(null)
   if (!pinnedToHomeScreenModalVisible) return null
   let modalWidth: string
@@ -60,7 +61,32 @@ const PinToHomescreen = ({ pinnedToHomeScreenModalVisible, dispatch }: Props) =>
     })
   }
 
-  if (os === "ios") {
+  const ua = window.navigator.userAgent
+  const iOS = !!ua.match(/iPad/i) || !!ua.match(/iPhone/i)
+  const webkit = !!ua.match(/WebKit/i)
+  const iOSSafari = iOS && webkit && !ua.match(/CriOS/i)
+
+  if (os === "ios" && !iOSSafari) {
+    modalWidth = "340px"
+    return (
+      <>
+        <Modal
+          ref={pinToHomeRef}
+          isOpened={pinnedToHomeScreenModalVisible}
+          handleClose={handleClose}
+          modalWidth={modalWidth}
+          modalTitle="How to pin the Cash Register to your home screen"
+        >
+          <div className={`${styles.wrapper} ${styles.desktop}`}>
+            This app can not be installed through chrome on iOS. Use a safari browser to
+            install/pin the POS app to homescreen.
+          </div>
+        </Modal>
+      </>
+    )
+  }
+
+  if (os === "ios" && iOSSafari) {
     modalWidth = "340px"
     return (
       <>

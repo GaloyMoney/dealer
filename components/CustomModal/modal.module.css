@@ -18,7 +18,7 @@
   background-color: #fff;
   border-radius: 12px;
   padding: 0.875rem;
-  margin: 0 auto;
+  margin: 0.875rem auto;
   position: relative;
 }
 
@@ -34,6 +34,8 @@
   border: none;
   outline: none;
   background-color: transparent;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
 }
 
 .close_btn:hover,

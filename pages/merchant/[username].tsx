@@ -14,11 +14,15 @@ function ReceivePayment() {
   const router = useRouter()
   const { username } = router.query
 
+  const username_from_local = localStorage.getItem("username")
   let accountUsername: string
   if (username == undefined) {
     accountUsername = ""
   } else {
     accountUsername = username.toString()
+    if (!username_from_local) {
+      localStorage.setItem("username", accountUsername)
+    }
   }
 
   const { data, error: usernameError } = useQuery.accountDefaultWallet({
@@ -61,12 +65,18 @@ function ReceivePayment() {
                 className={styles.pin_icon}
               />
               <button
-                onClick={() =>
+                onClick={() => {
+                  if (username_from_local) {
+                    // clear prev username
+                    localStorage.removeItem("username")
+                    // cache new user
+                    localStorage.setItem("username", accountUsername)
+                  }
                   dispatch({
                     type: ACTIONS.PINNED_TO_HOMESCREEN_MODAL_VISIBLE,
                     payload: !state.pinnedToHomeScreenModalVisible,
                   })
-                }
+                }}
                 className={styles.pin_btn}
               >
                 Pin to homescreen
@@ -88,7 +98,7 @@ function ReceivePayment() {
                 />
               </button>
             )}
-            <p className={styles.username}>{`${username} cash register`}</p>
+            <p className={styles.username}>{`Pay ${username}`}</p>
           </div>
 
           <ParsePayment
