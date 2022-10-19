@@ -126,13 +126,13 @@ const OnChainInvoice: OnChainInvoiceFCT = ({
 
       <div className="amount-description">
         {satAmount === 0 ? (
-          "Flexible Amount Invoice"
+          translate("Flexible Amount Invoice")
         ) : (
           <>
-            <div className="converted-sats">
+            <div className="amount-primarys">
               <SatFormat amount={satAmount} />
             </div>
-            <div className="converted-usd small">&#8776; {formatUsd(usdAmount)}</div>
+            <div className="amount-seconddary small">&#8776; {formatUsd(usdAmount)}</div>
           </>
         )}
       </div>

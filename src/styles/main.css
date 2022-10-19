@@ -260,9 +260,9 @@
   margin: 0 auto;
   margin-top: 1rem;
   text-align: center;
-  .converted-sats {
+  .amount-primarys {
   }
-  .converted-usd {
+  .amount-seconddary {
     margin-top: 0.3rem;
     color: var(--color-secondary);
   }
@@ -337,6 +337,7 @@
   padding: 0.5rem;
   div.link {
     margin-top: 0.5rem;
+    display: flex;
   }
 }
 
@@ -513,7 +514,7 @@ button {
     .amount {
       flex: 2;
     }
-    .converted-usd {
+    .amount-seconddary {
       font-size: 90%;
       margin-top: 0.25rem;
       color: var(--color-secondary);
@@ -1058,14 +1059,13 @@ button {
 .receive {
   .invoice-generator {
     width: 100%;
-    height: 400px;
   }
   .amount-description {
     display: flex;
     justify-content: center;
     align-items: center;
     font-weight: bold;
-    .converted-usd {
+    .amount-seconddary {
       margin-left: 0.5rem;
       color: var(--color-secondary);
     }
@@ -1087,4 +1087,27 @@ button {
       height: 18px;
     }
   }
+}
+
+.btc-usd-switch {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  .button {
+    margin: 0 2rem;
+    color: var(--color-gray);
+    background-color: var(--color-light-bg);
+  }
+  .usd.active {
+    color: var(--color-usdPrimary);
+    background-color: var(--color-usdSecondary);
+  }
+  .btc.active {
+    color: var(--color-btcPrimary);
+    background-color: var(--color-btcSecondary);
+  }
+}
+
+.countdown-timer {
+  margin-top: 1rem;
 }

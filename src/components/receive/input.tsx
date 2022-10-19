@@ -113,15 +113,17 @@ const InvoiceInput: FCT = ({ input, setInput }) => {
     }
 
     if (convertedValues.sats === undefined) {
-      return <div className="converted-usd">&#8776; {formatUsd(convertedValues.usd)}</div>
+      return (
+        <div className="amount-seconddary">&#8776; {formatUsd(convertedValues.usd)}</div>
+      )
     }
 
     return (
       <>
-        <div className="converted-sats">
+        <div className="amount-primarys">
           <SatFormat amount={convertedValues.sats} />
         </div>
-        <div className="converted-usd small">
+        <div className="amount-seconddary small">
           &#8776; {formatUsd(convertedValues.usd)}
         </div>
       </>

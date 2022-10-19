@@ -12,7 +12,7 @@ const WalletsHeader: NoPropsFCT = () => {
   const { btcWalletBalance, usdWalletBalance, wallets } = useMainQuery()
   const { satsToUsd } = useMyUpdates()
 
-  if (wallets.length === 1) {
+  if (wallets.length < 2) {
     return null
   }
 

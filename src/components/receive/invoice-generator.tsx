@@ -1,7 +1,13 @@
 import { useState, useEffect, useRef } from "react"
 
-import { formatUsd, GaloyGQL, useMutation } from "@galoymoney/client"
-import { SatFormat, Spinner } from "@galoymoney/react"
+import {
+  decodeInvoiceString,
+  formatUsd,
+  GaloyGQL,
+  getLightningInvoiceExpiryTime,
+  useMutation,
+} from "@galoymoney/client"
+import { SatFormat, Spinner, useCountdownTimer } from "@galoymoney/react"
 
 import { translate } from "store/index"
 
@@ -23,7 +29,7 @@ const ExpiredMessage: ExpiredMessageFCT = ({ onClick }) => (
 
 type AmountInvoiceFCT = React.FC<{
   layer: "lightning" | "onchain"
-  btcWalletId: string
+  wallet: GaloyGQL.Wallet
   btcAddress: GaloyGQL.Scalars["OnChainAddress"] | undefined
   regenerate: () => void
   amount: number | ""
@@ -33,8 +39,8 @@ type AmountInvoiceFCT = React.FC<{
   usdAmount: number
 }>
 
-const AmountInvoiceGenerator: AmountInvoiceFCT = ({
-  btcWalletId,
+const BtcAmountInvoiceGenerator: AmountInvoiceFCT = ({
+  wallet,
   regenerate,
   amount,
   memo,
@@ -56,13 +62,13 @@ const AmountInvoiceGenerator: AmountInvoiceFCT = ({
 
   useEffect(() => {
     createInvoice({
-      variables: { input: { walletId: btcWalletId, amount: satAmount, memo } },
+      variables: { input: { walletId: wallet.id, amount: satAmount, memo } },
     })
     timerIds.current.push(
       window.setTimeout(() => setInvoiceStatus("expired"), INVOICE_EXPIRE_INTERVAL),
     )
     return clearTimers
-  }, [satAmount, btcWalletId, createInvoice, currency, memo])
+  }, [satAmount, wallet.id, createInvoice, currency, memo])
 
   if (errorsMessage) {
     return <ErrorMessage message={errorsMessage} />
@@ -102,26 +108,100 @@ const AmountInvoiceGenerator: AmountInvoiceFCT = ({
       )}
       <LightningInvoice invoice={invoice} onPaymentSuccess={clearTimers} />
       <div className="amount-description">
-        <div className="converted-sats">
+        <div className="amount-primarys">
           <SatFormat amount={satAmount} />
         </div>
-        <div className="converted-usd small">&#8776; {formatUsd(usdAmount)}</div>
+        <div className="amount-seconddary small">&#8776; {formatUsd(usdAmount)}</div>
       </div>
     </>
   )
 }
 
+const UsdAmountInvoiceGenerator: AmountInvoiceFCT = ({
+  wallet,
+  regenerate,
+  memo,
+  satAmount,
+  usdAmount,
+}) => {
+  const [invoiceStatus, setInvoiceStatus] = useState<undefined | "new" | "expired">()
+
+  const { timeLeft, startCountdownTimer, stopCountdownTimer } = useCountdownTimer()
+
+  const [createInvoice, { loading, errorsMessage, data }] =
+    useMutation.lnUsdInvoiceCreate({
+      onCompleted: () => setInvoiceStatus("new"),
+    })
+
+  useEffect(() => {
+    createInvoice({
+      variables: { input: { walletId: wallet.id, amount: satAmount, memo } },
+    })
+
+    return () => stopCountdownTimer()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [createInvoice, memo, satAmount, wallet.id])
+
+  const invoice = data?.lnUsdInvoiceCreate?.invoice
+
+  useEffect(() => {
+    if (invoice) {
+      const timeUntilInvoiceExpires =
+        getLightningInvoiceExpiryTime(decodeInvoiceString(invoice.paymentRequest)) -
+        Math.round(Date.now() / 1000)
+      if (timeUntilInvoiceExpires <= 0) {
+        setInvoiceStatus("expired")
+        stopCountdownTimer()
+        return
+      }
+      startCountdownTimer(timeUntilInvoiceExpires, () => setInvoiceStatus("expired"))
+      return () => stopCountdownTimer()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [invoice])
+
+  if (errorsMessage) {
+    return <ErrorMessage message={errorsMessage} />
+  }
+
+  if (loading) {
+    return <Spinner size="big" />
+  }
+
+  if (!invoice) {
+    return null
+  }
+
+  if (invoiceStatus === "expired") {
+    return <ExpiredMessage onClick={regenerate} />
+  }
+
+  return (
+    <>
+      <LightningInvoice invoice={invoice} onPaymentSuccess={() => stopCountdownTimer()} />
+      <div className="amount-description">
+        <div className="amount-primary">{formatUsd(usdAmount)}</div>
+      </div>
+
+      {timeLeft !== undefined && (
+        <div className="countdown-timer">
+          <div style={timeLeft < 10 ? { color: "red" } : undefined}>
+            {translate("Expires In")}:{" "}
+            {new Date(timeLeft * 1000).toISOString().substring(14, 19)}
+          </div>
+        </div>
+      )}
+    </>
+  )
+}
+
 type NoAmountInvoiceFCT = React.FC<{
-  btcWalletId: string
+  wallet: GaloyGQL.Wallet
   regenerate: () => void
   memo: string
 }>
 
-const NoAmountInvoiceGenerator: NoAmountInvoiceFCT = ({
-  btcWalletId,
-  regenerate,
-  memo,
-}) => {
+const NoAmountInvoiceGenerator: NoAmountInvoiceFCT = ({ wallet, regenerate, memo }) => {
   const [invoiceStatus, setInvoiceStatus] = useState<undefined | "new" | "expired">()
 
   const timerIds = useRef<number[]>([])
@@ -137,13 +217,13 @@ const NoAmountInvoiceGenerator: NoAmountInvoiceFCT = ({
 
   useEffect(() => {
     createInvoice({
-      variables: { input: { walletId: btcWalletId, memo } },
+      variables: { input: { walletId: wallet.id, memo } },
     })
     timerIds.current.push(
       window.setTimeout(() => setInvoiceStatus("expired"), INVOICE_EXPIRE_INTERVAL),
     )
     return clearTimers
-  }, [btcWalletId, createInvoice, memo])
+  }, [wallet.id, createInvoice, memo])
 
   if (errorsMessage) {
     return <ErrorMessage message={errorsMessage} />
@@ -166,7 +246,7 @@ const NoAmountInvoiceGenerator: NoAmountInvoiceFCT = ({
   return (
     <>
       <LightningInvoice invoice={invoice} onPaymentSuccess={clearTimers} />
-      <div className="amount-description">Flexible Amount Invoice</div>
+      <div className="amount-description">{translate("Flexible Amount Invoice")}</div>
     </>
   )
 }
@@ -186,14 +266,22 @@ const InvoiceGenerator: AmountInvoiceFCT = (props) => {
   if (props.satAmount === 0) {
     return (
       <NoAmountInvoiceGenerator
-        btcWalletId={props.btcWalletId}
+        wallet={props.wallet}
         regenerate={props.regenerate}
         memo={props.memo}
       />
     )
   }
 
-  return <AmountInvoiceGenerator {...props} />
+  if (props.wallet.walletCurrency === "BTC") {
+    return <BtcAmountInvoiceGenerator {...props} />
+  }
+
+  if (props.wallet.walletCurrency === "USD") {
+    return <UsdAmountInvoiceGenerator {...props} />
+  }
+
+  throw new Error("Invalid invoice data")
 }
 
 export default InvoiceGenerator

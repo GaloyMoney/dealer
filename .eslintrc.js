@@ -79,7 +79,6 @@ module.exports = {
     "max-statements-per-line": ["error", { max: 1 }],
     "max-statements": ["error", { max: 100 }],
     "new-parens": "error",
-    "newline-per-chained-call": "error",
     "no-alert": "error",
     "no-array-constructor": "error",
     "no-await-in-loop": "error",

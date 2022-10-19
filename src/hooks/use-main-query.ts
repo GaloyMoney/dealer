@@ -28,7 +28,7 @@ const useMainQuery = () => {
 
   const btcWallet = me?.defaultAccount?.wallets?.find(
     (wallet) => wallet?.__typename === "BTCWallet",
-  )
+  ) as GaloyGQL.BtcWallet
   const btcWalletId = btcWallet?.id
   const btcWalletBalance = isAuthenticated ? btcWallet?.balance ?? NaN : 0
 
@@ -36,7 +36,7 @@ const useMainQuery = () => {
 
   const usdWallet = me?.defaultAccount?.wallets?.find(
     (wallet) => wallet?.__typename === "UsdWallet",
-  )
+  ) as GaloyGQL.UsdWallet
   const usdWalletId = usdWallet?.id
   const usdWalletBalanceInCents = isAuthenticated ? usdWallet?.balance ?? NaN : 0
 
@@ -52,15 +52,18 @@ const useMainQuery = () => {
     refetch,
 
     wallets,
-    defaultWalletId,
     defaultWallet,
+    defaultWalletId,
+
     btcWallet,
     btcWalletId,
     btcWalletBalance,
-    transactions,
 
+    usdWallet,
     usdWalletId,
     usdWalletBalance: usdWalletBalanceInCents / 100,
+
+    transactions,
 
     username,
     phoneNumber,

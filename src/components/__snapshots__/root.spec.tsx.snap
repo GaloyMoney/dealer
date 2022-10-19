@@ -695,11 +695,6 @@ exports[`Root appRoutes renders Receive and matches snapshot 1`] = `
           >
             Set amount/note
           </div>
-          <div
-            class="receive-action"
-          >
-            Use a Bitcoin on-chain adddress
-          </div>
         </div>
         <div
           class="action-button center-display"

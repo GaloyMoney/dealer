@@ -93,7 +93,7 @@ const TransactionItem: FCT = ({ tx }) => {
             ) : (
               <div>
                 <SatFormat amount={tx.settlementAmount} />
-                <div className="converted-usd">{formatUsd(usdAmount)}</div>
+                <div className="amount-seconddary">{formatUsd(usdAmount)}</div>
               </div>
             )}
           </div>
@@ -178,7 +178,7 @@ const TransactionItem: FCT = ({ tx }) => {
           ) : (
             <div>
               <SatFormat amount={tx.settlementAmount} />
-              <div className="converted-usd">{formatUsd(usdAmount)}</div>
+              <div className="amount-seconddary">{formatUsd(usdAmount)}</div>
             </div>
           )}
         </div>
