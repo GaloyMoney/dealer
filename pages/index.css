@@ -114,10 +114,51 @@ code {
   background-color: #e9ecef;
 }
 
+.setup-pwa {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto;
+  min-height: calc(100vh - 36px);
+  padding: 0 2rem;
+}
+
+.setup-pwa > form {
+  text-align: center;
+  row-gap: 0.25rem;
+}
+
 @media (min-width: 768px) {
   .username-form > label {
     font-size: 1rem;
     font-weight: 500;
     opacity: 0.9;
+  }
+}
+
+.loader-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto;
+  min-height: calc(100vh - 36px);
+}
+
+.loader {
+  border: 12px solid rgb(243, 243, 243);
+  border-top: 12px solid rgba(83, 111, 242, 1);
+  border-radius: 50%;
+  width: 100px;
+  height: 100px;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
   }
 }

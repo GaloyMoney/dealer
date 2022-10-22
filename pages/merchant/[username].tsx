@@ -1,28 +1,26 @@
+import Link from "next/link"
 import { useRouter } from "next/router"
 import React from "react"
 import ButtonGroup from "react-bootstrap/ButtonGroup"
 import Container from "react-bootstrap/Container"
 import Image from "react-bootstrap/Image"
 
-import styles from "./_user.module.css"
-import reducer, { ACTIONS } from "./_reducer"
-import ParsePayment from "../../components/ParsePOSPayment"
 import { useQuery } from "@galoymoney/client"
+
+import ParsePayment from "../../components/ParsePOSPayment"
 import PinToHomescreen from "../../components/PinToHomescreen"
+import reducer, { ACTIONS } from "./_reducer"
+import styles from "./_user.module.css"
 
 function ReceivePayment() {
   const router = useRouter()
   const { username } = router.query
 
-  const username_from_local = localStorage.getItem("username")
   let accountUsername: string
   if (username == undefined) {
     accountUsername = ""
   } else {
     accountUsername = username.toString()
-    if (!username_from_local) {
-      localStorage.setItem("username", accountUsername)
-    }
   }
 
   const { data, error: usernameError } = useQuery.accountDefaultWallet({
@@ -54,6 +52,9 @@ function ReceivePayment() {
         <div className={styles.error}>
           <p>{`${usernameError.message}.`}</p>
           <p>Please check the username in your browser URL and try again.</p>
+          <Link href={"/setuppwa/setuppwa"}>
+            <a onClick={() => localStorage.removeItem("username")}>Back</a>
+          </Link>
         </div>
       ) : (
         <>
@@ -66,12 +67,6 @@ function ReceivePayment() {
               />
               <button
                 onClick={() => {
-                  if (username_from_local) {
-                    // clear prev username
-                    localStorage.removeItem("username")
-                    // cache new user
-                    localStorage.setItem("username", accountUsername)
-                  }
                   dispatch({
                     type: ACTIONS.PINNED_TO_HOMESCREEN_MODAL_VISIBLE,
                     payload: !state.pinnedToHomeScreenModalVisible,

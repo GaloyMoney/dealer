@@ -24,7 +24,7 @@ export default function Layout({
         <meta name="theme-color" content="#536FF2" />
         <meta name="apple-mobile-web-app-status-bar" content="#536FF2" />
         <link rel="apple-touch-icon" href="/APPLE-ICON.png" />
-        <link rel="icon" type="image/png" href="/.png" />
+        <link rel="icon" type="image/png" href="/APPLE-ICON.png" />
         <link rel="manifest" href="/manifest.json" id="manifest" />
 
         <script

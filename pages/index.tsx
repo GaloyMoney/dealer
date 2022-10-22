@@ -25,11 +25,13 @@ function Home() {
       ? `https://1ml.com/testnet/node/`
       : `https://1ml.com/node/`
   const { loading, error, data } = useQuery(GET_NODE_STATS)
+
   const router = useRouter()
   const [username, setUsername] = React.useState<string>("")
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
+
     router.push(
       {
         pathname: `/merchant/${username}`,
