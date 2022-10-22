@@ -4,6 +4,7 @@ import { useMutation } from "@galoymoney/client"
 
 import SendActionDisplay from "components/send/send-action-display"
 import { SendActionProps } from "components/send/send-action"
+import useMainQuery from "hooks/use-main-query"
 
 export type SendLnActionProps = SendActionProps & {
   paymentRequest: string
@@ -12,8 +13,14 @@ export type SendLnActionProps = SendActionProps & {
 type SendLnActionFCT = React.FC<SendLnActionProps>
 
 export const SendLnInvoiceAction: SendLnActionFCT = (props) => {
+  const { refetch } = useMainQuery()
+
   const [sendPayment, { loading, data, errorsMessage: paymentError }] =
-    useMutation.lnInvoicePaymentSend()
+    useMutation.lnInvoicePaymentSend({
+      onCompleted: () => {
+        refetch()
+      },
+    })
 
   const [
     propeForFee,

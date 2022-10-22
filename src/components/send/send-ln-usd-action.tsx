@@ -4,6 +4,7 @@ import { GaloyGQL, useMutation } from "@galoymoney/client"
 
 import SendActionDisplay from "components/send/send-action-display"
 import { SendActionProps } from "components/send/send-action"
+import useMainQuery from "hooks/use-main-query"
 
 export type SendLnUsdActionProps = SendActionProps & {
   fromWallet: GaloyGQL.Wallet
@@ -13,8 +14,14 @@ export type SendLnUsdActionProps = SendActionProps & {
 type SendLnUsdActionFCT = React.FC<SendLnUsdActionProps>
 
 export const SendLnUsdInvoiceAction: SendLnUsdActionFCT = (props) => {
+  const { refetch } = useMainQuery()
+
   const [sendPayment, { loading, data, errorsMessage: paymentError }] =
-    useMutation.lnInvoicePaymentSend()
+    useMutation.lnInvoicePaymentSend({
+      onCompleted: () => {
+        refetch()
+      },
+    })
 
   const [
     propeForFee,

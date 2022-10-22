@@ -37,6 +37,7 @@ type AmountInvoiceFCT = React.FC<{
   memo: string
   satAmount: number
   usdAmount: number
+  onPaymentSuccess: () => void
 }>
 
 const BtcAmountInvoiceGenerator: AmountInvoiceFCT = ({
@@ -47,6 +48,7 @@ const BtcAmountInvoiceGenerator: AmountInvoiceFCT = ({
   currency,
   satAmount,
   usdAmount,
+  onPaymentSuccess,
 }) => {
   const [invoiceStatus, setInvoiceStatus] = useState<undefined | "new" | "expired">()
 
@@ -106,7 +108,7 @@ const BtcAmountInvoiceGenerator: AmountInvoiceFCT = ({
           </div>
         </div>
       )}
-      <LightningInvoice invoice={invoice} onPaymentSuccess={clearTimers} />
+      <LightningInvoice invoice={invoice} onPaymentSuccess={onPaymentSuccess} />
       <div className="amount-description">
         <div className="amount-primarys">
           <SatFormat amount={satAmount} />
@@ -121,8 +123,8 @@ const UsdAmountInvoiceGenerator: AmountInvoiceFCT = ({
   wallet,
   regenerate,
   memo,
-  satAmount,
   usdAmount,
+  onPaymentSuccess,
 }) => {
   const [invoiceStatus, setInvoiceStatus] = useState<undefined | "new" | "expired">()
 
@@ -135,12 +137,12 @@ const UsdAmountInvoiceGenerator: AmountInvoiceFCT = ({
 
   useEffect(() => {
     createInvoice({
-      variables: { input: { walletId: wallet.id, amount: satAmount, memo } },
+      variables: { input: { walletId: wallet.id, amount: 100 * usdAmount, memo } },
     })
 
     return () => stopCountdownTimer()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [createInvoice, memo, satAmount, wallet.id])
+  }, [createInvoice, memo, usdAmount, wallet.id])
 
   const invoice = data?.lnUsdInvoiceCreate?.invoice
 
@@ -178,7 +180,7 @@ const UsdAmountInvoiceGenerator: AmountInvoiceFCT = ({
 
   return (
     <>
-      <LightningInvoice invoice={invoice} onPaymentSuccess={() => stopCountdownTimer()} />
+      <LightningInvoice invoice={invoice} onPaymentSuccess={onPaymentSuccess} />
       <div className="amount-description">
         <div className="amount-primary">{formatUsd(usdAmount)}</div>
       </div>
@@ -199,9 +201,15 @@ type NoAmountInvoiceFCT = React.FC<{
   wallet: GaloyGQL.Wallet
   regenerate: () => void
   memo: string
+  onPaymentSuccess: () => void
 }>
 
-const NoAmountInvoiceGenerator: NoAmountInvoiceFCT = ({ wallet, regenerate, memo }) => {
+const NoAmountInvoiceGenerator: NoAmountInvoiceFCT = ({
+  wallet,
+  regenerate,
+  memo,
+  onPaymentSuccess,
+}) => {
   const [invoiceStatus, setInvoiceStatus] = useState<undefined | "new" | "expired">()
 
   const timerIds = useRef<number[]>([])
@@ -245,7 +253,7 @@ const NoAmountInvoiceGenerator: NoAmountInvoiceFCT = ({ wallet, regenerate, memo
 
   return (
     <>
-      <LightningInvoice invoice={invoice} onPaymentSuccess={clearTimers} />
+      <LightningInvoice invoice={invoice} onPaymentSuccess={onPaymentSuccess} />
       <div className="amount-description">{translate("Flexible Amount Invoice")}</div>
     </>
   )
@@ -269,6 +277,7 @@ const InvoiceGenerator: AmountInvoiceFCT = (props) => {
         wallet={props.wallet}
         regenerate={props.regenerate}
         memo={props.memo}
+        onPaymentSuccess={props.onPaymentSuccess}
       />
     )
   }

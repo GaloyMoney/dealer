@@ -3,8 +3,10 @@ import { MouseEvent } from "react"
 
 import SendActionDisplay from "components/send/send-action-display"
 import { SendActionProps } from "components/send/send-action"
+import useMainQuery from "hooks/use-main-query"
 
 export type SendIntraLedgerUsdActionProps = SendActionProps & {
+  usdWalletId: string
   recipientWalletId: string
   usdAmount: number
 }
@@ -12,15 +14,21 @@ export type SendIntraLedgerUsdActionProps = SendActionProps & {
 type FCT = React.FC<SendIntraLedgerUsdActionProps>
 
 const SendIntraLedgerUsdAction: FCT = (props) => {
+  const { refetch } = useMainQuery()
+
   const [sendPayment, { loading, errorsMessage, data }] =
-    useMutation.intraLedgerUsdPaymentSend()
+    useMutation.intraLedgerUsdPaymentSend({
+      onCompleted: () => {
+        refetch()
+      },
+    })
 
   const handleSend = (event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault()
     sendPayment({
       variables: {
         input: {
-          walletId: props.btcWalletId,
+          walletId: props.usdWalletId,
           recipientWalletId: props.recipientWalletId,
           amount: 100 * props.usdAmount,
           memo: props.memo,

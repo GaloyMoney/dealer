@@ -3,6 +3,7 @@ import { MouseEvent } from "react"
 
 import SendActionDisplay from "components/send/send-action-display"
 import { SendActionProps } from "components/send/send-action"
+import useMainQuery from "hooks/use-main-query"
 
 export type SendIntraLedgerActionProps = SendActionProps & {
   recipientWalletId: string
@@ -12,8 +13,14 @@ export type SendIntraLedgerActionProps = SendActionProps & {
 type FCT = React.FC<SendIntraLedgerActionProps>
 
 const SendIntraLedgerAction: FCT = (props) => {
+  const { refetch } = useMainQuery()
+
   const [sendPayment, { loading, errorsMessage, data }] =
-    useMutation.intraLedgerPaymentSend()
+    useMutation.intraLedgerPaymentSend({
+      onCompleted: () => {
+        refetch()
+      },
+    })
 
   const handleSend = (event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault()

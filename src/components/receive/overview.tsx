@@ -84,6 +84,14 @@ const InvoiceOverview: FCT = ({ input, setInput, toggleWallet }) => {
           memo={input.memo as string}
           satAmount={input.satAmount as number}
           usdAmount={input.usdAmount as number}
+          onPaymentSuccess={() =>
+            setInput((currInput) => ({
+              ...currInput,
+              satAmount: NaN,
+              usdAmount: NaN,
+              view: "success",
+            }))
+          }
         />
       )
     )

@@ -35,7 +35,7 @@ const ConversionConfirmation: React.FC<{
             input: {
               walletId: fromWallet?.id,
               recipientWalletId: toWallet?.id,
-              amount: satAmount.amount,
+              amount: Math.round(satAmount.amount),
             },
           },
         })
@@ -54,7 +54,7 @@ const ConversionConfirmation: React.FC<{
             input: {
               walletId: fromWallet?.id,
               recipientWalletId: toWallet?.id,
-              amount: usdAmount.amount,
+              amount: 100 * usdAmount.amount,
             },
           },
         })

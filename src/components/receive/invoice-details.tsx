@@ -1,12 +1,13 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { QRCode } from "react-qrcode-logo"
 import copy from "copy-to-clipboard"
 
 import { formatUsd, GaloyGQL, satsToBTC } from "@galoymoney/client"
-import { SatFormat, SuccessCheckmark } from "@galoymoney/react"
+import { SatFormat } from "@galoymoney/react"
 
-import { translate, useAppDispatcher } from "store/index"
+import { translate } from "store/index"
 import useMyUpdates from "hooks/use-my-updates"
+import useMainQuery from "hooks/use-main-query"
 
 type LightningInvoiceFCT = React.FC<{
   invoice: Pick<GaloyGQL.LnInvoice, "paymentHash" | "paymentRequest">
@@ -14,7 +15,8 @@ type LightningInvoiceFCT = React.FC<{
 }>
 
 const LightningInvoice: LightningInvoiceFCT = ({ invoice, onPaymentSuccess }) => {
-  const dispatch = useAppDispatcher()
+  const { refetch } = useMainQuery()
+
   const { lnUpdate } = useMyUpdates()
   const [showCopied, setShowCopied] = useState(false)
 
@@ -24,27 +26,15 @@ const LightningInvoice: LightningInvoiceFCT = ({ invoice, onPaymentSuccess }) =>
     setTimeout(() => setShowCopied(false), 3000)
   }
 
-  const resetReceiveScreen = () => {
-    dispatch({ type: "navigate", path: "/receive" })
-  }
-
   const invoicePaid =
     lnUpdate?.paymentHash === invoice?.paymentHash && lnUpdate?.status === "PAID"
 
-  if (invoicePaid) {
-    if (onPaymentSuccess) {
+  useEffect(() => {
+    if (invoicePaid && onPaymentSuccess) {
+      refetch()
       onPaymentSuccess()
     }
-
-    return (
-      <div className="invoice-status">
-        <SuccessCheckmark />
-        <button onClick={resetReceiveScreen}>
-          {translate("Receive another payment")}
-        </button>
-      </div>
-    )
-  }
+  }, [invoicePaid, onPaymentSuccess, refetch])
 
   const { paymentRequest } = invoice
 

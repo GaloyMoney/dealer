@@ -35,7 +35,7 @@ import { formatSats, formatUsd } from "@galoymoney/client"
 
 export type SendActionProps = SendScreenInput & {
   btcWalletId: string
-  btcWalletBalance: number
+  usdWalletId: string | undefined
   reset: () => void
 }
 
@@ -46,7 +46,7 @@ type FCT = React.FC<{
 
 const SendAction: FCT = ({ children, input }) => {
   const dispatch = useAppDispatcher()
-  const { btcWalletId, btcWalletBalance, usdWalletBalance } = useMainQuery()
+  const { btcWalletId, btcWalletBalance, usdWalletId, usdWalletBalance } = useMainQuery()
 
   const reset = useCallback(() => {
     dispatch({ type: "navigate", path: "/send" })
@@ -118,7 +118,7 @@ const SendAction: FCT = ({ children, input }) => {
   const sendActionProps = {
     ...input,
     btcWalletId,
-    btcWalletBalance,
+    usdWalletId,
     reset,
   }
 

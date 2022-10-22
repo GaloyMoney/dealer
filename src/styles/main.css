@@ -252,7 +252,10 @@
 }
 
 .invoice-status {
-  margin: 1.5rem;
+  margin: 4rem auto;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
 }
 
 .amount-converted {
@@ -308,6 +311,7 @@
   }
   form {
     width: 100%;
+    max-width: 400px;
     text-align: center;
   }
   .auth-code-form {
@@ -694,7 +698,7 @@ button {
   justify-content: center;
   align-items: center;
   button {
-    padding: 0.25rem 1rem;
+    padding: 0.5rem 1rem;
   }
 }
 

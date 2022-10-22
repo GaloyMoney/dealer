@@ -3,6 +3,7 @@ import { MouseEvent } from "react"
 
 import SendActionDisplay from "components/send/send-action-display"
 import { SendActionProps } from "components/send/send-action"
+import useMainQuery from "hooks/use-main-query"
 
 export type SendOnChainActionProps = SendActionProps & {
   address: string
@@ -12,8 +13,14 @@ export type SendOnChainActionProps = SendActionProps & {
 type FCT = React.FC<SendOnChainActionProps>
 
 const SendOnChainAction: FCT = (props) => {
+  const { refetch } = useMainQuery()
+
   const [sendPayment, { loading, data, errorsMessage: paymentError }] =
-    useMutation.onChainPaymentSend()
+    useMutation.onChainPaymentSend({
+      onCompleted: () => {
+        refetch()
+      },
+    })
 
   const {
     loading: feeLoading,

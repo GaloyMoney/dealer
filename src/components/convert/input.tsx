@@ -145,7 +145,7 @@ const ConversionInput: React.FC<{
       setConvertAmount((currAmount) => ({
         id: currAmount.id + 1,
         currency: "USD",
-        amount: Math.floor((usdWalletBalance * percentage) / 100),
+        amount: Math.floor((100 * usdWalletBalance * percentage) / 100) / 100,
       }))
     }
   }
