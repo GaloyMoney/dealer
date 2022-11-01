@@ -73,17 +73,12 @@ const loginUsingPhoneNumber = async ({
   }
 
   const galoyJwtToken = data?.userLogin?.authToken
-  const token = jwt.decode(galoyJwtToken) as GalowyJwtToken
-
-  if (!token || !token.uid) {
-    return res.status(401).send("Invalid login request")
-  }
 
   const authSession = {
     identity: {
-      id: token.uid,
-      uid: token.uid,
-      uidc: token.uid.slice(-6) + token.uid.slice(-6), // FIXME: Get from backend
+      id: galoyJwtToken,
+      uid: galoyJwtToken,
+      uidc: galoyJwtToken.slice(-6) + galoyJwtToken.slice(-6), // FIXME: Get from backend
       phoneNumber,
     },
     galoyJwtToken,
