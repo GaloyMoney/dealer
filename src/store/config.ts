@@ -31,7 +31,7 @@ if (!isBrowser) {
 
   if (
     process.env.NETWORK &&
-    !["mainnet", "testnet", "regtest"].includes(process.env.NETWORK)
+    !["mainnet", "testnet", "signet", "regtest"].includes(process.env.NETWORK)
   ) {
     throw new Error("Invalid NETWORK value")
   }
