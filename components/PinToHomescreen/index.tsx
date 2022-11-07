@@ -2,7 +2,7 @@ import React from "react"
 import { Image } from "react-bootstrap"
 
 import { getOS } from "../../lib/download"
-import { ACTIONS, ACTION_TYPE } from "../../pages/merchant/_reducer"
+import { ACTIONS, ACTION_TYPE } from "../../pages/_reducer"
 import Modal from "../CustomModal/modal"
 import {
   chromeModalContent,

@@ -25,21 +25,17 @@
   right: 0;
 }
 
-.curr_denomination {
+.zero_order {
+  order: 0;
   color: rgba(17, 25, 40, 1);
   font-size: 2rem;
   font-weight: 600;
 }
 
-.curr_denomination_small {
+.first_order {
+  order: 1;
   color: rgba(17, 25, 40, 1);
-  font-size: 1.35rem;
-  font-weight: 600;
-}
-
-.other_denomination {
-  color: rgba(17, 25, 40, 1);
-  font-size: 0.875rem;
+  font-size: 1rem;
   font-weight: 400;
 }
 
@@ -236,12 +232,12 @@
 }
 
 .loader {
-  border: 12px solid rgb(243, 243, 243);
-  border-top: 12px solid rgba(83, 111, 242, 1);
+  border: 8px solid rgba(243, 243, 243, 0.359);
+  border-top: 8px solid rgba(83, 111, 242, 1);
   border-radius: 50%;
   width: 100px;
   height: 100px;
-  animation: spin 2s linear infinite;
+  animation: spin 1s linear infinite;
 }
 
 @keyframes spin {

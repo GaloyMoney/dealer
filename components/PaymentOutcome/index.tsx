@@ -4,7 +4,7 @@ import React from "react"
 import Image from "react-bootstrap/Image"
 
 import useSatPrice from "../../lib/use-sat-price"
-import { ACTIONS, ACTION_TYPE } from "../../pages/merchant/_reducer"
+import { ACTIONS, ACTION_TYPE } from "../../pages/_reducer"
 import { formatOperand } from "../../utils/utils"
 import styles from "./payment-outcome.module.css"
 

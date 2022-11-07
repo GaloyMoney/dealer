@@ -1,102 +1,111 @@
+import Link from "next/link"
 import { useRouter } from "next/router"
-import Row from "react-bootstrap/Row"
-import Col from "react-bootstrap/Col"
-import Card from "react-bootstrap/Card"
+import React from "react"
+import ButtonGroup from "react-bootstrap/ButtonGroup"
 import Container from "react-bootstrap/Container"
 import Image from "react-bootstrap/Image"
-import { gql, useQuery } from "@apollo/client"
 
-import ReceiveAmount from "../components/receive-amount"
-import ReceiveNoAmount from "../components/receive-no-amount"
+import { useQuery } from "@galoymoney/client"
 
-import { getOS, playStoreLink, appStoreLink } from "../lib/download"
+import ParsePayment from "../components/ParsePOSPayment"
+import PinToHomescreen from "../components/PinToHomescreen"
+import reducer, { ACTIONS } from "./_reducer"
+import styles from "./_user.module.css"
 
-const RECIPIENT_WALLET_ID = gql`
-  query accountDefaultWallet($username: Username!) {
-    accountDefaultWallet(username: $username) {
-      id
-      walletCurrency
-    }
-  }
-`
-
-export default function Receive() {
+function ReceivePayment() {
   const router = useRouter()
-  const { username, amount } = router.query
+  const { username } = router.query
 
-  const { error, loading, data } = useQuery(RECIPIENT_WALLET_ID, {
-    variables: {
-      username,
-    },
+  let accountUsername: string
+  if (username == undefined) {
+    accountUsername = ""
+  } else {
+    accountUsername = username.toString()
+  }
+
+  const { data, error: usernameError } = useQuery.accountDefaultWallet({
+    variables: { username: accountUsername },
   })
 
-  const os = getOS()
+  const [state, dispatch] = React.useReducer(reducer, {
+    currentAmount: "",
+    createdInvoice: false,
+    walletCurrency: data?.accountDefaultWallet.walletCurrency || "USD",
+    username: accountUsername,
+    pinnedToHomeScreenModalVisible: false,
+  })
 
-  if (error) return <div className="error">{error.message}</div>
-  if (loading) return <div className="loading">Loading...</div>
-  if (!data) return null
-
-  const { id: recipientWalletId, walletCurrency: recipientWalletCurrency } =
-    data.accountDefaultWallet
-
-  const isAmountInvoice = amount !== undefined
-
-  const onSetAmountClick = () => {
-    router.push(`/${username}?amount=0&currency=USD`, undefined, { shallow: true })
-  }
+  React.useEffect(() => {
+    if (state.walletCurrency === data?.accountDefaultWallet.walletCurrency) {
+      return
+    }
+    dispatch({
+      type: ACTIONS.UPDATE_WALLET_CURRENCY,
+      payload: data?.accountDefaultWallet.walletCurrency,
+    })
+    dispatch({ type: ACTIONS.UPDATE_USERNAME, payload: username })
+  }, [state, username, data])
 
   return (
-    <Container className="invoice-container" fluid>
-      {os === undefined && <br />}
-      <Row className="justify-content-md-center">
-        <Col md="auto" style={{ padding: 0 }}>
-          <Card className="text-center">
-            <Card.Header>Pay {username}</Card.Header>
-
-            {isAmountInvoice ? (
-              <ReceiveAmount
-                recipientWalletId={recipientWalletId}
-                recipientWalletCurrency={recipientWalletCurrency}
+    <Container className={styles.payment_container}>
+      {usernameError ? (
+        <div className={styles.error}>
+          <p>{`${usernameError.message}.`}</p>
+          <p>Please check the username in your browser URL and try again.</p>
+          <Link href={"/setuppwa"}>
+            <a onClick={() => localStorage.removeItem("username")}>Back</a>
+          </Link>
+        </div>
+      ) : (
+        <>
+          {!state.createdInvoice && (
+            <ButtonGroup aria-label="Pin" className={styles.pin_btn_group}>
+              <Image
+                src="/icons/pin-icon.svg"
+                alt="pin icon"
+                className={styles.pin_icon}
               />
-            ) : (
-              <ReceiveNoAmount
-                recipientWalletId={recipientWalletId}
-                onSetAmountClick={onSetAmountClick}
-              />
+              <button
+                onClick={() => {
+                  dispatch({
+                    type: ACTIONS.PINNED_TO_HOMESCREEN_MODAL_VISIBLE,
+                    payload: !state.pinnedToHomeScreenModalVisible,
+                  })
+                }}
+                className={styles.pin_btn}
+              >
+                Pin to homescreen
+              </button>
+            </ButtonGroup>
+          )}
+          <PinToHomescreen
+            pinnedToHomeScreenModalVisible={state.pinnedToHomeScreenModalVisible}
+            dispatch={dispatch}
+          />
+          <div className={styles.username_container}>
+            {state.createdInvoice && (
+              <button onClick={() => dispatch({ type: ACTIONS.BACK })}>
+                <Image
+                  src="/icons/chevron-left-icon.svg"
+                  alt="back button"
+                  width="10px"
+                  height="12px"
+                />
+              </button>
             )}
+            <p className={styles.username}>{`Pay ${username}`}</p>
+          </div>
 
-            <Card.Body>
-              {os === "android" && (
-                <a href={playStoreLink}>
-                  <Image src="/google-play-badge.png" height="40px" rounded />
-                </a>
-              )}
-              {os === "ios" && (
-                <a href={playStoreLink}>
-                  <Image src="/apple-app-store.png" height="40px" rounded />
-                </a>
-              )}
-              {os === undefined && (
-                <div>
-                  <a href={appStoreLink}>
-                    <Image src="/apple-app-store.png" height="45px" rounded />
-                  </a>
-                  &nbsp;
-                  <a href={playStoreLink}>
-                    <Image src="/google-play-badge.png" height="45px" rounded />
-                  </a>
-                </div>
-              )}
-            </Card.Body>
-            <Card.Footer className="text-muted">
-              Powered by <Card.Link href="https://galoy.io">Galoy </Card.Link>
-              <br />
-              <Card.Link href={window.location.origin}>Open a channel with us</Card.Link>
-            </Card.Footer>
-          </Card>
-        </Col>
-      </Row>
-      <br />
+          <ParsePayment
+            state={state}
+            dispatch={dispatch}
+            defaultWalletCurrency={data?.accountDefaultWallet.walletCurrency}
+            walletId={data?.accountDefaultWallet.id}
+          />
+        </>
+      )}
     </Container>
   )
 }
+
+export default ReceivePayment

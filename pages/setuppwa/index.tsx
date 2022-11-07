@@ -16,7 +16,7 @@ const SetupPwa = () => {
 
     router.push(
       {
-        pathname: `/merchant/${username}`,
+        pathname: `${username}`,
       },
       undefined,
       { shallow: true },
@@ -27,7 +27,7 @@ const SetupPwa = () => {
     if (username_from_local) {
       router.push(
         {
-          pathname: `/merchant/${username_from_local}`,
+          pathname: `${username_from_local}`,
         },
         undefined,
         { shallow: true },

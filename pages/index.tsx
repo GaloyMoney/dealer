@@ -34,7 +34,7 @@ function Home() {
 
     router.push(
       {
-        pathname: `/merchant/${username}`,
+        pathname: username,
       },
       undefined,
       { shallow: true },

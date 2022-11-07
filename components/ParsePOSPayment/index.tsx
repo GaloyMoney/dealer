@@ -4,7 +4,7 @@ import Container from "react-bootstrap/Container"
 import Image from "react-bootstrap/Image"
 
 import useSatPrice from "../../lib/use-sat-price"
-import { ACTIONS, ACTION_TYPE } from "../../pages/merchant/_reducer"
+import { ACTION_TYPE, ACTIONS } from "../../pages/_reducer"
 import { formatOperand } from "../../utils/utils"
 import DigitButton from "./Digit-Button"
 import styles from "./parse-payment.module.css"
@@ -17,41 +17,151 @@ interface Props {
   state: React.ComponentState
 }
 
-function ParsePayment({ defaultWalletCurrency, walletId, dispatch, state }: Props) {
-  const [usdDenomination, setUsdDenomination] = React.useState<boolean>(true)
-  const { usdToSats } = useSatPrice()
-  const { amount } = useRouter().query
+interface UpdateAmount {
+  shouldUpdate: boolean
+  value: string | null
+}
 
-  React.useEffect(() => {
-    if (Number(amount) > 0) {
-      if (amount?.toString().match(/(\.[0-9]{3,}$|\..*\.)/)) return
-      dispatch({
-        type: ACTIONS.SET_AMOUNT_FROM_PARAMS,
-        payload: formatOperand(amount?.toString()),
-      })
-    }
-  }, [amount, dispatch])
+enum AmountUnit {
+  Sat = "SAT",
+  Cent = "CENT",
+}
+
+function ParsePayment({ defaultWalletCurrency, walletId, dispatch, state }: Props) {
+  const { usdToSats, satsToUsd } = useSatPrice()
+  const router = useRouter()
+  const { username, amount, sats, unit } = router.query
 
   const value = usdToSats(Number(state.currentAmount)).toFixed()
-  const valueInSats = `≈ ${formatOperand(value.toString())} sats `
-  const valueInUSD = `$ ${formatOperand(state.currentAmount)}`
+
+  const valueInUSD = `$ ${
+    unit === AmountUnit.Sat
+      ? satsToUsd(Number(sats)).toFixed(2)
+      : formatOperand(state.currentAmount)
+  }`
+  const valueInSats = `≈ ${
+    unit === AmountUnit.Sat
+      ? formatOperand(state.currentAmount)
+      : formatOperand(value.toString())
+  } sats `
+
+  const prevUnit = React.useRef(AmountUnit.Cent)
+
+  const updateCurrentAmountWithParams = React.useCallback((): UpdateAmount => {
+    if (unit === AmountUnit.Sat) {
+      if (sats === state.currentAmount) {
+        return {
+          shouldUpdate: false,
+          value: null,
+        }
+      } else if (sats) {
+        return {
+          shouldUpdate: true,
+          value: sats.toString(),
+        }
+      }
+    } else {
+      if (Number(amount) === Number(state.currentAmount)) {
+        return { shouldUpdate: false, value: null }
+      } else if (amount) {
+        return { shouldUpdate: true, value: amount.toString() }
+      }
+    }
+    return { shouldUpdate: false, value: null }
+  }, [amount, sats, unit, state.currentAmount])
+
+  const toggleCurrency = () => {
+    const newUnit = unit === AmountUnit.Sat ? AmountUnit.Cent : AmountUnit.Sat
+    prevUnit.current = (unit as AmountUnit) || AmountUnit.Cent
+    router.push(
+      {
+        pathname: `${username}`,
+        query: {
+          currency: defaultWalletCurrency,
+          unit: newUnit,
+        },
+      },
+      undefined,
+      { shallow: true },
+    )
+  }
+
+  // Update Params From Current Amount
+  React.useEffect(() => {
+    if (!unit) return
+    const amount =
+      unit === AmountUnit.Sat
+        ? satsToUsd(state.currentAmount).toFixed(2)
+        : state.currentAmount
+    const sats =
+      unit === AmountUnit.Sat
+        ? state.currentAmount
+        : usdToSats(Number(state.currentAmount)).toFixed()
+
+    router.push(
+      {
+        pathname: `${username}`,
+        query: {
+          amount,
+          sats,
+          currency: defaultWalletCurrency,
+          unit,
+        },
+      },
+      undefined,
+      { shallow: true },
+    )
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state.currentAmount])
+
+  // Toggle Current Amount
+  React.useEffect(() => {
+    if (!unit || unit === prevUnit.current) return
+    if (unit === AmountUnit.Cent) {
+      dispatch({
+        type: ACTIONS.SET_AMOUNT_FROM_PARAMS,
+        payload: satsToUsd(state.currentAmount).toFixed(2).toString(),
+      })
+    }
+    if (unit === AmountUnit.Sat) {
+      dispatch({
+        type: ACTIONS.SET_AMOUNT_FROM_PARAMS,
+        payload: value?.toString(),
+      })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [unit])
+
+  // Update Current Amount From Params
+  React.useEffect(() => {
+    if (!unit || !sats || !amount) return
+    const { shouldUpdate, value } = updateCurrentAmountWithParams()
+    if (shouldUpdate && value) {
+      dispatch({
+        type: ACTIONS.SET_AMOUNT_FROM_PARAMS,
+        payload: value?.toString(),
+      })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [amount, sats, unit, dispatch])
 
   return (
     <Container className={styles.digits_container}>
       <div className={styles.output}>
         <div
-          className={
-            state.currentAmount?.length >= 10
-              ? styles.curr_denomination_small
-              : styles.curr_denomination
-          }
+          className={`${
+            !unit || unit === AmountUnit.Cent ? styles.zero_order : styles.first_order
+          }`}
         >
-          {usdDenomination ? valueInUSD : valueInSats.slice(1, -1)}
+          {valueInUSD}
         </div>
-        <div className={styles.other_denomination}>
-          {!usdDenomination ? valueInUSD : valueInSats}
+        <div
+          className={`${unit === AmountUnit.Sat ? styles.zero_order : styles.first_order}
+          }`}
+        >
+          {unit === AmountUnit.Cent ? valueInSats : valueInSats.slice(1, -1)}
         </div>
-        <button onClick={() => setUsdDenomination(!usdDenomination)}>
+        <button onClick={() => toggleCurrency()}>
           <Image
             src="/icons/convert-icon.svg"
             alt="convert to SAT/USD icon"
@@ -95,11 +205,13 @@ function ParsePayment({ defaultWalletCurrency, walletId, dispatch, state }: Prop
       <div className={styles.pay_btn_container}>
         <button
           className={state.createdInvoice ? styles.pay_new_btn : styles.pay_btn}
-          onClick={
-            state.createdInvoice
-              ? () => dispatch({ type: ACTIONS.CREATE_NEW_INVOICE })
-              : () => dispatch({ type: ACTIONS.CREATE_INVOICE })
-          }
+          onClick={() => {
+            if (state.createdInvoice) {
+              dispatch({ type: ACTIONS.CREATE_NEW_INVOICE })
+            } else {
+              dispatch({ type: ACTIONS.CREATE_INVOICE, payload: amount?.toString() })
+            }
+          }}
         >
           <Image
             src={

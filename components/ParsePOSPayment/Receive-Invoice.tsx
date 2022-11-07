@@ -11,7 +11,7 @@ import { USD_INVOICE_EXPIRE_INTERVAL } from "../../config/config"
 import useCreateInvoice from "../../hooks/use-Create-Invoice"
 import { LnInvoiceObject } from "../../lib/graphql/index.types.d"
 import useSatPrice from "../../lib/use-sat-price"
-import { ACTION_TYPE } from "../../pages/merchant/_reducer"
+import { ACTION_TYPE } from "../../pages/_reducer"
 import PaymentOutcome from "../PaymentOutcome"
 import styles from "./parse-payment.module.css"
 
@@ -24,9 +24,9 @@ interface Props {
 
 const USD_MAX_INVOICE_TIME = "5.00"
 
-function ReceiveInvoice({ recipientWalletCurrency, walletId, dispatch }: Props) {
-  const { usdToSats } = useSatPrice()
+function ReceiveInvoice({ recipientWalletCurrency, walletId, state, dispatch }: Props) {
   const { amount, currency } = useRouter().query
+  const { usdToSats } = useSatPrice()
   const [copied, setCopied] = React.useState<boolean>(false)
   const timerRef = React.useRef<Date>()
 
@@ -48,29 +48,24 @@ function ReceiveInvoice({ recipientWalletCurrency, walletId, dispatch }: Props) 
     })
 
   const paymentAmount = React.useMemo(() => {
-    if (currency === "USD") {
-      return amount
+    if (amount === "0.00" || isNaN(Number(amount))) {
+      if (Number(state.currentAmount) > 0) {
+        return usdToSats(Number(state.currentAmount)).toFixed(2)
+      }
     }
 
-    return usdToSats(Number(amount)).toFixed()
-  }, [amount, currency, usdToSats])
+    return usdToSats(Number(amount)).toFixed(2)
+  }, [amount, usdToSats, state.currentAmount])
 
   React.useEffect(() => {
-    if (
-      paymentAmount === "0.00" ||
-      paymentAmount == undefined ||
-      isNaN(Number(paymentAmount)) ||
-      walletId == undefined
-    ) {
-      return
-    }
-    const amount = Number(paymentAmount)
+    if (!walletId) return
+
     createInvoice({
       variables: {
-        input: { recipientWalletId: walletId, amount },
+        input: { recipientWalletId: walletId, amount: Number(paymentAmount) },
       },
     })
-  }, [paymentAmount, walletId, createInvoice])
+  }, [amount, walletId, paymentAmount, createInvoice])
 
   const errorString: string | null = errorsMessage || null
   let invoice: LnInvoiceObject | undefined
@@ -164,7 +159,7 @@ function ReceiveInvoice({ recipientWalletCurrency, walletId, dispatch }: Props) 
       </div>
       <PaymentOutcome
         paymentRequest={invoice?.paymentRequest}
-        paymentAmount={paymentAmount}
+        paymentAmount={amount}
         dispatch={dispatch}
       />
     </div>

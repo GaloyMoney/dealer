@@ -1,6 +1,5 @@
-import router from "next/router"
 import React from "react"
-import { MAX_INPUT_VALUE_LENGTH } from "../../config/config"
+import { MAX_INPUT_VALUE_LENGTH } from "../config/config"
 
 export const ACTIONS = {
   ADD_DIGIT: "add-digit",
@@ -41,7 +40,12 @@ function reducer(state: React.ComponentState, { type, payload }: ACTION_TYPE) {
 
     case ACTIONS.SET_AMOUNT_FROM_PARAMS:
       if (state.currentAmount == null) return state
-      if (payload?.toString().match(/(\.[0-9]{3,}$|\..*\.)/)) return state
+      if (payload?.toString().match(/(\.[0-9]{2,}$|\..*\.)/)) {
+        return {
+          ...state,
+          currentAmount: Number(payload).toFixed(2),
+        }
+      }
       return {
         ...state,
         currentAmount: payload,
@@ -62,17 +66,10 @@ function reducer(state: React.ComponentState, { type, payload }: ACTION_TYPE) {
     case ACTIONS.CLEAR_INPUT:
       if (state.currentAmount == null) return state
       if (state.username == null) return state
-      router.push(
-        {
-          pathname: `/merchant/${state.username}`,
-          query: { amount: 0, currency: state.walletCurrency },
-        },
-        undefined,
-        { shallow: true },
-      )
+
       return {
         ...state,
-        currentAmount: "",
+        currentAmount: "0",
       }
 
     case ACTIONS.CREATE_INVOICE:
@@ -83,16 +80,10 @@ function reducer(state: React.ComponentState, { type, payload }: ACTION_TYPE) {
         state.currentAmount === "" ||
         state.currentAmount === "0.00" ||
         state.currentAmount === "0.0"
-      )
+      ) {
         return state
-      router.push(
-        {
-          pathname: `/merchant/${state.username}`,
-          query: { amount: state.currentAmount, currency: state.walletCurrency },
-        },
-        undefined,
-        { shallow: true },
-      )
+      }
+
       return {
         ...state,
         createdInvoice: true,
@@ -100,18 +91,11 @@ function reducer(state: React.ComponentState, { type, payload }: ACTION_TYPE) {
 
     case ACTIONS.CREATE_NEW_INVOICE:
       if (!state.createdInvoice) return state
-      router.push(
-        {
-          pathname: `/merchant/${state.username}`,
-          query: { amount: "0", currency: state.walletCurrency },
-        },
-        undefined,
-        { shallow: true },
-      )
+
       return {
         ...state,
         createdInvoice: false,
-        currentAmount: "",
+        currentAmount: "0",
       }
 
     case ACTIONS.BACK:
