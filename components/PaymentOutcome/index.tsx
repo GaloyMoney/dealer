@@ -16,8 +16,8 @@ interface Props {
 
 function PaymentOutcome({ paymentRequest, paymentAmount, dispatch }: Props) {
   const router = useRouter()
-  const { amount, currency, unit, sats } = router.query
-  const { usdToSats, satsToUsd } = useSatPrice()
+  const { amount, unit, sats } = router.query
+  const { satsToUsd } = useSatPrice()
 
   if (!paymentRequest) {
     return null
