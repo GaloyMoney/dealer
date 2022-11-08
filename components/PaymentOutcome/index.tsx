@@ -61,16 +61,16 @@ function PaymentOutcome({ paymentRequest, paymentAmount, dispatch }: Props) {
               height="104"
             />
             <p className={styles.text}>
-              The invoice of {"$"}
-              {`${
-                unit === "SAT"
-                  ? satsToUsd(Number(sats)).toFixed(6)
-                  : formatOperand(amount?.toString())
-              } (~${
-                currency === "USD"
-                  ? formatOperand(usdToSats(Number(amount)).toFixed().toString())
-                  : paymentAmount
-              } sats)`}{" "}
+              The invoice of{" "}
+              {unit === "SAT"
+                ? `${formatOperand(paymentAmount?.toString())} sats (~ $${satsToUsd(
+                    Number(paymentAmount),
+                  ).toFixed(6)})`
+                : ` $${formatOperand(
+                    amount?.toString() ?? satsToUsd(Number(paymentAmount)).toFixed(2),
+                  )} (~${formatOperand(
+                    sats?.toString() ?? Number(paymentAmount).toFixed(),
+                  )} sats)`}{" "}
               has been paid
             </p>
           </div>
