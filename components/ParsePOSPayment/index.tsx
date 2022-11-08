@@ -22,7 +22,7 @@ interface UpdateAmount {
   value: string | null
 }
 
-enum AmountUnit {
+export enum AmountUnit {
   Sat = "SAT",
   Cent = "CENT",
 }
@@ -34,10 +34,13 @@ function ParsePayment({ defaultWalletCurrency, walletId, dispatch, state }: Prop
 
   const value = usdToSats(Number(state.currentAmount)).toFixed()
 
+  const calcUsdOrCentAmount =
+    satsToUsd(Number(sats)) < 0.01 || isNaN(satsToUsd(Number(sats)))
+      ? "(less than 1 cent)"
+      : satsToUsd(Number(sats)).toFixed(2)
+
   const valueInUSD = `$ ${
-    unit === AmountUnit.Sat
-      ? satsToUsd(Number(sats)).toFixed(2)
-      : formatOperand(state.currentAmount)
+    unit === AmountUnit.Sat ? calcUsdOrCentAmount : formatOperand(state.currentAmount)
   }`
   const valueInSats = `≈ ${
     unit === AmountUnit.Sat

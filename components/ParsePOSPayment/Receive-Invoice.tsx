@@ -6,6 +6,7 @@ import OverlayTrigger from "react-bootstrap/OverlayTrigger"
 import Tooltip from "react-bootstrap/Tooltip"
 import { QRCode } from "react-qrcode-logo"
 import { useTimer } from "react-timer-hook"
+import { AmountUnit } from "."
 
 import { USD_INVOICE_EXPIRE_INTERVAL } from "../../config/config"
 import useCreateInvoice from "../../hooks/use-Create-Invoice"
@@ -25,7 +26,7 @@ interface Props {
 const USD_MAX_INVOICE_TIME = "5.00"
 
 function ReceiveInvoice({ recipientWalletCurrency, walletId, state, dispatch }: Props) {
-  const { amount, currency } = useRouter().query
+  const { amount, currency, unit, sats } = useRouter().query
   const { usdToSats } = useSatPrice()
   const [copied, setCopied] = React.useState<boolean>(false)
   const timerRef = React.useRef<Date>()
@@ -49,13 +50,19 @@ function ReceiveInvoice({ recipientWalletCurrency, walletId, state, dispatch }: 
 
   const paymentAmount = React.useMemo(() => {
     if (amount === "0.00" || isNaN(Number(amount))) {
-      if (Number(state.currentAmount) > 0) {
+      if (sats && unit === AmountUnit.Sat) {
+        return sats
+      } else if (Number(state.currentAmount) > 0) {
         return usdToSats(Number(state.currentAmount)).toFixed(2)
       }
     }
 
+    if (sats && unit === AmountUnit.Sat) {
+      return sats
+    }
+
     return usdToSats(Number(amount)).toFixed(2)
-  }, [amount, usdToSats, state.currentAmount])
+  }, [amount, unit, sats, usdToSats, state.currentAmount])
 
   React.useEffect(() => {
     if (!walletId) return
@@ -159,7 +166,7 @@ function ReceiveInvoice({ recipientWalletCurrency, walletId, state, dispatch }: 
       </div>
       <PaymentOutcome
         paymentRequest={invoice?.paymentRequest}
-        paymentAmount={amount}
+        paymentAmount={paymentAmount}
         dispatch={dispatch}
       />
     </div>

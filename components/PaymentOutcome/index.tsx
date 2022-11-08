@@ -16,8 +16,8 @@ interface Props {
 
 function PaymentOutcome({ paymentRequest, paymentAmount, dispatch }: Props) {
   const router = useRouter()
-  const { amount, currency } = router.query
-  const { usdToSats } = useSatPrice()
+  const { amount, currency, unit, sats } = router.query
+  const { usdToSats, satsToUsd } = useSatPrice()
 
   if (!paymentRequest) {
     return null
@@ -62,7 +62,11 @@ function PaymentOutcome({ paymentRequest, paymentAmount, dispatch }: Props) {
             />
             <p className={styles.text}>
               The invoice of {"$"}
-              {`${formatOperand(amount?.toString())} (~${
+              {`${
+                unit === "SAT"
+                  ? satsToUsd(Number(sats)).toFixed(6)
+                  : formatOperand(amount?.toString())
+              } (~${
                 currency === "USD"
                   ? formatOperand(usdToSats(Number(amount)).toFixed().toString())
                   : paymentAmount
