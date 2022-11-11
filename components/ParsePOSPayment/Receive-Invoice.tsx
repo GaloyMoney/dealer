@@ -6,14 +6,16 @@ import OverlayTrigger from "react-bootstrap/OverlayTrigger"
 import Tooltip from "react-bootstrap/Tooltip"
 import { QRCode } from "react-qrcode-logo"
 import { useTimer } from "react-timer-hook"
+import { useScreenshot } from "use-react-screenshot"
 import { AmountUnit } from "."
 
-import { USD_INVOICE_EXPIRE_INTERVAL } from "../../config/config"
+import { BBW_DOMAIN, USD_INVOICE_EXPIRE_INTERVAL } from "../../config/config"
 import useCreateInvoice from "../../hooks/use-Create-Invoice"
 import { LnInvoiceObject } from "../../lib/graphql/index.types.d"
 import useSatPrice from "../../lib/use-sat-price"
 import { ACTION_TYPE } from "../../pages/_reducer"
 import PaymentOutcome from "../PaymentOutcome"
+import { Share } from "../Share"
 import styles from "./parse-payment.module.css"
 
 interface Props {
@@ -26,9 +28,29 @@ interface Props {
 const USD_MAX_INVOICE_TIME = "5.00"
 
 function ReceiveInvoice({ recipientWalletCurrency, walletId, state, dispatch }: Props) {
-  const { amount, currency, unit, sats } = useRouter().query
+  const { username, amount, currency, unit, sats } = useRouter().query
   const { usdToSats } = useSatPrice()
+
   const [copied, setCopied] = React.useState<boolean>(false)
+  const [shareState, setShareState] = React.useState<"not-set">()
+  const [image, takeScreenShot] = useScreenshot()
+
+  const qrImageRef = React.useRef(null)
+  const getImage = () => takeScreenShot(qrImageRef.current)
+
+  const shareUrl =
+    !amount && !unit
+      ? `${BBW_DOMAIN}${username}?amount=${state.currentAmount}&sats=${usdToSats(
+          state.currentAmount,
+        ).toFixed()}&currency=${recipientWalletCurrency}&unit=SAT`
+      : window.location.href
+
+  const shareData = {
+    title: `Pay ${username}`,
+    text: `Use the link embedded below to pay ${username} some sats. Powered by: https://galoy.io`,
+    url: shareUrl,
+  }
+
   const timerRef = React.useRef<Date>()
 
   timerRef.current = new Date()
@@ -127,7 +149,11 @@ function ReceiveInvoice({ recipientWalletCurrency, walletId, state, dispatch }: 
 
         {data && (
           <>
-            <div aria-labelledby="QR code of lightning payment" onClick={copyInvoice}>
+            <div
+              ref={qrImageRef}
+              aria-labelledby="QR code of lightning payment"
+              onClick={copyInvoice}
+            >
               <QRCode
                 value={invoice?.paymentRequest}
                 size={320}
@@ -141,7 +167,7 @@ function ReceiveInvoice({ recipientWalletCurrency, walletId, state, dispatch }: 
                 placement="right"
                 overlay={<Tooltip id="copy">Copied!</Tooltip>}
               >
-                <button onClick={copyInvoice}>
+                <button title="Copy invoice" onClick={copyInvoice}>
                   <Image
                     src="/icons/copy-icon.svg"
                     alt="copy icon"
@@ -151,15 +177,27 @@ function ReceiveInvoice({ recipientWalletCurrency, walletId, state, dispatch }: 
                   {copied ? "Copied" : "Copy"}
                 </button>
               </OverlayTrigger>
-              <button>
-                <Image
-                  src="/icons/share-icon.svg"
-                  alt="share-icon"
-                  width="18px"
-                  height="18px"
-                />
-                Share
-              </button>
+
+              <Share
+                shareData={shareData}
+                getImage={getImage}
+                files={[image]}
+                shareState={shareState}
+              >
+                <span
+                  title="Share lightning invoice"
+                  className={styles.share_btn}
+                  onClick={() => setShareState("not-set")}
+                >
+                  <Image
+                    src="/icons/share-icon.svg"
+                    alt="share-icon"
+                    width="18px"
+                    height="18px"
+                  />
+                  Share
+                </span>
+              </Share>
             </div>
           </>
         )}

@@ -164,7 +164,7 @@ function ParsePayment({ defaultWalletCurrency, walletId, dispatch, state }: Prop
         >
           {unit === AmountUnit.Cent ? valueInSats : valueInSats.slice(1, -1)}
         </div>
-        <button onClick={() => toggleCurrency()}>
+        <button title="toggle currency" onClick={() => toggleCurrency()}>
           <Image
             src="/icons/convert-icon.svg"
             alt="convert to SAT/USD icon"

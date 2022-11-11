@@ -23,6 +23,7 @@
     "copy-to-clipboard": "^3.3.2",
     "cross-fetch": "^3.1.5",
     "graphql": "^16.6.0",
+    "html2canvas": "^1.4.1",
     "i18n-js": "^3.9.2",
     "lnurl-pay": "^1.0.1",
     "lodash.debounce": "^4.0.8",
@@ -38,7 +39,8 @@
     "react-timer-hook": "^3.0.5",
     "react-to-print": "^2.12.6",
     "subscriptions-transport-ws": "^0.11.0",
-    "use-debounce": "^8.0.4"
+    "use-debounce": "^8.0.4",
+    "use-react-screenshot": "^3.0.0"
   },
   "devDependencies": {
     "@types/bootstrap": "^5.1.6",

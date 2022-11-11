@@ -42,7 +42,7 @@ export default function Layout({
     `,
           }}
         />
-        <title>BitcoinBeach Lightning Node</title>
+        <title>BitcoinBeach Cash Register</title>
       </Head>
       <GraphQLProvider>
         <Component {...pageProps} />
