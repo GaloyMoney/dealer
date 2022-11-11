@@ -30,7 +30,7 @@ export enum AmountUnit {
 function ParsePayment({ defaultWalletCurrency, walletId, dispatch, state }: Props) {
   const { usdToSats, satsToUsd } = useSatPrice()
   const router = useRouter()
-  const { username, amount, sats, unit } = router.query
+  const { username, amount, sats, unit, memo } = router.query
 
   const value = usdToSats(Number(state.currentAmount)).toFixed()
 
@@ -82,6 +82,7 @@ function ParsePayment({ defaultWalletCurrency, walletId, dispatch, state }: Prop
         query: {
           currency: defaultWalletCurrency,
           unit: newUnit,
+          memo,
         },
       },
       undefined,
@@ -109,6 +110,7 @@ function ParsePayment({ defaultWalletCurrency, walletId, dispatch, state }: Prop
           sats,
           currency: defaultWalletCurrency,
           unit,
+          memo,
         },
       },
       undefined,

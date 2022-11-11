@@ -28,7 +28,7 @@ interface Props {
 const USD_MAX_INVOICE_TIME = "5.00"
 
 function ReceiveInvoice({ recipientWalletCurrency, walletId, state, dispatch }: Props) {
-  const { username, amount, currency, unit, sats } = useRouter().query
+  const { username, amount, currency, unit, sats, memo } = useRouter().query
   const { usdToSats } = useSatPrice()
 
   const [copied, setCopied] = React.useState<boolean>(false)
@@ -87,14 +87,18 @@ function ReceiveInvoice({ recipientWalletCurrency, walletId, state, dispatch }: 
   }, [amount, unit, sats, usdToSats, state.currentAmount])
 
   React.useEffect(() => {
-    if (!walletId) return
+    if (!walletId || !Number(paymentAmount)) return
 
     createInvoice({
       variables: {
-        input: { recipientWalletId: walletId, amount: Number(paymentAmount) },
+        input: {
+          recipientWalletId: walletId,
+          amount: Number(paymentAmount),
+          ...(memo ? { memo: memo.toString() } : {}),
+        },
       },
     })
-  }, [amount, walletId, paymentAmount, createInvoice])
+  }, [amount, walletId, paymentAmount, createInvoice, memo])
 
   const errorString: string | null = errorsMessage || null
   let invoice: LnInvoiceObject | undefined

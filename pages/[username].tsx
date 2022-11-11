@@ -11,16 +11,26 @@ import ParsePayment from "../components/ParsePOSPayment"
 import PinToHomescreen from "../components/PinToHomescreen"
 import reducer, { ACTIONS } from "./_reducer"
 import styles from "./_user.module.css"
+import Head from "next/head"
+
+function isRunningStandalone() {
+  return window.matchMedia("(display-mode: standalone)").matches
+}
 
 function ReceivePayment() {
   const router = useRouter()
-  const { username } = router.query
+  const { username, memo } = router.query
 
   let accountUsername: string
   if (username == undefined) {
     accountUsername = ""
   } else {
     accountUsername = username.toString()
+  }
+
+  const manifestParams = new URLSearchParams()
+  if (memo) {
+    manifestParams.set("memo", memo.toString())
   }
 
   const { data, error: usernameError } = useQuery.accountDefaultWallet({
@@ -48,6 +58,13 @@ function ReceivePayment() {
 
   return (
     <Container className={styles.payment_container}>
+      <Head>
+        <link
+          rel="manifest"
+          href={`/api/${username}/manifest?${manifestParams.toString()}`}
+          id="manifest"
+        />
+      </Head>
       {usernameError ? (
         <div className={styles.error}>
           <p>{`${usernameError.message}.`}</p>
@@ -58,7 +75,7 @@ function ReceivePayment() {
         </div>
       ) : (
         <>
-          {!state.createdInvoice && (
+          {!state.createdInvoice && !isRunningStandalone() && (
             <ButtonGroup aria-label="Pin" className={styles.pin_btn_group}>
               <Image
                 src="/icons/pin-icon.svg"
@@ -95,6 +112,7 @@ function ReceivePayment() {
             )}
             <p className={styles.username}>{`Pay ${username}`}</p>
           </div>
+          {memo && <p className={styles.memo}>{`Memo: ${memo}`}</p>}
 
           <ParsePayment
             state={state}

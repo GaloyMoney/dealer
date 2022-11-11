@@ -44,9 +44,10 @@ const SetupPwa = () => {
           autoComplete="off"
           onSubmit={(event: React.FormEvent<HTMLFormElement>) => handleSubmit(event)}
         >
-          <h4>Welcome to Bitcoin beach POS application.</h4>
+          <h4>Welcome to Bitcoin Beach POS application.</h4>
           <label htmlFor="username">
-            To use the app, enter your bitcoin beach username
+            To use the app, enter the bitcoin beach username you would like to receive
+            payments for.
           </label>
           <input
             type="text"
