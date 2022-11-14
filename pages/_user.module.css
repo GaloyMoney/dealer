@@ -1,36 +1,7 @@
 .payment_container {
-  display: grid;
-  place-items: center;
   height: 100%;
-  padding-top: 2rem;
   padding-left: 0;
   padding-right: 0;
-}
-
-.pin_btn_group {
-  --gray-200: rgba(239, 241, 245, 1);
-  --radius: 6px;
-  background-color: var(--gray-200);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  outline: none;
-  border: none;
-  border-radius: var(--radius);
-  width: 146px;
-  height: 30px;
-  transition: all 0.2s ease-in-out;
-}
-
-.pin_btn_group:hover,
-.pin_btn_group:focus {
-  background-color: rgb(233, 233, 236);
-}
-
-.pin_icon {
-  width: 14px;
-  height: 14px;
 }
 
 .pin_btn {
@@ -85,6 +56,7 @@
   font-weight: 400;
   line-height: 16px;
   text-transform: capitalize;
+  text-align: center;
 }
 
 .error {

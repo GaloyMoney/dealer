@@ -10,6 +10,10 @@ import DigitButton from "./Digit-Button"
 import styles from "./parse-payment.module.css"
 import ReceiveInvoice from "./Receive-Invoice"
 
+function isRunningStandalone() {
+  return window.matchMedia("(display-mode: standalone)").matches
+}
+
 interface Props {
   defaultWalletCurrency?: string
   walletId?: string
@@ -153,6 +157,19 @@ function ParsePayment({ defaultWalletCurrency, walletId, dispatch, state }: Prop
   return (
     <Container className={styles.digits_container}>
       <div className={styles.output}>
+        {!state.createdInvoice && !isRunningStandalone() && (
+          <button
+            onClick={() => {
+              dispatch({
+                type: ACTIONS.PINNED_TO_HOMESCREEN_MODAL_VISIBLE,
+                payload: !state.pinnedToHomeScreenModalVisible,
+              })
+            }}
+            className={styles.pin_btn}
+          >
+            <Image src="/icons/pin-icon.svg" alt="pin icon" className={styles.pin_icon} />
+          </button>
+        )}
         <div
           className={`${
             !unit || unit === AmountUnit.Cent ? styles.zero_order : styles.first_order

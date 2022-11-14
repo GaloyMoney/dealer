@@ -9,7 +9,7 @@ interface Props {
   onSuccess?: () => void
   onError?: (error?: unknown) => void
   onInteraction?: () => void
-  files: [string]
+  image?: string
   getImage?: () => void
   shareState: string | undefined
   disabled?: boolean
@@ -19,7 +19,7 @@ const Share: FC<Props> = ({
   children,
   shareData,
   onInteraction,
-  files,
+  image,
   getImage,
   shareState,
   onSuccess,
@@ -36,7 +36,6 @@ const Share: FC<Props> = ({
     <>
       <ShareController
         shareData={shareData}
-        files={files}
         getImage={getImage}
         onInteraction={onInteraction}
         onSuccess={onSuccess}
@@ -50,8 +49,8 @@ const Share: FC<Props> = ({
       {openPopup ? (
         <SharePopup
           shareData={shareData}
+          image={image}
           getImage={getImage}
-          files={files}
           shareState={shareState}
           onClose={() => setOpenPopup(false)}
         />

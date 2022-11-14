@@ -20,7 +20,6 @@ export async function getServerSideProps({
 
   return {
     props: {
-      lightningAddress: `${username}@${url.hostname}`,
       lnurl: bech32.encode(
         "lnurl",
         bech32.toWords(
@@ -32,18 +31,23 @@ export async function getServerSideProps({
         1500,
       ),
       webURL: `${url.protocol}//${url.hostname}/${username}`,
+      username,
+      userHeader: `${username}'s paycode`,
     },
   }
 }
 
 export default function ({
-  lightningAddress,
   lnurl,
   webURL,
+  username,
+  userHeader,
 }: {
   lightningAddress: string
   lnurl: string
   webURL: string
+  username: string
+  userHeader: string
 }) {
   const componentRef = useRef<HTMLDivElement | null>(null)
   const [qrType, setQR] = useState("lnurl")
@@ -58,7 +62,11 @@ export default function ({
               <Card className="text-center">
                 <Card.Body>
                   <Card.Text>
-                    <h1>Pay {lightningAddress}</h1>
+                    <span className="user-header">{userHeader}</span>
+                    <p>
+                      {`Display this static QR code online or in person to allow anybody to
+                    pay ${username.toLowerCase()}.`}
+                    </p>
                     <QRCode
                       ecLevel="H"
                       value={qrType === "lnurl" ? lnurl : webURL}
@@ -68,7 +76,6 @@ export default function ({
                     />
                   </Card.Text>
                 </Card.Body>
-                <h2>Powered by Galoy.io</h2>
               </Card>
             </Col>
           </Row>
@@ -82,7 +89,11 @@ export default function ({
             <Card className="text-center">
               <Card.Body>
                 <Card.Text>
-                  <h3>Pay {lightningAddress}</h3>
+                  <span className="user-header">{userHeader}</span>
+                  <p>
+                    {`Display this static QR code online or in person to allow anybody to
+                    pay ${username.toLowerCase()}.`}
+                  </p>
                   <QRCode
                     ecLevel="H"
                     value={qrType === "lnurl" ? lnurl : webURL}
@@ -92,9 +103,6 @@ export default function ({
                   />
                 </Card.Text>
               </Card.Body>
-              <h4>
-                Powered by <Card.Link href="https://galoy.io">Galoy.io</Card.Link>
-              </h4>
             </Card>
           </Col>
         </Row>

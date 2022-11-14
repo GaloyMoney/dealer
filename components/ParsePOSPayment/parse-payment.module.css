@@ -25,6 +25,25 @@
   right: 0;
 }
 
+.output .pin_icon {
+  width: 18px;
+  height: 18px;
+}
+
+.pin_btn {
+  --black-900: rgba(17, 25, 40, 1);
+  font-family: "Source Sans Pro", sans-serif;
+  font-weight: 600;
+  font-size: 0.75rem;
+  line-height: 12px;
+  background-color: transparent;
+  color: var(--black-900);
+  outline: none;
+  border: none;
+  position: absolute;
+  left: -85%;
+}
+
 .zero_order {
   order: 0;
   color: rgba(17, 25, 40, 1);
@@ -45,7 +64,7 @@
   grid-template-columns: repeat(3, 3rem);
   grid-template-rows: repeat(4, 2rem);
   row-gap: 3.5rem;
-  column-gap: 4rem;
+  column-gap: 5rem;
   margin: 2rem;
 }
 
@@ -80,8 +99,10 @@
 }
 
 .pay_btn_container {
-  display: grid;
-  place-items: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  column-gap: 0.5rem;
   margin-top: 2rem;
 }
 
@@ -90,17 +111,16 @@
   background-color: rgb(83, 111, 242);
   color: #fff;
   font-weight: 600;
-  width: 327px;
+  width: 220px;
   display: flex;
   justify-content: center;
   align-items: center;
   column-gap: 10px;
   border: none;
   outline: none;
-  height: 50px;
-  padding: 13px 32px;
+  padding: 10px 32px;
   border-radius: 6px;
-  margin-bottom: 1rem;
+  order: 2;
 }
 
 .pay_new_btn {
@@ -108,11 +128,14 @@
   color: rgb(83, 111, 242);
   border: 2px solid rgb(83, 111, 242);
   border-radius: 10px;
+  width: 327px;
+  height: 50px;
+  margin-bottom: 1rem;
 }
 
 .clear_btn {
   color: rgba(83, 111, 242, 1);
-  background-color: #fff;
+  background-color: rgba(83, 111, 242, 0.1);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -122,7 +145,8 @@
   outline: none;
   font-size: 18px;
   font-weight: 600;
-  padding: 0.5rem 1rem;
+  padding: 10px 12px;
+  order: 1;
   transition: all 0.5s ease;
 }
 
@@ -130,6 +154,12 @@
 .clear_btn:focus,
 .clear_btn:focus-visible {
   border: 1px solid rgb(233, 233, 236);
+}
+
+@media (min-width: 760px) {
+  .pay_btn {
+    width: 327px;
+  }
 }
 
 .invoice_container {

@@ -162,3 +162,9 @@ code {
     transform: rotate(360deg);
   }
 }
+
+.user-header {
+  font-weight: 600;
+  font-size: 22px;
+  color: rgba(17, 25, 40, 1);
+}

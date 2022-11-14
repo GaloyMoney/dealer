@@ -9,7 +9,7 @@ import { useTimer } from "react-timer-hook"
 import { useScreenshot } from "use-react-screenshot"
 import { AmountUnit } from "."
 
-import { BBW_DOMAIN, USD_INVOICE_EXPIRE_INTERVAL } from "../../config/config"
+import { URL_HOST_DOMAIN, USD_INVOICE_EXPIRE_INTERVAL } from "../../config/config"
 import useCreateInvoice from "../../hooks/use-Create-Invoice"
 import { LnInvoiceObject } from "../../lib/graphql/index.types.d"
 import useSatPrice from "../../lib/use-sat-price"
@@ -39,10 +39,12 @@ function ReceiveInvoice({ recipientWalletCurrency, walletId, state, dispatch }: 
   const getImage = () => takeScreenShot(qrImageRef.current)
 
   const shareUrl =
-    !amount && !unit
-      ? `${BBW_DOMAIN}${username}?amount=${state.currentAmount}&sats=${usdToSats(
+    !amount && !unit && !memo
+      ? `https://${URL_HOST_DOMAIN}/${username}?amount=${
+          state.currentAmount
+        }&sats=${usdToSats(
           state.currentAmount,
-        ).toFixed()}&currency=${recipientWalletCurrency}&unit=SAT`
+        ).toFixed()}&currency=${recipientWalletCurrency}&unit=SAT&memo=""`
       : window.location.href
 
   const shareData = {
@@ -185,7 +187,7 @@ function ReceiveInvoice({ recipientWalletCurrency, walletId, state, dispatch }: 
               <Share
                 shareData={shareData}
                 getImage={getImage}
-                files={[image]}
+                image={image}
                 shareState={shareState}
               >
                 <span

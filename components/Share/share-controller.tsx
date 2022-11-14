@@ -3,7 +3,6 @@ import React, { type FC } from "react"
 interface Props {
   children: React.ReactNode
   shareData: ShareData
-  files: [string]
   getImage?: () => void
   onSuccess?: () => void
   onError?: (error?: unknown) => void
@@ -15,7 +14,6 @@ interface Props {
 const ShareController: FC<Props> = ({
   children,
   shareData,
-  files,
   getImage,
   onInteraction,
   onSuccess,
@@ -26,24 +24,16 @@ const ShareController: FC<Props> = ({
   const handleOnClick = async () => {
     getImage && getImage()
 
-    const file = [
-      new File(files, "BBW lightning invoice QR code", {
-        type: "image/png",
-        lastModified: Date.now(),
-      }),
-    ]
-
     onInteraction && onInteraction()
     if (!navigator.canShare) {
       return onNonNativeShare && onNonNativeShare()
     }
-    if (navigator.canShare({ files: file })) {
-      try {
-        await navigator.share({ files: file, ...shareData })
-        onSuccess && onSuccess()
-      } catch (err) {
-        onError && onError(err)
-      }
+
+    try {
+      await navigator.share(shareData)
+      onSuccess && onSuccess()
+    } catch (err) {
+      onError && onError(err)
     }
   }
 

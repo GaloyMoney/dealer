@@ -1,7 +1,6 @@
 import Link from "next/link"
 import { useRouter } from "next/router"
 import React from "react"
-import ButtonGroup from "react-bootstrap/ButtonGroup"
 import Container from "react-bootstrap/Container"
 import Image from "react-bootstrap/Image"
 
@@ -12,10 +11,6 @@ import PinToHomescreen from "../components/PinToHomescreen"
 import reducer, { ACTIONS } from "./_reducer"
 import styles from "./_user.module.css"
 import Head from "next/head"
-
-function isRunningStandalone() {
-  return window.matchMedia("(display-mode: standalone)").matches
-}
 
 function ReceivePayment() {
   const router = useRouter()
@@ -75,26 +70,6 @@ function ReceivePayment() {
         </div>
       ) : (
         <>
-          {!state.createdInvoice && !isRunningStandalone() && (
-            <ButtonGroup aria-label="Pin" className={styles.pin_btn_group}>
-              <Image
-                src="/icons/pin-icon.svg"
-                alt="pin icon"
-                className={styles.pin_icon}
-              />
-              <button
-                onClick={() => {
-                  dispatch({
-                    type: ACTIONS.PINNED_TO_HOMESCREEN_MODAL_VISIBLE,
-                    payload: !state.pinnedToHomeScreenModalVisible,
-                  })
-                }}
-                className={styles.pin_btn}
-              >
-                Pin to homescreen
-              </button>
-            </ButtonGroup>
-          )}
           <PinToHomescreen
             pinnedToHomeScreenModalVisible={state.pinnedToHomeScreenModalVisible}
             dispatch={dispatch}

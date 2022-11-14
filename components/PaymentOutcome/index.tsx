@@ -51,6 +51,10 @@ function PaymentOutcome({ paymentRequest, paymentAmount, dispatch }: Props) {
   if (data) {
     const { status, errors } = data.lnInvoicePaymentStatus
     if (status === "PAID") {
+      const usdValueInSatUnit =
+        satsToUsd(Number(paymentAmount)) < 1
+          ? "less than a cent"
+          : `$${satsToUsd(Number(paymentAmount)).toFixed(2)}`
       return (
         <div className={styles.container}>
           <div aria-labelledby="Payment successful">
@@ -63,9 +67,9 @@ function PaymentOutcome({ paymentRequest, paymentAmount, dispatch }: Props) {
             <p className={styles.text}>
               The invoice of{" "}
               {unit === "SAT"
-                ? `${formatOperand(paymentAmount?.toString())} sats (~ $${satsToUsd(
-                    Number(paymentAmount),
-                  ).toFixed(6)})`
+                ? `${formatOperand(
+                    paymentAmount?.toString(),
+                  )} sats (~ ${usdValueInSatUnit})`
                 : ` $${formatOperand(
                     amount?.toString() ?? satsToUsd(Number(paymentAmount)).toFixed(2),
                   )} (~${formatOperand(
@@ -75,7 +79,6 @@ function PaymentOutcome({ paymentRequest, paymentAmount, dispatch }: Props) {
             </p>
           </div>
           {backToCashRegisterButton}
-          <p className={styles.receipt}>Send receipt</p>
         </div>
       )
     }

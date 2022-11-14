@@ -1,9 +1,12 @@
 import "bootstrap/dist/css/bootstrap.min.css"
 import "./index.css"
 
-import Head from "next/head"
-import dynamic from "next/dynamic"
 import { NextPage } from "next"
+import dynamic from "next/dynamic"
+import Head from "next/head"
+import { useRouter } from "next/router"
+
+import AppLayout from "../components/Layouts/AppLayout"
 import { APP_DESCRIPTION } from "../config/config"
 
 const GraphQLProvider = dynamic(() => import("../lib/graphql"), { ssr: false })
@@ -15,6 +18,7 @@ export default function Layout({
   Component: NextPage
   pageProps: Record<string, unknown>
 }) {
+  const { username } = useRouter().query
   return (
     <>
       <Head>
@@ -43,7 +47,9 @@ export default function Layout({
         <title>BitcoinBeach Cash Register</title>
       </Head>
       <GraphQLProvider>
-        <Component {...pageProps} />
+        <AppLayout username={username}>
+          <Component {...pageProps} />
+        </AppLayout>
       </GraphQLProvider>
     </>
   )

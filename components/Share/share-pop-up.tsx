@@ -1,3 +1,4 @@
+import copy from "copy-to-clipboard"
 import React, { type FC, useState } from "react"
 
 import styles from "./share.module.css"
@@ -6,7 +7,7 @@ type ShareState = "pending" | "success" | "error"
 
 interface Props {
   shareData: ShareData
-  files?: [string]
+  image?: string
   getImage?: () => void
   shareState: string | undefined
   onClose: () => void
@@ -16,7 +17,7 @@ interface Props {
 const SharePopup: FC<Props> = ({
   shareData,
   shareState,
-  files,
+  image,
   getImage,
   onClose,
   onError,
@@ -25,10 +26,10 @@ const SharePopup: FC<Props> = ({
 
   const copyImageToClipboard = async () => {
     try {
-      if (files) {
+      if (image) {
         getImage && getImage()
 
-        const data = await fetch(files[0])
+        const data = await fetch(image)
         const blob = await data.blob()
 
         await navigator.clipboard.write([
@@ -46,36 +47,50 @@ const SharePopup: FC<Props> = ({
     } catch (err) {
       onError && onError(err)
       setState("error")
+      setTimeout(() => {
+        setState("pending")
+        onClose()
+      }, 3000)
     }
   }
 
   const copyUrlToClipboard = async () => {
     try {
-      await navigator.clipboard.writeText(shareData?.url || "")
+      copy(shareData?.url || "")
       setState("success")
       setTimeout(() => {
         setState("pending")
         onClose()
-      }, 1000)
+      }, 2000)
     } catch (err) {
       onError && onError(err)
       setState("error")
+      setTimeout(() => {
+        setState("pending")
+        onClose()
+      }, 3000)
     }
   }
 
   return (
     <div>
       <div>
-        {state === "error" && (
-          <div>
-            <p>Unable to copy to clipboard, please manually copy the url to share.</p>
+        {/* {state === "error" && (
+          <div className={styles.error}>
+            <p>Unable to copy to clipboard, please copy the link to share.</p>
           </div>
-        )}
+        )} */}
 
         {shareState === "not-set" ? (
           <div className={styles.container}>
             {state === "success" ? (
-              <div className={styles.select_share_type}>Copied to clipboard</div>
+              <div className={styles.select_share_type}>
+                Invoice link copied to clipboard
+              </div>
+            ) : state === "error" ? (
+              <div className={styles.error}>
+                <p>Unable to copy to clipboard, please copy the link instead to share.</p>
+              </div>
             ) : (
               <div className={styles.select_share_type}>
                 <button onClick={onClose} className={styles.close_btn}>
