@@ -177,13 +177,15 @@
   transform: translateX(-50%);
 }
 
-.footer span {
+.footer > a > span {
+  color: black;
   margin-right: 5px;
+  font-weight: 700;
 }
 
 @media (max-width: 375px) {
   .footer {
-    bottom: 0;
+    bottom: -10%;
   }
 }
 
