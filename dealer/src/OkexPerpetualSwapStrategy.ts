@@ -1210,7 +1210,7 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
             result.out.transferSizeInBtc = roundBtc(
               result.out.transferSizeInUsd / btcPriceInUsd,
             )
-          } 
+          }
           // else if (
           //   totalCollateralInUsd <
           //   usedCollateralInUsd * hedgingBounds.LOW_BOUND_LEVERAGE
