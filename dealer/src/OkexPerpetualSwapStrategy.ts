@@ -1197,7 +1197,7 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
             )
           } else if (
             exposureInUsd >
-            totalCollateralInUsd * hedgingBounds.HIGH_BOUND_LEVERAGE * 0.90
+            totalCollateralInUsd * hedgingBounds.HIGH_BOUND_LEVERAGE * 0.9
           ) {
             const newCollateralInUsd =
               exposureInUsd / hedgingBounds.HIGH_SAFEBOUND_LEVERAGE
@@ -1210,7 +1210,7 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
             result.out.transferSizeInBtc = roundBtc(
               result.out.transferSizeInUsd / btcPriceInUsd,
             )
-          } 
+          }
           // else if (
           //   totalCollateralInUsd <
           //   usedCollateralInUsd * hedgingBounds.LOW_BOUND_LEVERAGE
