@@ -1197,7 +1197,7 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
             )
           } else if (
             exposureInUsd >
-            totalCollateralInUsd * hedgingBounds.HIGH_BOUND_LEVERAGE
+            totalCollateralInUsd * hedgingBounds.HIGH_BOUND_LEVERAGE * 0.90
           ) {
             const newCollateralInUsd =
               exposureInUsd / hedgingBounds.HIGH_SAFEBOUND_LEVERAGE
@@ -1210,23 +1210,24 @@ export class OkexPerpetualSwapStrategy implements HedgingStrategy {
             result.out.transferSizeInBtc = roundBtc(
               result.out.transferSizeInUsd / btcPriceInUsd,
             )
-          } else if (
-            totalCollateralInUsd <
-            usedCollateralInUsd * hedgingBounds.LOW_BOUND_LEVERAGE
-          ) {
-            const transferSizeInUsd =
-              hedgingBounds.LOW_SAFEBOUND_LEVERAGE * usedCollateralInUsd -
-              totalCollateralInUsd
-            const newCollateralInUsd = totalCollateralInUsd + transferSizeInUsd
-            result.out.transferSizeInUsd = transferSizeInUsd
-            result.out.fundTransferSide = FundTransferSide.Deposit
-            result.out.newLiabilityRatio = liabilityInUsd / newCollateralInUsd
-            result.out.newLeverageRatio = exposureInUsd / newCollateralInUsd
-            result.out.newMarginRatio = newCollateralInUsd / usedCollateralInUsd
-            result.out.transferSizeInBtc = roundBtc(
-              result.out.transferSizeInUsd / btcPriceInUsd,
-            )
-          }
+          } 
+          // else if (
+          //   totalCollateralInUsd <
+          //   usedCollateralInUsd * hedgingBounds.LOW_BOUND_LEVERAGE
+          // ) {
+          //   const transferSizeInUsd =
+          //     hedgingBounds.LOW_SAFEBOUND_LEVERAGE * usedCollateralInUsd -
+          //     totalCollateralInUsd
+          //   const newCollateralInUsd = totalCollateralInUsd + transferSizeInUsd
+          //   result.out.transferSizeInUsd = transferSizeInUsd
+          //   result.out.fundTransferSide = FundTransferSide.Deposit
+          //   result.out.newLiabilityRatio = liabilityInUsd / newCollateralInUsd
+          //   result.out.newLeverageRatio = exposureInUsd / newCollateralInUsd
+          //   result.out.newMarginRatio = newCollateralInUsd / usedCollateralInUsd
+          //   result.out.transferSizeInBtc = roundBtc(
+          //     result.out.transferSizeInUsd / btcPriceInUsd,
+          //   )
+          // }
 
           addAttributesToCurrentSpan({
             [`${SemanticAttributes.CODE_FUNCTION}.results.success`]: true,
