@@ -72,7 +72,7 @@ export class OkexExchangeConfiguration implements ExchangeConfiguration {
     this.maxOnChainWithdrawalFee = withdrawalFees.MAX_ON_CHAIN_WITHDRAWAL_FEE
     this.timeout = exchange.REQUEST_TIMEOUT || 20000
 
-    if (process.env["NETWORK"] === "testnet") {
+    if (process.env["NETWORK"] !== "mainnet") {
       this.headers["x-simulated-trading"] = 1
     }
   }
