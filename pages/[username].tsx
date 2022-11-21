@@ -87,7 +87,7 @@ function ReceivePayment() {
             )}
             <p className={styles.username}>{`Pay ${username}`}</p>
           </div>
-          {memo && <p className={styles.memo}>{`Memo: ${memo}`}</p>}
+          {/* {memo && <p className={styles.memo}>{`Memo: ${memo}`}</p>} */}
 
           <ParsePayment
             state={state}

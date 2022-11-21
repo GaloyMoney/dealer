@@ -51,14 +51,6 @@
   text-transform: capitalize;
 }
 
-.memo {
-  color: rgba(17, 25, 40, 1);
-  font-weight: 400;
-  line-height: 16px;
-  text-transform: capitalize;
-  text-align: center;
-}
-
 .error {
   color: rgb(224, 6, 6);
   font-size: 1.5rem;

@@ -74,13 +74,7 @@ function reducer(state: React.ComponentState, { type, payload }: ACTION_TYPE) {
 
     case ACTIONS.CREATE_INVOICE:
       if (state.createdInvoice) return state
-      if (
-        state.currentAmount == null ||
-        state.currentAmount === undefined ||
-        state.currentAmount === "" ||
-        state.currentAmount === "0.00" ||
-        state.currentAmount === "0.0"
-      ) {
+      if (!Number(state.currentAmount)) {
         return state
       }
 

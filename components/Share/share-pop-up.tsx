@@ -75,12 +75,6 @@ const SharePopup: FC<Props> = ({
   return (
     <div>
       <div>
-        {/* {state === "error" && (
-          <div className={styles.error}>
-            <p>Unable to copy to clipboard, please copy the link to share.</p>
-          </div>
-        )} */}
-
         {shareState === "not-set" ? (
           <div className={styles.container}>
             {state === "success" ? (

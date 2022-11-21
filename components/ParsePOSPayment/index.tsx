@@ -6,6 +6,7 @@ import Image from "react-bootstrap/Image"
 import useSatPrice from "../../lib/use-sat-price"
 import { ACTION_TYPE, ACTIONS } from "../../pages/_reducer"
 import { formatOperand } from "../../utils/utils"
+import Memo from "../Memo"
 import DigitButton from "./Digit-Button"
 import styles from "./parse-payment.module.css"
 import ReceiveInvoice from "./Receive-Invoice"
@@ -192,6 +193,8 @@ function ParsePayment({ defaultWalletCurrency, walletId, dispatch, state }: Prop
           />
         </button>
       </div>
+
+      <Memo createdInvoice={state.createdInvoice} />
 
       {state.createdInvoice ? (
         <ReceiveInvoice
