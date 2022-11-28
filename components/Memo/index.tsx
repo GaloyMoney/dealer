@@ -6,15 +6,35 @@ import styles from "./memo.module.css"
 
 const Memo = ({ createdInvoice }: React.ComponentState) => {
   const router = useRouter()
-  const { username, amount, unit, sats, memo } = router.query
+  const { username, amount, sats, unit, memo } = router.query
   const [openModal, setOpenModal] = React.useState<boolean>(false)
   const [note, setNote] = React.useState<string>(memo?.toString() || "")
 
   const handleSetMemo = () => {
-    router.push({
-      pathname: `${username}`,
-      query: { amount, sats, unit, memo: note },
-    })
+    if (unit === "SAT" || unit === "CENT") {
+      router.push(
+        {
+          pathname: `${username}`,
+          query: {
+            amount: amount,
+            sats: sats,
+            unit: unit,
+            memo: note,
+          },
+        },
+        undefined,
+        { shallow: true },
+      )
+    } else {
+      router.push(
+        {
+          pathname: `${username}`,
+          query: { memo: note },
+        },
+        undefined,
+        { shallow: true },
+      )
+    }
     handleClose()
   }
 
