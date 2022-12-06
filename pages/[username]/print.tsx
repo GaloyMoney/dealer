@@ -7,7 +7,7 @@ import originalUrl from "original-url"
 import ReactToPrint from "react-to-print"
 import { bech32 } from "bech32"
 import { QRCode } from "react-qrcode-logo"
-import { useRef, useState } from "react"
+import { useRef } from "react"
 
 export async function getServerSideProps({
   req,
@@ -18,19 +18,25 @@ export async function getServerSideProps({
 }) {
   const url = originalUrl(req)
 
+  const lnurl = bech32.encode(
+    "lnurl",
+    bech32.toWords(
+      Buffer.from(
+        `${url.protocol}//${url.hostname}/.well-known/lnurlp/${username}`,
+        "utf8",
+      ),
+    ),
+    1500,
+  )
+
+  // Note: add the port to the webURL for local development
+  const webURL = `${url.protocol}//${url.hostname}/${username}`
+
+  const qrCodeURL = (webURL + "?lightning=" + lnurl).toUpperCase()
+
   return {
     props: {
-      lnurl: bech32.encode(
-        "lnurl",
-        bech32.toWords(
-          Buffer.from(
-            `${url.protocol}//${url.hostname}/.well-known/lnurlp/${username}`,
-            "utf8",
-          ),
-        ),
-        1500,
-      ),
-      webURL: `${url.protocol}//${url.hostname}/${username}`,
+      qrCodeURL,
       username,
       userHeader: `${username}'s paycode`,
     },
@@ -38,19 +44,16 @@ export async function getServerSideProps({
 }
 
 export default function ({
-  lnurl,
-  webURL,
+  qrCodeURL,
   username,
   userHeader,
 }: {
   lightningAddress: string
-  lnurl: string
-  webURL: string
+  qrCodeURL: string
   username: string
   userHeader: string
 }) {
   const componentRef = useRef<HTMLDivElement | null>(null)
-  const [qrType, setQR] = useState("lnurl")
 
   return (
     <>
@@ -69,7 +72,7 @@ export default function ({
                     </p>
                     <QRCode
                       ecLevel="H"
-                      value={qrType === "lnurl" ? lnurl : webURL}
+                      value={qrCodeURL}
                       size={800}
                       logoImage="/BBW-QRLOGO.png"
                       logoWidth={250}
@@ -96,7 +99,7 @@ export default function ({
                   </p>
                   <QRCode
                     ecLevel="H"
-                    value={qrType === "lnurl" ? lnurl : webURL}
+                    value={qrCodeURL}
                     size={300}
                     logoImage="/BBW-QRLOGO.png"
                     logoWidth={100}
@@ -109,14 +112,6 @@ export default function ({
         <br />
       </Container>
       <Row className="justify-content-center">
-        <Button
-          style={{ marginRight: 10 }}
-          onClick={() => {
-            setQR(qrType === "web" ? "lnurl" : "web")
-          }}
-        >
-          Use {qrType === "web" ? "lnurl" : "web URL"}
-        </Button>
         <ReactToPrint
           trigger={() => <Button>Print QR Code</Button>}
           content={() => componentRef.current}
