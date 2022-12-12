@@ -28,9 +28,10 @@ interface Props {
 const USD_MAX_INVOICE_TIME = "5.00"
 
 function ReceiveInvoice({ recipientWalletCurrency, walletId, state, dispatch }: Props) {
-  const { username, amount, currency, unit, sats, memo } = useRouter().query
-  const { usdToSats } = useSatPrice()
+  const { username, amount, unit, sats, memo } = useRouter().query
+  const { usdToSats, satsToUsd } = useSatPrice()
 
+  const [expiredInvoiceError, setExpiredInvoiceError] = React.useState<string>("")
   const [copied, setCopied] = React.useState<boolean>(false)
   const [shareState, setShareState] = React.useState<"not-set">()
   const [image, takeScreenShot] = useScreenshot()
@@ -56,7 +57,7 @@ function ReceiveInvoice({ recipientWalletCurrency, walletId, state, dispatch }: 
   const timerRef = React.useRef<Date>()
 
   timerRef.current = new Date()
-  if (currency === "USD") {
+  if (recipientWalletCurrency === "USD") {
     timerRef.current.setSeconds(
       timerRef.current.getSeconds() + USD_INVOICE_EXPIRE_INTERVAL,
     ) // default to five mins for USD invoice
@@ -64,17 +65,29 @@ function ReceiveInvoice({ recipientWalletCurrency, walletId, state, dispatch }: 
   const expiryTimestamp = timerRef.current
   const { seconds, minutes } = useTimer({
     expiryTimestamp,
-    onExpire: () => console.warn("onExpire called on USD"),
+    onExpire: () => {
+      if (recipientWalletCurrency === "BTC") return
+      setExpiredInvoiceError("Invoice has expired. Generate a new invoice!")
+    },
   })
 
-  const { createInvoice, data, errorsMessage, error, loading, invoiceStatus } =
-    useCreateInvoice({
+  const { createInvoice, data, errorsMessage, loading, invoiceStatus } = useCreateInvoice(
+    {
       recipientWalletCurrency,
-    })
+    },
+  )
 
   const paymentAmount = React.useMemo(() => {
+    const finalReturnValue =
+      recipientWalletCurrency === "USD" ? Number(amount) * 100 : usdToSats(Number(amount))
     if (amount === "0.00" || isNaN(Number(amount))) {
+      if ((!unit || !amount || !sats) && recipientWalletCurrency === "USD") {
+        return (Number(state.currentAmount) * 100).toString()
+      }
       if (sats && unit === AmountUnit.Sat) {
+        if (recipientWalletCurrency === "USD") {
+          return satsToUsd(Number(state.currentAmount)).toString()
+        }
         return sats
       } else if (Number(state.currentAmount) > 0) {
         return usdToSats(Number(state.currentAmount)).toFixed(2)
@@ -82,11 +95,22 @@ function ReceiveInvoice({ recipientWalletCurrency, walletId, state, dispatch }: 
     }
 
     if (sats && unit === AmountUnit.Sat) {
+      if (recipientWalletCurrency === "USD") {
+        return (Number(amount) * 100).toString()
+      }
       return sats
     }
 
-    return usdToSats(Number(amount)).toFixed(2)
-  }, [amount, unit, sats, usdToSats, state.currentAmount])
+    return finalReturnValue.toFixed(2)
+  }, [
+    amount,
+    unit,
+    sats,
+    usdToSats,
+    satsToUsd,
+    state.currentAmount,
+    recipientWalletCurrency,
+  ])
 
   React.useEffect(() => {
     if (!walletId || !Number(paymentAmount)) return
@@ -131,6 +155,19 @@ function ReceiveInvoice({ recipientWalletCurrency, walletId, state, dispatch }: 
     }, 3000)
   }
 
+  if ((errorString && !loading) || expiredInvoiceError) {
+    const invalidInvoiceError =
+      recipientWalletCurrency === "USD" && Number(amount?.toString()) <= 0
+        ? "Enter an amount greater than 1 cent"
+        : expiredInvoiceError ?? null
+    return (
+      <div className={styles.error}>
+        <p>{errorString}</p>
+        <p>{invalidInvoiceError}</p>
+      </div>
+    )
+  }
+
   if (loading || invoiceStatus === "loading" || !invoice?.paymentRequest) {
     return (
       <div className={styles.loading}>
@@ -151,9 +188,7 @@ function ReceiveInvoice({ recipientWalletCurrency, walletId, state, dispatch }: 
         </div>
       )}
       <div>
-        {error && <p className={styles.error}>{errorString}</p>}
-
-        {data && (
+        {data ? (
           <>
             <div
               ref={qrImageRef}
@@ -206,7 +241,7 @@ function ReceiveInvoice({ recipientWalletCurrency, walletId, state, dispatch }: 
               </Share>
             </div>
           </>
-        )}
+        ) : null}
       </div>
       <PaymentOutcome
         paymentRequest={invoice?.paymentRequest}

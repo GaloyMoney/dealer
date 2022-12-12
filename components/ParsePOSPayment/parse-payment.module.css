@@ -180,7 +180,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 270px;
+  width: 300px;
   column-gap: 15px;
   font-size: 14px;
   font-weight: 300;
@@ -262,6 +262,15 @@
   padding: 30% 1rem;
   margin-top: 2rem;
   outline: 1px dashed rgba(0, 128, 0, 0.35);
+}
+
+.error {
+  flex-direction: column;
+  padding: 15% 1rem;
+}
+
+.error > p {
+  text-align: center;
 }
 
 @media (min-width: 760px) {
