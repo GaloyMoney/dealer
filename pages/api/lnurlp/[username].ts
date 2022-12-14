@@ -102,26 +102,24 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
   let walletId
   let walletCurrency
 
-  try{
-  const { data } = await client.query({
-    query: ACCOUNT_DEFAULT_WALLET,
-    variables: { username: accountUsername },
-    context: {
-      "x-real-ip": req.headers["x-real-ip"],
-      "x-forwarded-for": req.headers["x-forwarded-for"],
-    },
-  })
-  walletId = data?.accountDefaultWallet?.id ? data?.accountDefaultWallet?.id : ""
-  walletCurrency = data?.accountDefaultWallet?.walletCurrency
-} catch(error){
+  try {
+    const { data } = await client.query({
+      query: ACCOUNT_DEFAULT_WALLET,
+      variables: { username: accountUsername },
+      context: {
+        "x-real-ip": req.headers["x-real-ip"],
+        "x-forwarded-for": req.headers["x-forwarded-for"],
+      },
+    })
+    walletId = data?.accountDefaultWallet?.id ? data?.accountDefaultWallet?.id : ""
+    walletCurrency = data?.accountDefaultWallet?.walletCurrency
+  } catch (error) {
     return res.json({
       status: "ERROR",
       reason: `Couldn't find user '${username}'.`,
     })
   }
 
-
-  
   console.log({ headers: req.headers }, "request to NextApiRequest")
 
   const metadata = JSON.stringify([
