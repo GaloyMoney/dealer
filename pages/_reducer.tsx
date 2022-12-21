@@ -41,6 +41,11 @@ function reducer(state: React.ComponentState, { type, payload }: ACTION_TYPE) {
     case ACTIONS.SET_AMOUNT_FROM_PARAMS:
       if (state.currentAmount == null) return state
       if (payload?.toString().match(/(\.[0-9]{2,}$|\..*\.)/)) {
+        if (payload?.toString() === "0.00")
+          return {
+            ...state,
+            currentAmount: "0",
+          }
         return {
           ...state,
           currentAmount: Number(payload).toFixed(2),
