@@ -13,7 +13,7 @@ import {
   wrapAsyncToRunInSpan,
 } from "../services/tracing"
 
-import { exporter, scheduler, priceService } from "."
+import { exporter, priceService } from "."
 
 const logger = baseLogger.child({ module: "cron" })
 
@@ -45,7 +45,7 @@ const main = async () => {
 
   const tasks = {
     ["exporter"]: exporter.exporter,
-    //  ["scheduler"]: scheduler.scheduler,
+    // ["scheduler"]: scheduler.scheduler,        // unscheduling/disabling all funding & hedging function
     ["priceService"]: priceService.priceService,
   }
 
