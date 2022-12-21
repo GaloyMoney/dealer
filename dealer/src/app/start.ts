@@ -45,7 +45,7 @@ const main = async () => {
 
   const tasks = {
     ["exporter"]: exporter.exporter,
-    ["scheduler"]: scheduler.scheduler,
+    // ["scheduler"]: scheduler.scheduler,
     ["priceService"]: priceService.priceService,
   }
 
