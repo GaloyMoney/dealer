@@ -34,9 +34,13 @@ const client = new ApolloClient({
   cache: new InMemoryCache(),
 })
 
-const USER_WALLET_ID = gql`
-  query userDefaultWalletId($username: Username!) {
-    userDefaultWalletId(username: $username)
+const ACCOUNT_DEFAULT_WALLET = gql`
+  query accountDefaultWallet($username: Username!, $walletCurrency: WalletCurrency!) {
+    accountDefaultWallet(username: $username, walletCurrency: $walletCurrency) {
+      __typename
+      id
+      walletCurrency
+    }
   }
 `
 
@@ -63,25 +67,59 @@ const LNURL_INVOICE = gql`
   }
 `
 
+type CreateInvoiceOutput = {
+  paymentRequest?: string
+  error?: Error
+}
+
+async function createInvoice(
+  walletId: string,
+  amount: number,
+  metadata: string,
+): Promise<CreateInvoiceOutput> {
+  const descriptionHash = crypto.createHash("sha256").update(metadata).digest("hex")
+
+  const {
+    data: {
+      mutationData: { errors, invoice },
+    },
+  } = await client.mutate({
+    mutation: LNURL_INVOICE,
+    variables: {
+      walletId,
+      amount,
+      descriptionHash,
+    },
+  })
+  if (errors && errors.length) {
+    throw new Error(`Failed to get invoice: ${errors[0].message}`)
+  }
+  return invoice
+}
+
 export default async function (req: NextApiRequest, res: NextApiResponse) {
   const { username, amount } = req.query
   const url = originalUrl(req)
 
   console.log({ headers: req.headers }, "request to NextApiRequest")
 
-  let walletId
+  const accountUsername = username ? username.toString() : ""
+  const metadata = JSON.stringify([
+    ["text/plain", `Payment to ${username}`],
+    ["text/identifier", `${username}@${url.hostname}`],
+  ])
+  let walletId: string
 
   try {
     const { data } = await client.query({
-      query: USER_WALLET_ID,
-      variables: { username },
+      query: ACCOUNT_DEFAULT_WALLET,
+      variables: { username: accountUsername, walletCurrency: "BTC" },
       context: {
         "x-real-ip": req.headers["x-real-ip"],
         "x-forwarded-for": req.headers["x-forwarded-for"],
       },
     })
-
-    walletId = data.userDefaultWalletId
+    walletId = data?.accountDefaultWallet?.id ? data?.accountDefaultWallet?.id : ""
   } catch (err) {
     return res.json({
       status: "ERROR",
@@ -89,16 +127,10 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
     })
   }
 
-  const metadata = JSON.stringify([
-    ["text/plain", `Payment to ${username}`],
-    ["text/identifier", `${username}@${url.hostname}`],
-  ])
-
   if (amount) {
     if (Array.isArray(amount)) {
       throw new Error("Invalid request")
     }
-    // second call, return invoice
     const amountSats = Math.round(parseInt(amount, 10) / 1000)
     if ((amountSats * 1000).toString() !== amount) {
       return res.json({
@@ -106,42 +138,17 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
         reason: "Millisatoshi amount is not supported, please send a value in full sats.",
       })
     }
-
-    try {
-      const descriptionHash = crypto.createHash("sha256").update(metadata).digest("hex")
-
-      const {
-        data: {
-          mutationData: { errors, invoice },
-        },
-      } = await client.mutate({
-        mutation: LNURL_INVOICE,
-        variables: {
-          walletId,
-          amount: amountSats,
-          descriptionHash,
-        },
-      })
-
-      if (errors && errors.length) {
-        console.log("error getting invoice", errors)
-        return res.json({
-          status: "ERROR",
-          reason: `Failed to get invoice: ${errors[0].message}`,
-        })
-      }
-
-      res.json({
-        pr: invoice.paymentRequest,
-        routes: [],
-      })
-    } catch (err: unknown) {
-      console.log("unexpected error getting invoice", err)
-      res.json({
+    const { paymentRequest, error } = await createInvoice(walletId, amountSats, metadata)
+    if (error instanceof Error) {
+      return res.json({
         status: "ERROR",
-        reason: err instanceof Error ? err.message : "unexpected error",
+        reason: error instanceof Error ? error.message : "unexpected error",
       })
     }
+    return res.json({
+      pr: paymentRequest,
+      routes: [],
+    })
   } else {
     // first call
     res.json({
