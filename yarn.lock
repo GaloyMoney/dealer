@@ -14,10 +14,10 @@
   dependencies:
     "@jridgewell/trace-mapping" "^0.3.0"
 
-"@apollo/client@^3.7.0":
-  version "3.7.0"
-  resolved "https://registry.yarnpkg.com/@apollo/client/-/client-3.7.0.tgz#1c26a04488f45b3a4779fa2562e4b706402cb876"
-  integrity sha512-hp4OvrH1ZIQACRYcIrh/C0WFnY7IM7G6nlTpC8DSTEWxfZQ2kvpvDY0I/hYmCs0oAVrg26g3ANEdOzGWTcYbPg==
+"@apollo/client@^3.7.3":
+  version "3.7.3"
+  resolved "https://registry.yarnpkg.com/@apollo/client/-/client-3.7.3.tgz#ab3fe31046e74bc1a3762363a185ba5bcfffc58b"
+  integrity sha512-nzZ6d6a4flLpm3pZOGpuAUxLlp9heob7QcCkyIqZlCLvciUibgufRfYTwfkWCc4NaGHGSZyodzvfr79H6oUwGQ==
   dependencies:
     "@graphql-typed-document-node/core" "^3.1.1"
     "@wry/context" "^0.7.0"
@@ -532,10 +532,10 @@
     minimatch "^3.1.2"
     strip-json-comments "^3.1.1"
 
-"@galoymoney/client@^0.1.52":
-  version "0.1.60"
-  resolved "https://registry.yarnpkg.com/@galoymoney/client/-/client-0.1.60.tgz#10a708b2ea53584503f658f4af6f011fae1313e3"
-  integrity sha512-DOveDf+DmNW+9Ob9ljqcVwWFVTJkNygno8JVzpwlHgB7Ndh/iA2+RcM4kY4r2A+eQslxd0yTSpMrZjCCvcOJmA==
+"@galoymoney/client@^0.1.62":
+  version "0.1.62"
+  resolved "https://registry.yarnpkg.com/@galoymoney/client/-/client-0.1.62.tgz#5d13ce2c9d0e73c625abdc80a5d7ad730f8ba103"
+  integrity sha512-3YYO7S+zRkAZ85PAaORnI/AyH9WxgxBgZqVKQ1iG7eNq8HMfgj0g2juVUjFJYjBaafLbafXHaAvJ7fShzOJD/w==
 
 "@galoymoney/react@^0.1.14":
   version "0.1.14"

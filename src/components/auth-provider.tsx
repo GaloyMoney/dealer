@@ -33,7 +33,7 @@ const getPersistedSession = (sessionData?: {
   galoyJwtToken?: string
   identity?: AuthIdentity
 }): AuthSession => {
-  if (sessionData?.galoyJwtToken && sessionData?.identity) {
+  if (sessionData?.identity) {
     const { galoyJwtToken, identity } = sessionData
     return { galoyJwtToken, identity }
   }
@@ -90,16 +90,12 @@ export const AuthProvider: FCT = ({
 
     session.identity.accountStatus = resp.data.accountStatus
 
-    if (
-      !session ||
-      !session.galoyJwtToken ||
-      session.identity.id !== resp.data.kratosUserId
-    ) {
+    if (!session || session.identity.id !== resp.data.kratosUserId) {
       // TODO: logout?
       return new Error("INVALID_AUTH_TOKEN_RESPONSE")
     }
 
-    setAuth(session.galoyJwtToken ? session : null)
+    setAuth(session.identity ? session : null)
     dispatch({ type: "kratos-login", authIdentity: session.identity })
     return true
   }, [dispatch, request, setAuth])
@@ -149,7 +145,7 @@ export const AuthProvider: FCT = ({
   return (
     <AuthContext.Provider
       value={{
-        isAuthenticated: Boolean(authSession?.galoyJwtToken),
+        isAuthenticated: Boolean(authSession?.identity),
         galoyJwtToken: authSession?.galoyJwtToken,
         authIdentity: authSession?.identity,
         setAuthSession: setAuth,

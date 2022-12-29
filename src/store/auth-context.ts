@@ -3,7 +3,6 @@ import { useContext, createContext } from "react"
 export type AuthIdentity = {
   id: string
   uid: string
-  uidc: string
   phoneNumber?: string
   emailAddress?: string
   firstName?: string
@@ -12,7 +11,7 @@ export type AuthIdentity = {
 }
 
 export type AuthSession = {
-  galoyJwtToken: string
+  galoyJwtToken?: string
   identity: AuthIdentity
 } | null
 

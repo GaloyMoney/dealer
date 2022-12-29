@@ -11,28 +11,18 @@ const apiRouter = express.Router({ caseSensitive: true })
 
 export type GalowyJwtToken = null | (jwt.JwtPayload & { kratosUserId?: string })
 
-const loginUsingKratos = async ({
-  authToken,
-  req,
-  res,
-}: {
-  authToken: string
-  req: Request
-  res: Response
-}) => {
-  const token = jwt.decode(authToken) as GalowyJwtToken
+const loginUsingKratos = async ({ req, res }: { req: Request; res: Response }) => {
   const kratosSession = await handleWhoAmI(req)
 
-  if (!token || !token.uid || !kratosSession) {
+  if (!kratosSession) {
     return res.status(401).send("Invalid auth token")
   }
 
   const authSession = {
-    galoyJwtToken: authToken,
+    galoyJwtToken: "",
     identity: {
       id: kratosSession.identity.id,
-      uid: token.uid,
-      uidc: token.uid.slice(-6) + kratosSession.identity.id.slice(-6),
+      uid: kratosSession.identity.id,
       emailAddress: kratosSession.identity.traits.email,
       firstName: kratosSession.identity.traits.name?.first,
       lastName: kratosSession.identity.traits.name?.last,
@@ -78,7 +68,6 @@ const loginUsingPhoneNumber = async ({
     identity: {
       id: galoyJwtToken,
       uid: galoyJwtToken,
-      uidc: galoyJwtToken.slice(-6) + galoyJwtToken.slice(-6), // FIXME: Get from backend
       phoneNumber,
     },
     galoyJwtToken,
@@ -92,19 +81,15 @@ const loginUsingPhoneNumber = async ({
 apiRouter.post("/login", async (req: Request, res: Response) => {
   try {
     const {
-      authToken = "",
       phoneNumber = "",
       authCode = "",
     }: { authToken: string; phoneNumber: string; authCode: string } = req.body
-    if (authToken) {
-      return await loginUsingKratos({ authToken, req, res })
-    } else if (phoneNumber || authCode) {
+
+    if (phoneNumber && authCode) {
       return await loginUsingPhoneNumber({ phoneNumber, authCode, req, res })
     }
-    // No auth token or phone number and auth code
-    return res
-      .status(400)
-      .send("One of the following is required: authToken or phoneNumber & authCode")
+
+    return await loginUsingKratos({ req, res })
   } catch (err) {
     console.error(err)
     return res
