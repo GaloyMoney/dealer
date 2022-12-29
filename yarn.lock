@@ -533,9 +533,9 @@
     strip-json-comments "^3.1.1"
 
 "@galoymoney/client@^0.1.52":
-  version "0.1.52"
-  resolved "https://registry.yarnpkg.com/@galoymoney/client/-/client-0.1.52.tgz#88b37ef6323ea4be477888416a142d719e1e6c96"
-  integrity sha512-v0Pm7vSNyHeXr4vc5Y5FxcV19LCil9zK0Ol7ee4+RK8MOoZX8vwbC5Ib6V7Bmt2GaWirRObrwO+UEYEjp2svfw==
+  version "0.1.60"
+  resolved "https://registry.yarnpkg.com/@galoymoney/client/-/client-0.1.60.tgz#10a708b2ea53584503f658f4af6f011fae1313e3"
+  integrity sha512-DOveDf+DmNW+9Ob9ljqcVwWFVTJkNygno8JVzpwlHgB7Ndh/iA2+RcM4kY4r2A+eQslxd0yTSpMrZjCCvcOJmA==
 
 "@galoymoney/react@^0.1.14":
   version "0.1.14"

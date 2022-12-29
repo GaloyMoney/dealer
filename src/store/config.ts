@@ -31,7 +31,7 @@ if (!isBrowser) {
 
   if (
     process.env.NETWORK &&
-    !["mainnet", "testnet", "signet", "regtest"].includes(process.env.NETWORK)
+    !["mainnet", "signet", "signet", "regtest"].includes(process.env.NETWORK)
   ) {
     throw new Error("Invalid NETWORK value")
   }
@@ -42,8 +42,8 @@ const networkMap = (graphqlUrl: string): Network => {
     return "mainnet"
   }
 
-  if (graphqlUrl.match("testnet")) {
-    return "testnet"
+  if (graphqlUrl.match("signet")) {
+    return "signet"
   }
 
   return "regtest"
