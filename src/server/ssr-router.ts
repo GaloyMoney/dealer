@@ -1,7 +1,5 @@
 import express from "express"
 
-import { execSync } from "child_process"
-
 import { serverRenderer } from "renderers/server"
 import { checkRoute, routeRequiresAuth } from "server/routes"
 import { handleRegister, handleLogin, handleRecovery, handleLogout } from "kratos/index"
@@ -10,10 +8,8 @@ import { config } from "store/index"
 const ssrRouter = express.Router({ caseSensitive: true })
 
 ssrRouter.get("/debug", async (req, res) => {
-  const headHash = execSync("git rev-parse HEAD").toString().trim()
   res.send({
     packageVersion: process.env.npm_package_version,
-    headHash,
     network: config.network,
     graphqlUrl: config.graphqlUrl,
     graphqlSubscriptionUrl: config.graphqlSubscriptionUrl,
