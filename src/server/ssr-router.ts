@@ -8,8 +8,9 @@ import { config } from "store/index"
 const ssrRouter = express.Router({ caseSensitive: true })
 
 ssrRouter.get("/debug", async (req, res) => {
+  const { version } = await import("../../package.json")
   res.send({
-    packageVersion: process.env.npm_package_version,
+    version,
     network: config.network,
     graphqlUrl: config.graphqlUrl,
     graphqlSubscriptionUrl: config.graphqlSubscriptionUrl,
