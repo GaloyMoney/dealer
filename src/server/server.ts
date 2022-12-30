@@ -58,5 +58,5 @@ app.use("/api", apiRouter)
 app.use("/", ssrRouter)
 
 app.listen(config.port as number, config.host as string, () => {
-  console.info(`Running on ${config.host}:${config.port}...`)
+  console.info(`Running on http://${config.host}:${config.port}...`)
 })
