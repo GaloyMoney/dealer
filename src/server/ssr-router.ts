@@ -8,9 +8,8 @@ import { config } from "store/index"
 const ssrRouter = express.Router({ caseSensitive: true })
 
 ssrRouter.get("/debug", async (req, res) => {
-  const { version } = await import("../../package.json")
   res.send({
-    version,
+    version: "0.1.0", // FIXME: automate
     network: config.network,
     graphqlUrl: config.graphqlUrl,
     graphqlSubscriptionUrl: config.graphqlSubscriptionUrl,
