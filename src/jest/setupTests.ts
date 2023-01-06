@@ -3,7 +3,7 @@ if (typeof window !== "undefined") {
     value: {
       GwwConfig: {
         graphqlUrl: "https://api.staging.galoy.io/graphql",
-        network: "testnet",
+        network: "signet",
         kratosFeatureFlag: true,
       },
     },

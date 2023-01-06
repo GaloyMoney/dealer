@@ -6,7 +6,7 @@ describe("config", () => {
   })
   it("includes __G_DATA", () => {
     expect(config).toMatchObject(window.__G_DATA.GwwConfig)
-    expect(config.network).toBe("testnet") // from the window.__G_DATA mock
+    expect(config.network).toBe("signet") // from the window.__G_DATA mock
   })
 })
 

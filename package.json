@@ -1,6 +1,6 @@
 {
   "name": "web-wallet",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "license": "MIT",
   "scripts": {
@@ -10,7 +10,6 @@
     "build:node": "rm -rf build && tsc --sourceMap false --skipLibCheck true",
     "code:check": "yarn tsc:check && yarn eslint:check && yarn prettier:check",
     "dev:bundler": ". ./.envrc && webpack -w --mode=development --env=dev",
-    "dev:docker": "docker-compose --env-file /dev/null up",
     "dev:server": ". ./.envrc && tsnd --files --respawn src/server/server.ts --ignore-watch node_modules,public",
     "eslint:check": "eslint . --ext ts --ext tsx",
     "eslint:fix": "eslint . --ext ts --ext tsx --fix",
