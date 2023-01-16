@@ -17,7 +17,7 @@ RUN CUSTOM_MODULES=${CUSTOM_MODULES} yarn build:node && yarn build:files && yarn
 
 
 # FROM gcr.io/distroless/nodejs:16
-FROM node:16-alpine
+FROM node:18-alpine
 
 ARG CUSTOM_MODULES="default"
 
