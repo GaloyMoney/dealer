@@ -57,6 +57,7 @@ export default function ({
 
   return (
     <>
+      {/* FIXME: Avoid duplicate code and use one component for both print and web display */}
       <div style={{ display: "none" }}>
         <Container fluid ref={componentRef}>
           <br />
@@ -77,6 +78,14 @@ export default function ({
                       logoImage="/BBW-QRLOGO.png"
                       logoWidth={250}
                     />
+                    <Card.Text>
+                      <strong>
+                        Having trouble scanning this QR code with your wallet?
+                      </strong>{" "}
+                      Some wallets do not support printed QR codes like this one. Scan
+                      with the camera app on your phone to be taken to a webpage where you
+                      can create a fresh invoice for paying from any Lightning wallet.
+                    </Card.Text>
                   </Card.Text>
                 </Card.Body>
               </Card>
@@ -104,6 +113,14 @@ export default function ({
                     logoImage="/BBW-QRLOGO.png"
                     logoWidth={100}
                   />
+                </Card.Text>
+                <Card.Text
+                  style={{ fontSize: "13px", maxWidth: "500px", margin: "0 auto" }}
+                >
+                  <strong>Having trouble scanning this QR code with your wallet?</strong>{" "}
+                  Some wallets do not support printed QR codes like this one. Scan with
+                  the camera app on your phone to be taken to a webpage where you can
+                  create a fresh invoice for paying from any Lightning wallet.
                 </Card.Text>
               </Card.Body>
             </Card>

@@ -20,10 +20,9 @@ const GET_NODE_STATS = gql`
 `
 
 function Home() {
-  const nodeUrl =
-    GRAPHQL_URI.indexOf("testnet") === -1
-      ? `https://1ml.com/testnet/node/`
-      : `https://1ml.com/node/`
+  const nodeUrl = GRAPHQL_URI.includes("staging")
+    ? `https://mempool.space/signet/lightning/node/`
+    : `https://mempool.space/lightning/node/`
   const { loading, error, data } = useQuery(GET_NODE_STATS)
 
   const router = useRouter()
