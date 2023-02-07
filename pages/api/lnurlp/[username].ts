@@ -154,7 +154,7 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
     res.json({
       callback: url.full,
       minSendable: 1000,
-      maxSendable: 500000000,
+      maxSendable: 100000000000,
       metadata: metadata,
       tag: "payRequest",
     })
