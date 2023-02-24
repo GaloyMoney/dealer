@@ -11,16 +11,19 @@ export type AuthIdentity = {
 }
 
 export type AuthSession = {
-  galoyJwtToken?: string
   identity: AuthIdentity
 } | null
 
+export type KratosCookieResp = {
+  kratosUserId: string
+  phone: string
+}
+
 type AuthContextType = {
   isAuthenticated: boolean
-  galoyJwtToken?: string
   authIdentity?: AuthIdentity
   setAuthSession: (session: AuthSession) => void
-  syncSession: () => Promise<true | Error>
+  syncSession: (kratosCookieResp?: KratosCookieResp) => Promise<true | Error>
 }
 
 export const AuthContext = createContext<AuthContextType>({

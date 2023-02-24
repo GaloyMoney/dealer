@@ -1,3 +1,9 @@
+.loading {
+  margin: 2rem;
+  font-size: 1.2rem;
+  color: var(--color-secondary);
+}
+
 #main-container {
   height: 92%;
   width: 90%;

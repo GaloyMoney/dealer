@@ -1,6 +1,6 @@
 import { renderHook } from "@testing-library/react"
 
-import { useAppDispatcher, useAppState, useRequest } from "./main-context"
+import { useAppDispatcher, useAppState } from "./main-context"
 
 describe("useAppState", () => {
   it("has defaults", () => {
@@ -16,13 +16,5 @@ describe("useAppDispatch", () => {
     const { result } = renderHook(() => useAppDispatcher())
 
     expect(result.current).toBeInstanceOf(Function)
-  })
-})
-
-describe("useRequest", () => {
-  it("works", () => {
-    const { result } = renderHook(() => useRequest())
-
-    expect(result.current.post).toBeInstanceOf(Function)
   })
 })

@@ -4,10 +4,8 @@ import {
   createGaloyClient,
   createGaloyServerAdminClient,
   createGaloyServerClient,
-  postRequest,
 } from "@galoymoney/client"
 
-import { useAuthContext } from "store/auth-context"
 import { config } from "store/config"
 import { GwwActionType, GwwContextType } from "store/index"
 
@@ -28,16 +26,8 @@ export const useAppDispatcher = () => {
   return dispatch
 }
 
-export const useRequest = () => {
-  const { galoyJwtToken } = useAuthContext()
-
-  return {
-    post: postRequest(galoyJwtToken),
-  }
-}
-
 export const createClient = config.isBrowser
-  ? createGaloyClient({ config, initData: window.__G_DATA.ssrData })
+  ? createGaloyClient({ config })
   : createGaloyServerClient({ config })
 
 export const createAdminClient = createGaloyServerAdminClient({ config })

@@ -1,6 +1,6 @@
 import * as React from "react"
 
-import { Network, NormalizedCacheObject } from "@galoymoney/client"
+import { Network } from "@galoymoney/client"
 
 import { GwwStateType } from "store/reducer"
 
@@ -32,7 +32,6 @@ declare global {
   interface Window {
     __G_DATA: {
       GwwState: GwwStateType
-      ssrData: NormalizedCacheObject
       GwwConfig: GwwConfigType
     }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

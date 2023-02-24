@@ -1,18 +1,17 @@
-import { useMemo, useState, ReactNode, useEffect, useCallback } from "react"
+import { useMemo, useState, ReactNode, useCallback } from "react"
 import { useErrorHandler } from "react-error-boundary"
-import axios from "axios"
 
-import { GaloyClient, GaloyProvider, postRequest } from "@galoymoney/client"
+import { GaloyClient, GaloyProvider } from "@galoymoney/client"
 
 import {
   AuthContext,
   AuthIdentity,
   AuthSession,
   config,
+  ajax,
   createClient,
   storage,
   useAppDispatcher,
-  useRequest,
 } from "store/index"
 
 const galoySessionName = "galoy-session"
@@ -29,13 +28,10 @@ const persistSession = (session: AuthSession) => {
   }
 }
 
-const getPersistedSession = (sessionData?: {
-  galoyJwtToken?: string
-  identity?: AuthIdentity
-}): AuthSession => {
+const getPersistedSession = (sessionData?: { identity?: AuthIdentity }): AuthSession => {
   if (sessionData?.identity) {
-    const { galoyJwtToken, identity } = sessionData
-    return { galoyJwtToken, identity }
+    const { identity } = sessionData
+    return { identity }
   }
   if (config.isBrowser) {
     const session = storage.get(galoySessionName)
@@ -51,20 +47,13 @@ const getPersistedSession = (sessionData?: {
 type FCT = React.FC<{
   children: ReactNode
   galoyClient?: GaloyClient<unknown>
-  galoyJwtToken?: string
   authIdentity?: AuthIdentity
 }>
 
-export const AuthProvider: FCT = ({
-  children,
-  galoyClient,
-  galoyJwtToken,
-  authIdentity,
-}) => {
-  const request = useRequest()
+export const AuthProvider: FCT = ({ children, galoyClient, authIdentity }) => {
   const dispatch = useAppDispatcher()
   const [authSession, setAuthSession] = useState<AuthSession>(() =>
-    getPersistedSession({ galoyJwtToken, identity: authIdentity }),
+    getPersistedSession({ identity: authIdentity }),
   )
 
   const setAuth = useCallback((session: AuthSession) => {
@@ -78,39 +67,16 @@ export const AuthProvider: FCT = ({
   }, [])
 
   const syncSession = useCallback(async () => {
-    const resp = await axios.post(config.galoyAuthEndpoint, {}, { withCredentials: true })
+    const session = await ajax.post(config.authEndpoint)
 
-    if (resp.data.error) {
-      // TODO: logout?
-      return new Error(resp.data.error?.message || "INVALID_AUTH_TOKEN_RESPONSE")
-    }
-
-    const authToken = resp.data.authToken
-    const session = await request.post(config.authEndpoint, { authToken })
-
-    session.identity.accountStatus = resp.data.accountStatus
-
-    if (!session || session.identity.id !== resp.data.kratosUserId) {
-      // TODO: logout?
+    if (!session) {
       return new Error("INVALID_AUTH_TOKEN_RESPONSE")
     }
 
     setAuth(session.identity ? session : null)
     dispatch({ type: "kratos-login", authIdentity: session.identity })
     return true
-  }, [dispatch, request, setAuth])
-
-  useEffect(() => {
-    const persistedSession = getPersistedSession()
-
-    if (
-      (authIdentity?.uid || persistedSession) &&
-      persistedSession?.identity?.uid !== authIdentity?.uid
-    ) {
-      setAuth(null)
-      window.location.href = "/logout"
-    }
-  }, [authIdentity?.uid, setAuth])
+  }, [dispatch, setAuth])
 
   const handleError = useErrorHandler()
   const client = useMemo(() => {
@@ -119,34 +85,30 @@ export const AuthProvider: FCT = ({
       return galoyClient
     }
     return createClient({
-      authToken: authSession?.galoyJwtToken,
       onError: ({ graphQLErrors, networkError }) => {
+        if (networkError && networkError.message.includes("Failed to fetch")) {
+          fetch(config.galoyAuthEndpoint + "/clearCookies", {
+            method: "GET",
+            redirect: "follow",
+            credentials: "include",
+          })
+          localStorage.clear()
+        }
         if (graphQLErrors) {
           console.debug("[GraphQL errors]:", graphQLErrors)
-          // handleError(graphQLErrors[0].message)
         }
         if (networkError) {
           console.debug("[Network error]:", networkError)
-          if (
-            "result" in networkError &&
-            networkError.result.errors?.[0]?.code === "INVALID_AUTHENTICATION"
-          ) {
-            postRequest(authSession?.galoyJwtToken)("/api/logout").then(() => {
-              setAuth(null)
-            })
-          } else {
-            handleError(networkError)
-          }
+          handleError(networkError)
         }
       },
     })
-  }, [galoyClient, authSession?.galoyJwtToken, setAuth, handleError])
+  }, [galoyClient, handleError])
 
   return (
     <AuthContext.Provider
       value={{
         isAuthenticated: Boolean(authSession?.identity),
-        galoyJwtToken: authSession?.galoyJwtToken,
         authIdentity: authSession?.identity,
         setAuthSession: setAuth,
         syncSession,

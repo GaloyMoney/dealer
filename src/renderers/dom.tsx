@@ -15,8 +15,9 @@ if (!container) {
 
 setColorThemeFromStorage()
 
-ReactDOM.hydrateRoot(
-  container,
+const root = ReactDOM.createRoot(container)
+
+root.render(
   <ErrorBoundary FallbackComponent={ErrorFallback}>
     <Root GwwState={window.__G_DATA.GwwState} />
   </ErrorBoundary>,

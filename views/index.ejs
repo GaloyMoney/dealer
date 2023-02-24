@@ -15,11 +15,13 @@
     <script src="/vendor/gt.js" crossorigin="anonymous"></script>
 
     <script type="text/javascript">
-      window.__G_DATA = <%- serialize({ GwwConfig, GwwState, ssrData }, { isJSON: true }); %>
+      window.__G_DATA = <%- serialize({ GwwConfig, GwwState }, { isJSON: true }); %>
     </script>
   </head>
   <body>
-    <div id="root"><%- initialMarkup -%></div>
+    <div id="root">
+      <div class="loading">Loading...</div>
+    </div>
 
     <script src="/bundles/<%- gVars['vendor'] -%>" type="text/javascript"></script>
     <script src="/bundles/<%- gVars['main'][1] -%>" type="text/javascript"></script>

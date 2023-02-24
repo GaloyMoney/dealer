@@ -51,23 +51,18 @@ const Root: RootFCT = ({ GwwState }) => {
 
 type SSRRootFCT = React.FC<{
   client: GaloyClient<unknown>
-  galoyJwtToken?: string
   GwwState: GwwStateType
   flowData?: KratosFlowData
 }>
 
-export const SSRRoot: SSRRootFCT = ({ client, GwwState, galoyJwtToken }) => {
+export const SSRRoot: SSRRootFCT = ({ client, GwwState }) => {
   const [state, dispatch] = useReducer(mainReducer, GwwState, (initState) => {
     setLocale(initState.defaultLanguage)
     return initState
   })
 
   return (
-    <AuthProvider
-      galoyClient={client}
-      galoyJwtToken={galoyJwtToken}
-      authIdentity={state.authIdentity}
-    >
+    <AuthProvider galoyClient={client} authIdentity={state.authIdentity}>
       <GwwContext.Provider value={{ state, dispatch }}>
         <RootComponent path={state.path} flowData={state.flowData} {...state.props} />
       </GwwContext.Provider>

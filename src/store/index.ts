@@ -1,3 +1,4 @@
+export * from "store/ajax"
 export * from "store/auth-context"
 export * from "store/config"
 export * from "store/helmet"

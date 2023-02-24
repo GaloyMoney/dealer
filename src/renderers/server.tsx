@@ -1,18 +1,12 @@
 import { Request } from "express"
 
-import { renderToStringWithData } from "@galoymoney/client"
-
 import { appRoutes, AuthRoutePath, authRoutes, RoutePath, ValidPath } from "server/routes"
-import { publicConfig, GwwStateType, createClient } from "store/index"
+import { publicConfig, GwwStateType } from "store/index"
 import { KratosFlowData } from "kratos/index"
-
-import { SSRRoot } from "components/root"
 
 type ServerRenderResponse = {
   GwwState: GwwStateType
   GwwConfig: Record<string, string | boolean | number>
-  initialMarkup: string
-  ssrData: unknown
   pageData: Record<string, unknown>
 }
 
@@ -53,8 +47,6 @@ export const serverRenderer =
     flowData?: KratosFlowData
   }): Promise<Error | ServerRenderResponse> => {
     try {
-      const galoyJwtToken = req.session?.authSession?.galoyJwtToken
-
       const GwwState: GwwStateType = {
         path,
         props: extractAllowedProps({ path, props: req.query }),
@@ -65,22 +57,6 @@ export const serverRenderer =
         flowData,
       }
 
-      const galoyClient = createClient({
-        authToken: galoyJwtToken,
-        headers: req.headers,
-      })
-      const App = (
-        <SSRRoot
-          client={galoyClient}
-          GwwState={GwwState}
-          galoyJwtToken={galoyJwtToken}
-          flowData={flowData}
-        />
-      )
-
-      const initialMarkup = await renderToStringWithData(App)
-      const ssrData = galoyClient.extract()
-
       if (req.session?.emailVerified) {
         req.session.emailVerified = undefined
       }
@@ -88,8 +64,6 @@ export const serverRenderer =
       return Promise.resolve({
         GwwState,
         GwwConfig: publicConfig,
-        initialMarkup,
-        ssrData,
         pageData:
           flowData === undefined
             ? appRoutes[path as RoutePath]

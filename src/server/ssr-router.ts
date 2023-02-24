@@ -44,9 +44,9 @@ ssrRouter.get("/*", async (req, res) => {
         return res.status(500).send("Server error")
       }
 
-      const { GwwConfig, GwwState, pageData, ssrData, initialMarkup } = ssrVars
+      const { GwwConfig, GwwState, pageData } = ssrVars
 
-      if (!GwwConfig || !GwwState || !pageData || !ssrData || !initialMarkup) {
+      if (!GwwConfig || !GwwState || !pageData) {
         console.error("SSR variable(s) missing")
         return res.status(500).send("Server error")
       }
@@ -54,14 +54,11 @@ ssrRouter.get("/*", async (req, res) => {
         GwwConfig,
         GwwState,
         pageData,
-        ssrData,
-        initialMarkup,
       })
     }
 
     if (routePath === "/logout") {
-      req.session = req.session || {}
-      req.session.authSession = undefined
+      req.session = null
       if (config.kratosFeatureFlag) {
         const logoutResult = await handleLogout(req)
         return res.redirect(logoutResult.redirectTo)

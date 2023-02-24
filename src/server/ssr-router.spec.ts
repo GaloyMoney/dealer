@@ -58,7 +58,6 @@ describe("ssrRouter", () => {
     const html = textToHtml(res.text)
 
     expect(html.querySelector("title")?.textContent).toEqual("Galoy Web Wallet")
-    expect(html.querySelector(".balance")?.textContent).toMatch("Current Balance")
   })
 
   it("responds to /send", async () => {

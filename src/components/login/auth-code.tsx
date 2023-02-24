@@ -2,14 +2,13 @@ import { ChangeEvent, useState } from "react"
 
 import { Spinner } from "@galoymoney/react"
 
-import { config, translate, history, useRequest, useAuthContext } from "store/index"
+import { config, translate, ajax, history, useAuthContext } from "store/index"
 
 import Icon from "components/icon"
 
 type FCT = React.FC<{ phoneNumber: string }>
 
 const AuthCode: FCT = ({ phoneNumber }) => {
-  const request = useRequest()
   const [loading, setLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState("")
   const { setAuthSession } = useAuthContext()
@@ -17,23 +16,13 @@ const AuthCode: FCT = ({ phoneNumber }) => {
   const submitLoginRequest = async (authCode: string) => {
     setLoading(true)
 
-    const data = await request.post(config.authEndpoint, {
+    const session = await ajax.post(config.galoyAuthEndpoint + "/login", {
       phoneNumber,
       authCode,
     })
 
     setLoading(false)
-
-    if (data instanceof Error) {
-      setErrorMessage(data.message)
-      return
-    }
-
-    const session = {
-      galoyJwtToken: data?.galoyJwtToken,
-      identity: data?.identity,
-    }
-    setAuthSession(session.identity ? session : null)
+    setAuthSession(session.identity ? { identity: session.identity } : null)
     history.push("/")
   }
 

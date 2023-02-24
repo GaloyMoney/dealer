@@ -1,6 +1,6 @@
 import { useResetClient } from "@galoymoney/client"
 
-import { translate, useAuthContext, NoPropsFCT } from "store/index"
+import { translate, useAuthContext, NoPropsFCT, config, ajax } from "store/index"
 
 import Icon from "components/icon"
 
@@ -10,9 +10,17 @@ const LogoutLink: NoPropsFCT = () => {
   const resetClient = useResetClient()
   const handleLogout: React.MouseEventHandler<HTMLAnchorElement> = async (event) => {
     event.preventDefault()
-    resetClient()
-    setAuthSession(null)
-    window.location.href = "/logout"
+    ajax.get(config.galoyAuthEndpoint + "/logout").then(() => {
+      resetClient()
+      setAuthSession(null)
+      fetch(config.galoyAuthEndpoint + "/clearCookies", {
+        method: "GET",
+        redirect: "follow",
+        credentials: "include",
+      })
+      localStorage.clear()
+      window.location.href = "/logout"
+    })
   }
 
   return (
