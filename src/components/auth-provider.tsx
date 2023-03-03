@@ -91,8 +91,11 @@ export const AuthProvider: FCT = ({ children, galoyClient, authIdentity }) => {
             method: "GET",
             redirect: "follow",
             credentials: "include",
+          }).then(() => {
+            localStorage.clear()
+            sessionStorage.clear()
+            window.location.replace("/login")
           })
-          localStorage.clear()
         }
         if (graphQLErrors) {
           console.debug("[GraphQL errors]:", graphQLErrors)
