@@ -91,10 +91,12 @@ export const AuthProvider: FCT = ({ children, galoyClient, authIdentity }) => {
             method: "GET",
             redirect: "follow",
             credentials: "include",
-          }).then(() => {
+          }).finally(() => {
             localStorage.clear()
             sessionStorage.clear()
-            window.location.replace("/login")
+            if (!window.location.pathname.includes("login")) {
+              window.location.replace("/login")
+            }
           })
         }
         if (graphQLErrors) {
