@@ -9,8 +9,16 @@ const useMainQuery = () => {
   const { isAuthenticated } = useAuthContext()
   const { defaultLanguage } = useAppState()
 
+  let mainHeaders = {}
+  if (!isAuthenticated) {
+    mainHeaders = { credentials: "omit" }
+  }
+
   const { data, refetch } = useQuery.main({
     variables: { isAuthenticated, recentTransactions: 5 },
+    context: {
+      headers: { ...mainHeaders },
+    },
     onCompleted: (completed) => {
       setLocale(completed?.me?.language ?? defaultLanguage)
     },
