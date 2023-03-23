@@ -184,14 +184,16 @@ function ParsePayment({ defaultWalletCurrency, walletId, dispatch, state }: Prop
         >
           {unit === AmountUnit.Cent ? valueInSats : valueInSats.slice(1, -1)}
         </div>
-        <button title="toggle currency" onClick={() => toggleCurrency()}>
-          <Image
-            src="/icons/convert-icon.svg"
-            alt="convert to SAT/USD icon"
-            width="24"
-            height="24"
-          />
-        </button>
+        {state.createdInvoice ? null : (
+          <button title="toggle currency" onClick={() => toggleCurrency()}>
+            <Image
+              src="/icons/convert-icon.svg"
+              alt="convert to SAT/USD icon"
+              width="24"
+              height="24"
+            />
+          </button>
+        )}
       </div>
 
       <Memo createdInvoice={state.createdInvoice} />
