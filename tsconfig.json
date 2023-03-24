@@ -15,7 +15,9 @@
     "moduleResolution": "node",
     "esModuleInterop": true,
     "preserveSymlinks": true,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
+    "experimentalDecorators": true
   },
   "include": ["src"],
   "exclude": ["src/modules/*/vendor"]

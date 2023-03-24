@@ -163,6 +163,7 @@ module.exports = {
     "spaced-comment": "error",
     "symbol-description": "error",
     "yoda": "error",
+    "no-unused-expressions": "off",
   },
   overrides: [
     {

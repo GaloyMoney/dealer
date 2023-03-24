@@ -2,6 +2,20 @@ import { translate, useAuthContext, NoPropsFCT } from "store/index"
 
 import Header from "components/header"
 import TransactionList from "components/transactions/list"
+import { gql } from "@apollo/client"
+
+gql`
+  query btcPriceList($range: PriceGraphRange!) {
+    btcPriceList(range: $range) {
+      timestamp
+      price {
+        base
+        offset
+        currencyUnit
+      }
+    }
+  }
+`
 
 const Home: NoPropsFCT = () => {
   const { isAuthenticated } = useAuthContext()
