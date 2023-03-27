@@ -1,6 +1,8 @@
 import copy from "copy-to-clipboard"
+import Link from "next/link"
 import { useRouter } from "next/router"
 import React from "react"
+import { Button, Modal } from "react-bootstrap"
 import Image from "react-bootstrap/Image"
 import OverlayTrigger from "react-bootstrap/OverlayTrigger"
 import Tooltip from "react-bootstrap/Tooltip"
@@ -11,6 +13,7 @@ import { AmountUnit } from "."
 
 import { URL_HOST_DOMAIN, USD_INVOICE_EXPIRE_INTERVAL } from "../../config/config"
 import useCreateInvoice from "../../hooks/use-Create-Invoice"
+import { apkLink, appStoreLink, getOS, playStoreLink } from "../../lib/download"
 import { LnInvoiceObject } from "../../lib/graphql/index.types.d"
 import useSatPrice from "../../lib/use-sat-price"
 import { ACTION_TYPE } from "../../pages/_reducer"
@@ -35,6 +38,7 @@ function ReceiveInvoice({ recipientWalletCurrency, walletId, state, dispatch }: 
   const [copied, setCopied] = React.useState<boolean>(false)
   const [shareState, setShareState] = React.useState<"not-set">()
   const [image, takeScreenShot] = useScreenshot()
+  const [openModal, setOpenModal] = React.useState<boolean>(false)
 
   const qrImageRef = React.useRef(null)
   const getImage = () => takeScreenShot(qrImageRef.current)
@@ -126,6 +130,11 @@ function ReceiveInvoice({ recipientWalletCurrency, walletId, state, dispatch }: 
     })
   }, [amount, walletId, paymentAmount, createInvoice, memo])
 
+  React.useEffect(() => {
+    isMobileDevice()
+    isDesktopType()
+  }, [])
+
   const errorString: string | null = errorsMessage || null
   let invoice: LnInvoiceObject | undefined
 
@@ -153,6 +162,35 @@ function ReceiveInvoice({ recipientWalletCurrency, walletId, state, dispatch }: 
     setTimeout(() => {
       setCopied(false)
     }, 3000)
+  }
+
+  const OS = getOS()
+  const deviceDetails = window.navigator.userAgent
+
+  const isMobileDevice = (): boolean => {
+    // check if device is being used on the web or mobile
+    const mobileDevice = /android|iPhone|iPod|kindle|HMSCore|windows phone|ipad/i
+
+    if (window.navigator.maxTouchPoints > 1 || mobileDevice.test(deviceDetails)) {
+      return true
+    }
+    return false
+  }
+
+  const isDesktopType = () => {
+    const desktopType = /Macintosh|linux|Windows|Ubuntu/i
+    const type = deviceDetails.match(desktopType)
+    return type?.[0]
+  }
+
+  const fallbackUrl =
+    OS === "ios" ? appStoreLink : OS === "android" ? playStoreLink : apkLink
+
+  const handleLinkClick = () => {
+    if (isDesktopType() === "Macintosh") {
+      return window.open(appStoreLink, "_blank")
+    }
+    return window.open(playStoreLink, "_blank")
   }
 
   if ((errorString && !loading) || expiredInvoiceError) {
@@ -202,6 +240,18 @@ function ReceiveInvoice({ recipientWalletCurrency, walletId, state, dispatch }: 
                 logoWidth={100}
               />
             </div>
+            <Button
+              className={styles.pay_with_wallet}
+              onClick={() => {
+                !isMobileDevice() && setOpenModal(true)
+              }}
+            >
+              {isMobileDevice() ? (
+                <Link href={isMobileDevice() ? fallbackUrl : ""}>Pay in Wallet</Link>
+              ) : (
+                "Pay in wallet"
+              )}
+            </Button>
             <div className={styles.qr_clipboard}>
               <OverlayTrigger
                 show={copied}
@@ -248,6 +298,59 @@ function ReceiveInvoice({ recipientWalletCurrency, walletId, state, dispatch }: 
         paymentAmount={paymentAmount}
         dispatch={dispatch}
       />
+      {openModal && (
+        <Modal
+          show={openModal}
+          onHide={() => setOpenModal(false)}
+          aria-labelledby="contained-modal-title-vcenter"
+          centered
+        >
+          <Modal.Header className={styles.modal_header} closeButton>
+            You can pay with
+          </Modal.Header>
+          <Modal.Body>
+            <div className={styles.modal_item_wrapper}>
+              <Image
+                src="/BBW-QRLOGO.png"
+                alt="bitcoin beach wallet image"
+                className={styles.modal_item}
+                style={{ cursor: "pointer" }}
+                onClick={handleLinkClick}
+              />
+              <Image
+                src="/pheonix-logo.png"
+                alt="pheonix wallet logo"
+                className={styles.modal_item}
+              />
+              <Image
+                src="/wallet-of-satoshi-logo.png"
+                alt="wallet of satoshi logo"
+                className={styles.modal_item}
+              />
+              <Image
+                className={styles.modal_item}
+                src="/blue-wallet.png"
+                alt="blue wallet logo"
+              />
+              <Image
+                className={styles.modal_item}
+                src="/breez-logo.png"
+                alt="breez beach wallet logo"
+              />
+              <Image
+                className={styles.modal_item}
+                src="/muun-logo.png"
+                alt="muun wallet logo"
+              />
+            </div>
+          </Modal.Body>
+          <Modal.Footer>
+            <button className={styles.use_bbw_button} onClick={handleLinkClick}>
+              Use Bitcoin Beach wallet
+            </button>
+          </Modal.Footer>
+        </Modal>
+      )}
     </div>
   )
 }

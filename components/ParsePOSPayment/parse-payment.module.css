@@ -213,6 +213,57 @@
   animation-duration: 300s;
 }
 
+.pay_with_wallet {
+  background-color: rgb(83, 111, 242);
+  color: #fff;
+  font-weight: 600;
+  width: 100%;
+  border: none;
+  outline: none;
+  padding: 10px 32px;
+  border-radius: 6px;
+  margin-bottom: 16px;
+}
+
+.pay_with_wallet > a {
+  color: #fff;
+  text-decoration: none;
+}
+
+.modal_header {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.modal_item_wrapper {
+  display: grid;
+  gap: 16px;
+  grid-template-rows: 1fr;
+  grid-template-columns: 64px repeat(auto-fill, 64px);
+
+  margin: 8px 0px;
+}
+.modal_item {
+  height: 64px;
+  width: 64px;
+  border-radius: 20px;
+  background-color: #fff;
+  box-shadow: rgba(0, 0, 0, 0.25) 0px 0.0625em 0.0625em,
+    rgba(0, 0, 0, 0.25) 0px 0.125em 0.5em, rgba(255, 255, 255, 0.1) 0px 0px 0px 1px inset;
+}
+
+.use_bbw_button {
+  background-color: rgb(83, 111, 242);
+  color: #fff;
+  font-weight: 600;
+  width: 100%;
+  border: none;
+  outline: none;
+  padding: 10px 32px;
+  border-radius: 6px;
+  margin-bottom: 16px;
+}
+
 .qr_clipboard {
   display: grid;
   grid-template-columns: 1fr auto;
