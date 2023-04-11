@@ -1,7 +1,7 @@
 import copy from "copy-to-clipboard"
 import Link from "next/link"
 import { useRouter } from "next/router"
-import React from "react"
+import React, { useCallback } from "react"
 import { Button, Modal } from "react-bootstrap"
 import Image from "react-bootstrap/Image"
 import OverlayTrigger from "react-bootstrap/OverlayTrigger"
@@ -31,6 +31,9 @@ interface Props {
 const USD_MAX_INVOICE_TIME = "5.00"
 
 function ReceiveInvoice({ recipientWalletCurrency, walletId, state, dispatch }: Props) {
+  const OS = getOS()
+  const deviceDetails = window.navigator.userAgent
+
   const { username, amount, unit, sats, memo } = useRouter().query
   const { usdToSats, satsToUsd } = useSatPrice()
 
@@ -130,10 +133,34 @@ function ReceiveInvoice({ recipientWalletCurrency, walletId, state, dispatch }: 
     })
   }, [amount, walletId, paymentAmount, createInvoice, memo])
 
+  const isMobileDevice = useCallback(() => {
+    const mobileDevice = /android|iPhone|iPod|kindle|HMSCore|windows phone|ipad/i
+    if (window.navigator.maxTouchPoints > 1 || mobileDevice.test(deviceDetails)) {
+      return true
+    }
+    return false
+  }, [deviceDetails])
+
+  const isDesktopType = useCallback(() => {
+    const desktopType = /Macintosh|linux|Windows|Ubuntu/i
+    const type = deviceDetails.match(desktopType)
+    return type?.[0]
+  }, [deviceDetails])
+
+  const fallbackUrl =
+    OS === "ios" ? appStoreLink : OS === "android" ? playStoreLink : apkLink
+
+  const handleLinkClick = () => {
+    if (isDesktopType() === "Macintosh") {
+      return window.open(appStoreLink, "_blank")
+    }
+    return window.open(playStoreLink, "_blank")
+  }
+
   React.useEffect(() => {
     isMobileDevice()
     isDesktopType()
-  }, [])
+  }, [isDesktopType, isMobileDevice])
 
   const errorString: string | null = errorsMessage || null
   let invoice: LnInvoiceObject | undefined
@@ -162,35 +189,6 @@ function ReceiveInvoice({ recipientWalletCurrency, walletId, state, dispatch }: 
     setTimeout(() => {
       setCopied(false)
     }, 3000)
-  }
-
-  const OS = getOS()
-  const deviceDetails = window.navigator.userAgent
-
-  const isMobileDevice = (): boolean => {
-    // check if device is being used on the web or mobile
-    const mobileDevice = /android|iPhone|iPod|kindle|HMSCore|windows phone|ipad/i
-
-    if (window.navigator.maxTouchPoints > 1 || mobileDevice.test(deviceDetails)) {
-      return true
-    }
-    return false
-  }
-
-  const isDesktopType = () => {
-    const desktopType = /Macintosh|linux|Windows|Ubuntu/i
-    const type = deviceDetails.match(desktopType)
-    return type?.[0]
-  }
-
-  const fallbackUrl =
-    OS === "ios" ? appStoreLink : OS === "android" ? playStoreLink : apkLink
-
-  const handleLinkClick = () => {
-    if (isDesktopType() === "Macintosh") {
-      return window.open(appStoreLink, "_blank")
-    }
-    return window.open(playStoreLink, "_blank")
   }
 
   if ((errorString && !loading) || expiredInvoiceError) {

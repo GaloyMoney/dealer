@@ -21,13 +21,13 @@ function PaymentOutcome({ paymentRequest, paymentAmount, dispatch }: Props) {
   const { satsToUsd } = useSatPrice()
   const componentRef = useRef<HTMLDivElement | null>(null)
 
-  if (!paymentRequest) {
-    return null
-  }
-
   const printReceipt = useReactToPrint({
     content: () => componentRef.current,
   })
+
+  if (!paymentRequest) {
+    return null
+  }
 
   const { loading, data, error, errorsMessage } = useSubscription.lnInvoicePaymentStatus({
     variables: {
