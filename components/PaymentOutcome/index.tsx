@@ -1,12 +1,13 @@
 import { useSubscription } from "@galoymoney/client"
 import { useRouter } from "next/router"
-import React from "react"
+import React, { useRef } from "react"
 import Image from "react-bootstrap/Image"
-
 import useSatPrice from "../../lib/use-sat-price"
 import { ACTIONS, ACTION_TYPE } from "../../pages/_reducer"
 import { formatOperand } from "../../utils/utils"
 import styles from "./payment-outcome.module.css"
+import Receipt from "./receipt"
+import { useReactToPrint } from "react-to-print"
 
 interface Props {
   paymentRequest: string
@@ -16,12 +17,17 @@ interface Props {
 
 function PaymentOutcome({ paymentRequest, paymentAmount, dispatch }: Props) {
   const router = useRouter()
-  const { amount, unit, sats } = router.query
+  const { amount, unit, sats, username, memo } = router.query
   const { satsToUsd } = useSatPrice()
+  const componentRef = useRef<HTMLDivElement | null>(null)
 
   if (!paymentRequest) {
     return null
   }
+
+  const printReceipt = useReactToPrint({
+    content: () => componentRef.current,
+  })
 
   const { loading, data, error, errorsMessage } = useSubscription.lnInvoicePaymentStatus({
     variables: {
@@ -48,6 +54,19 @@ function PaymentOutcome({ paymentRequest, paymentAmount, dispatch }: Props) {
     </button>
   )
 
+  const downloadReceipt = (
+    <button className={styles.pay_new_btn} onClick={() => printReceipt()}>
+      <Image
+        src="/icons/print-icon.svg"
+        alt="print icon"
+        width="18"
+        height="18"
+        className="mr-2"
+      />
+      Print Receipt
+    </button>
+  )
+
   if (data) {
     const { status, errors } = data.lnInvoicePaymentStatus
     if (status === "PAID") {
@@ -67,9 +86,7 @@ function PaymentOutcome({ paymentRequest, paymentAmount, dispatch }: Props) {
             <p className={styles.text}>
               The invoice of{" "}
               {unit === "SAT"
-                ? `${formatOperand(
-                    paymentAmount?.toString(),
-                  )} sats (~ ${usdValueInSatUnit})`
+                ? `${formatOperand(sats?.toString())} sats (~ ${usdValueInSatUnit})`
                 : ` $${formatOperand(
                     amount?.toString() ?? satsToUsd(Number(paymentAmount)).toFixed(2),
                   )} (~${formatOperand(
@@ -77,11 +94,27 @@ function PaymentOutcome({ paymentRequest, paymentAmount, dispatch }: Props) {
                   )} sats)`}{" "}
               has been paid
             </p>
+
+            {/* the component for printing receipt */}
+            <div className={styles.hideReceipt}>
+              <div ref={componentRef}>
+                <Receipt
+                  amount={amount}
+                  sats={sats}
+                  username={username}
+                  paymentRequest={paymentRequest}
+                  paymentAmount={paymentAmount}
+                  memo={memo}
+                />
+              </div>
+            </div>
+            {downloadReceipt}
           </div>
           {backToCashRegisterButton}
         </div>
       )
     }
+
     if (errors.length > 0 || errorsMessage) {
       return (
         <div className={styles.container}>

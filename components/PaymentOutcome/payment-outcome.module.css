@@ -65,3 +65,35 @@
   border: 10px;
   padding: 0.5rem;
 }
+
+.pay_new_btn {
+  background-color: transparent;
+  color: rgb(83, 111, 242);
+  border: 2px solid rgb(83, 111, 242);
+  border-radius: 10px;
+  width: 270px;
+  height: 50px;
+  margin-bottom: 1rem;
+}
+
+.reference {
+  word-break: break-all;
+  width: 270px;
+  margin: auto;
+}
+
+.backdrop {
+  opacity: 1 !important;
+  background-color: rgba(255, 255, 255, 1);
+}
+
+.link:hover {
+  text-decoration: none;
+}
+
+/* make the receipt hidden on render but still accessible in the DOM */
+.hideReceipt {
+  position: absolute;
+  left: -9999px;
+  visibility: hidden;
+}
