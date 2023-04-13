@@ -6,15 +6,16 @@ interface Props {
   digit: string
   disabled?: boolean
   dispatch: React.Dispatch<ACTION_TYPE>
+  displayValue?: string
 }
 
-function DigitButton({ digit, disabled, dispatch }: Props) {
+function DigitButton({ digit, disabled, dispatch, displayValue }: Props) {
   return (
     <button
       disabled={disabled}
       onClick={() => dispatch({ type: ACTIONS.ADD_DIGIT, payload: digit })}
     >
-      {digit}
+      {displayValue ? displayValue : digit}
     </button>
   )
 }

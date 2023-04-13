@@ -4,7 +4,12 @@ import Container from "react-bootstrap/Container"
 import Image from "react-bootstrap/Image"
 import useRealtimePrice from "../../lib/use-realtime-price"
 import { ACTION_TYPE, ACTIONS } from "../../pages/_reducer"
-import { formatOperand, parseDisplayCurrency, safeAmount } from "../../utils/utils"
+import {
+  formatOperand,
+  parseDisplayCurrency,
+  safeAmount,
+  getLocaleConfig,
+} from "../../utils/utils"
 import Memo from "../Memo"
 import DigitButton from "./Digit-Button"
 import styles from "./parse-payment.module.css"
@@ -12,6 +17,7 @@ import ReceiveInvoice from "./Receive-Invoice"
 import { useDisplayCurrency } from "../../lib/use-display-currency"
 import { Currency } from "../../lib/graphql/generated"
 import { ParsedUrlQuery } from "querystring"
+import CurrencyInput from "react-currency-input-field"
 
 function isRunningStandalone() {
   return window.matchMedia("(display-mode: standalone)").matches
@@ -50,7 +56,7 @@ function ParsePayment({ defaultWalletCurrency, walletId, dispatch, state }: Prop
   const { display } = parseDisplayCurrency(router.query)
   const { currencyToSats, satsToCurrency, hasLoaded } = useRealtimePrice(display)
   const { currencyList } = useDisplayCurrency()
-  const [valueInFiat, setValueInFiat] = React.useState("0.00")
+  const [valueInFiat, setValueInFiat] = React.useState("0")
   const [valueInSats, setValueInSats] = React.useState(0)
   const [currentAmount, setCurrentAmount] = React.useState(state.currentAmount)
   const [currencyMetadata, setCurrencyMetadata] = React.useState<Currency>(
@@ -159,6 +165,7 @@ function ParsePayment({ defaultWalletCurrency, walletId, dispatch, state }: Prop
           ? safeAmt.toFixed()
           : safeAmt.toFixed(currencyMetadata.fractionDigits)
     }
+    if (isNaN(Number(amt))) return
     setValueInFiat(amt)
 
     // 2) format the sats amount
@@ -267,8 +274,22 @@ function ParsePayment({ defaultWalletCurrency, walletId, dispatch, state }: Prop
             !unit || unit === AmountUnit.Cent ? styles.zero_order : styles.first_order
           }`}
         >
-          {currencyMetadata.symbol}
-          {valueInFiat}
+          {!amount ? (
+            `${currencyMetadata.symbol} 0`
+          ) : (
+            <CurrencyInput
+              style={{
+                width: "100%",
+                border: 0,
+                backgroundColor: "white",
+                textAlign: "center",
+                fontWeight: 600,
+              }}
+              value={valueInFiat}
+              intlConfig={{ locale: navigator.language, currency: display }}
+              disabled={true}
+            />
+          )}
         </div>
         <div
           className={`${unit === AmountUnit.Sat ? styles.zero_order : styles.first_order}
@@ -308,11 +329,20 @@ function ParsePayment({ defaultWalletCurrency, walletId, dispatch, state }: Prop
           <DigitButton digit={"7"} dispatch={dispatch} />
           <DigitButton digit={"8"} dispatch={dispatch} />
           <DigitButton digit={"9"} dispatch={dispatch} />
-          <DigitButton
-            digit={"."}
-            dispatch={dispatch}
-            disabled={unit === AmountUnit.Sat}
-          />
+          {currencyMetadata.fractionDigits > 0 ? (
+            <DigitButton
+              digit={"."}
+              dispatch={dispatch}
+              disabled={unit === AmountUnit.Sat}
+              displayValue={
+                getLocaleConfig({ locale: navigator.language, currency: display })
+                  .decimalSeparator
+              }
+            />
+          ) : (
+            <DigitButton digit={""} dispatch={dispatch} disabled={true} />
+          )}
+
           <DigitButton digit={"0"} dispatch={dispatch} />
           <button onClick={() => dispatch({ type: ACTIONS.DELETE_DIGIT })}>
             <Image
