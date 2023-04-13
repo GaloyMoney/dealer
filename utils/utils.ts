@@ -27,3 +27,30 @@ export function parseQueryAmount(query: ParsedUrlQuery) {
     currency: currency?.toUpperCase() || "USD",
   }
 }
+
+export function parseDisplayCurrency(query: ParsedUrlQuery) {
+  const display = query.display as string | null
+
+  return {
+    display: display ?? localStorage.getItem("display") ?? "USD",
+  }
+}
+
+export function safeAmount(amount: number | string | string[] | undefined) {
+  try {
+    if (isNaN(Number(amount))) return 0
+    const theSafeAmount = (
+      amount !== "NaN" &&
+      amount !== undefined &&
+      amount !== "" &&
+      typeof amount === "string"
+        ? !amount?.includes("NaN")
+        : true
+    )
+      ? amount
+      : 0
+    return Number(theSafeAmount)
+  } catch (e) {
+    return 0
+  }
+}

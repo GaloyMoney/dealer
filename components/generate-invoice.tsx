@@ -2,6 +2,8 @@ import React, { useEffect, useRef } from "react"
 
 import useCreateInvoice from "../hooks/use-Create-Invoice"
 import Invoice from "./invoice"
+import { useRouter } from "next/router"
+import useSatPrice from "../lib/use-sat-price"
 
 const INVOICE_STALE_CHECK_INTERVAL = 2 * 60 * 1000
 const INVOICE_EXPIRE_INTERVAL = 60 * 60 * 1000
@@ -22,14 +24,30 @@ function GenerateInvoice({
   const { createInvoice, data, loading, errorsMessage, invoiceStatus, setInvoiceStatus } =
     useCreateInvoice({ recipientWalletCurrency })
   const timerIds = useRef<number[]>([])
+  const router = useRouter()
+  const { satsToUsd } = useSatPrice()
 
   const clearAllTimers = () => {
     timerIds.current.forEach((timerId) => clearTimeout(timerId))
   }
   useEffect(() => {
+    let amt = amountInBase
+    if (recipientWalletCurrency === "USD") {
+      if (!router.query.sats || typeof router.query.sats !== "string") {
+        alert("No sats amount provided")
+        return
+      } else {
+        const usdAmount = satsToUsd(Number(router.query.sats))
+        if (isNaN(usdAmount)) return
+        const cents = parseFloat(usdAmount.toFixed(2)) * 100
+        amt = Number(cents.toFixed())
+      }
+    }
+    if (amt === null) return
+
     createInvoice({
       variables: {
-        input: { recipientWalletId, amount: amountInBase },
+        input: { recipientWalletId, amount: amt },
       },
     })
     if (currency !== "SATS" || recipientWalletCurrency === "USD") {

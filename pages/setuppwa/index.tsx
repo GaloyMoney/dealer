@@ -1,11 +1,13 @@
 import { useRouter } from "next/router"
 import React from "react"
+import CurrencyDropdown from "../../components/Currency/currency-dropdown"
 
 const SetupPwa = () => {
   const router = useRouter()
   const [username, setUsername] = React.useState<string>("")
-
   const username_from_local = localStorage.getItem("username")
+  const display_currency_from_local = localStorage.getItem("display")
+  const [selectedDisplayCurrency, setSelectedDisplayCurrency] = React.useState("USD")
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -14,9 +16,14 @@ const SetupPwa = () => {
       localStorage.setItem("username", username)
     }
 
+    if (!display_currency_from_local) {
+      localStorage.setItem("display", selectedDisplayCurrency)
+    }
+
     router.push(
       {
         pathname: `${username}`,
+        query: { display: selectedDisplayCurrency },
       },
       undefined,
       { shallow: true },
@@ -28,6 +35,7 @@ const SetupPwa = () => {
       router.push(
         {
           pathname: `${username_from_local}`,
+          query: { display: display_currency_from_local },
         },
         undefined,
         { shallow: true },
@@ -58,6 +66,18 @@ const SetupPwa = () => {
             }
             placeholder="username"
             required
+          />
+          <label htmlFor="display" style={{ alignSelf: "flex-start" }}>
+            Enter your currency
+          </label>
+          <CurrencyDropdown
+            name="display"
+            style={{ height: "42px", width: "100%" }}
+            onSelectedDisplayCurrencyChange={(newDisplayCurrency) => {
+              if (newDisplayCurrency) {
+                setSelectedDisplayCurrency(newDisplayCurrency)
+              }
+            }}
           />
           <button>Submit</button>
         </form>

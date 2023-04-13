@@ -6,7 +6,7 @@ import styles from "./memo.module.css"
 
 const Memo = ({ createdInvoice }: React.ComponentState) => {
   const router = useRouter()
-  const { username, amount, sats, unit, memo } = router.query
+  const { username, amount, sats, unit, memo, display } = router.query
   const [openModal, setOpenModal] = React.useState<boolean>(false)
   const [note, setNote] = React.useState<string>(memo?.toString() || "")
 
@@ -20,6 +20,7 @@ const Memo = ({ createdInvoice }: React.ComponentState) => {
             sats: sats,
             unit: unit,
             memo: note,
+            display,
           },
         },
         undefined,
@@ -29,7 +30,7 @@ const Memo = ({ createdInvoice }: React.ComponentState) => {
       router.push(
         {
           pathname: `${username}`,
-          query: { memo: note },
+          query: { memo: note, display },
         },
         undefined,
         { shallow: true },

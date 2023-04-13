@@ -6,6 +6,7 @@ import { ParsedUrlQuery } from "querystring"
 import FormattedInput from "./formatted-input"
 import useSatPrice from "../lib/use-sat-price"
 import GenerateInvoice from "./generate-invoice"
+import { parseDisplayCurrency } from "../utils/utils"
 
 const usdFormatter = new Intl.NumberFormat("en-US", {
   style: "currency",
@@ -27,13 +28,16 @@ export default function ReceiveAmount({
   const router = useRouter()
   const { satsToUsd, usdToSats } = useSatPrice()
   const { amount, currency } = parseQueryAmount(router.query) // USD or SATs
+  const { display } = parseDisplayCurrency(router.query)
 
   function toggleCurrency() {
     const newCurrency = currency === "SATS" ? "USD" : "SATS"
     const newAmount =
       newCurrency === "SATS" ? Math.round(usdToSats(amount)) : satsToUsd(amount)
 
-    router.push(getUpdatedURL(router.query, { currency: newCurrency, amount: newAmount }))
+    router.push(
+      getUpdatedURL(router.query, { currency: newCurrency, amount: newAmount, display }),
+    )
   }
 
   const handleAmountUpdate = useDebouncedCallback(({ numberValue }) => {

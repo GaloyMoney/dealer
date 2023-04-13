@@ -5,11 +5,11 @@ import Container from "react-bootstrap/Container"
 import Jumbotron from "react-bootstrap/Jumbotron"
 import ListGroup from "react-bootstrap/ListGroup"
 import Row from "react-bootstrap/Row"
-
 import { gql, useQuery } from "@apollo/client"
 
 import { GRAPHQL_URI } from "../lib/config"
 import { useRouter } from "next/router"
+import CurrencyDropdown from "../components/Currency/currency-dropdown"
 
 const GET_NODE_STATS = gql`
   query nodeIds {
@@ -24,6 +24,9 @@ function Home() {
     ? `https://mempool.space/signet/lightning/node/`
     : `https://mempool.space/lightning/node/`
   const { loading, error, data } = useQuery(GET_NODE_STATS)
+  const [selectedDisplayCurrency, setSelectedDisplayCurrency] = React.useState(
+    localStorage.getItem("display") ?? "USD",
+  )
 
   const router = useRouter()
   const [username, setUsername] = React.useState<string>("")
@@ -34,6 +37,7 @@ function Home() {
     router.push(
       {
         pathname: username,
+        query: { display: selectedDisplayCurrency },
       },
       undefined,
       { shallow: true },
@@ -96,6 +100,18 @@ function Home() {
                               }
                               placeholder="username"
                               required
+                            />
+                            <label htmlFor="display" style={{ alignSelf: "flex-start" }}>
+                              Enter your currency
+                            </label>
+                            <CurrencyDropdown
+                              name="display"
+                              style={{ height: "42px", width: "100%" }}
+                              onSelectedDisplayCurrencyChange={(newDisplayCurrency) => {
+                                if (newDisplayCurrency) {
+                                  setSelectedDisplayCurrency(newDisplayCurrency)
+                                }
+                              }}
                             />
                             <button>Submit</button>
                           </form>

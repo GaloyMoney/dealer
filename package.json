@@ -13,7 +13,8 @@
     "tsc-check": "tsc --noEmit --skipLibCheck",
     "check-code": "yarn prettier-check && yarn eslint-check && yarn tsc-check",
     "dev:docker": "docker compose up",
-    "build:docker": "docker build -t galoy-pay ."
+    "build:docker": "docker build -t galoy-pay .",
+    "codegen": "graphql-codegen --config codegen.yml"
   },
   "dependencies": {
     "@apollo/client": "^3.4.16",
@@ -46,6 +47,12 @@
     "use-react-screenshot": "^3.0.0"
   },
   "devDependencies": {
+    "@graphql-codegen/add": "^4.0.1",
+    "@graphql-codegen/cli": "^3.2.2",
+    "@graphql-codegen/client-preset": "^2.1.1",
+    "@graphql-codegen/typescript": "^3.0.2",
+    "@graphql-codegen/typescript-operations": "^3.0.2",
+    "@graphql-codegen/typescript-react-apollo": "^3.3.7",
     "@types/bootstrap": "^5.1.6",
     "@types/eslint": "^8.2.0",
     "@types/lodash.debounce": "^4.0.6",
@@ -55,7 +62,7 @@
     "@types/react-dev-utils": "^9.0.11",
     "@types/react-dom": "^17.0.0",
     "@types/react-lottie": "^1.2.6",
-    "@typescript-eslint/eslint-plugin": "^5.5.0",
+    "@typescript-eslint/eslint-plugin": "^5.56.0",
     "@typescript-eslint/parser": "^5.51.0",
     "eslint": "^8.3.0",
     "eslint-config-next": "^12.3.0",

@@ -12,7 +12,7 @@ import ReceiveNoAmount from "../../components/receive-no-amount"
 import { getOS, playStoreLink, appStoreLink } from "../../lib/download"
 
 const RECIPIENT_WALLET_ID = gql`
-  query accountDefaultWallet($username: Username!) {
+  query accountDefaultWallet2($username: Username!) {
     accountDefaultWallet(username: $username) {
       id
       walletCurrency
