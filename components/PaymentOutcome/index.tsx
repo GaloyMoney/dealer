@@ -70,10 +70,7 @@ function PaymentOutcome({ paymentRequest, paymentAmount, dispatch }: Props) {
   if (data) {
     const { status, errors } = data.lnInvoicePaymentStatus
     if (status === "PAID") {
-      const usdValueInSatUnit =
-        satsToUsd(Number(paymentAmount)) < 1
-          ? "less than a cent"
-          : `$${satsToUsd(Number(paymentAmount)).toFixed(2)}`
+      const usdValueInSatUnit = amount === "0.00" ? "less than 1 cent" : `$ ${amount}`
       return (
         <div className={styles.container}>
           <div aria-labelledby="Payment successful">
