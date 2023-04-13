@@ -15,6 +15,8 @@ interface Props {
 }
 
 function receipt(props: Props) {
+  const usdValueInSatUnit =
+    props.amount === "0.00" ? "less than 1 cent" : `$ ${props.amount}`
   return (
     <div className="w-100">
       <div className="d-flex justify-content-center">
@@ -27,12 +29,7 @@ function receipt(props: Props) {
           {formatOperand(props.sats?.toString() ?? Number(props.paymentAmount).toFixed())}{" "}
           sats
         </h1>
-        <span>
-          {" "}
-          ${props.amount
-            ? formatOperand(props.amount?.toString())
-            : "~ less than 1 cent"}{" "}
-        </span>
+        <span> ~ {usdValueInSatUnit}</span>
 
         <div className="d-flex justify-content-center">
           <table className="my-3 w-100">
