@@ -69,6 +69,7 @@ export type Account = {
   readonly defaultWalletId: Scalars["WalletId"]
   readonly displayCurrency: Scalars["DisplayCurrency"]
   readonly id: Scalars["ID"]
+  readonly level: AccountLevel
   readonly limits: AccountLimits
   readonly realtimePrice: RealtimePrice
   readonly transactions?: Maybe<TransactionConnection>
@@ -87,6 +88,12 @@ export type AccountTransactionsArgs = {
   walletIds?: InputMaybe<ReadonlyArray<InputMaybe<Scalars["WalletId"]>>>
 }
 
+export const AccountLevel = {
+  One: "ONE",
+  Two: "TWO",
+} as const
+
+export type AccountLevel = typeof AccountLevel[keyof typeof AccountLevel]
 export type AccountLimit = {
   /** The rolling time interval in seconds that the limits would apply for. */
   readonly interval?: Maybe<Scalars["Seconds"]>
@@ -206,6 +213,7 @@ export type ConsumerAccount = Account & {
   readonly defaultWalletId: Scalars["WalletId"]
   readonly displayCurrency: Scalars["DisplayCurrency"]
   readonly id: Scalars["ID"]
+  readonly level: AccountLevel
   readonly limits: AccountLimits
   /** List the quiz questions of the consumer account */
   readonly quiz: ReadonlyArray<Quiz>
@@ -592,6 +600,7 @@ export type Mutation = {
   readonly onChainPaymentSend: PaymentSendPayload
   readonly onChainPaymentSendAll: PaymentSendPayload
   readonly onChainUsdPaymentSend: PaymentSendPayload
+  readonly onChainUsdPaymentSendAsBtcDenominated: PaymentSendPayload
   readonly quizCompleted: QuizCompletedPayload
   /** @deprecated will be moved to AccountContact */
   readonly userContactUpdateAlias: UserContactUpdateAliasPayload
@@ -701,6 +710,10 @@ export type MutationOnChainUsdPaymentSendArgs = {
   input: OnChainUsdPaymentSendInput
 }
 
+export type MutationOnChainUsdPaymentSendAsBtcDenominatedArgs = {
+  input: OnChainUsdPaymentSendAsBtcDenominatedInput
+}
+
 export type MutationQuizCompletedArgs = {
   input: QuizCompletedInput
 }
@@ -791,6 +804,14 @@ export type OnChainUpdate = {
   readonly txNotificationType: TxNotificationType
   /** @deprecated updated over displayCurrencyPerSat */
   readonly usdPerSat: Scalars["Float"]
+  readonly walletId: Scalars["WalletId"]
+}
+
+export type OnChainUsdPaymentSendAsBtcDenominatedInput = {
+  readonly address: Scalars["OnChainAddress"]
+  readonly amount: Scalars["SatAmount"]
+  readonly memo?: InputMaybe<Scalars["Memo"]>
+  readonly targetConfirmations?: InputMaybe<Scalars["TargetConfirmations"]>
   readonly walletId: Scalars["WalletId"]
 }
 
@@ -947,6 +968,7 @@ export type Query = {
   readonly mobileVersions?: Maybe<ReadonlyArray<Maybe<MobileVersions>>>
   readonly onChainTxFee: OnChainTxFee
   readonly onChainUsdTxFee: OnChainUsdTxFee
+  readonly onChainUsdTxFeeAsBtcDenominated: OnChainUsdTxFee
   /** @deprecated TODO: remove. we don't need a non authenticated version of this query. the users can only do the query while authenticated */
   readonly quizQuestions?: Maybe<ReadonlyArray<Maybe<QuizQuestion>>>
   /** Returns 1 Sat and 1 Usd Cent price for the given currency */
@@ -983,6 +1005,13 @@ export type QueryOnChainTxFeeArgs = {
 export type QueryOnChainUsdTxFeeArgs = {
   address: Scalars["OnChainAddress"]
   amount: Scalars["CentAmount"]
+  targetConfirmations?: InputMaybe<Scalars["TargetConfirmations"]>
+  walletId: Scalars["WalletId"]
+}
+
+export type QueryOnChainUsdTxFeeAsBtcDenominatedArgs = {
+  address: Scalars["OnChainAddress"]
+  amount: Scalars["SatAmount"]
   targetConfirmations?: InputMaybe<Scalars["TargetConfirmations"]>
   walletId: Scalars["WalletId"]
 }
@@ -1048,16 +1077,6 @@ export type SatAmountPayload = {
   readonly __typename: "SatAmountPayload"
   readonly amount?: Maybe<Scalars["SatAmount"]>
   readonly errors: ReadonlyArray<Error>
-}
-
-export type SelectedDisplayCurrency = {
-  readonly __typename: "SelectedDisplayCurrency"
-  readonly currency?: Maybe<Scalars["String"]>
-  readonly flag?: Maybe<Scalars["String"]>
-  readonly fractionDigits?: Maybe<Scalars["Int"]>
-  readonly id?: Maybe<Scalars["ID"]>
-  readonly name?: Maybe<Scalars["String"]>
-  readonly symbol?: Maybe<Scalars["String"]>
 }
 
 export type SettlementVia =
@@ -1418,36 +1437,6 @@ export type CurrencyListQuery = {
   }>
 }
 
-export type RealtimePriceQueryVariables = Exact<{ [key: string]: never }>
-
-export type RealtimePriceQuery = {
-  readonly __typename: "Query"
-  readonly me?: {
-    readonly __typename: "User"
-    readonly id: string
-    readonly defaultAccount: {
-      readonly __typename: "ConsumerAccount"
-      readonly id: string
-      readonly realtimePrice: {
-        readonly __typename: "RealtimePrice"
-        readonly denominatorCurrency: string
-        readonly id: string
-        readonly timestamp: number
-        readonly btcSatPrice: {
-          readonly __typename: "PriceOfOneSatInMinorUnit"
-          readonly base: number
-          readonly offset: number
-        }
-        readonly usdCentPrice: {
-          readonly __typename: "PriceOfOneUsdCentInMinorUnit"
-          readonly base: number
-          readonly offset: number
-        }
-      }
-    }
-  } | null
-}
-
 export type RealtimePriceWsSubscriptionVariables = Exact<{
   currency: Scalars["DisplayCurrency"]
 }>
@@ -1475,6 +1464,29 @@ export type RealtimePriceWsSubscription = {
         readonly offset: number
       }
     } | null
+  }
+}
+
+export type RealtimePriceInitialQueryVariables = Exact<{
+  currency: Scalars["DisplayCurrency"]
+}>
+
+export type RealtimePriceInitialQuery = {
+  readonly __typename: "Query"
+  readonly realtimePrice: {
+    readonly __typename: "RealtimePrice"
+    readonly timestamp: number
+    readonly denominatorCurrency: string
+    readonly btcSatPrice: {
+      readonly __typename: "PriceOfOneSatInMinorUnit"
+      readonly base: number
+      readonly offset: number
+    }
+    readonly usdCentPrice: {
+      readonly __typename: "PriceOfOneUsdCentInMinorUnit"
+      readonly base: number
+      readonly offset: number
+    }
   }
 }
 
@@ -1675,74 +1687,6 @@ export type CurrencyListQueryResult = Apollo.QueryResult<
   CurrencyListQuery,
   CurrencyListQueryVariables
 >
-export const RealtimePriceDocument = gql`
-  query realtimePrice {
-    me {
-      id
-      defaultAccount {
-        id
-        realtimePrice {
-          btcSatPrice {
-            base
-            offset
-          }
-          denominatorCurrency
-          id
-          timestamp
-          usdCentPrice {
-            base
-            offset
-          }
-        }
-      }
-    }
-  }
-`
-
-/**
- * __useRealtimePriceQuery__
- *
- * To run a query within a React component, call `useRealtimePriceQuery` and pass it any options that fit your needs.
- * When your component renders, `useRealtimePriceQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useRealtimePriceQuery({
- *   variables: {
- *   },
- * });
- */
-export function useRealtimePriceQuery(
-  baseOptions?: Apollo.QueryHookOptions<RealtimePriceQuery, RealtimePriceQueryVariables>,
-) {
-  const options = { ...defaultOptions, ...baseOptions }
-  return Apollo.useQuery<RealtimePriceQuery, RealtimePriceQueryVariables>(
-    RealtimePriceDocument,
-    options,
-  )
-}
-export function useRealtimePriceLazyQuery(
-  baseOptions?: Apollo.LazyQueryHookOptions<
-    RealtimePriceQuery,
-    RealtimePriceQueryVariables
-  >,
-) {
-  const options = { ...defaultOptions, ...baseOptions }
-  return Apollo.useLazyQuery<RealtimePriceQuery, RealtimePriceQueryVariables>(
-    RealtimePriceDocument,
-    options,
-  )
-}
-export type RealtimePriceQueryHookResult = ReturnType<typeof useRealtimePriceQuery>
-export type RealtimePriceLazyQueryHookResult = ReturnType<
-  typeof useRealtimePriceLazyQuery
->
-export type RealtimePriceQueryResult = Apollo.QueryResult<
-  RealtimePriceQuery,
-  RealtimePriceQueryVariables
->
 export const RealtimePriceWsDocument = gql`
   subscription realtimePriceWs($currency: DisplayCurrency!) {
     realtimePrice(input: { currency: $currency }) {
@@ -1798,6 +1742,73 @@ export type RealtimePriceWsSubscriptionHookResult = ReturnType<
 >
 export type RealtimePriceWsSubscriptionResult =
   Apollo.SubscriptionResult<RealtimePriceWsSubscription>
+export const RealtimePriceInitialDocument = gql`
+  query realtimePriceInitial($currency: DisplayCurrency!) {
+    realtimePrice(currency: $currency) {
+      timestamp
+      btcSatPrice {
+        base
+        offset
+      }
+      usdCentPrice {
+        base
+        offset
+      }
+      denominatorCurrency
+    }
+  }
+`
+
+/**
+ * __useRealtimePriceInitialQuery__
+ *
+ * To run a query within a React component, call `useRealtimePriceInitialQuery` and pass it any options that fit your needs.
+ * When your component renders, `useRealtimePriceInitialQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useRealtimePriceInitialQuery({
+ *   variables: {
+ *      currency: // value for 'currency'
+ *   },
+ * });
+ */
+export function useRealtimePriceInitialQuery(
+  baseOptions: Apollo.QueryHookOptions<
+    RealtimePriceInitialQuery,
+    RealtimePriceInitialQueryVariables
+  >,
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useQuery<RealtimePriceInitialQuery, RealtimePriceInitialQueryVariables>(
+    RealtimePriceInitialDocument,
+    options,
+  )
+}
+export function useRealtimePriceInitialLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    RealtimePriceInitialQuery,
+    RealtimePriceInitialQueryVariables
+  >,
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useLazyQuery<
+    RealtimePriceInitialQuery,
+    RealtimePriceInitialQueryVariables
+  >(RealtimePriceInitialDocument, options)
+}
+export type RealtimePriceInitialQueryHookResult = ReturnType<
+  typeof useRealtimePriceInitialQuery
+>
+export type RealtimePriceInitialLazyQueryHookResult = ReturnType<
+  typeof useRealtimePriceInitialLazyQuery
+>
+export type RealtimePriceInitialQueryResult = Apollo.QueryResult<
+  RealtimePriceInitialQuery,
+  RealtimePriceInitialQueryVariables
+>
 export const PriceDocument = gql`
   subscription price(
     $amount: SatAmount!

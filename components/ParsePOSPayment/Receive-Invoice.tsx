@@ -9,7 +9,6 @@ import Tooltip from "react-bootstrap/Tooltip"
 import { QRCode } from "react-qrcode-logo"
 import { useTimer } from "react-timer-hook"
 import { useScreenshot } from "use-react-screenshot"
-import { AmountUnit } from "."
 
 import { URL_HOST_DOMAIN, USD_INVOICE_EXPIRE_INTERVAL } from "../../config/config"
 import useCreateInvoice from "../../hooks/use-Create-Invoice"
@@ -20,6 +19,7 @@ import { ACTION_TYPE } from "../../pages/_reducer"
 import PaymentOutcome from "../PaymentOutcome"
 import { Share } from "../Share"
 import styles from "./parse-payment.module.css"
+import { safeAmount } from "../../utils/utils"
 
 interface Props {
   recipientWalletCurrency?: string
@@ -86,30 +86,19 @@ function ReceiveInvoice({ recipientWalletCurrency, walletId, state, dispatch }: 
   )
 
   const paymentAmount = React.useMemo(() => {
-    const finalReturnValue =
-      recipientWalletCurrency === "USD" ? Number(amount) * 100 : usdToSats(Number(amount))
-    if (amount === "0.00" || isNaN(Number(amount))) {
-      if ((!unit || !amount || !sats) && recipientWalletCurrency === "USD") {
-        return (Number(state.currentAmount) * 100).toString()
-      }
-      if (sats && unit === AmountUnit.Sat) {
-        if (recipientWalletCurrency === "USD") {
-          return satsToUsd(Number(state.currentAmount)).toString()
-        }
-        return sats
-      } else if (Number(state.currentAmount) > 0) {
-        return usdToSats(Number(state.currentAmount)).toFixed(2)
-      }
+    if (!router.query.sats || typeof router.query.sats !== "string") {
+      alert("No sats amount provided")
+      return
     }
-
-    if (sats && unit === AmountUnit.Sat) {
-      if (recipientWalletCurrency === "USD") {
-        return (Number(amount) * 100).toString()
-      }
-      return sats
+    let amt = safeAmount(router.query.sats)
+    if (recipientWalletCurrency === "USD") {
+      const usdAmount = satsToUsd(Number(amt))
+      if (isNaN(usdAmount)) return
+      const cents = parseFloat(usdAmount.toFixed(2)) * 100
+      amt = Number(cents.toFixed())
     }
-
-    return finalReturnValue.toFixed(2)
+    if (amt === null) return
+    return safeAmount(amt).toString()
   }, [
     amount,
     unit,

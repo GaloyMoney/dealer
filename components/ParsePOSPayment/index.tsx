@@ -52,7 +52,7 @@ const defaultCurrencyMetadata: Currency = {
 
 function ParsePayment({ defaultWalletCurrency, walletId, dispatch, state }: Props) {
   const router = useRouter()
-  const { username, amount, sats, unit, memo } = router.query
+  const { username, amount, sats, unit, memo, currency } = router.query
   const { display } = parseDisplayCurrency(router.query)
   const { currencyToSats, satsToCurrency, hasLoaded } = useRealtimePrice(display)
   const { currencyList } = useDisplayCurrency()
@@ -65,6 +65,14 @@ function ParsePayment({ defaultWalletCurrency, walletId, dispatch, state }: Prop
   const [numOfChanges, setNumOfChanges] = React.useState(0)
 
   const prevUnit = React.useRef(AmountUnit.Cent)
+
+  if (!currency) {
+    const queryString = window.location.search
+    const searchParams = new URLSearchParams(queryString)
+    searchParams.set("currency", defaultWalletCurrency ?? "BTC")
+    const newQueryString = searchParams.toString()
+    window.history.pushState(null, "", "?" + newQueryString)
+  }
 
   // onload
   // set all query params on first load, even if they are not passed
@@ -198,7 +206,7 @@ function ParsePayment({ defaultWalletCurrency, walletId, dispatch, state }: Prop
     }
   }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  React.useEffect(handleAmountChange, [currentAmount, hasLoaded])
+  React.useEffect(handleAmountChange, [currentAmount, hasLoaded.current])
 
   React.useEffect(() => {
     setCurrentAmount(state.currentAmount)
@@ -296,7 +304,7 @@ function ParsePayment({ defaultWalletCurrency, walletId, dispatch, state }: Prop
           }`}
         >
           {unit === "CENT" ? "≈" : ""} {formatOperand(valueInSats.toString())} sat
-          {!hasLoaded && (
+          {!hasLoaded.current && (
             <span
               style={{
                 fontSize: "1rem",

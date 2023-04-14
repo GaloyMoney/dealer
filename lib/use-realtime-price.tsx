@@ -2,6 +2,7 @@ import { gql, SubscriptionResult } from "@apollo/client"
 import * as React from "react"
 import {
   RealtimePriceWsSubscription,
+  useRealtimePriceInitialQuery,
   useRealtimePriceWsSubscription,
 } from "../lib/graphql/generated"
 import { useDisplayCurrency } from "../lib/use-display-currency"
@@ -28,6 +29,23 @@ gql`
   }
 `
 
+gql`
+  query realtimePriceInitial($currency: DisplayCurrency!) {
+    realtimePrice(currency: $currency) {
+      timestamp
+      btcSatPrice {
+        base
+        offset
+      }
+      usdCentPrice {
+        base
+        offset
+      }
+      denominatorCurrency
+    }
+  }
+`
+
 const useRealtimePrice = (
   currency: string,
   onSubscriptionDataCallback?: (
@@ -45,12 +63,22 @@ const useRealtimePrice = (
     },
   })
 
+  const { data: initialData } = useRealtimePriceInitialQuery({
+    variables: { currency },
+    onCompleted(initData) {
+      if (initData?.realtimePrice?.btcSatPrice) {
+        const { base, offset } = initData.realtimePrice.btcSatPrice
+        priceRef.current = base / 10 ** offset
+      }
+    },
+  })
+
   React.useEffect(() => {
-    if (data && !hasLoaded.current) {
-      // Subscription data has loaded for the first time
+    if ((data || initialData) && !hasLoaded.current) {
+      // Subscription data or graphql data has loaded for the first time
       hasLoaded.current = true
     }
-  }, [data])
+  }, [data, initialData])
 
   const conversions = React.useMemo(
     () => ({
@@ -82,7 +110,7 @@ const useRealtimePrice = (
           formattedCurrency,
         }
       },
-      hasLoaded,
+      hasLoaded: hasLoaded,
     }),
     [priceRef, formatCurrency],
   )
@@ -106,7 +134,7 @@ const useRealtimePrice = (
           formattedCurrency: "0",
         }
       },
-      hasLoaded: false,
+      hasLoaded: hasLoaded,
     }
   }
 
