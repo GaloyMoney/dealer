@@ -22,6 +22,9 @@ export type ACTION_TYPE = {
 function reducer(state: React.ComponentState, { type, payload }: ACTION_TYPE) {
   switch (type) {
     case ACTIONS.ADD_DIGIT:
+      if (state.currentAmount.includes("NaN")) {
+        state.currentAmount = state.currentAmount.replace("NaN", "")
+      }
       if (payload == "0" && state.currentAmount == "0") return state
       if (payload === "." && state.currentAmount.includes(".")) return state
       if (state.currentAmount?.length >= MAX_INPUT_VALUE_LENGTH) return state
