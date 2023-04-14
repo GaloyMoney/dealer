@@ -353,3 +353,17 @@
   color: red;
   outline: 1px dashed rgba(255, 0, 0, 0.35);
 }
+
+.spinner {
+  display: inline-block;
+  border-radius: 50%;
+  border: 2px solid #ccc;
+  border-top-color: #555;
+  animation: spinKeyFrame 1s infinite linear;
+}
+
+@keyframes spinKeyFrame {
+  to {
+    transform: rotate(360deg);
+  }
+}

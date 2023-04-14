@@ -295,7 +295,18 @@ function ParsePayment({ defaultWalletCurrency, walletId, dispatch, state }: Prop
           className={`${unit === AmountUnit.Sat ? styles.zero_order : styles.first_order}
           }`}
         >
-          {unit === "CENT" ? "≈" : ""} {formatOperand(valueInSats.toString())} sats
+          {unit === "CENT" ? "≈" : ""} {formatOperand(valueInSats.toString())} sat
+          {!hasLoaded && (
+            <span
+              style={{
+                fontSize: "1rem",
+                marginLeft: ".5rem",
+                width: "18px",
+                height: "18px",
+              }}
+              className={styles.spinner}
+            ></span>
+          )}
         </div>
         {state.createdInvoice ? null : (
           <button title="toggle currency" onClick={() => toggleCurrency()}>
