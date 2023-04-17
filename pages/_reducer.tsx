@@ -29,6 +29,12 @@ function reducer(state: React.ComponentState, { type, payload }: ACTION_TYPE) {
       if (payload === "." && state.currentAmount.includes(".")) return state
       if (state.currentAmount?.length >= MAX_INPUT_VALUE_LENGTH) return state
       if (state.currentAmount.match(/(\.[0-9]{2,}$|\..*\.)/)) return state
+      if (
+        payload === "." &&
+        (state.currentAmount === "0" || state.currentAmount === "")
+      ) {
+        return { ...state, currentAmount: "0." }
+      }
       return {
         ...state,
         currentAmount: `${state.currentAmount || ""}${payload}`,

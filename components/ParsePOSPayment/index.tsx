@@ -56,7 +56,7 @@ function ParsePayment({ defaultWalletCurrency, walletId, dispatch, state }: Prop
   const { display } = parseDisplayCurrency(router.query)
   const { currencyToSats, satsToCurrency, hasLoaded } = useRealtimePrice(display)
   const { currencyList } = useDisplayCurrency()
-  const [valueInFiat, setValueInFiat] = React.useState("0")
+  const [valueInFiat, setValueInFiat] = React.useState(0)
   const [valueInSats, setValueInSats] = React.useState(0)
   const [currentAmount, setCurrentAmount] = React.useState(state.currentAmount)
   const [currencyMetadata, setCurrencyMetadata] = React.useState<Currency>(
@@ -74,10 +74,18 @@ function ParsePayment({ defaultWalletCurrency, walletId, dispatch, state }: Prop
     window.history.pushState(null, "", "?" + newQueryString)
   }
 
+  if (!amount) {
+    const queryString = window.location.search
+    const searchParams = new URLSearchParams(queryString)
+    searchParams.set("amount", "0")
+    const newQueryString = searchParams.toString()
+    window.history.pushState(null, "", "?" + newQueryString)
+  }
+
   // onload
   // set all query params on first load, even if they are not passed
   useEffect(() => {
-    const initialUnit = unit ?? "SAT"
+    const initialUnit = unit ?? "CENT" // TODO: eventually depreciate CENT for Fiat, but don't want to break existing POS links
     const initialAmount = safeAmount(amount).toString()
     const initialSats = safeAmount(sats).toString()
     const initialDisplay = display ?? localStorage.getItem("display") ?? "USD"
@@ -288,22 +296,18 @@ function ParsePayment({ defaultWalletCurrency, walletId, dispatch, state }: Prop
             !unit || unit === AmountUnit.Cent ? styles.zero_order : styles.first_order
           }`}
         >
-          {!amount ? (
-            `${currencyMetadata.symbol} 0`
-          ) : (
-            <CurrencyInput
-              style={{
-                width: "100%",
-                border: 0,
-                backgroundColor: "white",
-                textAlign: "center",
-                fontWeight: 600,
-              }}
-              value={valueInFiat}
-              intlConfig={{ locale: navigator.language, currency: display }}
-              disabled={true}
-            />
-          )}
+          <CurrencyInput
+            style={{
+              width: "100%",
+              border: 0,
+              backgroundColor: "white",
+              textAlign: "center",
+              fontWeight: 600,
+            }}
+            value={!amount ? 0 : valueInFiat}
+            intlConfig={{ locale: navigator.language, currency: display }}
+            disabled={true}
+          />
         </div>
         <div
           className={`${unit === AmountUnit.Sat ? styles.zero_order : styles.first_order}
