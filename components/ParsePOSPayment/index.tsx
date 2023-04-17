@@ -17,7 +17,7 @@ import ReceiveInvoice from "./Receive-Invoice"
 import { useDisplayCurrency } from "../../lib/use-display-currency"
 import { Currency } from "../../lib/graphql/generated"
 import { ParsedUrlQuery } from "querystring"
-import CurrencyInput from "react-currency-input-field"
+import CurrencyInput, { formatValue } from "react-currency-input-field"
 
 function isRunningStandalone() {
   return window.matchMedia("(display-mode: standalone)").matches
@@ -174,6 +174,11 @@ function ParsePayment({ defaultWalletCurrency, walletId, dispatch, state }: Prop
           : safeAmt.toFixed(currencyMetadata.fractionDigits)
     }
     if (isNaN(Number(amt))) return
+    const formattedValue = formatValue({
+      value: amt,
+      intlConfig: { locale: navigator.language, currency: display },
+    })
+    localStorage.setItem("formattedFiatValue", formattedValue)
     setValueInFiat(amt)
 
     // 2) format the sats amount
@@ -183,6 +188,7 @@ function ParsePayment({ defaultWalletCurrency, walletId, dispatch, state }: Prop
         : currencyToSats(Number(currentAmount), display, currencyMetadata.fractionDigits)
             .convertedCurrencyAmount
     satsAmt = safeAmount(satsAmt).toFixed()
+    localStorage.setItem("formattedSatsValue", `${formatOperand(satsAmt)} sats`)
     setValueInSats(satsAmt)
 
     // 3) update the query params
@@ -303,7 +309,7 @@ function ParsePayment({ defaultWalletCurrency, walletId, dispatch, state }: Prop
           className={`${unit === AmountUnit.Sat ? styles.zero_order : styles.first_order}
           }`}
         >
-          {unit === "CENT" ? "≈" : ""} {formatOperand(valueInSats.toString())} sat
+          {unit === "CENT" ? "≈" : ""} {formatOperand(valueInSats.toString())} sats
           {!hasLoaded.current && (
             <span
               style={{

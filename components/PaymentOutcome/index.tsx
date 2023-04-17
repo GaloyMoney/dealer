@@ -2,13 +2,10 @@ import { useSubscription } from "@galoymoney/client"
 import { useRouter } from "next/router"
 import React, { useRef } from "react"
 import Image from "react-bootstrap/Image"
-import useSatPrice from "../../lib/use-sat-price"
 import { ACTIONS, ACTION_TYPE } from "../../pages/_reducer"
-import { formatOperand } from "../../utils/utils"
 import styles from "./payment-outcome.module.css"
 import Receipt from "./receipt"
 import { useReactToPrint } from "react-to-print"
-
 interface Props {
   paymentRequest: string
   paymentAmount: string | string[] | undefined
@@ -17,8 +14,7 @@ interface Props {
 
 function PaymentOutcome({ paymentRequest, paymentAmount, dispatch }: Props) {
   const router = useRouter()
-  const { amount, unit, sats, username, memo } = router.query
-  const { satsToUsd } = useSatPrice()
+  const { amount, sats, username, memo } = router.query
   const componentRef = useRef<HTMLDivElement | null>(null)
 
   const printReceipt = useReactToPrint({
@@ -70,7 +66,6 @@ function PaymentOutcome({ paymentRequest, paymentAmount, dispatch }: Props) {
   if (data) {
     const { status, errors } = data.lnInvoicePaymentStatus
     if (status === "PAID") {
-      const usdValueInSatUnit = amount === "0.00" ? "less than 1 cent" : `$ ${amount}`
       return (
         <div className={styles.container}>
           <div aria-labelledby="Payment successful">
@@ -81,15 +76,9 @@ function PaymentOutcome({ paymentRequest, paymentAmount, dispatch }: Props) {
               height="104"
             />
             <p className={styles.text}>
-              The invoice of{" "}
-              {unit === "SAT"
-                ? `${formatOperand(sats?.toString())} sats (~ ${usdValueInSatUnit})`
-                : ` $${formatOperand(
-                    amount?.toString() ?? satsToUsd(Number(paymentAmount)).toFixed(2),
-                  )} (~${formatOperand(
-                    sats?.toString() ?? Number(paymentAmount).toFixed(),
-                  )} sats)`}{" "}
-              has been paid
+              {`The invoice of ${localStorage.getItem("formattedSatsValue")}
+                (~${localStorage.getItem("formattedFiatValue")})
+                has been paid`}
             </p>
 
             {/* the component for printing receipt */}

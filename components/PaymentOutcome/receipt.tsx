@@ -2,7 +2,6 @@ import React from "react"
 import Image from "react-bootstrap/Image"
 import GaloyIcon from "./galoy-icon"
 import styles from "./payment-outcome.module.css"
-import { formatOperand } from "../../utils/utils"
 import { formattedDate, formattedTime } from "../../utils/dateUtil"
 
 interface Props {
@@ -15,8 +14,6 @@ interface Props {
 }
 
 function receipt(props: Props) {
-  const usdValueInSatUnit =
-    props.amount === "0.00" ? "less than 1 cent" : `$ ${props.amount}`
   return (
     <div className="w-100">
       <div className="d-flex justify-content-center">
@@ -25,11 +22,8 @@ function receipt(props: Props) {
 
       <div className="text-center">
         <span>Transaction Amount</span>
-        <h1>
-          {formatOperand(props.sats?.toString() ?? Number(props.paymentAmount).toFixed())}{" "}
-          sats
-        </h1>
-        <span> ~ {usdValueInSatUnit}</span>
+        <h1>{localStorage.getItem("formattedSatsValue")}</h1>
+        <span> ~ {localStorage.getItem("formattedFiatValue")}</span>
 
         <div className="d-flex justify-content-center">
           <table className="my-3 w-100">
