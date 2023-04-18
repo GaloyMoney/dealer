@@ -1,23 +1,28 @@
 apiVersion: vendir.k14s.io/v1alpha1
 kind: Config
 
+# Relative to ci/
 directories:
-- path: tasks/vendor
+- path: ../.github/workflows/vendor
   contents:
-  - path: .
+  - path: . # Copy this folder out to ..
     git:
       url: https://github.com/GaloyMoney/concourse-shared.git
-      ref: fc36c9834e4da8374728298ffd362b7bc1280bc5
+      ref: f866f388e2bc4508e518d442b4782a2c8f25d2f8
     includePaths:
-    - tasks/**/*
-    newRootPath: tasks
+    - shared/actions/*
+    excludePaths:
+    - shared/actions/rust-*
+    newRootPath: shared/actions
 
-- path: config/vendor
+- path: ./vendor
   contents:
   - path: .
     git:
       url: https://github.com/GaloyMoney/concourse-shared.git
-      ref: fc36c9834e4da8374728298ffd362b7bc1280bc5
+      ref: f866f388e2bc4508e518d442b4782a2c8f25d2f8
     includePaths:
-    - config/**/*
-    newRootPath: config
+    - shared/ci/**/*
+    excludePaths:
+    - shared/ci/**/rust-*
+    newRootPath: shared/ci
