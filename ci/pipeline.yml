@@ -8,8 +8,11 @@
 #@   "repo_resource",
 #@   "nodejs_deps_resource",
 #@   "install_yarn_deps",
+#@   "open_charts_pr",
 #@   "deps_version_resource",
 #@   "bundled_deps_resource",
+#@   "gh_release_resource",
+#@   "charts_repo_bot_branch",
 #@   "version_resource",
 #@   "versioned_image_resource",
 #@   "charts_repo_resource",
@@ -38,56 +41,7 @@ jobs:
 - #@ nodejs_audit()
 - #@ build_edge_image()
 - #@ release()
-
-- name: bump-image-in-chart
-  plan:
-    - in_parallel:
-        - get: edge-image
-          passed: [ release ]
-          params: { skip_download: true }
-        - get: repo
-          trigger: true
-          passed: [ release ]
-        - get: version
-          trigger: true
-          passed: [ release ]
-        - get: charts-repo
-          params: { skip_download: true }
-        - get: pipeline-tasks
-    - task: bump-image-digest-in-values
-      config:
-        platform: linux
-        image_resource: #@ nodejs_task_image_config()
-        inputs:
-          - name: repo
-          - name: edge-image
-          - name: pipeline-tasks
-          - name: charts-repo
-          - name: version
-        outputs:
-          - name: charts-repo
-        params:
-          BRANCH: #@ data.values.git_charts_branch
-        run:
-          path: pipeline-tasks/ci/tasks/bump-image-digest.sh
-    - put: charts-repo-bot-branch
-      params:
-        repository: charts-repo
-        force: true
-    - task: open-charts-pr
-      config:
-        platform: linux
-        image_resource: #@ nodejs_task_image_config()
-        inputs:
-          - name: pipeline-tasks
-          - name: edge-image
-          - name: charts-repo
-        params:
-          GH_TOKEN: #@ data.values.github_token
-          BRANCH: #@ data.values.git_charts_branch
-          BOT_BRANCH: #@ data.values.git_charts_bot_branch
-        run:
-          path: pipeline-tasks/ci/tasks/open-charts-pr.sh
+- #@ open_charts_pr()
 
 resources:
 - #@ repo_resource()
@@ -102,19 +56,8 @@ resources:
 - #@ charts_repo_resource()
 - #@ versioned_image_resource()
 
-- name: gh-release
-  type: github-release
-  source:
-    owner: #@ data.values.gh_org
-    repository: #@ data.values.gh_repository
-    access_token: #@ data.values.github_token
-
-- name: charts-repo-bot-branch
-  type: git
-  source:
-    uri: #@ data.values.git_charts_uri
-    branch: #@ data.values.git_charts_bot_branch
-    private_key: #@ data.values.github_private_key
+- #@ gh_release_resource()
+- #@ charts_repo_bot_branch()
 
 resource_types:
 - #@ gcr_resource_type()
