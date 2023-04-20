@@ -2,14 +2,14 @@ apiVersion: vendir.k14s.io/v1alpha1
 directories:
 - contents:
   - git:
-      commitTitle: 'chore: unpack_deps function for rust'
-      sha: f866f388e2bc4508e518d442b4782a2c8f25d2f8
+      commitTitle: 'fix: rust helpers'
+      sha: 32ff38a66a0ffa588dc1b9e245a38e83b097da32
     path: .
   path: ../.github/workflows/vendor
 - contents:
   - git:
-      commitTitle: 'chore: unpack_deps function for rust'
-      sha: f866f388e2bc4508e518d442b4782a2c8f25d2f8
+      commitTitle: 'fix: rust helpers'
+      sha: 32ff38a66a0ffa588dc1b9e245a38e83b097da32
     path: .
   path: ./vendor
 kind: LockConfig
