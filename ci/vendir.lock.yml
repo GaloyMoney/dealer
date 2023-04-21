@@ -2,14 +2,14 @@ apiVersion: vendir.k14s.io/v1alpha1
 directories:
 - contents:
   - git:
-      commitTitle: 'chore: pipeline fragments file names'
-      sha: 0a916f2074c900552639e84e379a2deb90b416db
+      commitTitle: 'chore: have version for prepping docker build'
+      sha: ffb5caaacf1331b1e74f7c7f4893bfb7b3656eef
     path: .
   path: ../.github/workflows/vendor
 - contents:
   - git:
-      commitTitle: 'chore: pipeline fragments file names'
-      sha: 0a916f2074c900552639e84e379a2deb90b416db
+      commitTitle: 'chore: have version for prepping docker build'
+      sha: ffb5caaacf1331b1e74f7c7f4893bfb7b3656eef
     path: .
   path: ./vendor
 kind: LockConfig
