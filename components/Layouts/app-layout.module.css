@@ -186,16 +186,14 @@
   font-weight: 600;
 }
 
-.footer_text {
-  display: flex;
-  column-gap: 5px;
-}
-
 .footer_text > p {
   margin: 0;
   padding: 0;
   font-size: 15px;
-  font-style: italic;
+  text-align: center;
+}
+
+.footer_text > p > a {
   text-decoration: underline;
 }
 
