@@ -168,3 +168,13 @@ code {
   font-size: 22px;
   color: rgba(17, 25, 40, 1);
 }
+
+.print-paycode-button {
+  padding: 9px 32px;
+  border-radius: 8px;
+  background: linear-gradient(0deg, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1)),
+    linear-gradient(268.08deg, #fb5607 8.75%, #ffbe0b 98.45%);
+  border: none;
+  color: #fff;
+  font-weight: 600;
+}

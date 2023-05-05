@@ -3,7 +3,6 @@
   height: 100vh;
   right: 0;
   left: 0;
-  /* transform: translateX(0%); */
   margin-top: 1rem;
 }
 
@@ -97,8 +96,9 @@
 }
 
 .lightning_addr > div:nth-child(2) button {
-  background-color: rgba(83, 111, 242, 0.1);
-  color: rgba(83, 111, 242, 1);
+  background: linear-gradient(0deg, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)),
+    linear-gradient(268.08deg, #fb5607 8.75%, #ffbe0b 98.45%);
+  color: #fff;
   padding: 0.45rem 0.75rem;
   border-radius: 8px;
   border: none;
@@ -106,11 +106,12 @@
   align-items: center;
   column-gap: 5px;
   font-weight: 500;
+  font-size: 0.975rem;
   transition: 0.2s border;
 }
 
 .lightning_addr > div:nth-child(2) button:hover {
-  border: 1px solid rgba(83, 111, 242, 1);
+  border: 1px solid rgba(22, 31, 71, 0.414);
 }
 
 .hamburger {

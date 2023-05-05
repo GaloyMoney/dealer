@@ -1,13 +1,13 @@
 import Row from "react-bootstrap/Row"
 import Col from "react-bootstrap/Col"
 import Card from "react-bootstrap/Card"
-import Button from "react-bootstrap/Button"
 import Container from "react-bootstrap/Container"
 import originalUrl from "original-url"
 import ReactToPrint from "react-to-print"
 import { bech32 } from "bech32"
 import { QRCode } from "react-qrcode-logo"
 import { useRef } from "react"
+import { URL_HOST_DOMAIN } from "../../config/config"
 
 export async function getServerSideProps({
   req,
@@ -38,7 +38,7 @@ export async function getServerSideProps({
     props: {
       qrCodeURL,
       username,
-      userHeader: `Pay ${username}@blink.sv`,
+      userHeader: `Pay ${username}@${URL_HOST_DOMAIN}`,
     },
   }
 }
@@ -130,7 +130,7 @@ export default function ({
       </Container>
       <Row className="justify-content-center">
         <ReactToPrint
-          trigger={() => <Button>Print QR Code</Button>}
+          trigger={() => <button className="print-paycode-button">Print QR Code</button>}
           content={() => componentRef.current}
           onBeforeGetContent={() => {
             const qrcodeLogo = document.getElementById("react-qrcode-logo")
