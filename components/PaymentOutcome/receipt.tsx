@@ -16,8 +16,8 @@ interface Props {
 function receipt(props: Props) {
   return (
     <div className="w-100">
-      <div className="d-flex justify-content-center">
-        <Image src="/QRLOGO-BBW.png" />
+      <div className="d-flex py-3 justify-content-center">
+        <Image src="/blink-qr-logo.png" width={50} height={50} />
       </div>
 
       <div className="text-center">

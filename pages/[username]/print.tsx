@@ -38,7 +38,7 @@ export async function getServerSideProps({
     props: {
       qrCodeURL,
       username,
-      userHeader: `${username}'s paycode`,
+      userHeader: `Pay ${username}@blink.sv`,
     },
   }
 }
@@ -75,7 +75,7 @@ export default function ({
                       ecLevel="H"
                       value={qrCodeURL}
                       size={800}
-                      logoImage="/BBW-QRLOGO.png"
+                      logoImage="/blink-qr-logo.png"
                       logoWidth={250}
                     />
                     <Card.Text>
@@ -110,7 +110,7 @@ export default function ({
                     ecLevel="H"
                     value={qrCodeURL}
                     size={300}
-                    logoImage="/BBW-QRLOGO.png"
+                    logoImage="/blink-qr-logo.png"
                     logoWidth={100}
                   />
                 </Card.Text>

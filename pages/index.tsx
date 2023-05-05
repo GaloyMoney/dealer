@@ -88,8 +88,8 @@ function Home() {
                             }
                           >
                             <label htmlFor="username">
-                              To use the <strong>POS</strong> app, enter your bitcoin
-                              beach username
+                              To use the <strong>POS</strong> app, enter your blink (BBW)
+                              username
                             </label>
                             <input
                               type="text"

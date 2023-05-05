@@ -6,6 +6,7 @@
   position: absolute;
   top: 0;
   bottom: 0;
+  right: 0;
   background-color: #fff;
   width: 100%;
   height: 100%;
@@ -33,7 +34,8 @@
   justify-content: center;
   align-items: center;
   column-gap: 0.5rem;
-  background-color: rgb(83, 111, 242);
+  background: linear-gradient(0deg, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1)),
+    linear-gradient(268.08deg, #fb5607 8.75%, #ffbe0b 98.45%);
   border-radius: 10px;
   border: none;
   outline: none;

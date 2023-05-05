@@ -34,11 +34,12 @@
   display: inline-flex;
   align-items: center;
   border: none;
-  background-color: rgba(83, 111, 242, 0.1);
+  background: linear-gradient(0deg, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1)),
+    linear-gradient(268.08deg, #fb5607 8.75%, #ffbe0b 98.45%);
   border-radius: 8px;
   font-weight: 600;
   padding: 0.5rem;
-  color: rgba(83, 111, 242, 1);
+  color: #faf9f9;
   column-gap: 0.5rem;
 }
 
@@ -61,13 +62,13 @@
   width: 100%;
   padding: 0.5rem 1.5rem;
   font-weight: 500;
-  background-color: rgba(83, 111, 242, 1);
+  background: linear-gradient(6.59deg, #ffbe0b 5.78%, #fb5607 81.81%);
   color: #fff;
 }
 
 .modal_footer button:last-child {
-  background-color: transparent;
-  color: rgba(83, 111, 242, 1);
+  background: transparent;
+  color: rgb(242, 102, 83);
 }
 
 .modal_header {

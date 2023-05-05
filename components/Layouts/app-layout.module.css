@@ -154,7 +154,7 @@
 
 .main {
   position: absolute;
-  width: 100vw;
+  width: calc(100vw - 1rem);
   min-height: 100vh;
 }
 
@@ -164,14 +164,16 @@
 
 .divider {
   height: 2px;
-  background-color: rgba(83, 111, 242, 0.2);
+  background: linear-gradient(6.59deg, #ffbe0b 5.78%, #fb5607 81.81%);
+  opacity: 0.5;
 }
 
 .footer {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
-  margin-top: 1.5rem;
+  margin-top: 1rem;
 }
 
 .footer > a {
@@ -181,6 +183,19 @@
   column-gap: 5px;
   color: #000;
   font-weight: 600;
+}
+
+.footer_text {
+  display: flex;
+  column-gap: 5px;
+}
+
+.footer_text > p {
+  margin: 0;
+  padding: 0;
+  font-size: 15px;
+  font-style: italic;
+  text-decoration: underline;
 }
 
 @media (min-width: 768px) {

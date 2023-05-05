@@ -251,7 +251,7 @@ function ReceiveInvoice({ recipientWalletCurrency, walletId, state, dispatch }: 
               <QRCode
                 value={invoice?.paymentRequest}
                 size={320}
-                logoImage="/BBW-QRLOGO.png"
+                logoImage="/blink-qr-logo.png"
                 logoWidth={100}
               />
             </div>
@@ -326,7 +326,7 @@ function ReceiveInvoice({ recipientWalletCurrency, walletId, state, dispatch }: 
           <Modal.Body>
             <div className={styles.modal_item_wrapper}>
               <Image
-                src="/BBW-QRLOGO.png"
+                src="/icons/blink-logo-icon.svg"
                 alt="bitcoin beach wallet image"
                 className={styles.modal_item}
                 style={{ cursor: "pointer" }}

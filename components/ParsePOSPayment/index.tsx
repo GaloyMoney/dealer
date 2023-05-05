@@ -373,7 +373,10 @@ function ParsePayment({ defaultWalletCurrency, walletId, dispatch, state }: Prop
           )}
 
           <DigitButton digit={"0"} dispatch={dispatch} />
-          <button onClick={() => dispatch({ type: ACTIONS.DELETE_DIGIT })}>
+          <button
+            className={styles.backspace_icon}
+            onClick={() => dispatch({ type: ACTIONS.DELETE_DIGIT })}
+          >
             <Image
               src="/icons/backspace-icon.svg"
               alt="delete digit icon"
@@ -396,11 +399,7 @@ function ParsePayment({ defaultWalletCurrency, walletId, dispatch, state }: Prop
           }}
         >
           <Image
-            src={
-              state.createdInvoice
-                ? "/icons/lightning-icon-dark.svg"
-                : "/icons/lightning-icon.svg"
-            }
+            src={"/icons/lightning-icon.svg"}
             alt="lightning icon"
             width="20"
             height="20"

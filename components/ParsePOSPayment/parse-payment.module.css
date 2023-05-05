@@ -108,7 +108,8 @@
 
 .pay_btn,
 .pay_new_btn {
-  background-color: rgb(83, 111, 242);
+  background: linear-gradient(0deg, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1)),
+    linear-gradient(268.08deg, #fb5607 8.75%, #ffbe0b 98.45%);
   color: #fff;
   font-weight: 600;
   width: 220px;
@@ -125,8 +126,6 @@
 
 .pay_new_btn {
   background-color: transparent;
-  color: rgb(83, 111, 242);
-  border: 2px solid rgb(83, 111, 242);
   border-radius: 10px;
   width: 327px;
   height: 50px;
@@ -134,8 +133,9 @@
 }
 
 .clear_btn {
-  color: rgba(83, 111, 242, 1);
-  background-color: rgba(83, 111, 242, 0.1);
+  background: linear-gradient(0deg, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1)),
+    linear-gradient(268.08deg, #fb5607 8.75%, #ffbe0b 98.45%);
+  color: #fff;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -143,9 +143,8 @@
   border: none;
   border-radius: 10px;
   outline: none;
-  font-size: 18px;
   font-weight: 600;
-  padding: 10px 12px;
+  padding: 9px 12px;
   order: 1;
   transition: all 0.5s ease;
 }
@@ -214,7 +213,8 @@
 }
 
 .pay_with_wallet {
-  background-color: rgb(83, 111, 242);
+  background: linear-gradient(0deg, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1)),
+    linear-gradient(268.08deg, #fb5607 8.75%, #ffbe0b 98.45%);
   color: #fff;
   font-weight: 600;
   width: 100%;
@@ -253,7 +253,8 @@
 }
 
 .use_bbw_button {
-  background-color: rgb(83, 111, 242);
+  background: linear-gradient(0deg, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1)),
+    linear-gradient(268.08deg, #fb5607 8.75%, #ffbe0b 98.45%);
   color: #fff;
   font-weight: 600;
   width: 100%;
@@ -332,8 +333,8 @@
 }
 
 .loader {
-  border: 8px solid rgba(243, 243, 243, 0.359);
-  border-top: 8px solid rgba(83, 111, 242, 1);
+  border: 8px solid #f4570e;
+  border-top: 5px solid rgb(242, 170, 83);
   border-radius: 50%;
   width: 100px;
   height: 100px;
