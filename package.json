@@ -41,7 +41,6 @@
     "react-lottie": "^1.2.3",
     "react-qrcode-logo": "^2.9.0",
     "react-refresh": "^0.14.0",
-    "react-timer-hook": "^3.0.5",
     "react-to-print": "^2.14.12",
     "subscriptions-transport-ws": "^0.11.0",
     "use-debounce": "^8.0.4",

@@ -300,13 +300,14 @@ function ParsePayment({ defaultWalletCurrency, walletId, dispatch, state }: Prop
             style={{
               width: "100%",
               border: 0,
-              backgroundColor: "white",
+              color: "black",
+              backgroundColor: "transparent",
               textAlign: "center",
               fontWeight: 600,
             }}
             value={!amount ? 0 : valueInFiat}
             intlConfig={{ locale: navigator.language, currency: display }}
-            disabled={true}
+            readOnly={true}
           />
         </div>
         <div

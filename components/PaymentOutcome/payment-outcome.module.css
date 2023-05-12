@@ -35,7 +35,7 @@
   align-items: center;
   column-gap: 0.5rem;
   background: linear-gradient(0deg, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1)),
-    linear-gradient(268.08deg, #fb5607 8.75%, #ffbe0b 98.45%);
+    linear-gradient(45deg, #ffbe0b 0%, #fb5607 100%);
   border-radius: 10px;
   border: none;
   outline: none;

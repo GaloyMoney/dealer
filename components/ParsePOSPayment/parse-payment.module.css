@@ -31,29 +31,26 @@
 }
 
 .pin_btn {
-  --black-900: rgba(17, 25, 40, 1);
-  font-family: "Source Sans Pro", sans-serif;
   font-weight: 600;
   font-size: 0.75rem;
-  line-height: 12px;
   background-color: transparent;
-  color: var(--black-900);
+  color: black;
   outline: none;
   border: none;
   position: absolute;
-  left: -85%;
+  left: 0%;
+  width: fit-content;
 }
 
 .zero_order {
   order: 0;
-  color: rgba(17, 25, 40, 1);
   font-size: 2rem;
   font-weight: 600;
 }
 
 .first_order {
   order: 1;
-  color: rgba(17, 25, 40, 1);
+  color: #000;
   font-size: 1rem;
   font-weight: 400;
 }
@@ -109,7 +106,7 @@
 .pay_btn,
 .pay_new_btn {
   background: linear-gradient(0deg, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1)),
-    linear-gradient(268.08deg, #fb5607 8.75%, #ffbe0b 98.45%);
+    linear-gradient(45deg, #ffbe0b 0%, #fb5607 100%);
   color: #fff;
   font-weight: 600;
   width: 220px;
@@ -133,20 +130,36 @@
 }
 
 .clear_btn {
-  background: linear-gradient(0deg, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1)),
-    linear-gradient(268.08deg, #fb5607 8.75%, #ffbe0b 98.45%);
-  color: #fff;
+  position: relative;
+  background-color: #fff;
+  color: #232222;
   display: flex;
   justify-content: center;
   align-items: center;
   column-gap: 10px;
   border: none;
-  border-radius: 10px;
+  border-radius: 8px;
   outline: none;
   font-weight: 600;
-  padding: 9px 12px;
+  padding: 10px 12px;
   order: 1;
   transition: all 0.5s ease;
+}
+
+.clear_btn::before {
+  content: "";
+  position: absolute;
+  top: -1.5px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(0deg, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1)),
+    linear-gradient(45deg, #ffbe0b 0%, #fb5607 100%);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  z-index: -1;
+  transition: background-size 0.25s ease;
+  border-radius: 10px;
 }
 
 .clear_btn:hover,
@@ -204,30 +217,8 @@
 }
 
 .timer > span {
-  background-color: rgba(83, 111, 242, 1);
-  width: 100%;
   height: 100%;
-  transition: all 0.5s ease;
-  animation-name: timer;
-  animation-duration: 300s;
-}
-
-.pay_with_wallet {
-  background: linear-gradient(0deg, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1)),
-    linear-gradient(268.08deg, #fb5607 8.75%, #ffbe0b 98.45%);
-  color: #fff;
-  font-weight: 600;
-  width: 100%;
-  border: none;
-  outline: none;
-  padding: 10px 32px;
-  border-radius: 6px;
-  margin-bottom: 16px;
-}
-
-.pay_with_wallet > a {
-  color: #fff;
-  text-decoration: none;
+  transition: width 0.5s ease;
 }
 
 .modal_header {

@@ -1,18 +1,14 @@
 import copy from "copy-to-clipboard"
-import Link from "next/link"
 import { useRouter } from "next/router"
 import React, { useCallback } from "react"
-import { Button, Modal } from "react-bootstrap"
 import Image from "react-bootstrap/Image"
 import OverlayTrigger from "react-bootstrap/OverlayTrigger"
 import Tooltip from "react-bootstrap/Tooltip"
 import { QRCode } from "react-qrcode-logo"
-import { useTimer } from "react-timer-hook"
 import { useScreenshot } from "use-react-screenshot"
 
 import { URL_HOST_DOMAIN, USD_INVOICE_EXPIRE_INTERVAL } from "../../config/config"
 import useCreateInvoice from "../../hooks/use-Create-Invoice"
-import { apkLink, appStoreLink, getOS, playStoreLink } from "../../lib/download"
 import { LnInvoiceObject } from "../../lib/graphql/index.types.d"
 import useSatPrice from "../../lib/use-sat-price"
 import { ACTION_TYPE } from "../../pages/_reducer"
@@ -28,21 +24,24 @@ interface Props {
   dispatch: React.Dispatch<ACTION_TYPE>
 }
 
-const USD_MAX_INVOICE_TIME = "5.00"
+const USD_MAX_INVOICE_TIME = 5 // minutes
+const PROGRESS_BAR_MAX_WIDTH = 100 // percent
 
 function ReceiveInvoice({ recipientWalletCurrency, walletId, state, dispatch }: Props) {
-  const OS = getOS()
   const deviceDetails = window.navigator.userAgent
   const router = useRouter()
   const { username, amount, unit, sats, memo } = router.query
 
   const { usdToSats, satsToUsd } = useSatPrice()
 
+  const [progress, setProgress] = React.useState(PROGRESS_BAR_MAX_WIDTH)
+  const [seconds, setSeconds] = React.useState(0)
+  const [minutes, setMinutes] = React.useState(USD_MAX_INVOICE_TIME)
+
   const [expiredInvoiceError, setExpiredInvoiceError] = React.useState<string>("")
   const [copied, setCopied] = React.useState<boolean>(false)
   const [shareState, setShareState] = React.useState<"not-set">()
   const [image, takeScreenShot] = useScreenshot()
-  const [openModal, setOpenModal] = React.useState<boolean>(false)
 
   const qrImageRef = React.useRef(null)
   const getImage = () => takeScreenShot(qrImageRef.current)
@@ -62,22 +61,42 @@ function ReceiveInvoice({ recipientWalletCurrency, walletId, state, dispatch }: 
     url: shareUrl,
   }
 
-  const timerRef = React.useRef<Date>()
+  React.useEffect(() => {
+    const timerStartTime = new Date()
 
-  timerRef.current = new Date()
-  if (recipientWalletCurrency === "USD") {
-    timerRef.current.setSeconds(
-      timerRef.current.getSeconds() + USD_INVOICE_EXPIRE_INTERVAL,
-    ) // default to five mins for USD invoice
+    if (recipientWalletCurrency === "USD") {
+      timerStartTime.setSeconds(timerStartTime.getSeconds() + USD_INVOICE_EXPIRE_INTERVAL) // default to five mins for USD invoice
+    }
+
+    const interval = setInterval(() => {
+      const currentTime = new Date()
+      const elapsedTime = timerStartTime.getTime() - currentTime.getTime()
+      const remainingSeconds = Math.ceil(elapsedTime / 1000)
+
+      if (remainingSeconds <= 0) {
+        clearInterval(interval)
+        if (recipientWalletCurrency !== "BTC") {
+          setExpiredInvoiceError("Invoice has expired. Generate a new invoice!")
+        }
+      } else {
+        setMinutes(Math.floor(remainingSeconds / 60))
+        setSeconds(remainingSeconds % 60)
+        setProgress(
+          PROGRESS_BAR_MAX_WIDTH -
+            (elapsedTime / (USD_INVOICE_EXPIRE_INTERVAL * 1000)) * 100,
+        )
+      }
+    }, 1000)
+
+    return () => clearInterval(interval)
+    // we don't want to re-run it when any particular prop or state value changes.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  const progressBarStyle = {
+    width: `${progress}%`,
+    backgroundColor: minutes < 1 ? "rgb(255, 0, 0)" : "rgba(83, 111, 242, 1)",
   }
-  const expiryTimestamp = timerRef.current
-  const { seconds, minutes } = useTimer({
-    expiryTimestamp,
-    onExpire: () => {
-      if (recipientWalletCurrency === "BTC") return
-      setExpiredInvoiceError("Invoice has expired. Generate a new invoice!")
-    },
-  })
 
   const { createInvoice, data, errorsMessage, loading, invoiceStatus } = useCreateInvoice(
     {
@@ -164,16 +183,6 @@ function ReceiveInvoice({ recipientWalletCurrency, walletId, state, dispatch }: 
     return type?.[0]
   }, [deviceDetails])
 
-  const fallbackUrl =
-    OS === "ios" ? appStoreLink : OS === "android" ? playStoreLink : apkLink
-
-  const handleLinkClick = () => {
-    if (isDesktopType() === "Macintosh") {
-      return window.open(appStoreLink, "_blank")
-    }
-    return window.open(playStoreLink, "_blank")
-  }
-
   React.useEffect(() => {
     isMobileDevice()
     isDesktopType()
@@ -235,9 +244,9 @@ function ReceiveInvoice({ recipientWalletCurrency, walletId, state, dispatch }: 
         <div className={styles.timer_container}>
           <p>{`${minutes}:${seconds}`}</p>
           <div className={styles.timer}>
-            <span></span>
+            <span style={progressBarStyle}></span>
           </div>
-          <p>{USD_MAX_INVOICE_TIME}</p>
+          <p>{`${USD_MAX_INVOICE_TIME}:00`}</p>
         </div>
       )}
       <div>
@@ -255,18 +264,7 @@ function ReceiveInvoice({ recipientWalletCurrency, walletId, state, dispatch }: 
                 logoWidth={100}
               />
             </div>
-            <Button
-              className={styles.pay_with_wallet}
-              onClick={() => {
-                !isMobileDevice() && setOpenModal(true)
-              }}
-            >
-              {isMobileDevice() ? (
-                <Link href={isMobileDevice() ? fallbackUrl : ""}>Pay in Wallet</Link>
-              ) : (
-                "Pay in wallet"
-              )}
-            </Button>
+
             <div className={styles.qr_clipboard}>
               <OverlayTrigger
                 show={copied}
@@ -313,59 +311,6 @@ function ReceiveInvoice({ recipientWalletCurrency, walletId, state, dispatch }: 
         paymentAmount={paymentAmount}
         dispatch={dispatch}
       />
-      {openModal && (
-        <Modal
-          show={openModal}
-          onHide={() => setOpenModal(false)}
-          aria-labelledby="contained-modal-title-vcenter"
-          centered
-        >
-          <Modal.Header className={styles.modal_header} closeButton>
-            You can pay with
-          </Modal.Header>
-          <Modal.Body>
-            <div className={styles.modal_item_wrapper}>
-              <Image
-                src="/icons/blink-logo-icon.svg"
-                alt="bitcoin beach wallet image"
-                className={styles.modal_item}
-                style={{ cursor: "pointer" }}
-                onClick={handleLinkClick}
-              />
-              <Image
-                src="/pheonix-logo.png"
-                alt="pheonix wallet logo"
-                className={styles.modal_item}
-              />
-              <Image
-                src="/wallet-of-satoshi-logo.png"
-                alt="wallet of satoshi logo"
-                className={styles.modal_item}
-              />
-              <Image
-                className={styles.modal_item}
-                src="/blue-wallet.png"
-                alt="blue wallet logo"
-              />
-              <Image
-                className={styles.modal_item}
-                src="/breez-logo.png"
-                alt="breez beach wallet logo"
-              />
-              <Image
-                className={styles.modal_item}
-                src="/muun-logo.png"
-                alt="muun wallet logo"
-              />
-            </div>
-          </Modal.Body>
-          <Modal.Footer>
-            <button className={styles.use_bbw_button} onClick={handleLinkClick}>
-              Use Bitcoin Beach wallet
-            </button>
-          </Modal.Footer>
-        </Modal>
-      )}
     </div>
   )
 }

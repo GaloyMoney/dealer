@@ -96,8 +96,8 @@
 }
 
 .lightning_addr > div:nth-child(2) button {
-  background: linear-gradient(0deg, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)),
-    linear-gradient(268.08deg, #fb5607 8.75%, #ffbe0b 98.45%);
+  background: linear-gradient(0deg, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1)),
+    linear-gradient(45deg, #ffbe0b 0%, #fb5607 100%);
   color: #fff;
   padding: 0.45rem 0.75rem;
   border-radius: 8px;
@@ -150,7 +150,8 @@
   -moz-transform: rotate(40deg);
   -o-transform: rotate(40deg);
   -ms-transform: rotate(40deg);
-  background: linear-gradient(6.59deg, #ffbe0b 5.78%, #fb5607 81.81%);
+  background: linear-gradient(0deg, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1)),
+    linear-gradient(45deg, #ffbe0b 0%, #fb5607 100%);
 }
 
 .main {
@@ -165,7 +166,8 @@
 
 .divider {
   height: 2px;
-  background: linear-gradient(6.59deg, #ffbe0b 5.78%, #fb5607 81.81%);
+  background: linear-gradient(0deg, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1)),
+    linear-gradient(45deg, #ffbe0b 0%, #fb5607 100%);
   opacity: 0.5;
 }
 

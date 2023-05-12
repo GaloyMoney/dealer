@@ -31,23 +31,36 @@
 }
 
 .add_btn {
+  position: relative;
+  background-color: #fff;
   display: inline-flex;
   align-items: center;
   border: none;
-  background: linear-gradient(0deg, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1)),
-    linear-gradient(268.08deg, #fb5607 8.75%, #ffbe0b 98.45%);
   border-radius: 8px;
   font-weight: 600;
   padding: 0.5rem;
-  color: #faf9f9;
+  color: #232222;
   column-gap: 0.5rem;
 }
 
+.add_btn::before {
+  content: "";
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(0deg, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1)),
+    linear-gradient(45deg, #ffbe0b 0%, #fb5607 100%);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  z-index: -1;
+  transition: background-size 0.25s ease;
+  border-radius: 10px;
+}
+
 .disable_btn {
-  border: none;
-  background-color: transparent;
-  padding: 0.5rem;
-  cursor: not-allowed;
+  display: none;
 }
 
 .modal_footer {
@@ -62,7 +75,8 @@
   width: 100%;
   padding: 0.5rem 1.5rem;
   font-weight: 500;
-  background: linear-gradient(6.59deg, #ffbe0b 5.78%, #fb5607 81.81%);
+  background: linear-gradient(0deg, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1)),
+    linear-gradient(45deg, #ffbe0b 0%, #fb5607 100%);
   color: #fff;
 }
 
