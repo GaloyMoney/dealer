@@ -1,4 +1,4 @@
-FROM node:18-alpine AS BUILD_IMAGE
+FROM node:20-alpine AS BUILD_IMAGE
 
 ARG CUSTOM_MODULES="default"
 
@@ -16,7 +16,7 @@ COPY ./*.js ./
 RUN CUSTOM_MODULES=${CUSTOM_MODULES} yarn build:node && yarn build:files && yarn build:bundler
 
 
-FROM gcr.io/distroless/nodejs:18
+FROM gcr.io/distroless/nodejs20-debian11
 
 ARG CUSTOM_MODULES="default"
 

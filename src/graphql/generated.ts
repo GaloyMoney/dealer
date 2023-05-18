@@ -258,7 +258,7 @@ export const ExchangeCurrencyUnit = {
 } as const
 
 export type ExchangeCurrencyUnit =
-  typeof ExchangeCurrencyUnit[keyof typeof ExchangeCurrencyUnit]
+  (typeof ExchangeCurrencyUnit)[keyof typeof ExchangeCurrencyUnit]
 /** Provides global settings for the application which might have an impact for the user. */
 export type Globals = {
   readonly __typename: "Globals"
@@ -339,7 +339,7 @@ export const InvoicePaymentStatus = {
 } as const
 
 export type InvoicePaymentStatus =
-  typeof InvoicePaymentStatus[keyof typeof InvoicePaymentStatus]
+  (typeof InvoicePaymentStatus)[keyof typeof InvoicePaymentStatus]
 export type LnInvoice = {
   readonly __typename: "LnInvoice"
   readonly paymentHash: Scalars["PaymentHash"]
@@ -747,7 +747,7 @@ export const Network = {
   Testnet: "testnet",
 } as const
 
-export type Network = typeof Network[keyof typeof Network]
+export type Network = (typeof Network)[keyof typeof Network]
 export type OnChainAddressCreateInput = {
   readonly walletId: Scalars["WalletId"]
 }
@@ -844,14 +844,14 @@ export const PaymentSendResult = {
   Success: "SUCCESS",
 } as const
 
-export type PaymentSendResult = typeof PaymentSendResult[keyof typeof PaymentSendResult]
+export type PaymentSendResult = (typeof PaymentSendResult)[keyof typeof PaymentSendResult]
 export const PhoneCodeChannelType = {
   Sms: "SMS",
   Whatsapp: "WHATSAPP",
 } as const
 
 export type PhoneCodeChannelType =
-  typeof PhoneCodeChannelType[keyof typeof PhoneCodeChannelType]
+  (typeof PhoneCodeChannelType)[keyof typeof PhoneCodeChannelType]
 /** Price amount expressed in base/offset. To calculate, use: `base / 10^offset` */
 export type Price = {
   readonly __typename: "Price"
@@ -870,7 +870,7 @@ export const PriceGraphRange = {
   OneYear: "ONE_YEAR",
 } as const
 
-export type PriceGraphRange = typeof PriceGraphRange[keyof typeof PriceGraphRange]
+export type PriceGraphRange = (typeof PriceGraphRange)[keyof typeof PriceGraphRange]
 export type PriceInput = {
   readonly amount: Scalars["SatAmount"]
   readonly amountCurrencyUnit: ExchangeCurrencyUnit
@@ -1154,7 +1154,7 @@ export const TxDirection = {
   Send: "SEND",
 } as const
 
-export type TxDirection = typeof TxDirection[keyof typeof TxDirection]
+export type TxDirection = (typeof TxDirection)[keyof typeof TxDirection]
 export const TxNotificationType = {
   IntraLedgerPayment: "IntraLedgerPayment",
   IntraLedgerReceipt: "IntraLedgerReceipt",
@@ -1165,14 +1165,14 @@ export const TxNotificationType = {
 } as const
 
 export type TxNotificationType =
-  typeof TxNotificationType[keyof typeof TxNotificationType]
+  (typeof TxNotificationType)[keyof typeof TxNotificationType]
 export const TxStatus = {
   Failure: "FAILURE",
   Pending: "PENDING",
   Success: "SUCCESS",
 } as const
 
-export type TxStatus = typeof TxStatus[keyof typeof TxStatus]
+export type TxStatus = (typeof TxStatus)[keyof typeof TxStatus]
 /** A wallet belonging to an account which contains a USD balance and a list of transactions. */
 export type UsdWallet = Wallet & {
   readonly __typename: "UsdWallet"
@@ -1374,7 +1374,7 @@ export const WalletCurrency = {
   Usd: "USD",
 } as const
 
-export type WalletCurrency = typeof WalletCurrency[keyof typeof WalletCurrency]
+export type WalletCurrency = (typeof WalletCurrency)[keyof typeof WalletCurrency]
 export type CaptchaCreateChallengeMutationVariables = Exact<{ [key: string]: never }>
 
 export type CaptchaCreateChallengeMutation = {

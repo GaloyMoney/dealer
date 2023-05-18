@@ -13,7 +13,7 @@ import Icon from "components/icon"
 const headerNavPages = ["home"] as const
 
 type Page =
-  | typeof headerNavPages[number]
+  | (typeof headerNavPages)[number]
   | "conversion-flow"
   | "send-bitcoin"
   | "receive-bitcoin"

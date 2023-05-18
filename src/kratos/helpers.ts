@@ -18,7 +18,7 @@ export const getUrlForFlow = ({
   kratosBrowserUrl,
   query,
 }: {
-  flow: typeof KratosFlow[keyof typeof KratosFlow]
+  flow: (typeof KratosFlow)[keyof typeof KratosFlow]
   kratosBrowserUrl: string
   query?: URLSearchParams
 }) =>
